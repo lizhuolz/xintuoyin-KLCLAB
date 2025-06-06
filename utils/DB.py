@@ -7,7 +7,7 @@ from transformers import AutoTokenizer, AutoModelForCausalLM
 
 import copy
 import re
-from utils.functions import query_LLM_ollama
+from utils.query_backend import query_LLM_ollama
 # predefined info
 HOST = '60.204.204.207'
 PORT = 3306
@@ -91,7 +91,7 @@ class DB:
             path,
             trust_remote_code=True,
             torch_dtype=torch.float16,
-            device_map='auto'
+            device_map='cuda:0'
             # device_map={"": int(os.environ.get("LOCAL_RANK") or 0)}
         )
         
@@ -101,7 +101,7 @@ class DB:
             path,
             trust_remote_code=True,
             torch_dtype=torch.float16,
-            device_map='auto'
+            device_map='cuda:1'
             # device_map={"": int(os.environ.get("LOCAL_RANK") or 0)}
         )
         
