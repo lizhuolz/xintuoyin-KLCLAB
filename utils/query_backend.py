@@ -37,7 +37,8 @@ vllm_LLM_path_dict = {
     "weak LLM": {"base_url": "http://localhost:8000/v1", "api_key": "token-abc123", "model":"/data1/public/models/Qwen2.5-32B-Instruct"},
     "NLP-LLM": {"base_url": "http://localhost:8000/v1", "api_key": "token-abc123", "model":"/data1/public/models/Qwen2.5-32B-Instruct"},
     "reasoning LLM": {"base_url": "http://localhost:8000/v1", "api_key": "token-abc123", "model":"/data1/public/models/Qwen2.5-32B-Instruct"},
-    "SQL LLM": {"base_url": "http://localhost:8000/v1", "api_key": "token-abc123", "model":"/data1/public/models/Qwen2.5-32B-Instruct"},
+    "SQL LLM": {"base_url": "http://localhost:8000/v1", "api_key": "token-abc123", "model":"/data1/public/models/llama-3-sqlcoder-8b"},
+    "SQL seletor": {"base_url": "http://localhost:8000/v1", "api_key": "token-abc123", "model":"/data1/public/models/Qwen2.5-14B-Instruct"},
     DEFAULT: {"base_url": "http://localhost:8000/v1", "api_key": "token-abc123", "model":"/data1/public/models/Qwen2.5-32B-Instruct"},
 }
 
