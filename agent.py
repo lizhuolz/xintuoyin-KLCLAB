@@ -6,13 +6,15 @@ planning_prompt_system_multi_step, \
 planning_prompt_user_multi_step, \
 RAG_QA_conservative_prompt, \
 RAG_QA_radical_prompt, \
-transform_prompt
+transform_prompt, \
+function_calling_prompt_system,\
+function_calling_prompt_user
 
 #from utils.functions import query_LLM, general_task_classify, RAG, execute_sql, compute, text2sql, TEXT2SQL, query_LLM_wrapped
 from utils.functions import general_task_classify, RAG, compute, text2sql, query_LLM
-from utils.query_backend import query_LLM_backend
+from utils.query_backend import function_calling_query_vllm
 from utils.DB import DB
-
+from transformers import AutoTokenizer
 import warnings
 warnings.filterwarnings("ignore")
 
@@ -20,15 +22,50 @@ warnings.filterwarnings("ignore")
 
 # 假设你已经有以下动作映射表
 ACTION_FUNCTION_MAP = {
-    "RAG": "RAG",
-    "query LLM": "query_LLM",
-    "execute SQL": "execute_sql_wrapped",
+    "<RAG>": "RAG",
+    "<query>": "query_LLM",
+    "<sql>": "execute_sql_wrapped",
     "compute": "compute"
     # ... 其他动作
 }
 
+# 首次生成（到特定token停止）
+SUPPRESS_TOKENS = ["</sql>", "</RAG>"]  # 您的特定停止标记
+PATTERNS = [
+    ("<sql>", "</sql>"),
+    ("<RAG>", "</RAG>"),
+]
 
-# 执行器上下文：用于存储中间变量
+def find_last_unclosed_pattern(long_string, patterns=PATTERNS):
+    """
+    从后往前查找最后一个未闭合的模式。
+    
+    Args:
+        long_string (str): 要搜索的长字符串。
+        patterns (list of tuple): 模式列表，每个模式是 (发语词, 结束词) 的元组，如 ("<sql>", "</sql>")。
+        
+    Returns:
+        tuple or None: 返回最后一个未闭合的 (发语词, 结束词)，如果没有未闭合的模式则返回 None。
+    """
+    last_unclosed = None
+    last_unclosed_pos = -1  # 记录未闭合模式的最晚出现位置
+    
+    for start_tag, end_tag in patterns:
+        # 从后往前找最后一个 start_tag
+        last_start_pos = long_string.rfind(start_tag)
+        
+        if last_start_pos == -1:
+            continue  # 该模式未出现，跳过
+        
+        # 检查 start_tag 后面是否有对应的 end_tag
+        substring_after_start = long_string[last_start_pos:]
+        if end_tag not in substring_after_start:
+            # 如果未闭合，检查是否是最晚出现的未闭合模式
+            if last_start_pos > last_unclosed_pos:
+                last_unclosed_pos = last_start_pos
+                last_unclosed = (start_tag, end_tag)
+    
+    return last_unclosed
 
 
 global_db = None
@@ -57,18 +94,25 @@ class User:
 class Conversation: 
     def __init__(self, conv_id):
         self.conv_id = conv_id
-        self.history = []  # [(user_msg, agent_msg), ...]
-        self.ctx = {}
-    
+        self.history = [
+            {"role":"system", "content": function_calling_prompt_system},
+        ]
     def handle_message(self, query):
         agent = Agent()  # 始终调用唯一的Agent实例
-        response, steps = agent.solve(self, query)
-        self.history.append({
-            "user": query,
-            "planning": steps,
-            "assistant": response,
-        })
-        return response
+
+        self.history = self.history + [
+            {"role":"user", "content": function_calling_prompt_user.format(question=query)},
+            {"role":"assistant", "content": ""},
+        ]
+    
+        messages = agent.solve(self.history, query)
+        assert len(self.history) == len(messages)
+        self.history = messages
+        return self.extract_response(messages)
+    
+    def extract_response(messages):
+        return messages[-1]["content"]
+
     
 
 class Agent:
@@ -80,92 +124,46 @@ class Agent:
         return cls._instance
 
     def __init__(self):
-        #self.ctx = {}
-        self.func_mapping_LLM = "weak-LLM"
-        self.planning_LLM = "NLP-LLM"
+        #self.func_mapping_LLM = "weak-LLM"
+        #self.planning_LLM = "NLP-LLM"
+        self.tokenizer = AutoTokenizer.from_pretrained("/data1/public/models/Qwen2.5-32B-Instruct")
+        self.MAX_ITERATION = 8
 
         ### 定义数据库
         self.db = DB(init_llm=True)
         global global_db
         global_db = self.db 
     
-    def solve(self, conver: Conversation, query):
-        steps = self.planning(conver, query)
-        result = self.execute(conver, query, steps)
-        response = query_LLM_backend(llm_name="NLP-LLM", query=transform_prompt.format(user_prompt=query, final_result=result))   ### todo
-        return response, steps
-        
-    
-    def function_mapping(self, raw_query, step, allowed_args, ctx_var):
-        message = [ {"role":"user", "content": 
-                     function_mapping_prompt.format(用户原始问题=raw_query, 当前步骤=step, context_vars=ctx_var, allowed_args=allowed_args)              
-                    }]
-        response = query_LLM_backend(llm_name=self.func_mapping_LLM, query=message)
-        #print(message[-1]["content"])
-        #print(response)
-        return eval(response.split("```json")[1].split("```")[0].replace("null", "None"))
-    
-    def planning(self, conver: Conversation, query):
-        if len(conver.history)==0:
-            message = [
-                {"role":"system", "content": planning_prompt_system},
-                {"role":"user", "content": planning_prompt_user.format(用户提问=query)},
-                ]
-        else:
-            ctx_var = [{'name':name, 'comment': value["comment"]}  for name, value in conver.ctx.items()]
-            message = [
-                {"role":"system", "content": planning_prompt_system_multi_step},
-                {"role":"user", "content": planning_prompt_user_multi_step.format(用户提问=query, 历史对话=conver.history, context_vars=ctx_var)},
-                ]
-        response = query_LLM_backend(llm_name=self.planning_LLM, query=message)
-        #print(message[-1]["content"])
-        #print(response)
+    def solve(self, message: list, query):
+        for i in range(self.MAX_ITERATION):
+            inputs = self.tokenizer.apply_chat_template(message, tokenize=False)
+            inputs = "<|im_end|>".join(inputs.split("<|im_end|>")[:-1])
+            #print("\033[31m inputs:\033[0m", inputs)
+            raw_response = function_calling_query_vllm(inputs, SUPPRESS_TOKENS)
+            #print("\033[31m raw_response:\033[0m", raw_response)
+            func_pattern = find_last_unclosed_pattern(raw_response)
+            if func_pattern is None:
+                break
+            supress_token = func_pattern[1]
+            leading_token = func_pattern[0]
+            function_call_content = raw_response.split(leading_token)[-1]
+            #print("\033[31m function_call_content:\033[0m", function_call_content)
 
-        return eval(response.split("```json")[1].split("```")[0].replace("null", "\"null\""))
-
-    def execute(self, conver: Conversation, query, steps):
-        ctx = conver.ctx
-        for step in steps:
-            action = step["action"]
-            raw_args = step["args"]
-            raw_input = step["input"]
-            output_name = step["output"]
-
-            # 替换 input 中引用的变量（如果是已有中间结果）
-            """
-            input_value = raw_input
-            for var_name in self.ctx:
-                if var_name in raw_input:
-                    input_value = input_value.replace(var_name, str(self.ctx[var_name]))
-            """
-            # 取得函数名
-            func_name = ACTION_FUNCTION_MAP[action]
+            func_name = ACTION_FUNCTION_MAP[leading_token]
             func = globals()[func_name]
-            func_allowed_args = func.allowed_args
-            func_description = None
-
-            # 获得环境变量名及其注释
-            ctx_var = []
-            for name, value in conver.ctx.items():
-                ctx_var.append({'name':name, 'comment': value["comment"]})
+            sandbox_result = func(args=None, input=function_call_content)
             
-            mapping_step = self.function_mapping(query, step, func_allowed_args, ctx_var)
-            
-            args = None if mapping_step['args'] is not None and "None" in mapping_step['args'] else mapping_step['args']
-            input = mapping_step['input']
-            if input in conver.ctx.keys():
-                input_value = conver.ctx[input]['content']
-            else: 
-                input_value = raw_input
-            output_comment = mapping_step['output_comment']
+            extended_response = raw_response + supress_token + "<result>\n" + sandbox_result + "\n</result>\n```\n"
+            if message[-1]["role"] == "assistant":
+                message[-1]["content"] = message[-1]["content"]  + extended_response
+            else:
+                message = message + [{"role":"assistant", "content": extended_response}]
+            #print("\033[31m message:\033[0m", message)
 
-            # 执行函数
-            #print("input_value", input_value)
-            result = func(args=args, input=input_value)
-
-            # 存储结果到上下文，供后续步骤引用
-            conver.ctx[output_name] = {'content': result, 'comment': output_comment}
-
-            print(f"[STEP {step['step']}] {output_name} = {func_name}(args={args}, input={input_value})\n")
-        return result
-
+        if message[-1]["role"] == "assistant":
+            message[-1]["content"] = message[-1]["content"]  +raw_response
+        else:
+            message = message + [{"role":"assistant", "content": raw_response}]
+        #response = query_LLM_backend(llm_name="NLP-LLM", query=transform_prompt.format(user_prompt=query, final_result=result))   ### todo
+        return message
+        

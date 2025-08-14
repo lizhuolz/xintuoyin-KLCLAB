@@ -34,12 +34,12 @@ def query_LLM_ollama(llm_name, query, only_return_response=True):
 
 
 vllm_LLM_path_dict = {
-    "weak LLM": {"base_url": "http://localhost:8000/v1", "api_key": "token-abc123", "model":"/data1/public/models/Qwen2.5-32B-Instruct"},
-    "NLP-LLM": {"base_url": "http://localhost:8000/v1", "api_key": "token-abc123", "model":"/data1/public/models/Qwen2.5-32B-Instruct"},
-    "reasoning LLM": {"base_url": "http://localhost:8000/v1", "api_key": "token-abc123", "model":"/data1/public/models/Qwen2.5-32B-Instruct"},
-    "SQL LLM": {"base_url": "http://localhost:8000/v1", "api_key": "token-abc123", "model":"/data1/public/models/llama-3-sqlcoder-8b"},
-    "SQL seletor": {"base_url": "http://localhost:8000/v1", "api_key": "token-abc123", "model":"/data1/public/models/Qwen2.5-14B-Instruct"},
-    DEFAULT: {"base_url": "http://localhost:8000/v1", "api_key": "token-abc123", "model":"/data1/public/models/Qwen2.5-32B-Instruct"},
+    "weak LLM": {"base_url": "http://localhost:8000/v1", "api_key": "token-abc123", "model":"Qwen2.5-32B-Instruct"},
+    "NLP-LLM": {"base_url": "http://localhost:8000/v1", "api_key": "token-abc123", "model":"Qwen2.5-32B-Instruct"},
+    "reasoning LLM": {"base_url": "http://localhost:8000/v1", "api_key": "token-abc123", "model":"Qwen2.5-32B-Instruct"},
+    "SQL LLM": {"base_url": "http://localhost:8000/v1", "api_key": "token-abc123", "model":"llama-3-sqlcoder-8b"},
+    "SQL seletor": {"base_url": "http://localhost:8000/v1", "api_key": "token-abc123", "model":"Qwen2.5-14B-Instruct"},
+    DEFAULT: {"base_url": "http://localhost:8000/v1", "api_key": "token-abc123", "model":"Qwen2.5-32B-Instruct"},
 }
 
 
@@ -51,7 +51,7 @@ def query_LLM_vllm(llm_name, query, only_return_response):
     client = OpenAI(**llm_path)
 
     if isinstance(query, str):
-        resposne = client.chat.completions.create(
+        response = client.chat.completions.create(
             model=model_name,
             messages=[
                 {"role": "user", "content": query}
@@ -60,16 +60,35 @@ def query_LLM_vllm(llm_name, query, only_return_response):
     elif isinstance(query, list) and isinstance(query[0], str):
         raise NotImplementedError
     elif isinstance(query, list) and isinstance(query[0], dict):
-        resposne = client.chat.completions.create(
+        response = client.chat.completions.create(
             model=model_name,
             messages=query
         )
     response = response.choices[0].message.content
     if only_return_response:
-        return resposne
+        return response
     else: 
-        return query + resposne
+        return query + response
     
+
+
+def function_calling_query_vllm(query, SUPPRESS_TOKENS, only_return_response=True):
+    llm_path = vllm_LLM_path_dict.setdefault("NLP-LLM", vllm_LLM_path_dict[DEFAULT]).copy()
+    model_name = llm_path.pop("model")
+    client = OpenAI(**llm_path)
+
+    outputs = client.completions.create(
+        model=model_name,
+        prompt=query,
+        max_tokens=3096,
+        stop=SUPPRESS_TOKENS,
+    )
+    response = outputs.choices[0].text
+    if only_return_response:
+        return response
+    else: 
+        return response, query + [{"role":"assistant", "content": response}]
+
 
 LLM_local_path_dict = {
     "weak LLM": "/data1/public/models/Qwen2.5-32B-Instruct",
