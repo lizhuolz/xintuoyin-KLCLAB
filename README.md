@@ -1,0 +1,2 @@
+# 新拓银AGENT
+- 目前使用新的langgraph框架，在agent文件夹下core_agt是目前的主agent

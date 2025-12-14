@@ -1,7 +1,4 @@
 transformers==4.50.0
-torch==2.5.1 
-torchaudio==2.5.1 
-torchvision==0.20.1
 PyMySQL==1.0.2
 sqlparse
 ollama==0.4.8
