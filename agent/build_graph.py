@@ -13,6 +13,7 @@ def build_graph():
     graph_builder = StateGraph(MessagesState)
     graph_builder.add_node("chatbot", chatbot_node)
     graph_builder.add_node("tools", ToolNode(TOOLS))
+    
     graph_builder.add_edge(START, "chatbot")
     # tools_condition：如果模型输出包含 tool calls，则走到 tools；否则走 END
     graph_builder.add_conditional_edges("chatbot", tools_condition)

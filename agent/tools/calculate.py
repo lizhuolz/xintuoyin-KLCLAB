@@ -4,9 +4,6 @@ from typing import Any, Dict
 from langchain_core.tools import tool
 
 
-# -----------------------------
-# 1) 定义工具（Tools）
-# -----------------------------
 # 一个“安全版四则运算”工具（避免直接 eval）
 _ALLOWED_OPS = {
     ast.Add: op.add,

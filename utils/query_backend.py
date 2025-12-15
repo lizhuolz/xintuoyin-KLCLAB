@@ -123,7 +123,7 @@ context = {
 }
 import torch
 def query_LLM_hf(llm_name, query, only_return_response=True):
-    global context;
+    global context
     llm_path = LLM_local_path_dict.setdefault(llm_name, LLM_local_path_dict[DEFAULT])
     load_LLM(llm_name, context)
     model = context['LLM/model'][llm_path] 
