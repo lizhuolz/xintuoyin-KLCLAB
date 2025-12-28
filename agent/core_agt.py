@@ -41,7 +41,7 @@ def main():
 
         # result["messages"] 是整个线程的消息列表，取最后一条 AI 消息输出
         last = result["messages"][-1]
-        # print(result["messages"])  #DEBUG
+        print(result["messages"])  #DEBUG
         print(f"Agent: {last.content}")
 
 
