@@ -33,15 +33,17 @@ def main():
             continue
         if user_text.lower() in ("exit", "quit"):
             break
-
+        enable_web = True # 联网开关
         result = app.invoke(
-            {"messages": [("user", user_text)]},
+            {"messages": [("user", user_text)],
+                 "enable_web": enable_web},
             config={"configurable": {"thread_id": thread_id}},
         )
 
         # result["messages"] 是整个线程的消息列表，取最后一条 AI 消息输出
         last = result["messages"][-1]
-        print(result["messages"])  #DEBUG
+        for i in result["messages"]:
+            print(i)  #DEBUG
         print(f"Agent: {last.content}")
 
 
