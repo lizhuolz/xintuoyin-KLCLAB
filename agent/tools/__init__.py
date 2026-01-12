@@ -5,6 +5,7 @@ from .db_operator import sql_tool
 # 所有的tool需要进行注册
 WEB_TOOLS = [calculator, echo,search_tool,sql_tool]
 LOCAL_TOOLS = [calculator, echo,sql_tool]
+
 __All__ = ['calculator','echo','search_tool','sql_tool']
 
 

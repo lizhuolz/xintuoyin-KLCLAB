@@ -14,12 +14,11 @@ import json
 import re
 from typing import Any, Dict, List, Literal, TypedDict
 from langchain_core.messages import AIMessage, BaseMessage, HumanMessage, SystemMessage
-from langchain_openai import ChatOpenAI
 from agent.utils import extract_last_user_text, safe_json_load
 
 # 获得一个chatbot节点
-def make_chatbot_node(model: str, temperature: float, tools, system_prompt: str = "你是一个有用的人工智能助手，你可以使用工具来回答问题。"):
-    llm = ChatOpenAI(model=model, temperature=temperature).bind_tools(tools)
+def make_chatbot_node(model: str, temperature: float, tools, system_prompt: str = "你是一个有用的人工智能助手，你可以使用工具来回答问题。",streaming=True):
+    llm = ChatOpenAI(model=model, temperature=temperature,streaming=streaming).bind_tools(tools)
     sys_msg = SystemMessage(content=system_prompt)
 
     def chatbot_node(state: MessagesState):
