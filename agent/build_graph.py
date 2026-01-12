@@ -73,6 +73,7 @@ def build_graph():
         {
             "tools_local": "tools_local",
             "should_sql": "should_sql",
+            "end": END, # 添加结束路径
         },
     )
     graph_builder.add_edge("tools_local", "chatbot_local")
@@ -84,6 +85,7 @@ def build_graph():
         {
             "tools_web": "tools_web",
             "should_sql": "should_sql",
+             "end": END # 添加结束路径
         },
     )
     graph_builder.add_edge("tools_web", "chatbot_web")
