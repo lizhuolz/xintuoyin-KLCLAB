@@ -24,7 +24,7 @@ local_chatbot_node = make_chatbot_node( 0, LOCAL_TOOLS)
 web_chatbot_node = make_chatbot_node( 0, WEB_TOOLS)
 should_sql_node = make_should_sql_node(SQL_TOOL_NAME)
 # sql_planner：只允许 SQL 工具调用（产出 tool_calls）
-sql_planner_node = make_chatbot_node(0, SQL_TOOLS,system_prompt="你是一个SQL代码生成器，你只能根据用户的问题生成SQL代码和SQL语句") #SYS prompt 可以不加，已经在路由中加入了
+sql_planner_node = make_chatbot_node(0, SQL_TOOLS,system_prompt="你是一个用户问题总结器,你需要精炼用户的问题，后续你的回答将会给sql代码生成器使用，请让你的回答清晰且能完全表述需求。") #SYS prompt 可以不加，已经在路由中加入了
 # sql_answer：不允许任何工具调用（只根据 messages 里 ToolMessage 总结）
 sql_answer_node = make_chatbot_node( 0, [])
 
