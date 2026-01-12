@@ -35,7 +35,8 @@ def main():
         config = {"configurable": {"thread_id": thread_id}}
         inputs = {
             "messages": [("user", user_text)],
-            "enable_web": True
+            "enable_web": True,
+            "select_model": "gpt-4o"
         }
 
         print("Agent: ", end="", flush=True)

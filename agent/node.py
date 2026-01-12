@@ -17,21 +17,21 @@ from langchain_core.messages import AIMessage, BaseMessage, HumanMessage, System
 from agent.utils import extract_last_user_text, safe_json_load
 
 # 获得一个chatbot节点
-def make_chatbot_node(model: str, temperature: float, tools, system_prompt: str = "你是一个有用的人工智能助手，你可以使用工具来回答问题。",streaming=True):
-    llm = ChatOpenAI(model=model, temperature=temperature,streaming=streaming).bind_tools(tools)
-    sys_msg = SystemMessage(content=system_prompt)
-
-    def chatbot_node(state: MessagesState):
+def make_chatbot_node(temperature: float, tools, system_prompt: str = "你是一个有用的人工智能助手，你可以使用工具来回答问题。",streaming=True):
+    def chatbot_node(state: GraphState):
+        model = state["select_model"]
+        llm = ChatOpenAI(model=model, temperature=temperature,streaming=streaming).bind_tools(tools)
+        sys_msg = SystemMessage(content=system_prompt)
         response = llm.invoke([sys_msg, *state["messages"]])
         return {"messages": [response]}
 
     return chatbot_node
 
-def make_should_sql_node(judge_llm,SQL_TOOL_NAME) -> GraphState:
+def make_should_sql_node(SQL_TOOL_NAME) -> GraphState:
     
     def res(state: GraphState):
+        judge_llm = ChatOpenAI(model=state["select_model"], temperature=0)
         user_text = extract_last_user_text(state["messages"])
-
         system = SystemMessage(
             content=(
                 "你是一个路由分类器。任务：判断用户问题是否必须通过数据库(SQL)查询才能回答。\n"
