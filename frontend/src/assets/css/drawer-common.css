@@ -1,0 +1,31 @@
+/* 公共抽屉标题样式 */
+.drawer-title {
+  font-weight: 500;
+  font-size: 16px;
+  color: #3D3D3D;
+  line-height: 1.2;
+  padding: 0;
+  margin: 0;
+}
+
+/* 公共确认按钮样式 */
+.drawer-confirm-btn {
+  background: #0256FF !important;
+  color: #fff !important;
+  border-radius: 4px !important;
+  border: none !important;
+  font-weight: 500;
+  font-size: 14px;
+  transition: background 0.2s;
+}
+.drawer-confirm-btn:hover,
+.drawer-confirm-btn:focus {
+  background: #003FCC !important;
+  color: #fff !important;
+}
+
+.dialog__header{
+  font-weight: 500;
+  font-size: 16px;
+  color: #3D3D3D;
+}

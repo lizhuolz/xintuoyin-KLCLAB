@@ -1,0 +1,10 @@
+:root {
+  --primary-blue: #0D5DFF;
+  --primary-blue-hover: #0B4CD9;
+  --warning-color: #ED7B00;
+}
+
+.primary-text,
+.primary-text * {
+  color: #0D5DFF !important;
+}

@@ -1,0 +1,38 @@
+[workspace]
+name = "r-d-cat-api-view"
+version = "0.1.0"
+description = "Project environment for FastAPI backend"
+channels = ["conda-forge"]
+platforms = ["linux-64"]
+
+[dependencies]
+python = "3.11.*"
+fastapi = "*"
+uvicorn = "*"
+python-multipart = "*"
+openai = "*"
+httpx = "*"
+langgraph = ">=1.0.5,<2"
+pymysql = ">=1.1.2,<2"
+sqlparse = ">=0.5.5,<0.6"
+llama-index = ">=0.14.12,<0.15"
+llama-index-llms-openai = ">=0.6.13,<0.7"
+llama-index-embeddings-openai = ">=0.5.1,<0.6"
+docx2txt = ">=0.9,<0.10"
+pypdf = ">=6.6.0,<7"
+gunicorn = ">=23.0.0,<24"
+
+[pypi-dependencies]
+socksio = "*"
+langchain-openai = ">=1.1.3, <2"
+langchain-community = ">=0.4.1, <0.5"
+langchain-core = "*"
+langchain = ">=1.1.3, <2"
+langgraph = "*"
+tavily-python = ">=0.7.15, <0.8"
+llama-index = "*"
+llama-index-llms-openai = "*"
+llama-index-embeddings-openai = "*"
+
+[tasks]
+start-backend = "cd backend && python app.py"

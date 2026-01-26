@@ -1,0 +1,31 @@
+# Environments
+.env
+env.sh
+venv/
+.venv/
+.pixi/
+pixi.lock
+
+# Frontend
+node_modules/
+dist/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.DS_Store
+
+# Backend
+__pycache__/
+*.py[cod]
+*.so
+backend/storage/
+backend/history_storage/
+
+# IDE
+.vscode/
+.idea/
+
+# Custom
+.geminiignore
+logs/
+*pids
