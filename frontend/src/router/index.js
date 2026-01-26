@@ -42,6 +42,21 @@ const routes = [
         component: () => import("../views/main/ai/LLMChat.vue"),
         meta: { title: 'AI 对话' }
       },
+      {
+        path: "/ai/kb",
+        component: () => import("../views/main/ai/KBManagement.vue"),
+        meta: { title: '知识库管理' }
+      },
+      {
+        path: "/org/info",
+        component: () => import("../views/main/org/OrgInfo.vue"),
+        meta: { title: '企业信息' }
+      },
+      {
+        path: "/hr/staff",
+        component: () => import("../views/main/hr/StaffList.vue"),
+        meta: { title: '员工列表' }
+      },
     ]
   },
   {

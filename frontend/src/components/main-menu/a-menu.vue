@@ -1,47 +1,88 @@
 <template>
-    <div class="sidebar-wrapper">
-        <el-menu 
-            :default-active="activeMenu" 
-            class="el-menu-vertical-demo"
-            background-color="#ffffff" 
-            text-color="#444746" 
-            active-text-color="#1f1f1f" 
-            unique-opened 
-            router
-            :collapse="layoutStore.isCollapse"
-            :collapse-transition="false"
-        >
-            <div class="el-menu-item toggle-item" @click="layoutStore.toggleCollapse">
-                <div class="icon-container">
-                    <el-icon size="18">
-                        <Expand v-if="layoutStore.isCollapse" />
-                        <Fold v-else />
-                    </el-icon>
-                </div>
-                <span class="menu-text">收起菜单</span>
-            </div>
-
-            <el-menu-item index="/home">
-                <el-icon class="fixed-icon"><HomeFilled /></el-icon>
-                <template #title>
-                    <span class="menu-text">首页</span>
-                </template>
-            </el-menu-item>
-
-            <el-menu-item index="/ai/chat">
-                <el-icon class="fixed-icon"><ChatDotRound /></el-icon>
-                <template #title>
-                    <span class="menu-text">AI 对话</span>
-                </template>
-            </el-menu-item>
-        </el-menu>
+  <div class="sidebar-wrapper">
+    <!-- 1. 顶部品牌区 (蓝色背景) -->
+    <div class="brand-header" :class="{ collapsed: layoutStore.isCollapse }">
+      <div class="logo-icon">
+        <!-- 简单的猫形状 SVG -->
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M12 2C6.48 2 2 6.48 2 12C2 17.52 6.48 22 12 22C17.52 22 22 17.52 22 12C22 6.48 17.52 2 12 2ZM12 6C13.66 6 15 7.34 15 8.4C15 9.46 13.66 10.8 12 10.8C10.34 10.8 9 9.46 9 8.4C9 7.34 10.34 6 12 6ZM12 19.2C9.5 19.2 7.29 17.92 6 15.75C6.03 13.75 10 12.66 12 12.66C13.99 12.66 17.97 13.75 18 15.75C16.71 17.92 14.5 19.2 12 19.2Z" fill="white"/>
+        </svg>
+      </div>
+      <span class="brand-text">研发猫</span>
     </div>
+
+    <!-- 2. 滚动菜单区 (白色背景) -->
+    <div class="menu-scroll-area">
+      <el-menu
+        :default-active="activeMenu"
+        class="el-menu-vertical-demo"
+        :collapse="layoutStore.isCollapse"
+        :collapse-transition="false"
+        unique-opened
+        router
+      >
+        <el-menu-item index="/home">
+          <el-icon><HomeFilled /></el-icon>
+          <template #title>首页</template>
+        </el-menu-item>
+
+        <!-- 模拟原型图中的层级 -->
+        <el-sub-menu index="1">
+          <template #title>
+            <el-icon><OfficeBuilding /></el-icon>
+            <span>我的企业</span>
+          </template>
+          <el-menu-item index="/org/info">企业信息</el-menu-item>
+        </el-sub-menu>
+
+        <el-sub-menu index="2">
+          <template #title>
+            <el-icon><User /></el-icon>
+            <span>人事管理</span>
+          </template>
+          <el-menu-item index="/hr/staff">员工列表</el-menu-item>
+        </el-sub-menu>
+
+        <!-- 核心功能区 -->
+        <el-sub-menu index="ai">
+          <template #title>
+            <el-icon><Cpu /></el-icon>
+            <span>AI 助手</span>
+          </template>
+          <el-menu-item index="/ai/chat">
+            <template #title>AI 问答</template>
+          </el-menu-item>
+          <!-- 新增入口 -->
+          <el-menu-item index="/ai/kb">
+            <template #title>知识库管理</template>
+          </el-menu-item>
+        </el-sub-menu>
+
+      </el-menu>
+    </div>
+
+    <!-- 3. 底部收起按钮区 -->
+    <div class="collapse-footer" @click="layoutStore.toggleCollapse">
+      <el-icon size="16">
+        <Expand v-if="layoutStore.isCollapse" />
+        <Fold v-else />
+      </el-icon>
+      <span class="collapse-text" v-if="!layoutStore.isCollapse">收起导航</span>
+    </div>
+  </div>
 </template>
 
 <script setup>
 import { computed } from 'vue'
 import { useRoute } from 'vue-router'
-import { HomeFilled, ChatDotRound, Fold, Expand } from '@element-plus/icons-vue'
+import { 
+  HomeFilled, 
+  OfficeBuilding, 
+  User, 
+  Cpu, 
+  Fold, 
+  Expand 
+} from '@element-plus/icons-vue'
 import { useLayoutStore } from '@/stores/layout'
 
 const route = useRoute()
@@ -50,129 +91,122 @@ const activeMenu = computed(() => route.path)
 </script>
 
 <style scoped lang="less">
+/* 全局布局变量 */
+@header-bg: #4080FF; /* 原型图蓝色 */
+@menu-bg: #ffffff;
+@text-color: #333333;
+@active-bg: #e6f7ff;
+@active-text: #1890ff;
+
 .sidebar-wrapper {
-    height: 100%;
-    display: flex;
-    flex-direction: column;
-    border-right: 1px solid #e0e0e0;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  background: @menu-bg;
+  border-right: 1px solid #e8e8e8;
+  transition: width 0.3s;
+  overflow: hidden;
 }
 
-.el-menu-vertical-demo {
-    flex: 1;
-    border-right: none;
-    padding: 12px 0;
-    width: 100% !important;
-}
+/* 1. 顶部品牌区 */
+.brand-header {
+  height: 56px;
+  background: @header-bg;
+  display: flex;
+  align-items: center;
+  padding: 0 20px;
+  color: white;
+  flex-shrink: 0;
+  transition: padding 0.3s;
+  overflow: hidden;
 
-/* =================================================================
-   1. 核心布局：通用样式
-   ================================================================= */
-:deep(.el-menu-item) {
-    margin: 4px 10px;
-    height: 44px;
-    line-height: 44px;
-    border-radius: 22px;
-    border: none;
-    font-size: 14px;
-    font-weight: 500;
-    padding: 0 !important; 
+  &.collapsed {
+    padding: 0;
+    justify-content: center;
+    .brand-text {
+      display: none;
+    }
+  }
+
+  .logo-icon {
+    width: 24px;
+    height: 24px;
     display: flex;
     align-items: center;
-    box-sizing: border-box;
-    /* 这里的 transition 只负责 item 容器本身的背景色等，不负责文字 */
-    transition: background-color 0.3s;
+    justify-content: center;
+  }
+
+  .brand-text {
+    margin-left: 12px;
+    font-size: 16px;
+    font-weight: 600;
+    white-space: nowrap;
+  }
 }
 
-:deep(.el-icon),
-.icon-container {
-    width: 44px !important; 
+/* 2. 菜单区 */
+.menu-scroll-area {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+
+  /* 隐藏滚动条但保留功能 */
+  &::-webkit-scrollbar {
+    width: 0; 
+  }
+}
+
+/* 覆盖 Element Plus 样式以匹配原型 */
+:deep(.el-menu) {
+  border-right: none;
+}
+
+:deep(.el-menu-item), :deep(.el-sub-menu__title) {
+  height: 50px;
+  line-height: 50px;
+  margin: 4px 8px; /* 悬浮留白效果 */
+  border-radius: 4px;
+  
+  &:hover {
+    background-color: #f5f5f5;
+  }
+}
+
+:deep(.el-menu-item.is-active) {
+  background-color: @active-bg;
+  color: @active-text;
+  font-weight: 500;
+}
+
+/* 3. 底部折叠区 */
+.collapse-footer {
+  height: 48px;
+  border-top: 1px solid #f0f0f0;
+  display: flex;
+  align-items: center;
+  padding-left: 24px;
+  cursor: pointer;
+  color: #666;
+  font-size: 14px;
+  flex-shrink: 0;
+  
+  &:hover {
+    color: @active-text;
+  }
+
+  .collapse-text {
+    margin-left: 12px;
+    white-space: nowrap;
+  }
+}
+
+/* 针对折叠状态的特殊处理 */
+:deep(.el-menu--collapse) {
+  .el-menu-item, .el-sub-menu__title {
+    margin: 4px 0;
+    padding: 0 !important;
     display: flex;
     justify-content: center;
-    align-items: center;
-    flex-shrink: 0; 
-    margin: 0 !important;
-    font-size: 18px;
-    text-align: center;
-}
-
-/* =================================================================
-   2. 文字动画核心逻辑 (The Magic)
-   ================================================================= */
-.menu-text {
-    /* 默认状态 (展开) */
-    opacity: 1;
-    margin-left: 8px;
-    white-space: nowrap;
-    overflow: hidden;
-    
-    /* 使用 max-width 而不是 width。
-       width: auto 无法做 transition 动画，必须给一个具体的像素上限。
-       150px 足够容纳大多数菜单文字。
-    */
-    max-width: 150px; 
-
-    /* 展开时的动画 (Fade In):
-       1. max-width 先动，把空间撑开。
-       2. opacity 稍微延迟 (0.1s)，等空间有了再显示文字，实现"淡入"。
-    */
-    transition: max-width 0.3s cubic-bezier(0.4, 0, 0.2, 1),
-                margin-left 0.3s cubic-bezier(0.4, 0, 0.2, 1),
-                opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1) 0.1s;
-}
-
-.toggle-item {
-    cursor: pointer;
-    user-select: none;
-    display: flex;
-    align-items: center;
-}
-
-/* =================================================================
-   3. 收起状态 (Collapse)
-   ================================================================= */
-
-/* 强制锁定容器宽度 */
-:deep(.el-menu--collapse .el-menu-item),
-:deep(.el-menu--collapse .toggle-item) {
-    /* width: 44px !important; Removed to allow smooth shrinking */
-    margin-left: 10px !important;
-    margin-right: 10px !important;
-}
-
-/* 收起状态下的文字处理 
-   这里是解决“一瞬间消失”的关键
-*/
-:deep(.el-menu--collapse .menu-text),
-:deep(.el-menu--collapse .el-menu-item span) {
-    /* 1. 变透明 */
-    opacity: 0;
-    /* 2. 宽度缩为 0 (这会产生滑动的挤压效果) */
-    max-width: 0;
-    /* 3. 去掉间距 */
-    margin-left: 0;
-    
-    /* 覆盖 Element 可能的 display: none，确保动画能执行 */
-    display: inline-block !important; 
-
-    /* 收起时的动画 (Fade Out):
-       1. opacity 快速变为 0 (0.15s)，实现"淡出"，避免文字挤压。
-       2. max-width 正常收缩 (0.3s)。
-       注意：这里必须显式重写 transition，否则会继承 .menu-text 的延迟效果。
-    */
-    transition: opacity 0.15s cubic-bezier(0.4, 0, 0.2, 1),
-                max-width 0.3s cubic-bezier(0.4, 0, 0.2, 1),
-                margin-left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-/* 针对 Element Plus 内部结构的额外修复 */
-:deep(.el-menu--collapse .el-menu-item template) {
-    display: block !important; 
-}
-
-/* Tooltip 修复 */
-:deep(.el-menu--collapse .el-menu-tooltip__trigger) {
-    padding: 0 !important;
-    width: 44px !important;
-    justify-content: center !important;
+  }
 }
 </style>

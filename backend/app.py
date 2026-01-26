@@ -15,6 +15,7 @@ if current_dir not in sys.path:
     sys.path.insert(0, current_dir)
 
 from agent.build_graph import graph_builder
+from agent.tools.rag_tool import force_refresh_index # 新增导入
 
 # ----------------------------- 
 # 1. 环境与配置加载
@@ -99,7 +100,8 @@ async def chat_endpoint(
     conversation_id: str = Form(...),
     web_search: bool = Form(False),
     db_version: Optional[str] = Form(None),
-    kb_category: Optional[str] = Form(None)  # 新增: 知识库分类
+    kb_category: Optional[str] = Form(None),
+    user_identity: Optional[str] = Form("guest") # 新增: 用户身份模拟
 ):
     # 处理上传文件内容
     file_context = ""
@@ -118,11 +120,9 @@ async def chat_endpoint(
     if file_context:
         full_user_content += f"\n\n--- 附件内容 ---\n{file_context}"
 
-    # Agent 输入：仅包含当前一轮的 System 和 Human 消息
-    # 动态构建 System Prompt
+    # Agent 输入
     current_system_prompt = system_prompt
     if kb_category:
-        # 强指令：告诉 Agent 用户选了哪个知识库
         instruction = (
             f"\n\n【重要指令】用户已选择在知识库分类 '{kb_category}' 中查询。"
             f"如果你需要检索内部文档，请务必调用 rag_tool 并将参数 category 设置为 '{kb_category}'。"
@@ -135,7 +135,8 @@ async def chat_endpoint(
             HumanMessage(content=full_user_content)
         ],
         "enable_web": web_search,
-        "select_model": "gpt-4o"
+        "select_model": "gpt-4o",
+        "user_identity": user_identity # 传入身份
     }
 
     async def response_stream():
@@ -160,9 +161,71 @@ async def chat_endpoint(
 
     return StreamingResponse(response_stream(), media_type="text/plain")
 
+from services.kb_service import KBService
+
+kb_service = KBService()
+
+# --- KB Management API ---
+
+@app.get("/api/kb/list")
+async def get_kb_list():
+    return kb_service.load_all()
+
+@app.post("/api/kb/create")
+async def create_kb(
+    name: str = Form(...),
+    model: str = Form("openai"),
+    category: str = Form("users/guest")
+):
+    return kb_service.create_kb(name, model, category)
+
+@app.post("/api/kb/update")
+async def update_kb(
+    id: str = Form(...),
+    name: Optional[str] = Form(None),
+    remark: Optional[str] = Form(None),
+    enabled: Optional[bool] = Form(None),
+    users: Optional[str] = Form(None) # JSON string
+):
+    update_data = {}
+    if name is not None: update_data["name"] = name
+    if remark is not None: update_data["remark"] = remark
+    if enabled is not None: update_data["enabled"] = enabled
+    if users is not None: update_data["users"] = json.loads(users)
+    
+    result = kb_service.update_kb(id, update_data)
+    if result: return result
+    return JSONResponse(status_code=404, content={"error": "KB not found"})
+
+@app.delete("/api/kb/{id}")
+async def delete_kb(id: str):
+    success = kb_service.delete_kb(id)
+    if success: return {"status": "success"}
+    return JSONResponse(status_code=404, content={"error": "KB not found"})
+
+@app.get("/api/kb/{id}/files")
+async def get_kb_files(id: str):
+    return kb_service.list_files(id)
+
+@app.post("/api/kb/{id}/upload")
+async def upload_kb_file(id: str, file: UploadFile = File(...)):
+    success = kb_service.save_file(id, file)
+    if success:
+        force_refresh_index() # 刷新索引
+        return {"status": "success"}
+    return JSONResponse(status_code=500, content={"error": "Upload failed"})
+
+@app.post("/api/kb/{id}/delete_file")
+async def delete_kb_file(id: str, filename: str = Form(...)):
+    success = kb_service.delete_file(id, filename)
+    if success:
+        force_refresh_index() # 刷新索引
+        return {"status": "success"}
+    return JSONResponse(status_code=404, content={"error": "File not found"})
+
+
 if __name__ == "__main__":
-    # import uvicorn
-    # # 获取环境变量中的端口，默认 8000
-    # port = int(os.environ.get("PORT", "8000"))
-    # uvicorn.run("app:app", host="0.0.0.0", port=port, reload=False)
-    pass
+    import uvicorn
+    # 获取环境变量中的端口，默认 8000
+    port = int(os.environ.get("PORT", "8000"))
+    uvicorn.run("app:app", host="0.0.0.0", port=port, reload=False)

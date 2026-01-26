@@ -24,9 +24,31 @@
         </div>
       </div>
       <div class="sidebar-footer">
-        <div class="user-profile">
-          <div class="avatar">{{ userName.charAt(0).toUpperCase() }}</div>
-          <span>{{ userName }}</span>
+        <div class="user-profile-wrapper">
+          <div class="user-profile">
+            <div class="avatar">{{ user_identity.charAt(0).toUpperCase() }}</div>
+            <div class="user-info">
+              <span class="user-name">{{ user_identity }}</span>
+              <span class="user-role">{{ getRoleName(user_identity) }}</span>
+            </div>
+          </div>
+          <el-select 
+            v-model="user_identity" 
+            placeholder="切换身份" 
+            size="small" 
+            class="identity-selector"
+          >
+            <el-option label="超级管理员" value="admin" />
+            <el-divider content-position="center">部门主管</el-divider>
+            <el-option label="技术部主管" value="dept_a_manager" />
+            <el-option label="财务部主管" value="dept_b_manager" />
+            <el-divider content-position="center">普通员工</el-divider>
+            <el-option label="技术员 A1" value="user_a1" />
+            <el-option label="技术员 A2" value="user_a2" />
+            <el-option label="会计师 B1" value="user_b1" />
+            <el-divider />
+            <el-option label="访客" value="guest" />
+          </el-select>
         </div>
       </div>
     </aside>
@@ -208,6 +230,21 @@
                     </div>
                   </div>
 
+                  <!-- User Identity Mock (For Demo) -->
+                  <div class="db-wrapper">
+                    <el-select 
+                      v-model="user_identity" 
+                      placeholder="模拟身份" 
+                      size="small" 
+                      style="width: 100px; margin-left: 8px"
+                    >
+                      <el-option label="管理员" value="admin" />
+                      <el-option label="员工 A1" value="user_a1" />
+                      <el-option label="员工 B1" value="user_b1" />
+                      <el-option label="游客" value="guest" />
+                    </el-select>
+                  </div>
+
                 </div>
                 
                 <button 
@@ -277,6 +314,20 @@ const showDBMenu = ref(false)
 const selectedDB = ref(null)
 const showKBMenu = ref(false)
 const selectedKBCategory = ref(null)
+const user_identity = ref('admin') // 默认管理员以展示全量能力
+
+const getRoleName = (id) => {
+  const roles = {
+    'admin': '系统管理员',
+    'dept_a_manager': '技术部主管',
+    'dept_b_manager': '财务部主管',
+    'user_a1': '高级工程师 (A1)',
+    'user_a2': '初级技术员 (A2)',
+    'user_b1': '财务会计 (B1)',
+    'guest': '访客'
+  }
+  return roles[id] || '普通用户'
+}
 
 const currentConv = computed(() => conversations.value.find(c => c.id === currentId.value))
 const currentMessages = computed(() => currentConv.value ? currentConv.value.messages : [])
@@ -439,6 +490,9 @@ async function sendMessage() {
   fd.append('conversation_id', String(conv.id))
   // Send web_search status
   fd.append('web_search', String(webSearchEnabled.value))
+  // Send user identity
+  fd.append('user_identity', user_identity.value)
+  
   // Send db_version if selected
   if (selectedDB.value) {
     fd.append('db_version', selectedDB.value)
