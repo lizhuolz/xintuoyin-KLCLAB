@@ -230,20 +230,7 @@
                     </div>
                   </div>
 
-                  <!-- User Identity Mock (For Demo) -->
-                  <div class="db-wrapper">
-                    <el-select 
-                      v-model="user_identity" 
-                      placeholder="模拟身份" 
-                      size="small" 
-                      style="width: 100px; margin-left: 8px"
-                    >
-                      <el-option label="管理员" value="admin" />
-                      <el-option label="员工 A1" value="user_a1" />
-                      <el-option label="员工 B1" value="user_b1" />
-                      <el-option label="游客" value="guest" />
-                    </el-select>
-                  </div>
+                  
 
                 </div>
                 
