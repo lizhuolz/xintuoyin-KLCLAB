@@ -201,36 +201,19 @@
                     </div>
                   </div>
 
-                  <!-- Knowledge Base Button -->
-                  <div class="db-wrapper">
-                    <button
-                      class="tool-btn"
-                      :class="{ active: selectedKBCategory !== null }"
-                      @click="toggleKBMenu"
-                      title="知识库"
-                    >
-                      <!-- book icon -->
-                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
-                        <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
-                      </svg>
-                    </button>
-
-                    <!-- KB Menu -->
-                    <div v-if="showKBMenu" class="db-menu">
-                      <div class="db-item" :class="{ active: selectedKBCategory === 'contracts' }" @click="selectKB('contracts')">
-                        合同管理
-                      </div>
-                      <div class="db-item" :class="{ active: selectedKBCategory === 'projects' }" @click="selectKB('projects')">
-                        项目资料
-                      </div>
-                      <div class="db-item" :class="{ active: selectedKBCategory === 'research' }" @click="selectKB('research')">
-                        调研检索
-                      </div>
-                    </div>
-                  </div>
-
-                  
+                  <!-- Knowledge Base Button (Toggle Only) -->
+                  <button
+                    class="tool-btn"
+                    :class="{ active: ragEnabled }"
+                    @click="toggleRAG"
+                    title="知识库"
+                  >
+                    <!-- book icon -->
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+                      <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+                    </svg>
+                  </button>
 
                 </div>
                 
@@ -299,8 +282,7 @@ const textareaRef = ref(null)
 const webSearchEnabled = ref(false)
 const showDBMenu = ref(false)
 const selectedDB = ref(null)
-const showKBMenu = ref(false)
-const selectedKBCategory = ref(null)
+const ragEnabled = ref(false) 
 const user_identity = ref('admin') // 默认管理员以展示全量能力
 
 const getRoleName = (id) => {
@@ -410,17 +392,8 @@ function selectDB(val) {
   showDBMenu.value = false
 }
 
-function toggleKBMenu() {
-  showKBMenu.value = !showKBMenu.value
-}
-
-function selectKB(val) {
-  if (selectedKBCategory.value === val) {
-    selectedKBCategory.value = null
-  } else {
-    selectedKBCategory.value = val
-  }
-  showKBMenu.value = false
+function toggleRAG() {
+  ragEnabled.value = !ragEnabled.value
 }
 
 function scrollToBottom() {
@@ -479,20 +452,14 @@ async function sendMessage() {
   fd.append('web_search', String(webSearchEnabled.value))
   // Send user identity
   fd.append('user_identity', user_identity.value)
+  // Send RAG enable flag
+  fd.append('rag_enabled', String(ragEnabled.value))
   
   // Send db_version if selected
   if (selectedDB.value) {
     fd.append('db_version', selectedDB.value)
   }
-  // Send kb_category if selected
-  if (selectedKBCategory.value) {
-    fd.append('kb_category', selectedKBCategory.value)
-  }
   
-  // No longer sending full history to save bandwidth. Backend loads it from file.
-  // const historyMessages = conv.messages.slice(0, -1)
-  // fd.append('history', JSON.stringify(historyMessages))
-
   currentFiles.forEach(f => fd.append('files', f))
 
   try {
@@ -626,19 +593,48 @@ async function sendMessage() {
   margin-top: auto;
   padding-top: 10px;
 }
+
+.user-profile-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 12px;
+  background: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 -2px 10px rgba(0,0,0,0.05);
+}
+
 .user-profile {
   display: flex;
   align-items: center;
   gap: 12px;
-  padding: 8px 12px;
-  cursor: pointer;
-  border-radius: 8px;
   color: #444746;
 }
-.user-profile:hover { background-color: #e1e5ea; }
+
+.user-info {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.2;
+}
+
+.user-name {
+  font-size: 14px;
+  font-weight: 600;
+  color: #1f1f1f;
+}
+
+.user-role {
+  font-size: 11px;
+  color: #757575;
+}
+
 .avatar {
-  width: 32px; height: 32px; background: #8e44ad; color: white; border-radius: 50%;
-  display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 14px;
+  width: 36px; height: 36px; background: #4080FF; color: white; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 16px;
+}
+
+.identity-selector {
+  width: 100%;
 }
 
 /* --- Main Chat Area --- */
@@ -735,7 +731,7 @@ async function sendMessage() {
 .messages-container {
   flex: 1; /* Takes all available space */
   overflow-y: auto; /* Internal scroll */
-  padding-top: 0; /* Remove padding as header is now separate */
+  padding-top: 0; /* Remove padding as header是分开的 */
   padding-bottom: 20px;
   display: flex;
   flex-direction: column;
@@ -996,7 +992,7 @@ textarea:focus { outline: none; }
 
 @keyframes blink {
   0% { opacity: 0.2; } 
-  20% { opacity: 1; }
+  20% { opacity: 1; } 
   100% { opacity: 0.2; }
 }
 

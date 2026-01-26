@@ -58,9 +58,9 @@
         </el-form-item>
         <el-form-item label="分层类别:">
           <el-select v-model="addForm.category" placeholder="请选择">
-            <el-option label="企业级 (Org)" value="org" />
-            <el-option label="部门级 (Depts)" value="depts/dept_a" />
-            <el-option label="个人级 (Users)" value="users/user_a1" />
+            <el-option label="企业级 (Org)" value="企业知识库" />
+            <el-option label="部门级 (Depts)" value="部门知识库/技术部" />
+            <el-option label="个人级 (Users)" value="个人知识库/用户A1" />
           </el-select>
         </el-form-item>
         <el-form-item label="向量模型:">

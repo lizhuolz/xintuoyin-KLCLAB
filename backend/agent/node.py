@@ -17,11 +17,22 @@ from langchain_core.messages import AIMessage, BaseMessage, HumanMessage, System
 from agent.utils import extract_last_user_text, safe_json_load
 
 # 获得一个chatbot节点
-def make_chatbot_node(temperature: float, tools, system_prompt: str = "你是一个有用的人工智能助手，你可以使用工具来回答问题。",streaming=True):
+def make_chatbot_node(temperature: float, tools, system_prompt: str = "你是一个专业的人工智能助手。",streaming=True):
     def chatbot_node(state: GraphState):
         model = state["select_model"]
         llm = ChatOpenAI(model=model, temperature=temperature,streaming=streaming).bind_tools(tools)
-        sys_msg = SystemMessage(content=system_prompt)
+        
+        # 强化指令：要求 AI 尊重原文
+        instruction = (
+            "\n\n【行为准则】"
+            "\n1. 如果你调用了知识库检索工具 `rag_tool`，请务必直接使用返回的原文进行回答。"
+            "\n2. 严禁对原文进行过度总结或润色，必须保留原文的关键指标、数据和术语。"
+            "\n3. 回答时请注明来源（如：根据[XXX文件]记载...）。"
+            "\n4. 如果检索结果中没有相关内容，请直说“知识库中未找到相关信息”，不要尝试编造。"
+        )
+        
+        full_system_prompt = system_prompt + instruction
+        sys_msg = SystemMessage(content=full_system_prompt)
         response = llm.invoke([sys_msg, *state["messages"]])
         return {"messages": [response]}
 

@@ -38,17 +38,30 @@ class KBService:
         with open(METADATA_FILE, "w", encoding="utf-8") as f:
             json.dump(data, f, ensure_ascii=False, indent=2)
 
-    def create_kb(self, name, model="openai", category="users/guest"):
+    def create_kb(self, name, model="openai", category="个人知识库/访客"):
         """
         category 决定了它在 documents/ 下的物理路径
-        例如: org, depts/dept_a, users/user_a1
+        例如: 企业知识库, 部门知识库/技术部, 个人知识库/员工A1
+        文件夹名直接使用知识库名称，更直观
         """
         all_kb = self.load_all()
         kb_id = str(uuid.uuid4())[:8]
         
+        # 处理物理文件夹名：isalnum() 在 Python3 中包含中文
+        safe_folder_name = "".join([c for c in name if c.isalnum() or c in (' ', '_', '-')]).strip()
+        if not safe_folder_name:
+            safe_folder_name = kb_id
+        
         # 物理路径
-        physical_path = category + "/" + kb_id
+        physical_path = f"{category}/{safe_folder_name}"
         full_path = DOCS_DIR / physical_path
+        
+        # 如果重名，加上时间戳防冲突
+        if full_path.exists():
+            suffix = datetime.now().strftime("%H%M%S")
+            physical_path = f"{category}/{safe_folder_name}_{suffix}"
+            full_path = DOCS_DIR / physical_path
+
         full_path.mkdir(parents=True, exist_ok=True)
 
         new_kb = {

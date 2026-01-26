@@ -56,6 +56,9 @@
           <el-menu-item index="/ai/kb">
             <template #title>知识库管理</template>
           </el-menu-item>
+          <el-menu-item index="/ai/test-tree">
+            <template #title>结构测试</template>
+          </el-menu-item>
         </el-sub-menu>
 
       </el-menu>

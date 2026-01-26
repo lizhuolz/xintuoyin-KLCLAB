@@ -15,7 +15,8 @@ if current_dir not in sys.path:
     sys.path.insert(0, current_dir)
 
 from agent.build_graph import graph_builder
-from agent.tools.rag_tool import force_refresh_index # 新增导入
+from agent.tools.rag_tool import force_refresh_index 
+from utils.security import check_input_safety, check_output_safety # 新增导入
 
 # ----------------------------- 
 # 1. 环境与配置加载
@@ -103,18 +104,48 @@ async def chat_endpoint(
     kb_category: Optional[str] = Form(None),
     user_identity: Optional[str] = Form("guest") # 新增: 用户身份模拟
 ):
+    # --- 🛡️ 安全检查 ---
+    sanitized_message, is_safe, error_msg = check_input_safety(message)
+    if not is_safe:
+        # 直接作为流式回复返回错误信息，前端可以正常展示
+        async def safety_error_stream():
+            yield f"⚠️ [安全拦截] {error_msg}"
+        return StreamingResponse(safety_error_stream(), media_type="text/plain")
+
     # 处理上传文件内容
     file_context = ""
     for f in files or []:
         try:
+            filename = f.filename.lower()
             content = await f.read()
-            text = content.decode("utf-8", errors="ignore")
-            file_context += f"\n文件 {f.filename} 内容:\n{text[:5000]}"
-        except:
+            text = ""
+            
+            if filename.endswith(".pdf"):
+                from pypdf import PdfReader
+                import io
+                reader = PdfReader(io.BytesIO(content))
+                text = "\n".join([page.extract_text() for page in reader.pages if page.extract_text()])
+            elif filename.endswith(".docx"):
+                import docx2txt
+                import io
+                text = docx2txt.process(io.BytesIO(content))
+            elif filename.endswith(".xlsx") or filename.endswith(".xls"):
+                import pandas as pd
+                import io
+                df = pd.read_excel(io.BytesIO(content))
+                text = df.to_string()
+            else:
+                # 默认按文本处理
+                text = content.decode("utf-8", errors="ignore")
+            
+            if text:
+                file_context += f"\n文件 {f.filename} 内容:\n{text[:10000]}" # 提高解析限制
+        except Exception as e:
+            print(f"File parsing error ({f.filename}): {e}")
             pass
 
     # 构造当前请求的完整内容
-    full_user_content = message
+    full_user_content = sanitized_message
     if db_version:
         full_user_content = f"从数据库{db_version}中 {full_user_content}"
     if file_context:
@@ -122,10 +153,14 @@ async def chat_endpoint(
 
     # Agent 输入
     current_system_prompt = system_prompt
+    # 显式告知 AI 当前身份和行为准则
+    current_system_prompt += f"\n\n【重要上下文】"
+    current_system_prompt += f"\n- 当前用户身份: {user_identity}"
+    current_system_prompt += f"\n- 你的任务: 优先通过调用 `rag_tool` 检索内部知识库。如果检索到内容，请务必【直接引用原文】或基于原文精准回答，严禁产生幻觉。如果未搜到内容，请如实告知。"
+    
     if kb_category:
         instruction = (
-            f"\n\n【重要指令】用户已选择在知识库分类 '{kb_category}' 中查询。"
-            f"如果你需要检索内部文档，请务必调用 rag_tool 并将参数 category 设置为 '{kb_category}'。"
+            f"\n- 用户偏好: 已指定分类 '{kb_category}'。请在调用 `rag_tool` 时参考此分类。"
         )
         current_system_prompt += instruction
 
@@ -136,7 +171,7 @@ async def chat_endpoint(
         ],
         "enable_web": web_search,
         "select_model": "gpt-4o",
-        "user_identity": user_identity # 传入身份
+        "user_identity": user_identity # 传入状态，供 Graph 内部逻辑参考
     }
 
     async def response_stream():
@@ -155,6 +190,11 @@ async def chat_endpoint(
             # 流式结束后，静默存入后端磁盘
             if full_ai_response:
                 log_to_history(conversation_id, full_user_content, full_ai_response)
+                
+                # 输出审计 (审计模式，不拦截但可以在日志记录)
+                out_safe, out_msg = check_output_safety(sanitized_message, full_ai_response)
+                if not out_safe:
+                    print(f"⚠️ [输出风险警告] {out_msg}")
                 
         except Exception as e:
             yield f"\n[系统错误: {str(e)}]"
@@ -222,6 +262,24 @@ async def delete_kb_file(id: str, filename: str = Form(...)):
         force_refresh_index() # 刷新索引
         return {"status": "success"}
     return JSONResponse(status_code=404, content={"error": "File not found"})
+
+@app.get("/api/test/file_tree")
+async def get_file_tree():
+    """返回 documents 目录的完整树状结构，用于演示测试"""
+    def build_tree(path: Path):
+        node = {"label": path.name, "children": []}
+        try:
+            for item in sorted(path.iterdir()):
+                if item.is_dir():
+                    node["children"].append(build_tree(item))
+                else:
+                    node["children"].append({"label": item.name})
+        except Exception:
+            pass
+        return node
+
+    docs_root = Path(__file__).parent.parent / "documents"
+    return [build_tree(docs_root)]
 
 
 if __name__ == "__main__":

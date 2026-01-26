@@ -1,24 +1,25 @@
-# agent_cli.py
+# core_agt.py
 import operator as op
+import openai
 from typing import Any, Dict
 
-# 引入必要的类型判断
 from langchain_core.messages import AIMessageChunk
 from langgraph.checkpoint.memory import MemorySaver
 from agent.build_graph import graph_builder
+from utils.security import check_input_safety, check_output_safety
 
-# -----------------------------
-# 编译
-# -----------------------------
+# 编译 Graph
 checkpointer = MemorySaver()
 app = graph_builder.compile(checkpointer=checkpointer)
 
-# -----------------------------
-#  命令行对话循环 (同步流式版)
-# -----------------------------
 def main():
-    print("LangGraph 对话 Agent 已启动 (Stream Mode: Messages)。输入 exit 退出。")
-    thread_id = "demo-thread"
+    print("==================================================")
+    print("🛡️  LangGraph Agent (Secure CLI Mode) 已启动")
+    print("   防火墙已加载：输入、输出均受 LLM Guard 保护")
+    print("   输入 'exit' 或 'quit' 退出。")
+    print("==================================================")
+    
+    thread_id = "cli-demo-thread"
 
     while True:
         try:
@@ -31,35 +32,47 @@ def main():
         if user_text.lower() in ("exit", "quit"):
             break
 
-        # 配置
+        # --- 🛡️ 1. 输入防火墙检查 ---
+        sanitized_prompt, is_safe, error_msg = check_input_safety(user_text)
+        if not is_safe:
+            print(f"\n🛑 [本地拦截] {error_msg}")
+            continue
+
+        # --- 2. 执行 Agent ---
         config = {"configurable": {"thread_id": thread_id}}
         inputs = {
-            "messages": [("user", user_text)],
+            "messages": [("user", sanitized_prompt)],
             "enable_web": True,
-            "select_model": "gpt-4o"
+            "select_model": "gpt-4o",
+            "user_identity": "admin" # CLI 默认管理员权限
         }
 
         print("Agent: ", end="", flush=True)
+        full_response_text = ""
 
-        # ---------------------------------------------------------
-        # 核心修改：使用 stream_mode="messages"
-        # ---------------------------------------------------------
-        # 这会自动提取 Graph 中所有 ChatModel 的输出片段
-        # event 格式为: (message_chunk, metadata)
-        for msg, metadata in app.stream(inputs, config, stream_mode="messages"):
-            
-            # 1. 获取生成该消息的节点名称 (例如 "agent", "tools", "researcher")
-            # 这是你在 graph_builder.add_node("名字", ...) 时定义的名字
-            node_name = metadata.get("langgraph_node", "unknown")
-            
-            # 2. (可选) 获取具体的模型名称 (例如 "gpt-4o")
-            # 注意：流式传输时，只有部分 chunk 的 response_metadata 包含 model_name
-            # model_name = msg.response_metadata.get("model_name", "")
+        try:
+            # 流式输出
+            for msg, metadata in app.stream(inputs, config, stream_mode="messages"):
+                node_name = metadata.get("langgraph_node", "unknown")
+                if isinstance(msg, AIMessageChunk) and msg.content and node_name in ["chatbot_web","chatbot_local"]:
+                    print(msg.content, end="", flush=True)
+                    full_response_text += msg.content
+        
+        except openai.BadRequestError as e:
+            if e.code == 'content_filter':
+                print("\n\n🛡️ [Azure/Cloud 拦截] 内容违反了云端安全策略。" )
+            else:
+                print(f"\n\n❌ API 错误: {e}")
+        except Exception as e:
+            print(f"\n\n❌ 系统运行错误: {e}")
 
-            if isinstance(msg, AIMessageChunk) and msg.content and node_name in ["chatbot_web","chatbot_local"]:
-                print(msg.content, end="", flush=True)
+        print("") 
 
-        print("") # 对话结束后换行
+        # --- 🛡️ 3. 输出防火墙审计 ---
+        if full_response_text:
+            out_safe, out_msg = check_output_safety(sanitized_prompt, full_response_text)
+            if not out_safe:
+                print(f"⚠️ [内容警告] {out_msg}")
 
 if __name__ == "__main__":
     main()

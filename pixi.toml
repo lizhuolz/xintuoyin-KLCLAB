@@ -21,6 +21,8 @@ llama-index-embeddings-openai = ">=0.5.1,<0.6"
 docx2txt = ">=0.9,<0.10"
 pypdf = ">=6.6.0,<7"
 gunicorn = ">=23.0.0,<24"
+regex = "2024.11.6.*"
+pip = ">=25.3,<26"
 
 [pypi-dependencies]
 socksio = "*"
@@ -33,6 +35,8 @@ tavily-python = ">=0.7.15, <0.8"
 llama-index = "*"
 llama-index-llms-openai = "*"
 llama-index-embeddings-openai = "*"
+llm-guard = { version = ">=0.3.16", extras = ["full"] }
+openpyxl = ">=3.1.5, <4"
 
 [tasks]
 start-backend = "cd backend && python app.py"
