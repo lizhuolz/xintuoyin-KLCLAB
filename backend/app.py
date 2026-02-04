@@ -211,6 +211,33 @@ kb_service = KBService()
 async def get_kb_list():
     return kb_service.load_all()
 
+@app.get("/api/test/file_tree")
+async def get_file_tree():
+    """调试接口：返回 documents 目录的物理树形结构"""
+    def build_tree(path: Path):
+        d = {"label": path.name}
+        if path.is_dir():
+            # 排除隐藏文件和 __pycache__
+            children = [
+                build_tree(p) for p in path.iterdir() 
+                if not p.name.startswith(".") and p.name != "__pycache__"
+            ]
+            # 排序：文件夹在前，文件在后
+            children.sort(key=lambda x: ("children" not in x, x["label"]))
+            d["children"] = children
+        return d
+
+    docs_path = Path(current_dir).parent / "documents"
+    if not docs_path.exists():
+        return []
+    
+    # 获取 documents 下的所有顶级子目录
+    tree = [
+        build_tree(p) for p in docs_path.iterdir() 
+        if not p.name.startswith(".")
+    ]
+    return tree
+
 @app.post("/api/kb/create")
 async def create_kb(
     name: str = Form(...),
