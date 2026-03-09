@@ -29,3 +29,5 @@ backend/history_storage/
 .geminiignore
 logs/
 *pids
+
+nohup.out
