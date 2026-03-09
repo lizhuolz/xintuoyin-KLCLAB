@@ -1,1 +1,21 @@
-[]
+[
+  {
+    "id": "d17a1cb0",
+    "name": "测试1",
+    "model": "openai",
+    "category": "org",
+    "physical_path": "org/测试1",
+    "remark": "",
+    "users": [
+      "人事部全员",
+      "张三",
+      "李四",
+      "王五",
+      "A1员工",
+      "B1员工"
+    ],
+    "enabled": true,
+    "updatedAt": "2026/02/10 14:53:47",
+    "fileCount": 2
+  }
+]

@@ -31,8 +31,8 @@ fi
 # 2. 启动后端
 echo "🚀 [1/2] 启动后端..."
 cd backend || exit
-source env.sh
-
+source script/settings.sh
+source script/env.sh
 # [修改点 1] 添加环境变量 PYTHONUNBUFFERED=1 消除缓冲延迟
 # [修改点 2] 添加 --log-level info 显式指定级别
 # [修改点 3] 使用 >> 进行追加写入，而不是覆盖
