@@ -5,7 +5,7 @@ venv/
 .venv/
 .pixi/
 pixi.lock
-
+GEMINI.md
 # Frontend
 node_modules/
 dist/

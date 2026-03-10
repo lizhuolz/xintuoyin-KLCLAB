@@ -48,6 +48,16 @@ const routes = [
         meta: { title: '知识库管理' }
       },
       {
+        path: "/ai/history",
+        component: () => import("../views/main/ai/HistoryManagement.vue"),
+        meta: { title: '历史记录维护' }
+      },
+      {
+        path: "/ai/feedback",
+        component: () => import("../views/main/ai/FeedbackManagement.vue"),
+        meta: { title: '反馈记录维护' }
+      },
+      {
         path: "/ai/test-tree",
         component: () => import("../views/main/ai/FileTreeTest.vue"),
         meta: { title: '结构测试' }

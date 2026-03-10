@@ -23,6 +23,8 @@ pypdf = ">=6.6.0,<7"
 gunicorn = ">=23.0.0,<24"
 regex = "2024.11.6.*"
 pip = ">=25.3,<26"
+faiss = ">=1.9.0,<2"
+pandas = ">=2.3.3,<3"
 
 [pypi-dependencies]
 socksio = "*"
@@ -37,6 +39,9 @@ llama-index-llms-openai = "*"
 llama-index-embeddings-openai = "*"
 llm-guard = { version = ">=0.3.16", extras = ["full"] }
 openpyxl = ">=3.1.5, <4"
+langchain-huggingface = ">=1.2.0, <2"
+sentence-transformers = ">=5.2.3, <6"
+python-pptx = ">=1.0.2, <2"
 
 [tasks]
 start-backend = "cd backend && python app.py"
