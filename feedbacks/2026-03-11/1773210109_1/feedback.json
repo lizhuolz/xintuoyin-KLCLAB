@@ -1,0 +1,26 @@
+{
+  "id": "1773210109_1",
+  "date_path": "2026-03-11",
+  "conversation_id": "1773138617583",
+  "message_index": 1,
+  "type": "dislike",
+  "target_question": "hello",
+  "target_answer": "Hello! How can I assist you today?",
+  "contact_name": "王颖奇",
+  "contact_phone": "15323720032",
+  "enterprise": "图湃（北京）医疗科技",
+  "reasons": [
+    "不理解问题",
+    "回答笼统不专业",
+    "内容侵权"
+  ],
+  "raw_reasons": {
+    "question": "不理解问题",
+    "answer": "回答笼统不专业",
+    "report": "内容侵权"
+  },
+  "comment": "s's",
+  "images": [],
+  "createdAt": "2026-03-11 14:21:49",
+  "process_result": "待处理"
+}

@@ -24,7 +24,7 @@ const routes = [
     children: [
       {
         path: "/home",
-        component: () => import("../views/main/home/Home.vue"),
+        component: () => import("@/views/main/home/Home.vue"),
         alias: ["/home/"],
         meta: { title: '首页' }
       },
@@ -34,42 +34,47 @@ const routes = [
       },
       {
         path: "/ai",
-        component: () => import("../views/main/ai/index.vue"),
+        component: () => import("@/views/main/ai/index.vue"),
         meta: { title: 'ai' }
       },
       {
         path: "/ai/chat",
-        component: () => import("../views/main/ai/LLMChat.vue"),
+        component: () => import("@/views/main/ai/LLMChat.vue"),
         meta: { title: 'AI 对话' }
       },
       {
         path: "/ai/kb",
-        component: () => import("../views/main/ai/KBManagement.vue"),
+        component: () => import("@/views/main/ai/KBManagement.vue"),
         meta: { title: '知识库管理' }
       },
       {
         path: "/ai/history",
-        component: () => import("../views/main/ai/HistoryManagement.vue"),
+        component: () => import("@/views/main/ai/HistoryManagement.vue"),
         meta: { title: '历史记录维护' }
       },
       {
-        path: "/ai/feedback",
-        component: () => import("../views/main/ai/FeedbackManagement.vue"),
-        meta: { title: '反馈记录维护' }
+        path: "/ai/feedback-positive",
+        component: () => import("@/views/main/ai/PositiveFeedback.vue"),
+        meta: { title: '正向反馈维护' }
+      },
+      {
+        path: "/ai/feedback-negative",
+        component: () => import("@/views/main/ai/NegativeFeedback.vue"),
+        meta: { title: '负向反馈维护' }
       },
       {
         path: "/ai/test-tree",
-        component: () => import("../views/main/ai/FileTreeTest.vue"),
+        component: () => import("@/views/main/ai/FileTreeTest.vue"),
         meta: { title: '结构测试' }
       },
       {
         path: "/org/info",
-        component: () => import("../views/main/org/OrgInfo.vue"),
+        component: () => import("@/views/main/org/OrgInfo.vue"),
         meta: { title: '企业信息' }
       },
       {
         path: "/hr/staff",
-        component: () => import("../views/main/hr/StaffList.vue"),
+        component: () => import("@/views/main/hr/StaffList.vue"),
         meta: { title: '员工列表' }
       },
     ]
@@ -85,22 +90,5 @@ const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes
 });
-
-// 路由守卫
-// router.beforeEach((to, from, next) => {
-//   const token = localStorage.getItem('token')
-//   const publicPages = ['/login', '/first']
-//   const authRequired = !publicPages.includes(to.path)
-
-//   if (authRequired && !token) {
-//     console.log('未登录，重定向到登录页')
-//     next('/login')
-//   } else if (to.path === '/login' && token) {
-//     console.log('已登录，重定向到首页')
-//     next('/home')
-//   } else {
-//     next()
-//   }
-// })
 
 export default router;

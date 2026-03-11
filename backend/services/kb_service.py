@@ -9,6 +9,7 @@ from datetime import datetime
 BASE_DIR = Path(__file__).parent.parent
 DOCS_DIR = BASE_DIR.parent / "documents"
 METADATA_FILE = BASE_DIR / "data" / "kb_metadata.json"
+USER_JSON_FILE = BASE_DIR.parent / "user.json"
 
 class KBService:
     def __init__(self):
@@ -20,15 +21,26 @@ class KBService:
             with open(METADATA_FILE, "w", encoding="utf-8") as f:
                 json.dump([], f)
 
+    def _get_user_info(self):
+        """读取演示用户信息"""
+        if USER_JSON_FILE.exists():
+            try:
+                with open(USER_JSON_FILE, "r", encoding="utf-8") as f:
+                    return json.load(f)
+            except: pass
+        return {
+            "name": "未知用户",
+            "company": "未知公司",
+            "department": "未知部门"
+        }
+
     def load_all(self):
         with open(METADATA_FILE, "r", encoding="utf-8") as f:
             all_kb = json.load(f)
         
-        # 实时统计文件数量
         for kb in all_kb:
             path = DOCS_DIR / kb["physical_path"]
             if path.exists():
-                # 只计算文件，排除文件夹
                 kb["fileCount"] = len([f for f in path.iterdir() if f.is_file()])
             else:
                 kb["fileCount"] = 0
@@ -38,28 +50,36 @@ class KBService:
         with open(METADATA_FILE, "w", encoding="utf-8") as f:
             json.dump(data, f, ensure_ascii=False, indent=2)
 
-    def create_kb(self, name, model="openai", category="个人知识库/访客"):
+    def create_kb(self, name, model="openai", category="个人知识库"):
         """
-        category 决定了它在 documents/ 下的物理路径
-        例如: 企业知识库, 部门知识库/技术部, 个人知识库/员工A1
-        文件夹名直接使用知识库名称，更直观
+        category: 根分类 (企业知识库 / 部门知识库 / 个人知识库)
+        逻辑：自动根据用户信息插入二级目录
         """
+        user = self._get_user_info()
         all_kb = self.load_all()
         kb_id = str(uuid.uuid4())[:8]
         
-        # 处理物理文件夹名：isalnum() 在 Python3 中包含中文
-        safe_folder_name = "".join([c for c in name if c.isalnum() or c in (' ', '_', '-')]).strip()
-        if not safe_folder_name:
-            safe_folder_name = kb_id
+        # 1. 确定中间层级
+        mid_folder = ""
+        if "企业" in category:
+            mid_folder = user.get("company", "通用公司")
+        elif "部门" in category:
+            mid_folder = user.get("department", "通用部门")
+        else: # 个人级
+            mid_folder = user.get("name", "访客")
+
+        # 2. 处理物理文件夹名 (知识库名)
+        safe_kb_name = "".join([c for c in name if c.isalnum() or c in (' ', '_', '-')]).strip()
+        if not safe_kb_name: safe_kb_name = kb_id
         
-        # 物理路径
-        physical_path = f"{category}/{safe_folder_name}"
+        # 3. 构造物理路径：根分类 / 用户相关目录 / 知识库名
+        physical_path = f"{category}/{mid_folder}/{safe_kb_name}"
         full_path = DOCS_DIR / physical_path
         
-        # 如果重名，加上时间戳防冲突
+        # 防止物理路径冲突
         if full_path.exists():
             suffix = datetime.now().strftime("%H%M%S")
-            physical_path = f"{category}/{safe_folder_name}_{suffix}"
+            physical_path = f"{category}/{mid_folder}/{safe_kb_name}_{suffix}"
             full_path = DOCS_DIR / physical_path
 
         full_path.mkdir(parents=True, exist_ok=True)
@@ -68,10 +88,11 @@ class KBService:
             "id": kb_id,
             "name": name,
             "model": model,
-            "category": category,
+            "category": category, # 存储根分类
+            "owner_info": f"{user.get('company')}/{user.get('department')}", # 记录创建时的背景
             "physical_path": physical_path,
             "remark": "",
-            "users": [],
+            "users": [user.get("name")],
             "enabled": True,
             "updatedAt": datetime.now().strftime("%Y/%m/%d %H:%M:%S")
         }
@@ -83,7 +104,6 @@ class KBService:
         all_kb = self.load_all()
         for kb in all_kb:
             if kb["id"] == kb_id:
-                # 只允许更新部分字段
                 for key in ["name", "remark", "users", "enabled"]:
                     if key in update_data:
                         kb[key] = update_data[key]
@@ -94,19 +114,10 @@ class KBService:
 
     def delete_kb(self, kb_id):
         all_kb = self.load_all()
-        to_delete = None
-        for kb in all_kb:
-            if kb["id"] == kb_id:
-                to_delete = kb
-                break
-        
+        to_delete = next((k for k in all_kb if k["id"] == kb_id), None)
         if to_delete:
-            # 1. 物理删除文件
             full_path = DOCS_DIR / to_delete["physical_path"]
-            if full_path.exists():
-                shutil.rmtree(full_path)
-            
-            # 2. 删除元数据
+            if full_path.exists(): shutil.rmtree(full_path)
             all_kb = [k for k in all_kb if k["id"] != kb_id]
             self.save_all(all_kb)
             return True
@@ -116,28 +127,16 @@ class KBService:
         all_kb = self.load_all()
         kb = next((k for k in all_kb if k["id"] == kb_id), None)
         if not kb: return []
-        
         full_path = DOCS_DIR / kb["physical_path"]
         if not full_path.exists(): return []
-        
-        files = []
-        for f in full_path.iterdir():
-            if f.is_file():
-                stats = f.stat()
-                files.append({
-                    "name": f.name,
-                    "size": f"{stats.st_size / 1024:.1f} KB"
-                })
-        return files
+        return [{"name": f.name, "size": f"{f.stat().st_size/1024:.1f} KB"} for f in full_path.iterdir() if f.is_file()]
 
     def save_file(self, kb_id, file_obj):
         all_kb = self.load_all()
         kb = next((k for k in all_kb if k["id"] == kb_id), None)
         if not kb: return False
-        
         target_dir = DOCS_DIR / kb["physical_path"]
         target_dir.mkdir(parents=True, exist_ok=True)
-        
         with open(target_dir / file_obj.filename, "wb") as f:
             f.write(file_obj.file.read())
         return True
@@ -146,7 +145,6 @@ class KBService:
         all_kb = self.load_all()
         kb = next((k for k in all_kb if k["id"] == kb_id), None)
         if not kb: return False
-        
         file_path = DOCS_DIR / kb["physical_path"] / filename
         if file_path.exists():
             os.remove(file_path)

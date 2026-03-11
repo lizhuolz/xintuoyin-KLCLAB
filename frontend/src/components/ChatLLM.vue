@@ -10,6 +10,19 @@
           <el-icon><Fold v-if="!isSidebarCollapsed" /><Expand v-else /></el-icon>
         </button>
       </div>
+
+      <!-- 侧边栏搜索框 -->
+      <div v-if="!isSidebarCollapsed" class="sidebar-search-wrapper">
+        <el-input 
+          v-model="sidebarSearch" 
+          placeholder="搜索对话记录或内容..." 
+          prefix-icon="Search" 
+          clearable 
+          size="small"
+          @input="handleSidebarSearch"
+        />
+      </div>
+
       <div class="sidebar-list">
         <div 
           v-for="conv in conversations" 
@@ -19,32 +32,19 @@
           @click="selectConv(conv.id)"
         >
           <el-icon class="conv-icon"><ChatDotRound /></el-icon>
-          <span v-if="!isSidebarCollapsed" class="conv-title">{{ conv.title || '新对话' }}</span>
-          <span v-if="!isSidebarCollapsed" class="delete-btn" @click.stop="deleteConv(conv.id)">
-            <el-icon size="14"><Delete /></el-icon>
-          </span>
+          <span v-if="!isSidebarCollapsed" class="conv-title" :title="conv.title">{{ conv.title || '新对话' }}</span>
         </div>
       </div>
-      <div class="sidebar-footer" v-if="!isSidebarCollapsed">
-        <div class="user-profile-wrapper">
-          <div class="user-profile">
-            <div class="avatar">{{ user_identity.charAt(0).toUpperCase() }}</div>
-            <div class="user-info">
-              <span class="user-name">{{ user_identity }}</span>
-              <span class="user-role">{{ getRoleName(user_identity) }}</span>
-            </div>
-          </div>
-          <el-select v-model="user_identity" size="small" class="identity-selector">
-            <el-option label="超级管理员" value="admin" />
-            <el-divider content-position="center">部门角色</el-divider>
-            <el-option label="技术主管" value="dept_a_manager" />
-            <el-option label="财务主管" value="dept_b_manager" />
-            <el-divider content-position="center">员工角色</el-divider>
-            <el-option label="高级工程师 A1" value="user_a1" />
-            <el-option label="初级技术员 A2" value="user_a2" />
-            <el-option label="会计师 B1" value="user_b1" />
-          </el-select>
+      
+      <!-- 侧边栏底部操作区 -->
+      <div class="sidebar-footer">
+        <div v-if="!isSidebarCollapsed" class="sidebar-actions">
+          <button class="manage-history-btn" @click="openHistoryManager">
+            <el-icon><Setting /></el-icon> 管理对话记录
+          </button>
         </div>
+        
+
       </div>
     </aside>
 
@@ -92,7 +92,7 @@
                 </div>
                 <div class="footer-right">
                   <button class="icon-action" @click="copyText(msg.content)"><el-icon><DocumentCopy /></el-icon></button>
-                  <button class="icon-action" :class="{ active: msg.liked }" @click="handleLike(msg)"><el-icon><CaretTop /></el-icon></button>
+                  <button class="icon-action" :class="{ active: msg.liked }" @click="handleLike(msg, index)"><el-icon><CaretTop /></el-icon></button>
                   <button class="icon-action" :class="{ active: msg.disliked }" @click="handleDislike(msg, index)"><el-icon><CaretBottom /></el-icon></button>
                 </div>
               </div>
@@ -153,27 +153,132 @@
       </aside>
     </transition>
 
-    <!-- 反馈弹窗 -->
-    <el-dialog v-model="feedbackVisible" title="意见反馈" width="550px">
-      <el-form :model="feedbackForm" label-position="top">
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
-          <el-form-item label="反馈人姓名"><el-input v-model="feedbackForm.contact_name" placeholder="请输入姓名" /></el-form-item>
-          <el-form-item label="联系方式"><el-input v-model="feedbackForm.contact_phone" placeholder="请输入手机或邮箱" /></el-form-item>
+    <!-- 历史记录管理弹窗 -->
+    <el-dialog v-model="historyManagerVisible" title="管理对话记录" width="700px" custom-class="history-manager-dialog">
+      <div class="history-manager-content">
+        <div class="manager-header">
+          <span class="count-tip">对话记录 ({{ managerList.length }}条)</span>
+          <el-input 
+            v-model="managerSearch" 
+            placeholder="搜索名称或对话内容" 
+            prefix-icon="Search" 
+            class="search-input" 
+            clearable 
+            @input="handleManagerSearch"
+          />
         </div>
-        <el-form-item label="所属企业"><el-input v-model="feedbackForm.enterprise" placeholder="请输入单位名称" /></el-form-item>
-        <el-form-item label="不满意原因">
-          <el-checkbox-group v-model="feedbackForm.reasons">
-            <el-checkbox label="回答不准确" /><el-checkbox label="内容不完整" /><el-checkbox label="逻辑混乱" /><el-checkbox label="其他" />
-          </el-checkbox-group>
+        
+        <el-table 
+          :data="managerList" 
+          height="400px" 
+          v-loading="managerLoading"
+          @selection-change="handleManagerSelection"
+          style="width: 100%"
+        >
+          <el-table-column type="selection" width="50" />
+          <el-table-column label="对话名称" min-width="250">
+            <template #default="scope">
+              <div class="conv-name-cell">
+                <el-icon class="icon"><ChatDotRound /></el-icon>
+                <span>{{ scope.row.title || '新对话' }}</span>
+              </div>
+            </template>
+          </el-table-column>
+          <el-table-column prop="updatedAtDisplay" label="最近通话时间" width="180" />
+          <el-table-column label="操作" width="80" align="center">
+            <template #default="scope">
+              <el-button link type="danger" @click="handleSingleDelete(scope.row)">
+                <el-icon size="16"><Delete /></el-icon>
+              </el-button>
+            </template>
+          </el-table-column>
+        </el-table>
+        
+        <div class="manager-footer">
+          <div class="left">
+             <span class="hint">对话记录保存90天</span>
+          </div>
+          <div class="right">
+            <el-button @click="historyManagerVisible = false">取消</el-button>
+            <el-button type="danger" :disabled="selectedManagerIds.length === 0" @click="handleBatchDelete">
+              批量删除 <span v-if="selectedManagerIds.length">({{ selectedManagerIds.length }})</span>
+            </el-button>
+          </div>
+        </div>
+      </div>
+    </el-dialog>
+
+    <!-- 反馈弹窗 (点踩重构 - 严格参考原型图) -->
+    <el-dialog v-model="feedbackVisible" title="反馈" width="650px" custom-class="dislike-feedback-dialog">
+      <div class="feedback-guidelines">
+        <p>1、用户可在以下表单发起投诉、举报、反馈信息。</p>
+        <p>2、系统收到信息后由工作人员在2-5个工作日内处理，并对用户个人信息予以必要性的保密。</p>
+        <p>3、工作人员对涉及重要事件的如BUG漏洞上报到公司高层领导，必要的上报到有关部门如国家互联网应急中心</p>
+        <p>4、工作人员根据情况可能直接联系投诉举报的用户和被投诉举报者，解决问题。</p>
+        <p>5、通过用户留下的手机号码、邮箱方式，最终将处理结果反馈给用户。</p>
+        <p>6、若您有紧急事务，请直接联系我们：18908397188。</p>
+      </div>
+
+      <el-form :model="feedbackForm" label-position="top" class="custom-feedback-form">
+        <el-form-item label="针对问题">
+          <el-radio-group v-model="feedbackForm.reasons.question">
+            <el-radio label="不理解问题" />
+            <el-radio label="遗忘上下文" />
+            <el-radio label="未遵循要求" />
+          </el-radio-group>
         </el-form-item>
-        <el-form-item label="详细描述"><el-input type="textarea" v-model="feedbackForm.comment" rows="3" placeholder="请详细说明您遇到的问题" /></el-form-item>
-        <el-form-item label="图片附件">
-          <el-upload action="#" list-type="picture-card" :auto-upload="false" multiple :on-change="handleFeedbackFile"><el-icon><Plus /></el-icon></el-upload>
+
+        <el-form-item label="针对回答效果">
+          <el-radio-group v-model="feedbackForm.reasons.answer">
+            <el-radio label="回答错误" />
+            <el-radio label="逻辑混乱" />
+            <el-radio label="时效性差" />
+            <el-radio label="可读性差" />
+            <el-radio label="回答不完整" />
+            <el-radio label="回答笼统不专业" />
+          </el-radio-group>
+        </el-form-item>
+
+        <el-form-item label="举报">
+          <el-radio-group v-model="feedbackForm.reasons.report">
+            <el-radio label="色情低俗" />
+            <el-radio label="政治敏感" />
+            <el-radio label="违法犯罪" />
+            <el-radio label="歧视或偏见回答" />
+            <el-radio label="侵犯隐私" />
+            <el-radio label="内容侵权" />
+          </el-radio-group>
+        </el-form-item>
+
+        <el-form-item label="更多描述">
+          <el-input type="textarea" v-model="feedbackForm.comment" rows="3" placeholder="请输入" />
+        </el-form-item>
+
+        <el-form-item label="上传照片" class="upload-item">
+          <el-upload
+            action="#"
+            list-type="picture-card"
+            :auto-upload="false"
+            multiple
+            :limit="4"
+            :on-change="handleFeedbackFile"
+            class="custom-uploader"
+          >
+            <div class="upload-trigger">
+              <el-icon><Plus /></el-icon>
+              <div class="text">上传照片</div>
+              <div class="count">{{ feedbackFiles.length }}/4</div>
+            </div>
+          </el-upload>
+          <div class="upload-tip">只支持.jpg.png格式</div>
         </el-form-item>
       </el-form>
+      
       <template #footer>
-        <el-button @click="feedbackVisible = false">取消</el-button>
-        <el-button type="primary" @click="submitFeedback">提交反馈</el-button>
+        <div class="feedback-footer">
+          <el-button @click="feedbackVisible = false" class="footer-btn">取消</el-button>
+          <el-button type="primary" @click="submitFeedback" class="footer-btn submit-btn">提交</el-button>
+        </div>
       </template>
     </el-dialog>
 
@@ -186,14 +291,23 @@ import { ref, reactive, computed, nextTick, onMounted, watch } from 'vue'
 import MarkdownIt from 'markdown-it'
 import hljs from 'highlight.js'
 import 'highlight.js/styles/github.css'
-import { Link, DocumentCopy, CaretTop, CaretBottom, Search, Paperclip, Coin, Notebook, Promotion, TopRight, Fold, Expand, ChatDotRound, Delete, Plus } from '@element-plus/icons-vue'
-import { ElMessage } from 'element-plus'
+import { Link, DocumentCopy, CaretTop, CaretBottom, Search, Paperclip, Coin, Notebook, Promotion, TopRight, Fold, Expand, ChatDotRound, Delete, Plus, Setting } from '@element-plus/icons-vue'
+import { ElMessage, ElMessageBox } from 'element-plus'
 
 const md = new MarkdownIt({ html:false, linkify:true, typographer:true, highlight:(s,l)=>{
   if(l && hljs.getLanguage(l)) try{return hljs.highlight(s,{language:l}).value}catch(e){}
   return md.utils.escapeHtml(s)
 }});
 const renderMarkdown = (t) => md.render(t || '')
+
+// // 模拟已登录用户信息 (与 user.json 保持一致)
+// const MOCK_USER = {
+//   name: '王颖奇',
+//   phone: '15323720032',
+//   company: '图湃（北京）医疗科技'
+// }
+import userData from './user.json'
+const MOCK_USER = userData
 
 const conversations = ref([]); const currentId = ref(null); const inputMessage = ref(''); const files = ref([]); const loading = ref(false);
 const webSearchEnabled = ref(false); const showDBMenu = ref(false); const selectedDB = ref(null); const ragEnabled = ref(false);
@@ -203,21 +317,143 @@ const isSidebarCollapsed = ref(false);
 const currentConv = computed(() => conversations.value.find(c => String(c.id) === String(currentId.value)))
 const currentMessages = computed(() => currentConv.value?.messages || [])
 
-// 反馈逻辑
+// 搜索防抖函数
+function debounce(fn, delay) {
+  let timer = null;
+  return function(...args) {
+    if(timer) clearTimeout(timer);
+    timer = setTimeout(() => fn.apply(this, args), delay);
+  }
+}
+
+// 侧边栏搜索逻辑
+const sidebarSearch = ref('')
+const handleSidebarSearch = debounce(async () => {
+  await fetchConversations(sidebarSearch.value);
+}, 300)
+
+async function fetchConversations(query = "") {
+  try {
+    const res = await fetch(`/api/history/list?search=${encodeURIComponent(query)}`)
+    if (res.ok) {
+      const serverList = await res.json()
+      conversations.value = serverList.map(item => ({ id: String(item.id), title: item.title, messages: [] }))
+    }
+  } catch (e) {}
+}
+
+// 历史记录管理弹窗逻辑
+const historyManagerVisible = ref(false)
+const managerList = ref([])
+const managerSearch = ref('')
+const selectedManagerIds = ref([])
+const managerLoading = ref(false)
+
+async function openHistoryManager() {
+  historyManagerVisible.value = true;
+  managerSearch.value = '';
+  await refreshManagerList();
+}
+
+const handleManagerSearch = debounce(async () => {
+  await refreshManagerList(managerSearch.value);
+}, 300)
+
+async function refreshManagerList(query = "") {
+  managerLoading.value = true;
+  try {
+    const res = await fetch(`/api/history/list?search=${encodeURIComponent(query)}`)
+    if(res.ok) {
+      const list = await res.json();
+      managerList.value = list.map(item => ({
+        ...item,
+        updatedAtDisplay: new Date(item.updatedAt * 1000).toLocaleString()
+      }))
+    }
+  } catch(e) {} finally {
+    managerLoading.value = false;
+  }
+}
+
+function handleManagerSelection(selection) {
+  selectedManagerIds.value = selection.map(item => item.id)
+}
+
+async function handleSingleDelete(row) {
+  try {
+    await ElMessageBox.confirm(`确认删除对话“${row.title || '新对话'}”吗？删除后无法恢复并找回。`, '确认删除', {
+      confirmButtonText: '确认删除',
+      cancelButtonText: '取消',
+      confirmButtonClass: 'danger-btn',
+      type: 'warning'
+    })
+    await fetch(`/api/chat/${row.id}`, { method: 'DELETE' })
+    ElMessage.success('已删除')
+    
+    const idx = conversations.value.findIndex(c => String(c.id) === String(row.id))
+    if(idx !== -1) conversations.value.splice(idx, 1)
+    
+    if(String(currentId.value) === String(row.id)) {
+      if(conversations.value.length) selectConv(conversations.value[0].id)
+      else createNewChat()
+    }
+    
+    refreshManagerList(managerSearch.value)
+  } catch(e) {}
+}
+
+async function handleBatchDelete() {
+  try {
+    await ElMessageBox.confirm(`确认删除选中的 ${selectedManagerIds.value.length} 条记录吗？删除后对话记录无法恢复并找回。`, '确认删除', {
+      confirmButtonText: '确认删除',
+      cancelButtonText: '取消',
+      confirmButtonClass: 'danger-btn',
+      type: 'warning'
+    })
+    
+    await fetch('/api/history/batch_delete', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ ids: selectedManagerIds.value })
+    })
+    
+    ElMessage.success('批量删除成功')
+    
+    let currentWasDeleted = false;
+    selectedManagerIds.value.forEach(id => {
+      if(String(currentId.value) === String(id)) currentWasDeleted = true;
+      const idx = conversations.value.findIndex(c => String(c.id) === String(id))
+      if(idx !== -1) conversations.value.splice(idx, 1)
+    })
+    
+    if(currentWasDeleted) {
+      if(conversations.value.length) selectConv(conversations.value[0].id)
+      else createNewChat()
+    }
+    
+    refreshManagerList(managerSearch.value);
+    selectedManagerIds.value = [];
+  } catch(e) {}
+}
+
+// 反馈逻辑 (点踩重构)
 const feedbackVisible = ref(false);
 const currentFeedbackMsgIndex = ref(-1);
-const feedbackForm = reactive({ contact_name: "", contact_phone: "", enterprise: "", reasons: [], comment: "" });
+const feedbackForm = reactive({ 
+  reasons: { question: '', answer: '', report: '' },
+  comment: "" 
+});
 const feedbackFiles = ref([]);
 
-const handleLike = async (msg) => {
+const handleLike = async (msg, index) => {
   msg.liked = !msg.liked;
   if(msg.liked) {
     msg.disliked = false;
     const fd = new FormData();
     fd.append('conversation_id', String(currentId.value));
-    fd.append('message_index', String(currentMessages.value.indexOf(msg)));
+    fd.append('message_index', String(index));
     fd.append('type', 'like');
-    fd.append('user_identity', user_identity.value);
+    // 后端会根据 user.json 自动填充，这里可以不用传，保持静默
     try { await fetch('/api/chat/feedback', { method: 'POST', body: fd }); } catch(e) {}
   }
 }
@@ -227,6 +463,10 @@ const handleDislike = (msg, index) => {
   if(msg.disliked) {
     msg.liked = false;
     currentFeedbackMsgIndex.value = index;
+    // 重置表单
+    feedbackForm.reasons = { question: '', answer: '', report: '' };
+    feedbackForm.comment = "";
+    feedbackFiles.value = [];
     feedbackVisible.value = true;
   }
 }
@@ -238,10 +478,6 @@ const submitFeedback = async () => {
   fd.append('conversation_id', String(currentId.value));
   fd.append('message_index', String(currentFeedbackMsgIndex.value));
   fd.append('type', 'dislike');
-  fd.append('user_identity', user_identity.value);
-  fd.append('contact_name', feedbackForm.contact_name);
-  fd.append('contact_phone', feedbackForm.contact_phone);
-  fd.append('enterprise', feedbackForm.enterprise);
   fd.append('reasons', JSON.stringify(feedbackForm.reasons));
   fd.append('comment', feedbackForm.comment);
   feedbackFiles.value.forEach(file => fd.append('files', file));
@@ -251,27 +487,15 @@ const submitFeedback = async () => {
     if(res.ok) {
       ElMessage.success("感谢您的反馈！");
       feedbackVisible.value = false;
-      feedbackForm.contact_name = ""; feedbackForm.contact_phone = ""; feedbackForm.enterprise = "";
-      feedbackForm.reasons = []; feedbackForm.comment = ""; feedbackFiles.value = [];
     }
-  } catch(e) { ElMessage.error("提交失败"); }
+  } catch (e) { ElMessage.error("提交失败"); }
 }
 
 const toggleSidebarSources = (s) => { sidebarSources.value = (sidebarSources.value === s ? [] : s) }
 const copyText = (t) => { navigator.clipboard.writeText(t).then(()=>ElMessage.success('已复制')) }
-const getRoleName = (id) => ({ admin:'超级管理员', dept_a_manager:'技术主管', dept_b_manager:'财务主管', user_a1:'技术员 A1', user_a2:'技术员 A2', user_b1:'会计师 B1' }[id] || '普通用户')
 
 onMounted(async () => {
-  try {
-    const res = await fetch('/api/history/list')
-    if (res.ok) {
-      const serverList = await res.json()
-      conversations.value = serverList.map(item => ({ id: String(item.id), title: item.title, messages: [] }))
-    }
-  } catch (e) {
-    const saved = localStorage.getItem('chatgpt_convs')
-    if (saved) conversations.value = JSON.parse(saved)
-  }
+  await fetchConversations();
   if (!conversations.value.length) createNewChat()
   else selectConv(conversations.value[0].id)
 })
@@ -291,15 +515,6 @@ async function selectConv(id) {
 const createNewChat = () => {
   const n = { id: String(Date.now()), title: '新对话', messages: [] }
   conversations.value.unshift(n); currentId.value = n.id;
-}
-
-const deleteConv = (id) => {
-  if(!confirm('确定删除？')) return
-  const i = conversations.value.findIndex(c => String(c.id) === String(id))
-  conversations.value.splice(i, 1)
-  if(!conversations.value.length) createNewChat()
-  else if(String(currentId.value) === String(id)) selectConv(conversations.value[0].id)
-  fetch(`/api/chat/${id}`, { method: 'DELETE' })
 }
 
 const handleFileUpload = (e) => {
@@ -380,20 +595,31 @@ async function sendMessage() {
 .chat-container { display: flex; height: 100%; background: #fff; overflow: hidden; }
 .sidebar { width: 260px; background: #f9f9f9; display: flex; flex-direction: column; border-right: 1px solid #eee; padding: 12px; transition: width 0.3s; }
 .sidebar.collapsed { width: 64px; padding: 12px 8px; }
-.sidebar-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }
+.sidebar-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
 .collapsed .sidebar-header { justify-content: center; }
 .new-chat-btn { background: #eee; border: none; padding: 10px; border-radius: 20px; cursor: pointer; flex: 1; margin-right: 8px; font-weight: 500; white-space: nowrap; overflow: hidden; }
 .toggle-btn { background: none; border: none; cursor: pointer; color: #666; font-size: 18px; display: flex; }
+
+.sidebar-search-wrapper { margin-bottom: 12px; }
+
 .sidebar-list { flex: 1; overflow-y: auto; }
 .sidebar-item { padding: 10px 12px; border-radius: 12px; cursor: pointer; display: flex; align-items: center; gap: 12px; margin-bottom: 4px; transition: 0.2s; position: relative; }
 .sidebar-item.active { background: #e6f0ff; color: #4080FF; }
-.sidebar-item .delete-btn { opacity: 0; margin-left: auto; }
-.sidebar-item:hover .delete-btn { opacity: 1; }
+.conv-title { flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-size: 14px; }
 .collapsed .sidebar-item { justify-content: center; padding: 10px 0; }
+
+.sidebar-footer { margin-top: auto; }
+.sidebar-actions { padding: 10px 0; }
+.manage-history-btn { width: 100%; text-align: left; background: none; border: none; padding: 10px 12px; font-size: 14px; color: #666; cursor: pointer; border-radius: 8px; transition: 0.2s; display: flex; align-items: center; gap: 8px; }
+.manage-history-btn:hover { background: #eee; color: #333; }
+
 .user-profile-wrapper { background: #fff; padding: 12px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
-.user-profile { display: flex; gap: 10px; align-items: center; margin-bottom: 10px; }
+.user-profile { display: flex; gap: 10px; align-items: center; }
 .avatar { width: 32px; height: 32px; background: #4080FF; color: #fff; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; }
-.user-name { font-size: 13px; font-weight: 600; white-space: nowrap; } .user-role { font-size: 11px; color: #999; }
+.user-info { display: flex; flex-direction: column; overflow: hidden; }
+.user-name { font-size: 13px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; } 
+.user-role { font-size: 11px; color: #999; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
 .main-chat { flex: 1; display: flex; flex-direction: column; position: relative; min-width: 0; }
 .chat-header { height: 50px; display: flex; align-items: center; justify-content: center; border-bottom: 1px solid #f0f0f0; font-size: 14px; color: #666; }
 .initial-greeting { flex: 1; display: flex; align-items: center; justify-content: center; }
@@ -445,4 +671,78 @@ textarea { background: none; border: none; resize: none; width: 100%; min-height
 .slide-fade-enter-active { transition: all 0.3s ease-out; }
 .slide-fade-leave-active { transition: all 0.2s ease-in; }
 .slide-fade-enter-from, .slide-fade-leave-to { transform: translateX(30px); opacity: 0; }
+
+// 管理弹窗样式
+.history-manager-content { padding: 0 10px; }
+.manager-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+.count-tip { font-size: 14px; color: #666; }
+.search-input { width: 240px; }
+.conv-name-cell { display: flex; align-items: center; gap: 8px; color: #333; }
+.conv-name-cell .icon { color: #999; }
+.manager-footer { display: flex; justify-content: space-between; align-items: center; margin-top: 20px; padding-top: 16px; border-top: 1px solid #f0f0f0; }
+.manager-footer .hint { font-size: 12px; color: #ccc; }
+.manager-footer .right { display: flex; gap: 12px; }
+
+/* 点踩反馈弹窗样式 (严格参考原型图) */
+.dislike-feedback-dialog {
+  .feedback-guidelines {
+    background: #fdfdfd;
+    padding: 16px;
+    border-radius: 8px;
+    margin-bottom: 24px;
+    p {
+      margin: 4px 0;
+      font-size: 13px;
+      color: #666;
+      line-height: 1.6;
+    }
+  }
+  
+  .custom-feedback-form {
+    :deep(.el-form-item__label) {
+      font-weight: bold;
+      color: #333;
+      padding-bottom: 8px;
+      font-size: 15px;
+    }
+
+    :deep(.el-radio-group) {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      .el-radio { margin-right: 0; min-width: 100px; }
+    }
+  }
+
+  .custom-uploader {
+    :deep(.el-upload--picture-card) {
+      width: 100px;
+      height: 100px;
+      border: 1px dashed #d9d9d9;
+      background: #fafafa;
+    }
+    .upload-trigger {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100%;
+      color: #999;
+      line-height: 1.2;
+      .el-icon { font-size: 24px; margin-bottom: 4px; }
+      .text { font-size: 12px; }
+      .count { color: #ccc; font-size: 11px; margin-top: 2px; }
+    }
+  }
+  .upload-tip { font-size: 12px; color: #bbb; margin-top: 8px; }
+
+  .feedback-footer {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    padding-bottom: 10px;
+    .footer-btn { width: 120px; border-radius: 4px; height: 40px; font-size: 15px; }
+    .submit-btn { background: #4080FF; border-color: #4080FF; }
+  }
+}
 </style>

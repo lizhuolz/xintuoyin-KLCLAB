@@ -1,21 +1,17 @@
 [
   {
-    "id": "d17a1cb0",
-    "name": "测试1",
+    "id": "ca2a9642",
+    "name": "测试",
     "model": "openai",
-    "category": "org",
-    "physical_path": "org/测试1",
+    "category": "企业知识库",
+    "owner_info": "图湃（北京）医疗科技/技术部",
+    "physical_path": "企业知识库/图湃（北京）医疗科技/测试",
     "remark": "",
     "users": [
-      "人事部全员",
-      "张三",
-      "李四",
-      "王五",
-      "A1员工",
-      "B1员工"
+      "王颖奇"
     ],
-    "enabled": true,
-    "updatedAt": "2026/03/09 17:29:41",
-    "fileCount": 2
+    "enabled": false,
+    "updatedAt": "2026/03/11 18:08:15",
+    "fileCount": 0
   }
 ]

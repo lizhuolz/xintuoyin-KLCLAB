@@ -50,7 +50,8 @@
           <el-menu-item index="/ai/chat">AI 问答</el-menu-item>
           <el-menu-item index="/ai/kb">知识库管理</el-menu-item>
           <el-menu-item index="/ai/history">历史记录维护</el-menu-item>
-          <el-menu-item index="/ai/feedback">反馈记录维护</el-menu-item>
+          <el-menu-item index="/ai/feedback-positive">正向反馈维护</el-menu-item>
+          <el-menu-item index="/ai/feedback-negative">负向反馈维护</el-menu-item>
           <el-menu-item index="/ai/test-tree">结构测试</el-menu-item>
         </el-sub-menu>
       </el-menu>

@@ -34,9 +34,28 @@ app.add_middleware(
 ROOT_DIR = Path(current_dir).parent
 HISTORY_DIR = ROOT_DIR / "history_storage"
 FEEDBACK_ROOT = ROOT_DIR / "feedbacks"
+USER_JSON_PATH = ROOT_DIR / "user.json"
+
+# 收录目录
+EXCELLENT_DIR = FEEDBACK_ROOT / "excellent_answers"
+NEGATIVE_QA_DIR = FEEDBACK_ROOT / "negative_answers"
 
 HISTORY_DIR.mkdir(exist_ok=True)
 FEEDBACK_ROOT.mkdir(exist_ok=True)
+EXCELLENT_DIR.mkdir(exist_ok=True)
+NEGATIVE_QA_DIR.mkdir(exist_ok=True)
+
+def get_logged_in_user():
+    if USER_JSON_PATH.exists():
+        with open(USER_JSON_PATH, "r", encoding="utf-8") as f:
+            return json.load(f)
+    return {
+        "name": "演示用户",
+        "company": "演示公司",
+        "phone": "13800000000",
+        "ip_address": "127.0.0.1",
+        "user_id": "UID_DEMO"
+    }
 
 app.mount("/api/static/feedbacks", StaticFiles(directory=str(FEEDBACK_ROOT)), name="feedbacks")
 
@@ -124,16 +143,29 @@ async def chat_endpoint(
 # ----------------------------- 
 
 @app.get("/api/history/list")
-async def list_histories(search: str = ""):
+async def list_histories(search: str = "", start_time: float = None, end_time: float = None):
+    user = get_logged_in_user()
     results = []
     for f in HISTORY_DIR.glob("*.json"):
         try:
+            mtime = os.path.getmtime(f)
+            if start_time and mtime < start_time: continue
+            if end_time and mtime > end_time: continue
+
             with open(f, "r", encoding="utf-8") as file:
                 content = json.load(file)
                 if search:
                     text_blob = "".join([m.get("content", "") for m in content]).lower()
                     if search.lower() not in text_blob: continue
-                results.append({"id": f.stem, "title": content[0]["content"][:30] if content else "空对话", "updatedAt": os.path.getmtime(f), "messageCount": len(content)})
+                results.append({
+                    "id": f.stem, 
+                    "title": content[0]["content"][:30] if content else "空对话", 
+                    "updatedAt": mtime, 
+                    "messageCount": len(content),
+                    "ip_address": user["ip_address"],
+                    "user_id_display": user["user_id"],
+                    "record_id": f"REC_{f.stem}"
+                })
         except: pass
     results.sort(key=lambda x: x["updatedAt"], reverse=True)
     return results
@@ -162,7 +194,7 @@ async def get_history_detail(conversation_id: str):
     return JSONResponse(status_code=404, content={"error": "not found"})
 
 # ----------------------------- 
-# 反馈维护 (点踩专用)
+# 反馈维护
 # ----------------------------- 
 
 @app.post("/api/chat/feedback")
@@ -171,16 +203,24 @@ async def save_feedback(
     message_index: int = Form(...),
     type: str = Form(...), # 'like' or 'dislike'
     user_identity: str = Form("guest"),
-    contact_name: Optional[str] = Form(None),
-    contact_phone: Optional[str] = Form(None),
-    enterprise: Optional[str] = Form(None),
     reasons: Optional[str] = Form(None),
     comment: Optional[str] = Form(None),
     files: List[UploadFile] = File(None)
 ):
-    # 不需要记录点赞
-    if type == 'like':
-        return {"status": "success", "info": "like ignored"}
+    user = get_logged_in_user()
+    
+    target_question = "未知问题"
+    target_answer = "未知回答"
+    hist_path = HISTORY_DIR / f"{conversation_id}.json"
+    if hist_path.exists():
+        try:
+            with open(hist_path, "r", encoding="utf-8") as f:
+                history = json.load(f)
+                if 0 <= message_index < len(history):
+                    target_answer = history[message_index].get("content", "")
+                    if message_index > 0:
+                        target_question = history[message_index - 1].get("content", "")
+        except: pass
 
     today = datetime.now().strftime("%Y-%m-%d")
     feedback_id = f"{int(datetime.now().timestamp())}_{message_index}"
@@ -190,26 +230,90 @@ async def save_feedback(
     image_names = []
     for i, f in enumerate(files or []):
         ext = os.path.splitext(f.filename)[1]
-        name = f"user_{contact_name or 'unnamed'}_{i}{ext}"
+        name = f"user_{user['name']}_{i}{ext}"
         with open(target_dir / name, "wb") as out: shutil.copyfileobj(f.file, out)
         image_names.append(name)
     
+    # 解析原因结构
+    reason_list = []
+    if reasons:
+        try:
+            r_data = json.loads(reasons)
+            if isinstance(r_data, dict):
+                for k, v in r_data.items():
+                    if v: reason_list.append(v)
+            else:
+                reason_list = r_data
+        except:
+            reason_list = [reasons]
+
     info = {
-        "id": feedback_id, "date_path": today, "conversation_id": conversation_id,
-        "contact_name": contact_name or user_identity, "contact_phone": contact_phone,
-        "enterprise": enterprise, "type": type, "reasons": json.loads(reasons) if reasons else [],
-        "comment": comment, "images": image_names, "createdAt": datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        "id": feedback_id, 
+        "date_path": today, 
+        "conversation_id": conversation_id,
+        "type": type,
+        "target_question": target_question,
+        "target_answer": target_answer,
+        "contact_name": user["name"],
+        "contact_phone": user["phone"],
+        "enterprise": user["company"],
+        "reasons": reason_list,
+        "comment": comment or ("用户点赞" if type == 'like' else ""),
+        "images": image_names,
+        "createdAt": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+        "process_status": "未处理",
+        "process_result": "",
+        "processor": ""
     }
     with open(target_dir / "feedback.json", "w", encoding="utf-8") as f:
         json.dump(info, f, ensure_ascii=False, indent=2)
     return {"status": "success", "id": feedback_id}
+
+@app.post("/api/feedback/process")
+async def process_feedback(data: dict):
+    # 参数: date_path, id, processor, is_collect
+    date_path = data.get("date_path")
+    fid = data.get("id")
+    processor = data.get("processor", "系统管理员")
+    is_collect = data.get("is_collect", False)
+    
+    f_path = FEEDBACK_ROOT / date_path / fid / "feedback.json"
+    if not f_path.exists():
+        return JSONResponse(status_code=404, content={"error": "not found"})
+    
+    with open(f_path, "r", encoding="utf-8") as f:
+        info = json.load(f)
+    
+    # 更新状态
+    info["process_status"] = "已处理"
+    info["processor"] = processor
+    
+    # 收录逻辑
+    if is_collect:
+        target_dir = EXCELLENT_DIR if info["type"] == "like" else NEGATIVE_QA_DIR
+        info["process_result"] = "已收录于优秀回答" if info["type"] == "like" else "已收录于负面回答"
+        # 物理保存收录文件
+        collect_file = target_dir / f"{fid}.json"
+        with open(collect_file, "w", encoding="utf-8") as out:
+            json.dump({
+                "question": info["target_question"],
+                "answer": info["target_answer"],
+                "feedback_id": fid,
+                "collectedAt": datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+            }, out, ensure_ascii=False, indent=2)
+    else:
+        info["process_result"] = "已处理 (未收录)"
+
+    with open(f_path, "w", encoding="utf-8") as f:
+        json.dump(info, f, ensure_ascii=False, indent=2)
+        
+    return {"status": "success"}
 
 @app.delete("/api/feedback/{date}/{id}")
 async def delete_feedback(date: str, id: str):
     target_dir = FEEDBACK_ROOT / date / id
     if target_dir.exists() and target_dir.is_dir():
         shutil.rmtree(target_dir)
-        # 如果日期文件夹空了，也删掉
         parent = target_dir.parent
         if not any(parent.iterdir()):
             shutil.rmtree(parent)
@@ -218,7 +322,6 @@ async def delete_feedback(date: str, id: str):
 
 @app.post("/api/feedback/batch_delete")
 async def batch_delete_feedback(data: dict):
-    # 期望数据格式: [{"date": "2024-03-10", "id": "123_4"}, ...]
     items = data.get("items", [])
     for item in items:
         date = item.get("date")
@@ -233,22 +336,34 @@ async def batch_delete_feedback(data: dict):
     return {"status": "success"}
 
 @app.get("/api/feedback/list")
-async def list_feedbacks(name: str = "", enterprise: str = "", reason: str = ""):
+async def list_feedbacks(name: str = "", enterprise: str = "", type: str = ""):
     results = []
+    # 查找所有 feedback.json
     for f_json in FEEDBACK_ROOT.glob("**/feedback.json"):
+        # 排除收录文件夹
+        if "excellent_answers" in str(f_json) or "negative_answers" in str(f_json):
+            continue
+            
         try:
             with open(f_json, "r", encoding="utf-8") as f:
                 d = json.load(f)
                 if name and name.lower() not in d.get("contact_name", "").lower(): continue
                 if enterprise and enterprise.lower() not in d.get("enterprise", "").lower(): continue
-                if reason and reason not in d.get("reasons", []): continue
+                
+                # 筛选逻辑：如果传入 like/dislike 则严格按 type 过滤
+                if type in ["like", "dislike"]:
+                    if d.get("type", "") != type: continue
+                # 如果传入的是具体理由，则在 reasons 数组中过滤
+                elif type:
+                    if type not in d.get("reasons", []): continue
+                
                 results.append(d)
         except: pass
     results.sort(key=lambda x: x.get("createdAt", ""), reverse=True)
     return results
 
 # ----------------------------- 
-# 结构测试 & 知识库 (略)
+# 结构测试 & 知识库
 # ----------------------------- 
 @app.get("/api/test/file_tree")
 async def get_file_tree():
@@ -262,13 +377,56 @@ async def get_file_tree():
 
 from services.kb_service import KBService
 kb_service = KBService()
+
 @app.get("/api/kb/list")
 async def get_kb_list(): return kb_service.load_all()
+
 @app.post("/api/kb/create")
-async def create_kb(name: str = Form(...), category: str = Form(...)): return kb_service.create_kb(name, category=category)
+async def create_kb(
+    name: str = Form(...), 
+    category: str = Form(...),
+    model: str = Form("openai")
+): 
+    return kb_service.create_kb(name, category=category, model=model)
+
+@app.post("/api/kb/update")
+async def update_kb(
+    id: str = Form(...),
+    name: Optional[str] = Form(None),
+    remark: Optional[str] = Form(None),
+    enabled: Optional[str] = Form(None),
+    users: Optional[str] = Form(None)
+):
+    update_data = {}
+    if name is not None: update_data["name"] = name
+    if remark is not None: update_data["remark"] = remark
+    if enabled is not None: 
+        update_data["enabled"] = enabled.lower() == 'true' or enabled is True
+    if users is not None: update_data["users"] = json.loads(users)
+    
+    result = kb_service.update_kb(id, update_data)
+    if result: return result
+    return JSONResponse(status_code=404, content={"error": "failed"})
+
 @app.delete("/api/kb/{id}")
 async def delete_kb(id: str):
     if kb_service.delete_kb(id): return {"status": "success"}
+    return JSONResponse(status_code=404, content={"error": "failed"})
+
+@app.get("/api/kb/{id}/files")
+async def list_kb_files(id: str):
+    return kb_service.list_files(id)
+
+@app.post("/api/kb/{id}/upload")
+async def upload_kb_file(id: str, file: UploadFile = File(...)):
+    if kb_service.save_file(id, file):
+        return {"status": "success"}
+    return JSONResponse(status_code=404, content={"error": "failed"})
+
+@app.post("/api/kb/{id}/delete_file")
+async def delete_kb_file(id: str, filename: str = Form(...)):
+    if kb_service.delete_file(id, filename):
+        return {"status": "success"}
     return JSONResponse(status_code=404, content={"error": "failed"})
 
 if __name__ == "__main__":

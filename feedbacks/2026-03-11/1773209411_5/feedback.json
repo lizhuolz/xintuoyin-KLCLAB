@@ -1,0 +1,19 @@
+{
+  "id": "1773209411_5",
+  "date_path": "2026-03-11",
+  "conversation_id": "1773138617583",
+  "message_index": 5,
+  "type": "dislike",
+  "target_question": "熊出没的剧情",
+  "target_answer": "知识库中未找到关于《熊出没》剧情的相关信息。您可以尝试在其他地方查找，或者提供更多具体问题，我会尽力帮助您。",
+  "contact_name": "1",
+  "contact_phone": "2",
+  "enterprise": "3",
+  "reasons": [
+    "内容不完整",
+    "逻辑混乱"
+  ],
+  "comment": "4",
+  "images": [],
+  "createdAt": "2026-03-11 14:10:11"
+}
