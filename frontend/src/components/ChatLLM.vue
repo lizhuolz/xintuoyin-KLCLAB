@@ -306,7 +306,7 @@ const renderMarkdown = (t) => md.render(t || '')
 //   phone: '15323720032',
 //   company: '图湃（北京）医疗科技'
 // }
-import userData from './user.json'
+import userData from '../../../user.json'
 const MOCK_USER = userData
 
 const conversations = ref([]); const currentId = ref(null); const inputMessage = ref(''); const files = ref([]); const loading = ref(false);

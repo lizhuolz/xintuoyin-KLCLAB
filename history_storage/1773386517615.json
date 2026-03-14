@@ -1,0 +1,34 @@
+[
+  {
+    "role": "user",
+    "content": "hello"
+  },
+  {
+    "role": "assistant",
+    "content": "Hello! How can I assist you today?"
+  },
+  {
+    "role": "user",
+    "content": "aa"
+  },
+  {
+    "role": "assistant",
+    "content": "你好！有什么我可以帮助你的吗？"
+  },
+  {
+    "role": "user",
+    "content": "aa"
+  },
+  {
+    "role": "assistant",
+    "content": "你好！有什么我可以帮助你的吗？"
+  },
+  {
+    "role": "user",
+    "content": "11"
+  },
+  {
+    "role": "assistant",
+    "content": "你好！请问有什么我可以帮助你的吗？"
+  }
+]

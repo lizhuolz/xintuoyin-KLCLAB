@@ -13,5 +13,19 @@
     "enabled": false,
     "updatedAt": "2026/03/11 18:08:15",
     "fileCount": 0
+  },
+  {
+    "id": "6e73d834",
+    "name": "aa",
+    "model": "openai",
+    "category": "企业知识库",
+    "owner_info": "图湃（北京）医疗科技/技术部",
+    "physical_path": "企业知识库/图湃（北京）医疗科技/aa",
+    "remark": "",
+    "users": [
+      "王颖奇"
+    ],
+    "enabled": true,
+    "updatedAt": "2026/03/13 17:36:22"
   }
 ]

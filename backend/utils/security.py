@@ -21,20 +21,18 @@ _INPUT_SCANNERS = [
         match_type="str",
         case_sensitive=False
     ),
-    PromptInjection(threshold=0.8), # 调高阈值，减少误报
+    # PromptInjection(threshold=0.9), # 调高阈值，减少误报
     InvisibleText(),
     Secrets(redact_mode="partial"),
-    Anonymize(vault=_VAULT),
     # TokenLimit(limit=4000), # 放宽长度限制
-    Toxicity(threshold=0.8), # 调高阈值
-    Gibberish(threshold=0.8), # 调开阈值，防止技术类乱码误判
+    Toxicity(threshold=0.9), # 调高阈值
+    Gibberish(threshold=0.9), # 调开阈值，防止技术类乱码误判
 ]
 
 # 定义输出防御层 (Output Scanners)
 _OUTPUT_SCANNERS = [
     NoRefusal(),
-    BanTopics(topics=["explosives", "weapons"], threshold=0.8), # 调高阈值
-    Deanonymize(vault=_VAULT)
+    BanTopics(topics=["explosives", "weapons"], threshold=0.9), # 调高阈值
 ]
 
 def check_input_safety(text: str) -> Tuple[str, bool, str]:

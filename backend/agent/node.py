@@ -28,7 +28,7 @@ def make_chatbot_node(temperature: float, tools, system_prompt: str = "你是一
             "\n1. 如果你调用了知识库检索工具 `rag_tool`，请务必直接使用返回的原文进行回答。"
             "\n2. 严禁对原文进行过度总结或润色，必须保留原文的关键指标、数据和术语。"
             "\n3. 回答时请注明来源（如：根据[XXX文件]记载...）。"
-            "\n4. 如果检索结果中没有相关内容，请直说“知识库中未找到相关信息”，不要尝试编造。"
+            # "\n4. 如果检索结果中没有相关内容，请直说“知识库中未找到相关信息”，不要尝试编造。"
         )
         
         full_system_prompt = system_prompt + instruction

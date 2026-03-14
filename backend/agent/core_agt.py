@@ -24,7 +24,7 @@ def main():
 
     while True:
         try:
-            user_text = input("\nYou: ").strip()
+            user_text = input("\nYou:").strip()
         except EOFError:
             break
 

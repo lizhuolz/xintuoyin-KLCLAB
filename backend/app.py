@@ -10,7 +10,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import StreamingResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
 
-from langchain_core.messages import HumanMessage, SystemMessage, AIMessageChunk, ToolMessage
+from langchain_core.messages import HumanMessage, SystemMessage, AIMessage, AIMessageChunk, ToolMessage
 
 # 确保 backend 目录在 sys.path 中
 current_dir = os.path.dirname(os.path.abspath(__file__))
@@ -59,8 +59,13 @@ def get_logged_in_user():
 
 app.mount("/api/static/feedbacks", StaticFiles(directory=str(FEEDBACK_ROOT)), name="feedbacks")
 
-# 编译 Agent
-agent_app = graph_builder.compile() 
+from langgraph.checkpoint.memory import MemorySaver
+
+# ... (other imports)
+
+# 编译 Agent (注入 MemorySaver 以支持上下文记忆)
+memory = MemorySaver()
+agent_app = graph_builder.compile(checkpointer=memory) 
 
 # ----------------------------- 
 # 引导逻辑：生成推荐提问
@@ -106,10 +111,13 @@ async def chat_endpoint(
         "enable_web": web_search, "select_model": "gpt-4o", "user_identity": user_identity 
     }
 
+    # 注入线程 ID 以启用上下文记忆
+    config = {"configurable": {"thread_id": conversation_id}}
+
     async def response_stream():
         full_ai_response = ""
         try:
-            async for msg, metadata in agent_app.astream(inputs, stream_mode="messages"):
+            async for msg, metadata in agent_app.astream(inputs, config=config, stream_mode="messages"):
                 node_name = metadata.get("langgraph_node", "")
                 if node_name in ["chatbot_web", "chatbot_local"] and isinstance(msg, AIMessageChunk):
                     if msg.content:

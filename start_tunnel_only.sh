@@ -4,7 +4,7 @@
 LOG_DIR="./logs"
 PID_FILE="./pids.ngork"
 NGROK_BIN="./ngrok"  
-PORT=5173
+PORT=8000
 # 这里填入你刚才截图里获取的固定域名
 STATIC_DOMAIN="pulplike-partingly-emilee.ngrok-free.dev" 
 
