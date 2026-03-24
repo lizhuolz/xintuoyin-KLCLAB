@@ -26,6 +26,8 @@ from agent.tools.rag_tool import force_refresh_index
 from utils.security import check_input_safety, check_output_safety
 from services.kb_service import KBService
 SELECT_MODEL = os.environ.get("SELECT_MODEL", "gpt-4o")
+MAX_INPUT_TOKENS = int(os.environ.get("MAX_INPUT_TOKENS", 10000)) # 增加长度限定
+
 
 # -----------------------------
 # 1. 环境与配置加载
@@ -65,8 +67,6 @@ kb_service = KBService()
 # -----------------------------
 # 2. Token 计数与消息裁剪
 # -----------------------------
-MAX_INPUT_TOKENS = int(os.environ.get("MAX_INPUT_TOKENS", 10000)) # 增加长度限定
-
 
 def get_token_encoder():
     """

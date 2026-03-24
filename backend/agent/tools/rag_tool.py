@@ -13,15 +13,19 @@ from llama_index.core.vector_stores.types import MetadataFilters, ExactMatchFilt
 from llama_index.llms.openai import OpenAI
 from llama_index.embeddings.openai import OpenAIEmbedding
 
+
+SELECT_MODEL = os.environ["SELECT_MODEL"] 
+EMBEDDING_MODEL = os.environ["EMBEDDING_MODEL"] 
+
 # --- 配置 LlamaIndex ---
 Settings.llm = OpenAI(
-    model="gpt-4o",
+    model=SELECT_MODEL,
     api_key=os.environ.get("OPENAI_API_KEY"),
     api_base=os.environ.get("OPENAI_API_BASE"),
     temperature=0.1
 )
 Settings.embed_model = OpenAIEmbedding(
-    model="text-embedding-3-small",
+    model=EMBEDDING_MODEL,
     api_key=os.environ.get("OPENAI_API_KEY"),
     api_base=os.environ.get("OPENAI_API_BASE"),
 )
