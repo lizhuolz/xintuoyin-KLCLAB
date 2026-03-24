@@ -25,6 +25,7 @@ from agent.build_graph import graph_builder
 from agent.tools.rag_tool import force_refresh_index
 from utils.security import check_input_safety, check_output_safety
 from services.kb_service import KBService
+SELECT_MODEL = os.environ.get("SELECT_MODEL", "gpt-4o")
 
 # -----------------------------
 # 1. 环境与配置加载
@@ -196,7 +197,7 @@ async def extract_file_text(files: Optional[List[UploadFile]]) -> str:
 
         except Exception as e:
             print(f"[File parsing error] ({getattr(f, 'filename', 'unknown')}): {e}")
-
+    print("[DEBUG] file_context:", file_context)
     return file_context
 
 
@@ -272,7 +273,7 @@ async def chat_endpoint(
         HumanMessage(content=full_user_content),
     ]
 
-    # 裁剪到最大 4000 tokens
+    # 裁剪
     trimmed_messages = trim_input_messages(raw_messages, MAX_INPUT_TOKENS)
 
     try:
@@ -286,7 +287,7 @@ async def chat_endpoint(
     inputs = {
         "messages": trimmed_messages,
         "enable_web": web_search,
-        "select_model": "gpt-4o",
+        "select_model": SELECT_MODEL,
         "user_identity": user_identity,
     }
 
