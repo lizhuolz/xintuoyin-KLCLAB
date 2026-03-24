@@ -4,6 +4,8 @@ import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
 import vueDevTools from 'vite-plugin-vue-devtools'
 
+const backendPort = process.env.VITE_BACKEND_PORT || '8069'
+
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [
@@ -19,7 +21,7 @@ export default defineConfig({
     allowedHosts: true,
     proxy: {
       '/api': {
-        target: 'http://127.0.0.1:8000',
+        target: `http://127.0.0.1:${backendPort}`,
         changeOrigin: true
       }
     },

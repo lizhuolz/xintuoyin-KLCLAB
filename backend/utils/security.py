@@ -30,6 +30,28 @@ _INPUT_SCANNERS = [
     Gibberish(threshold=0.8), # 调开阈值，防止技术类乱码误判
 ]
 
+_HIGH_RISK_PROMPT_INJECTION_PATTERNS = [
+    "ignore previous instructions",
+    "ignore all previous instructions",
+    "system prompt",
+    "developer message",
+    "reveal the prompt",
+    "jailbreak",
+    "忽略之前的指令",
+    "忽略以上指令",
+    "忽略系统提示",
+    "系统提示词",
+    "开发者消息",
+    "越狱",
+    "绕过限制",
+]
+
+
+def _contains_high_risk_prompt_injection(text: str) -> bool:
+    lowered = (text or "").lower()
+    return any(pattern in lowered for pattern in _HIGH_RISK_PROMPT_INJECTION_PATTERNS)
+
+
 # 定义输出防御层 (Output Scanners)
 _OUTPUT_SCANNERS = [
     NoRefusal(),
@@ -44,15 +66,21 @@ def check_input_safety(text: str) -> Tuple[str, bool, str]:
     """
     try:
         sanitized_prompt, results_valid, results_score = scan_prompt(_INPUT_SCANNERS, text)
-        
-        if any(not is_valid for is_valid in results_valid.values()):
+
+        invalid_scanners = [name for name, is_valid in results_valid.items() if not is_valid]
+        if invalid_scanners:
+            # 仅 PromptInjection 命中且不包含明显越权/绕过意图时，按误报放行。
+            if invalid_scanners == ["PromptInjection"] and not _contains_high_risk_prompt_injection(text):
+                score = results_score.get("PromptInjection", 0)
+                print(f"[Security] PromptInjection false positive ignored (score={score}): {text[:120]}")
+                return sanitized_prompt, True, ""
+
             errors = []
-            for scanner_name, is_valid in results_valid.items():
-                if not is_valid:
-                    score = results_score.get(scanner_name, 0)
-                    errors.append(f"{scanner_name} (score: {score})")
+            for scanner_name in invalid_scanners:
+                score = results_score.get(scanner_name, 0)
+                errors.append(f"{scanner_name} (score: {score})")
             return text, False, f"输入包含违规内容，已被防火墙拦截: {', '.join(errors)}"
-        
+
         return sanitized_prompt, True, ""
     except Exception as e:
         print(f"Safety check error (Input): {e}")

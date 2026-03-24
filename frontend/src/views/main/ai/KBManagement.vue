@@ -197,8 +197,8 @@ const fetchKBList = async () => {
   loading.value = true
   try {
     const res = await axios.get('/api/kb/list')
-    kbList.value = res.data
-    total.value = res.data.length
+    kbList.value = res.data.data || []
+    total.value = kbList.value.length
   } catch (err) {
     ElMessage.error('获取知识库列表失败')
   } finally {
@@ -251,7 +251,7 @@ const handleEdit = async (row) => {
 const fetchFiles = async () => {
   try {
     const res = await axios.get(`/api/kb/${editingId.value}/files`)
-    currentFiles.value = res.data
+    currentFiles.value = res.data.data || []
   } catch (e) {
     currentFiles.value = []
   }

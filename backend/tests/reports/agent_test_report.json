@@ -1,0 +1,318 @@
+{
+  "generated_at": "2026-03-24 17:54:27",
+  "base_url": "http://127.0.0.1:8069",
+  "probe": {
+    "url": "http://127.0.0.1:8069/api/kb/list",
+    "status_code": 200,
+    "ok": true,
+    "body_preview": "{\"success\":true,\"code\":\"SUCCESS\",\"message\":\"知识库列表获取成功\",\"data\":[{\"id\":\"d17a1cb0\",\"name\":\"测试1\",\"model\":\"openai\",\"category\":\"org\",\"physical_path\":\"org/测试1\",\"remark\":\"\",\"users\":[\"人事部全员\",\"张三\",\"李四\",\"王五\",\"A1员工\",\"B1员工\"],\"enabled\":true,\"updatedAt\":\"2026/02/10 14:53:47\",\"fileCount\":2}],\"request_id\":\"b55af4fc094f41b9a7a7fcbdf87281b6\"}",
+    "mode": "http"
+  },
+  "requirements": [
+    {
+      "id": "REQ-THINKING",
+      "source_rows": "43-53",
+      "module": "企业端-思考过程",
+      "name": "思考过程展示与开关",
+      "backend_scope": "Agent 在推理时输出思考过程，并支持开关。",
+      "status": "not_testable_via_current_api",
+      "reason": "/api/chat 当前仅返回 text/plain 最终回答，不返回独立思考过程流或开关状态。"
+    },
+    {
+      "id": "REQ-WEB",
+      "source_rows": "54-61",
+      "module": "企业端-联网功能",
+      "name": "联网实时检索",
+      "backend_scope": "根据 web_search 开关进行实时信息检索。",
+      "status": "partially_testable",
+      "reason": "当前 /api/chat 仅暴露 web_search 布尔开关，不返回检索来源或执行细节，结果受外部网络与模型行为影响。"
+    },
+    {
+      "id": "REQ-SOURCE",
+      "source_rows": "62-72",
+      "module": "参考来源",
+      "name": "参考来源展示与合规过滤",
+      "backend_scope": "回答带来源标注、来源卡片与合规过滤。",
+      "status": "not_testable_via_current_api",
+      "reason": "/api/chat 当前不返回引用来源结构化字段，也不返回来源卡片元数据。"
+    },
+    {
+      "id": "REQ-DB",
+      "source_rows": "73-83",
+      "module": "链接数据库",
+      "name": "自然语言转 SQL 与数据库查询",
+      "backend_scope": "按选定数据库执行查询并返回结果。",
+      "status": "partially_testable",
+      "reason": "当前公开接口仅暴露 db_version 提示词注入能力，未暴露 SQL、权限判断、结果集或数据库选择列表。"
+    },
+    {
+      "id": "REQ-FILE",
+      "source_rows": "86-100",
+      "module": "上传文件--解析文件",
+      "name": "文件解析、结构提取与基于附件问答",
+      "backend_scope": "解析上传文件并将内容注入对话上下文。",
+      "status": "live_testable",
+      "reason": "当前 /api/chat 支持 files 上传，并在后端解析 txt/pdf/docx/xlsx/xls。"
+    },
+    {
+      "id": "REQ-KB",
+      "source_rows": "195-213",
+      "module": "企业端-动态知识库",
+      "name": "动态知识库问答",
+      "backend_scope": "上传知识库文件后，按分类进行检索问答。",
+      "status": "live_testable",
+      "reason": "当前后端提供 KB 创建、上传、删除与 /api/chat 的 kb_category 检索入口。"
+    },
+    {
+      "id": "REQ-HISTORY",
+      "source_rows": "221-230",
+      "module": "企业端-历史对话",
+      "name": "历史对话落盘、删除与新会话隔离",
+      "backend_scope": "对话持久化、删除以及不同会话的上下文隔离。",
+      "status": "partially_testable",
+      "reason": "当前后端支持落盘与删除，但未提供列表、搜索、批量删除等公开 API。"
+    }
+  ],
+  "manual_or_untestable": [
+    {
+      "requirement_id": "REQ-THINKING",
+      "name": "思考过程展示/关闭",
+      "reason": "当前 API 不返回思考过程流，无法通过 /api/chat 自动核对。",
+      "suggestion": "如需测试，需后端新增结构化字段或单独流通道。"
+    },
+    {
+      "requirement_id": "REQ-WEB",
+      "name": "联网实时数据与时效性",
+      "reason": "结果依赖外部网络与模型调用，且当前接口不返回来源元数据，自动断言稳定性差。",
+      "suggestion": "建议增加引用来源、抓取时间戳与是否走联网链路的结构化字段。"
+    },
+    {
+      "requirement_id": "REQ-SOURCE",
+      "name": "参考来源弹窗/来源卡片/合规过滤",
+      "reason": "当前 API 不返回来源列表、来源标题、副标题、过滤原因。",
+      "suggestion": "建议新增 sources 字段与过滤日志。"
+    },
+    {
+      "requirement_id": "REQ-DB",
+      "name": "NL2SQL、权限判断、无数据和断链处理",
+      "reason": "公开接口未返回 SQL、结果集、错误码或数据库元信息，无法对需求逐项自动核验。",
+      "suggestion": "建议提供数据库查询专用接口或调试字段。"
+    }
+  ],
+  "case_results": [
+    {
+      "case_id": "CASE-FILE-TXT",
+      "requirement_id": "REQ-FILE",
+      "name": "TXT 附件解析与引用",
+      "notes": "验证 txt 文件内容是否被注入问答上下文。",
+      "prompt": "我上传了一个文件。请告诉我里面的项目代号和上线日期。",
+      "expected_all": [
+        "北极星",
+        "2026年4月15日"
+      ],
+      "expected_any": [],
+      "status": "passed",
+      "conversation_id": "agent_case_case-file-txt_b8cb23e0",
+      "response_status": 200,
+      "response_headers": {
+        "content-type": "text/plain; charset=utf-8",
+        "x-request-id": "ce7a25fb8d744e698b3ed08a4dbb1061"
+      },
+      "response_text": "根据您提供的文件内容：\n\n- 项目代号是：北极星\n- 上线日期是：2026年4月15日",
+      "checks": [
+        {
+          "type": "expected_all",
+          "keyword": "北极星",
+          "passed": true
+        },
+        {
+          "type": "expected_all",
+          "keyword": "2026年4月15日",
+          "passed": true
+        }
+      ]
+    },
+    {
+      "case_id": "CASE-FILE-MULTI",
+      "requirement_id": "REQ-FILE",
+      "name": "多文件联合解析",
+      "notes": "验证多个附件是否被同时拼接进上下文。",
+      "prompt": "请根据我上传的两个文件，分别告诉我研发负责人和测试负责人是谁。",
+      "expected_all": [
+        "张敏",
+        "李卓"
+      ],
+      "expected_any": [],
+      "status": "passed",
+      "conversation_id": "agent_case_case-file-multi_34bd9302",
+      "response_status": 200,
+      "response_headers": {
+        "content-type": "text/plain; charset=utf-8",
+        "x-request-id": "a6130a047ecb4d008910907fad955d3c"
+      },
+      "response_text": "根据您提供的文件内容：\n\n- 研发负责人是张敏。\n- 测试负责人是李卓。",
+      "checks": [
+        {
+          "type": "expected_all",
+          "keyword": "张敏",
+          "passed": true
+        },
+        {
+          "type": "expected_all",
+          "keyword": "李卓",
+          "passed": true
+        }
+      ]
+    },
+    {
+      "case_id": "CASE-FILE-XLSX",
+      "requirement_id": "REQ-FILE",
+      "name": "Excel 解析能力",
+      "notes": "按需求 Excel 应可解析工作表信息；当前环境缺少 openpyxl，预计可能失败。",
+      "prompt": "我上传了一个Excel文件。请告诉我它包含哪些工作表名称。",
+      "expected_all": [
+        "Sheet1",
+        "Sheet3"
+      ],
+      "expected_any": [],
+      "status": "failed",
+      "conversation_id": "agent_case_case-file-xlsx_455e3cc6",
+      "response_status": 200,
+      "response_headers": {
+        "content-type": "text/plain; charset=utf-8",
+        "x-request-id": "dc4e8287293843959b636f9370148e24"
+      },
+      "response_text": "请提供该Excel文件，我将帮助你查看其中包含的工作表名称。",
+      "checks": [
+        {
+          "type": "expected_all",
+          "keyword": "Sheet1",
+          "passed": false
+        },
+        {
+          "type": "expected_all",
+          "keyword": "Sheet3",
+          "passed": false
+        }
+      ],
+      "failure_reason": "content check failed"
+    },
+    {
+      "case_id": "CASE-KB-BASIC",
+      "requirement_id": "REQ-KB",
+      "name": "动态知识库问答",
+      "notes": "验证 KB 创建、文件上传、索引刷新后，聊天接口是否能基于 kb_category 检索。",
+      "prompt": "知识库里提到的报销审批时限是多久？",
+      "expected_all": [],
+      "expected_any": [
+        "3个工作日"
+      ],
+      "status": "failed",
+      "kb_setup": {
+        "id": "cad1a1d2",
+        "name": "agent_kb_28674aaf",
+        "category": "agent_test_category_28674aaf"
+      },
+      "conversation_id": "agent_case_case-kb-basic_a3ea62b8",
+      "response_status": 200,
+      "response_headers": {
+        "content-type": "text/plain; charset=utf-8",
+        "x-request-id": "799f0e1164b34ebe83c6d35e3ca80d45"
+      },
+      "response_text": "知识库检索工具出现异常，无法获取相关信息。请稍后再试或联系技术支持以解决此问题。",
+      "checks": [
+        {
+          "type": "expected_any",
+          "keywords": [
+            "3个工作日"
+          ],
+          "passed": false
+        }
+      ],
+      "failure_reason": "content check failed"
+    },
+    {
+      "case_id": "CASE-HISTORY-PERSIST",
+      "requirement_id": "REQ-HISTORY",
+      "name": "历史对话落盘",
+      "notes": "验证对话完成后 backend/history_storage 下是否生成对应会话文件。",
+      "prompt": "请回复一句：历史记录测试成功。",
+      "expected_all": [],
+      "expected_any": [
+        "历史记录测试成功"
+      ],
+      "status": "passed",
+      "conversation_id": "agent_case_case-history-persist_73f8666a",
+      "response_status": 200,
+      "response_headers": {
+        "content-type": "text/plain; charset=utf-8",
+        "x-request-id": "5c31bd85d1a3451c8fa4411eb4c24e64"
+      },
+      "response_text": "历史记录测试成功。",
+      "checks": [
+        {
+          "type": "expected_any",
+          "keywords": [
+            "历史记录测试成功"
+          ],
+          "passed": true
+        },
+        {
+          "type": "history_file_created",
+          "passed": true
+        }
+      ],
+      "history_file": {
+        "path": "/home/lyq/xintuoyin-KLCLAB/backend/history_storage/agent_case_case-history-persist_73f8666a.json",
+        "exists": true,
+        "content_preview": "[\n  {\n    \"role\": \"user\",\n    \"content\": \"请回复一句：历史记录测试成功。\"\n  },\n  {\n    \"role\": \"assistant\",\n    \"content\": \"历史记录测试成功。\"\n  }\n]"
+      }
+    },
+    {
+      "case_id": "CASE-HISTORY-ISOLATION",
+      "requirement_id": "REQ-HISTORY",
+      "name": "新会话不继承旧上下文",
+      "notes": "先在旧会话写入暗号，再用新会话提问，验证不会继承旧会话上下文。",
+      "prompt": "上一轮会话里我说过什么暗号？如果你不知道，请直接说不知道。",
+      "expected_all": [],
+      "expected_any": [
+        "不知道",
+        "无法确定",
+        "不清楚"
+      ],
+      "status": "passed",
+      "history_seed": {
+        "conversation_id": "agent_old_2e0c5f41",
+        "response": "记住了。"
+      },
+      "conversation_id": "agent_case_case-history-isolation_0c849e19",
+      "response_status": 200,
+      "response_headers": {
+        "content-type": "text/plain; charset=utf-8",
+        "x-request-id": "01f98d07399244d79d1d78c4162b6188"
+      },
+      "response_text": "不知道。",
+      "checks": [
+        {
+          "type": "expected_any",
+          "keywords": [
+            "不知道",
+            "无法确定",
+            "不清楚"
+          ],
+          "passed": true
+        },
+        {
+          "type": "history_isolation",
+          "passed": true
+        }
+      ]
+    }
+  ],
+  "summary": {
+    "total": 6,
+    "passed": 4,
+    "failed": 2,
+    "errors": 0
+  }
+}

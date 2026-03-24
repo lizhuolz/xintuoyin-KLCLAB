@@ -1,0 +1,229 @@
+{
+  "startup": {
+    "command": "bash conda_restart_services.sh",
+    "returncode": 0,
+    "stdout": "🔄 正在重启业务服务 (Backend + Frontend)...\n🛑 (隧道 Tunnel 将保持运行)\n   停止旧后端 (PID: 3918896)...\n   停止旧前端 (PID: 3919014)...\n✅ 已激活 Conda 环境: xtyAgent\n🚀 [1/2] 启动后端...\n   ⚠️  gunicorn 未安装，回退为 uvicorn (端口: 8069)\n✅ 后端 PID: 3920207\n🚀 [2/2] 启动前端...\n✅ 前端 PID: 3920287\n⚠️  警告: 未检测到隧道进程记录。请运行 ./start_tunnel_only.sh 启动穿透。\n🎉 服务重启完成！\n📊 后端地址: http://127.0.0.1:8069\n📊 查看后端日志: tail -f logs/backend.log\n",
+    "stderr": "",
+    "backend_log_tail": "",
+    "probes": [
+      {
+        "path": "/api/kb/list",
+        "status_code": 200,
+        "body_preview": "[{\"id\":\"ca2a9642\",\"name\":\"测试\",\"model\":\"openai\",\"category\":\"企业知识库\",\"owner_info\":\"图湃（北京）医疗科技/技术部\",\"physical_path\":\"企业知识库/图湃（北京）医疗科技/测试\",\"remark\":\"\",\"users\":[\"王颖奇\"],\"enabled\":false,\"updatedAt\":\"2026/03/11 18:08:15\",\"fileCount\":0},{\"id\":\"6e73d834\",\"name\":\"aa\",\"model\":\"openai\",\"category\":\"企业知识库\",\"owner_i"
+      },
+      {
+        "path": "/api/test/file_tree",
+        "status_code": 404,
+        "body_preview": "{\"detail\":\"Not Found\"}"
+      }
+    ]
+  },
+  "tests": {
+    "duration_seconds": 15.761,
+    "tests_run": 39,
+    "passed": 38,
+    "failed": 0,
+    "errors": 1,
+    "skipped": 0,
+    "successful": false,
+    "runner_output": "test_chat_file_parse_error_is_ignored (test_api.APITestCase) ... ok\ntest_chat_includes_db_version_and_kb_category (test_api.APITestCase) ... ok\ntest_chat_input_blocked (test_api.APITestCase) ... ok\ntest_chat_invalid_conversation_id (test_api.APITestCase) ... ok\ntest_chat_large_file_keeps_tail_context (test_api.APITestCase) ... ok\ntest_chat_requires_non_empty_message (test_api.APITestCase) ... ok\ntest_chat_stream_failure_returns_request_id (test_api.APITestCase) ... ok\ntest_chat_success_stream (test_api.APITestCase) ... ok\ntest_chat_uses_default_optional_values (test_api.APITestCase) ... ok\ntest_create_kb_requires_name_and_category (test_api.APITestCase) ... ok\ntest_create_kb_success (test_api.APITestCase) ... ok\ntest_delete_conversation_invalid_identifier (test_api.APITestCase) ... ok\ntest_delete_conversation_not_found (test_api.APITestCase) ... ok\ntest_delete_conversation_remove_failure (test_api.APITestCase) ... ok\ntest_delete_conversation_success (test_api.APITestCase) ... ok\ntest_delete_kb_file_internal_failure (test_api.APITestCase) ... ok\ntest_delete_kb_file_not_found (test_api.APITestCase) ... ok\ntest_delete_kb_file_refresh_failure_is_reported (test_api.APITestCase) ... ok\ntest_delete_kb_file_requires_filename (test_api.APITestCase) ... ok\ntest_delete_kb_file_success (test_api.APITestCase) ... ok\ntest_delete_kb_not_found (test_api.APITestCase) ... ok\ntest_delete_kb_refresh_failure_is_reported (test_api.APITestCase) ... ok\ntest_delete_kb_success (test_api.APITestCase) ... ok\ntest_file_tree_missing_documents_dir (test_api.APITestCase) ... ok\ntest_file_tree_success (test_api.APITestCase) ... ok\ntest_get_kb_files_invalid_identifier (test_api.APITestCase) ... ok\ntest_get_kb_files_success (test_api.APITestCase) ... ok\ntest_kb_list_success (test_api.APITestCase) ... ok\ntest_update_kb_invalid_identifier (test_api.APITestCase) ... ok\ntest_update_kb_invalid_users (test_api.APITestCase) ... ok\ntest_update_kb_not_found (test_api.APITestCase) ... ok\ntest_update_kb_rejects_empty_payload (test_api.APITestCase) ... ok\ntest_update_kb_success (test_api.APITestCase) ... ok\ntest_update_kb_users_must_be_array (test_api.APITestCase) ... ok\ntest_upload_kb_file_empty_filename (test_api.APITestCase) ... ERROR\ntest_upload_kb_file_internal_failure (test_api.APITestCase) ... ok\ntest_upload_kb_file_missing_kb (test_api.APITestCase) ... ok\ntest_upload_kb_file_refresh_failure_is_reported (test_api.APITestCase) ... ok\ntest_upload_kb_file_success (test_api.APITestCase) ... ok\n\n======================================================================\nERROR: test_upload_kb_file_empty_filename (test_api.APITestCase)\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"/home/lyq/anaconda3/envs/xtyAgent/lib/python3.10/site-packages/starlette/_exception_handler.py\", line 42, in wrapped_app\n    await app(scope, receive, sender)\n  File \"/home/lyq/anaconda3/envs/xtyAgent/lib/python3.10/site-packages/fastapi/routing.py\", line 106, in app\n    response = await f(request)\n  File \"/home/lyq/anaconda3/envs/xtyAgent/lib/python3.10/site-packages/fastapi/routing.py\", line 472, in app\n    raise validation_error\nfastapi.exceptions.RequestValidationError: 1 validation error:\n  {'type': 'value_error', 'loc': ('body', 'file'), 'msg': \"Value error, Expected UploadFile, received: <class 'str'>\", 'input': 'upload-body', 'ctx': {'error': ValueError(\"Expected UploadFile, received: <class 'str'>\")}}\n\n  File \"/home/lyq/xintuoyin-KLCLAB/backend/app.py\", line 646, in upload_kb_file\n    POST /api/kb/{id}/upload\n\nThe above exception was the direct cause of the following exception:\n\nTraceback (most recent call last):\n  File \"/home/lyq/xintuoyin-KLCLAB/backend/tests/test_api.py\", line 560, in test_upload_kb_file_empty_filename\n    response = self.client.post(\n  File \"/home/lyq/anaconda3/envs/xtyAgent/lib/python3.10/site-packages/starlette/testclient.py\", line 546, in post\n    return super().post(\n  File \"/home/lyq/anaconda3/envs/xtyAgent/lib/python3.10/site-packages/httpx/_client.py\", line 1144, in post\n    return self.request(\n  File \"/home/lyq/anaconda3/envs/xtyAgent/lib/python3.10/site-packages/starlette/testclient.py\", line 445, in request\n    return super().request(\n  File \"/home/lyq/anaconda3/envs/xtyAgent/lib/python3.10/site-packages/httpx/_client.py\", line 825, in request\n    return self.send(request, auth=auth, follow_redirects=follow_redirects)\n  File \"/home/lyq/anaconda3/envs/xtyAgent/lib/python3.10/site-packages/httpx/_client.py\", line 914, in send\n    response = self._send_handling_auth(\n  File \"/home/lyq/anaconda3/envs/xtyAgent/lib/python3.10/site-packages/httpx/_client.py\", line 942, in _send_handling_auth\n    response = self._send_handling_redirects(\n  File \"/home/lyq/anaconda3/envs/xtyAgent/lib/python3.10/site-packages/httpx/_client.py\", line 979, in _send_handling_redirects\n    response = self._send_single_request(request)\n  File \"/home/lyq/anaconda3/envs/xtyAgent/lib/python3.10/site-packages/httpx/_client.py\", line 1014, in _send_single_request\n    response = transport.handle_request(request)\n  File \"/home/lyq/anaconda3/envs/xtyAgent/lib/python3.10/site-packages/starlette/testclient.py\", line 348, in handle_request\n    raise exc\n  File \"/home/lyq/anaconda3/envs/xtyAgent/lib/python3.10/site-packages/starlette/testclient.py\", line 345, in handle_request\n    portal.call(self.app, scope, receive, send)\n  File \"/home/lyq/anaconda3/envs/xtyAgent/lib/python3.10/site-packages/anyio/from_thread.py\", line 326, in call\n    return cast(T_Retval, self.start_task_soon(func, *args).result())\n  File \"/home/lyq/anaconda3/envs/xtyAgent/lib/python3.10/concurrent/futures/_base.py\", line 458, in result\n    return self.__get_result()\n  File \"/home/lyq/anaconda3/envs/xtyAgent/lib/python3.10/concurrent/futures/_base.py\", line 403, in __get_result\n    raise self._exception\n  File \"/home/lyq/anaconda3/envs/xtyAgent/lib/python3.10/site-packages/anyio/from_thread.py\", line 257, in _call_func\n    retval = await retval_or_awaitable\n  File \"/home/lyq/anaconda3/envs/xtyAgent/lib/python3.10/site-packages/fastapi/applications.py\", line 1139, in __call__\n    await super().__call__(scope, receive, send)\n  File \"/home/lyq/anaconda3/envs/xtyAgent/lib/python3.10/site-packages/starlette/applications.py\", line 107, in __call__\n    await self.middleware_stack(scope, receive, send)\n  File \"/home/lyq/anaconda3/envs/xtyAgent/lib/python3.10/site-packages/starlette/middleware/errors.py\", line 186, in __call__\n    raise exc\n  File \"/home/lyq/anaconda3/envs/xtyAgent/lib/python3.10/site-packages/starlette/middleware/errors.py\", line 164, in __call__\n    await self.app(scope, receive, _send)\n  File \"/home/lyq/anaconda3/envs/xtyAgent/lib/python3.10/site-packages/starlette/middleware/base.py\", line 191, in __call__\n    with recv_stream, send_stream, collapse_excgroups():\n  File \"/home/lyq/anaconda3/envs/xtyAgent/lib/python3.10/contextlib.py\", line 153, in __exit__\n    self.gen.throw(typ, value, traceback)\n  File \"/home/lyq/anaconda3/envs/xtyAgent/lib/python3.10/site-packages/starlette/_utils.py\", line 85, in collapse_excgroups\n    raise exc\n  File \"/home/lyq/anaconda3/envs/xtyAgent/lib/python3.10/site-packages/starlette/middleware/base.py\", line 193, in __call__\n    response = await self.dispatch_func(request, call_next)\n  File \"/home/lyq/xintuoyin-KLCLAB/backend/app.py\", line 203, in inject_request_id\n    response = await call_next(request)\n  File \"/home/lyq/anaconda3/envs/xtyAgent/lib/python3.10/site-packages/starlette/middleware/base.py\", line 168, in call_next\n    raise app_exc from app_exc.__cause__ or app_exc.__context__\n  File \"/home/lyq/anaconda3/envs/xtyAgent/lib/python3.10/site-packages/starlette/middleware/base.py\", line 144, in coro\n    await self.app(scope, receive_or_disconnect, send_no_error)\n  File \"/home/lyq/anaconda3/envs/xtyAgent/lib/python3.10/site-packages/starlette/middleware/cors.py\", line 85, in __call__\n    await self.app(scope, receive, send)\n  File \"/home/lyq/anaconda3/envs/xtyAgent/lib/python3.10/site-packages/starlette/middleware/exceptions.py\", line 63, in __call__\n    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)\n  File \"/home/lyq/anaconda3/envs/xtyAgent/lib/python3.10/site-packages/starlette/_exception_handler.py\", line 53, in wrapped_app\n    raise exc\n  File \"/home/lyq/anaconda3/envs/xtyAgent/lib/python3.10/site-packages/starlette/_exception_handler.py\", line 42, in wrapped_app\n    await app(scope, receive, sender)\n  File \"/home/lyq/anaconda3/envs/xtyAgent/lib/python3.10/site-packages/fastapi/middleware/asyncexitstack.py\", line 18, in __call__\n    await self.app(scope, receive, send)\n  File \"/home/lyq/anaconda3/envs/xtyAgent/lib/python3.10/site-packages/starlette/routing.py\", line 716, in __call__\n    await self.middleware_stack(scope, receive, send)\n  File \"/home/lyq/anaconda3/envs/xtyAgent/lib/python3.10/site-packages/starlette/routing.py\", line 736, in app\n    await route.handle(scope, receive, send)\n  File \"/home/lyq/anaconda3/envs/xtyAgent/lib/python3.10/site-packages/starlette/routing.py\", line 290, in handle\n    await self.app(scope, receive, send)\n  File \"/home/lyq/anaconda3/envs/xtyAgent/lib/python3.10/site-packages/fastapi/routing.py\", line 120, in app\n    await wrap_app_handling_exceptions(app, request)(scope, receive, send)\n  File \"/home/lyq/anaconda3/envs/xtyAgent/lib/python3.10/site-packages/starlette/_exception_handler.py\", line 59, in wrapped_app\n    response = await handler(conn, exc)\n  File \"/home/lyq/xintuoyin-KLCLAB/backend/app.py\", line 221, in handle_validation_error\n    return error_response(\n  File \"/home/lyq/xintuoyin-KLCLAB/backend/app.py\", line 136, in error_response\n    return JSONResponse(\n  File \"/home/lyq/anaconda3/envs/xtyAgent/lib/python3.10/site-packages/starlette/responses.py\", line 189, in __init__\n    super().__init__(content, status_code, headers, media_type, background)\n  File \"/home/lyq/anaconda3/envs/xtyAgent/lib/python3.10/site-packages/starlette/responses.py\", line 46, in __init__\n    self.body = self.render(content)\n  File \"/home/lyq/anaconda3/envs/xtyAgent/lib/python3.10/site-packages/starlette/responses.py\", line 192, in render\n    return json.dumps(\n  File \"/home/lyq/anaconda3/envs/xtyAgent/lib/python3.10/json/__init__.py\", line 238, in dumps\n    **kw).encode(obj)\n  File \"/home/lyq/anaconda3/envs/xtyAgent/lib/python3.10/json/encoder.py\", line 199, in encode\n    chunks = self.iterencode(o, _one_shot=True)\n  File \"/home/lyq/anaconda3/envs/xtyAgent/lib/python3.10/json/encoder.py\", line 257, in iterencode\n    return _iterencode(o, 0)\n  File \"/home/lyq/anaconda3/envs/xtyAgent/lib/python3.10/json/encoder.py\", line 179, in default\n    raise TypeError(f'Object of type {o.__class__.__name__} '\nTypeError: Object of type ValueError is not JSON serializable\n\n----------------------------------------------------------------------\nRan 39 tests in 15.761s\n\nFAILED (errors=1)\n",
+    "cases": [
+      {
+        "name": "test_api.APITestCase.test_chat_file_parse_error_is_ignored",
+        "outcome": "passed",
+        "detail": ""
+      },
+      {
+        "name": "test_api.APITestCase.test_chat_includes_db_version_and_kb_category",
+        "outcome": "passed",
+        "detail": ""
+      },
+      {
+        "name": "test_api.APITestCase.test_chat_input_blocked",
+        "outcome": "passed",
+        "detail": ""
+      },
+      {
+        "name": "test_api.APITestCase.test_chat_invalid_conversation_id",
+        "outcome": "passed",
+        "detail": ""
+      },
+      {
+        "name": "test_api.APITestCase.test_chat_large_file_keeps_tail_context",
+        "outcome": "passed",
+        "detail": ""
+      },
+      {
+        "name": "test_api.APITestCase.test_chat_requires_non_empty_message",
+        "outcome": "passed",
+        "detail": ""
+      },
+      {
+        "name": "test_api.APITestCase.test_chat_stream_failure_returns_request_id",
+        "outcome": "passed",
+        "detail": ""
+      },
+      {
+        "name": "test_api.APITestCase.test_chat_success_stream",
+        "outcome": "passed",
+        "detail": ""
+      },
+      {
+        "name": "test_api.APITestCase.test_chat_uses_default_optional_values",
+        "outcome": "passed",
+        "detail": ""
+      },
+      {
+        "name": "test_api.APITestCase.test_create_kb_requires_name_and_category",
+        "outcome": "passed",
+        "detail": ""
+      },
+      {
+        "name": "test_api.APITestCase.test_create_kb_success",
+        "outcome": "passed",
+        "detail": ""
+      },
+      {
+        "name": "test_api.APITestCase.test_delete_conversation_invalid_identifier",
+        "outcome": "passed",
+        "detail": ""
+      },
+      {
+        "name": "test_api.APITestCase.test_delete_conversation_not_found",
+        "outcome": "passed",
+        "detail": ""
+      },
+      {
+        "name": "test_api.APITestCase.test_delete_conversation_remove_failure",
+        "outcome": "passed",
+        "detail": ""
+      },
+      {
+        "name": "test_api.APITestCase.test_delete_conversation_success",
+        "outcome": "passed",
+        "detail": ""
+      },
+      {
+        "name": "test_api.APITestCase.test_delete_kb_file_internal_failure",
+        "outcome": "passed",
+        "detail": ""
+      },
+      {
+        "name": "test_api.APITestCase.test_delete_kb_file_not_found",
+        "outcome": "passed",
+        "detail": ""
+      },
+      {
+        "name": "test_api.APITestCase.test_delete_kb_file_refresh_failure_is_reported",
+        "outcome": "passed",
+        "detail": ""
+      },
+      {
+        "name": "test_api.APITestCase.test_delete_kb_file_requires_filename",
+        "outcome": "passed",
+        "detail": ""
+      },
+      {
+        "name": "test_api.APITestCase.test_delete_kb_file_success",
+        "outcome": "passed",
+        "detail": ""
+      },
+      {
+        "name": "test_api.APITestCase.test_delete_kb_not_found",
+        "outcome": "passed",
+        "detail": ""
+      },
+      {
+        "name": "test_api.APITestCase.test_delete_kb_refresh_failure_is_reported",
+        "outcome": "passed",
+        "detail": ""
+      },
+      {
+        "name": "test_api.APITestCase.test_delete_kb_success",
+        "outcome": "passed",
+        "detail": ""
+      },
+      {
+        "name": "test_api.APITestCase.test_file_tree_missing_documents_dir",
+        "outcome": "passed",
+        "detail": ""
+      },
+      {
+        "name": "test_api.APITestCase.test_file_tree_success",
+        "outcome": "passed",
+        "detail": ""
+      },
+      {
+        "name": "test_api.APITestCase.test_get_kb_files_invalid_identifier",
+        "outcome": "passed",
+        "detail": ""
+      },
+      {
+        "name": "test_api.APITestCase.test_get_kb_files_success",
+        "outcome": "passed",
+        "detail": ""
+      },
+      {
+        "name": "test_api.APITestCase.test_kb_list_success",
+        "outcome": "passed",
+        "detail": ""
+      },
+      {
+        "name": "test_api.APITestCase.test_update_kb_invalid_identifier",
+        "outcome": "passed",
+        "detail": ""
+      },
+      {
+        "name": "test_api.APITestCase.test_update_kb_invalid_users",
+        "outcome": "passed",
+        "detail": ""
+      },
+      {
+        "name": "test_api.APITestCase.test_update_kb_not_found",
+        "outcome": "passed",
+        "detail": ""
+      },
+      {
+        "name": "test_api.APITestCase.test_update_kb_rejects_empty_payload",
+        "outcome": "passed",
+        "detail": ""
+      },
+      {
+        "name": "test_api.APITestCase.test_update_kb_success",
+        "outcome": "passed",
+        "detail": ""
+      },
+      {
+        "name": "test_api.APITestCase.test_update_kb_users_must_be_array",
+        "outcome": "passed",
+        "detail": ""
+      },
+      {
+        "name": "test_api.APITestCase.test_upload_kb_file_empty_filename",
+        "outcome": "error",
+        "detail": "Traceback (most recent call last):\n  File \"/home/lyq/anaconda3/envs/xtyAgent/lib/python3.10/site-packages/starlette/_exception_handler.py\", line 42, in wrapped_app\n    await app(scope, receive, sender)\n  File \"/home/lyq/anaconda3/envs/xtyAgent/lib/python3.10/site-packages/fastapi/routing.py\", line 106, in app\n    response = await f(request)\n  File \"/home/lyq/anaconda3/envs/xtyAgent/lib/python3.10/site-packages/fastapi/routing.py\", line 472, in app\n    raise validation_error\nfastapi.exceptions.RequestValidationError: 1 validation error:\n  {'type': 'value_error', 'loc': ('body', 'file'), 'msg': \"Value error, Expected UploadFile, received: <class 'str'>\", 'input': 'upload-body', 'ctx': {'error': ValueError(\"Expected UploadFile, received: <class 'str'>\")}}\n\n  File \"/home/lyq/xintuoyin-KLCLAB/backend/app.py\", line 646, in upload_kb_file\n    POST /api/kb/{id}/upload\n\nThe above exception was the direct cause of the following exception:\n\nTraceback (most recent call last):\n  File \"/home/lyq/xintuoyin-KLCLAB/backend/tests/test_api.py\", line 560, in test_upload_kb_file_empty_filename\n    response = self.client.post(\n  File \"/home/lyq/anaconda3/envs/xtyAgent/lib/python3.10/site-packages/starlette/testclient.py\", line 546, in post\n    return super().post(\n  File \"/home/lyq/anaconda3/envs/xtyAgent/lib/python3.10/site-packages/httpx/_client.py\", line 1144, in post\n    return self.request(\n  File \"/home/lyq/anaconda3/envs/xtyAgent/lib/python3.10/site-packages/starlette/testclient.py\", line 445, in request\n    return super().request(\n  File \"/home/lyq/anaconda3/envs/xtyAgent/lib/python3.10/site-packages/httpx/_client.py\", line 825, in request\n    return self.send(request, auth=auth, follow_redirects=follow_redirects)\n  File \"/home/lyq/anaconda3/envs/xtyAgent/lib/python3.10/site-packages/httpx/_client.py\", line 914, in send\n    response = self._send_handling_auth(\n  File \"/home/lyq/anaconda3/envs/xtyAgent/lib/python3.10/site-packages/httpx/_client.py\", line 942, in _send_handling_auth\n    response = self._send_handling_redirects(\n  File \"/home/lyq/anaconda3/envs/xtyAgent/lib/python3.10/site-packages/httpx/_client.py\", line 979, in _send_handling_redirects\n    response = self._send_single_request(request)\n  File \"/home/lyq/anaconda3/envs/xtyAgent/lib/python3.10/site-packages/httpx/_client.py\", line 1014, in _send_single_request\n    response = transport.handle_request(request)\n  File \"/home/lyq/anaconda3/envs/xtyAgent/lib/python3.10/site-packages/starlette/testclient.py\", line 348, in handle_request\n    raise exc\n  File \"/home/lyq/anaconda3/envs/xtyAgent/lib/python3.10/site-packages/starlette/testclient.py\", line 345, in handle_request\n    portal.call(self.app, scope, receive, send)\n  File \"/home/lyq/anaconda3/envs/xtyAgent/lib/python3.10/site-packages/anyio/from_thread.py\", line 326, in call\n    return cast(T_Retval, self.start_task_soon(func, *args).result())\n  File \"/home/lyq/anaconda3/envs/xtyAgent/lib/python3.10/concurrent/futures/_base.py\", line 458, in result\n    return self.__get_result()\n  File \"/home/lyq/anaconda3/envs/xtyAgent/lib/python3.10/concurrent/futures/_base.py\", line 403, in __get_result\n    raise self._exception\n  File \"/home/lyq/anaconda3/envs/xtyAgent/lib/python3.10/site-packages/anyio/from_thread.py\", line 257, in _call_func\n    retval = await retval_or_awaitable\n  File \"/home/lyq/anaconda3/envs/xtyAgent/lib/python3.10/site-packages/fastapi/applications.py\", line 1139, in __call__\n    await super().__call__(scope, receive, send)\n  File \"/home/lyq/anaconda3/envs/xtyAgent/lib/python3.10/site-packages/starlette/applications.py\", line 107, in __call__\n    await self.middleware_stack(scope, receive, send)\n  File \"/home/lyq/anaconda3/envs/xtyAgent/lib/python3.10/site-packages/starlette/middleware/errors.py\", line 186, in __call__\n    raise exc\n  File \"/home/lyq/anaconda3/envs/xtyAgent/lib/python3.10/site-packages/starlette/middleware/errors.py\", line 164, in __call__\n    await self.app(scope, receive, _send)\n  File \"/home/lyq/anaconda3/envs/xtyAgent/lib/python3.10/site-packages/starlette/middleware/base.py\", line 191, in __call__\n    with recv_stream, send_stream, collapse_excgroups():\n  File \"/home/lyq/anaconda3/envs/xtyAgent/lib/python3.10/contextlib.py\", line 153, in __exit__\n    self.gen.throw(typ, value, traceback)\n  File \"/home/lyq/anaconda3/envs/xtyAgent/lib/python3.10/site-packages/starlette/_utils.py\", line 85, in collapse_excgroups\n    raise exc\n  File \"/home/lyq/anaconda3/envs/xtyAgent/lib/python3.10/site-packages/starlette/middleware/base.py\", line 193, in __call__\n    response = await self.dispatch_func(request, call_next)\n  File \"/home/lyq/xintuoyin-KLCLAB/backend/app.py\", line 203, in inject_request_id\n    response = await call_next(request)\n  File \"/home/lyq/anaconda3/envs/xtyAgent/lib/python3.10/site-packages/starlette/middleware/base.py\", line 168, in call_next\n    raise app_exc from app_exc.__cause__ or app_exc.__context__\n  File \"/home/lyq/anaconda3/envs/xtyAgent/lib/python3.10/site-packages/starlette/middleware/base.py\", line 144, in coro\n    await self.app(scope, receive_or_disconnect, send_no_error)\n  File \"/home/lyq/anaconda3/envs/xtyAgent/lib/python3.10/site-packages/starlette/middleware/cors.py\", line 85, in __call__\n    await self.app(scope, receive, send)\n  File \"/home/lyq/anaconda3/envs/xtyAgent/lib/python3.10/site-packages/starlette/middleware/exceptions.py\", line 63, in __call__\n    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)\n  File \"/home/lyq/anaconda3/envs/xtyAgent/lib/python3.10/site-packages/starlette/_exception_handler.py\", line 53, in wrapped_app\n    raise exc\n  File \"/home/lyq/anaconda3/envs/xtyAgent/lib/python3.10/site-packages/starlette/_exception_handler.py\", line 42, in wrapped_app\n    await app(scope, receive, sender)\n  File \"/home/lyq/anaconda3/envs/xtyAgent/lib/python3.10/site-packages/fastapi/middleware/asyncexitstack.py\", line 18, in __call__\n    await self.app(scope, receive, send)\n  File \"/home/lyq/anaconda3/envs/xtyAgent/lib/python3.10/site-packages/starlette/routing.py\", line 716, in __call__\n    await self.middleware_stack(scope, receive, send)\n  File \"/home/lyq/anaconda3/envs/xtyAgent/lib/python3.10/site-packages/starlette/routing.py\", line 736, in app\n    await route.handle(scope, receive, send)\n  File \"/home/lyq/anaconda3/envs/xtyAgent/lib/python3.10/site-packages/starlette/routing.py\", line 290, in handle\n    await self.app(scope, receive, send)\n  File \"/home/lyq/anaconda3/envs/xtyAgent/lib/python3.10/site-packages/fastapi/routing.py\", line 120, in app\n    await wrap_app_handling_exceptions(app, request)(scope, receive, send)\n  File \"/home/lyq/anaconda3/envs/xtyAgent/lib/python3.10/site-packages/starlette/_exception_handler.py\", line 59, in wrapped_app\n    response = await handler(conn, exc)\n  File \"/home/lyq/xintuoyin-KLCLAB/backend/app.py\", line 221, in handle_validation_error\n    return error_response(\n  File \"/home/lyq/xintuoyin-KLCLAB/backend/app.py\", line 136, in error_response\n    return JSONResponse(\n  File \"/home/lyq/anaconda3/envs/xtyAgent/lib/python3.10/site-packages/starlette/responses.py\", line 189, in __init__\n    super().__init__(content, status_code, headers, media_type, background)\n  File \"/home/lyq/anaconda3/envs/xtyAgent/lib/python3.10/site-packages/starlette/responses.py\", line 46, in __init__\n    self.body = self.render(content)\n  File \"/home/lyq/anaconda3/envs/xtyAgent/lib/python3.10/site-packages/starlette/responses.py\", line 192, in render\n    return json.dumps(\n  File \"/home/lyq/anaconda3/envs/xtyAgent/lib/python3.10/json/__init__.py\", line 238, in dumps\n    **kw).encode(obj)\n  File \"/home/lyq/anaconda3/envs/xtyAgent/lib/python3.10/json/encoder.py\", line 199, in encode\n    chunks = self.iterencode(o, _one_shot=True)\n  File \"/home/lyq/anaconda3/envs/xtyAgent/lib/python3.10/json/encoder.py\", line 257, in iterencode\n    return _iterencode(o, 0)\n  File \"/home/lyq/anaconda3/envs/xtyAgent/lib/python3.10/json/encoder.py\", line 179, in default\n    raise TypeError(f'Object of type {o.__class__.__name__} '\nTypeError: Object of type ValueError is not JSON serializable\n"
+      },
+      {
+        "name": "test_api.APITestCase.test_upload_kb_file_internal_failure",
+        "outcome": "passed",
+        "detail": ""
+      },
+      {
+        "name": "test_api.APITestCase.test_upload_kb_file_missing_kb",
+        "outcome": "passed",
+        "detail": ""
+      },
+      {
+        "name": "test_api.APITestCase.test_upload_kb_file_refresh_failure_is_reported",
+        "outcome": "passed",
+        "detail": ""
+      },
+      {
+        "name": "test_api.APITestCase.test_upload_kb_file_success",
+        "outcome": "passed",
+        "detail": ""
+      }
+    ]
+  },
+  "generated_at": "2026-03-24 17:23:37"
+}

@@ -1,275 +1,268 @@
 <template>
-  <div class="chat-container">
-    <!-- Sidebar: Conversation List -->
+  <div class="chat-shell">
     <aside class="sidebar">
       <div class="sidebar-header">
         <button class="new-chat-btn" @click="createNewChat">
-          <span class="plus-icon">+</span> 新建对话
+          <span class="plus-icon">+</span>
+          <span>新建对话</span>
         </button>
       </div>
+
       <div class="sidebar-list">
-        <div 
-          v-for="conv in conversations" 
-          :key="conv.id" 
+        <div
+          v-for="conv in conversations"
+          :key="conv.id"
           class="sidebar-item"
           :class="{ active: currentId === conv.id }"
           @click="selectConv(conv.id)"
         >
-          <!-- Icon removed -->
           <span class="conv-title">{{ conv.title || '新对话' }}</span>
-          <!-- Delete Button -->
-          <span class="delete-btn" @click.stop="deleteConv(conv.id)" title="删除对话">
-            <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
-          </span>
+          <button class="delete-btn" @click.stop="deleteConv(conv.id)">删</button>
         </div>
       </div>
+
       <div class="sidebar-footer">
-        <div class="user-profile-wrapper">
-          <div class="user-profile">
-            <div class="avatar">{{ user_identity.charAt(0).toUpperCase() }}</div>
-            <div class="user-info">
-              <span class="user-name">{{ user_identity }}</span>
-              <span class="user-role">{{ getRoleName(user_identity) }}</span>
-            </div>
+        <div class="user-card">
+          <div class="avatar">{{ userIdentity.charAt(0).toUpperCase() }}</div>
+          <div class="user-meta">
+            <div class="user-name">{{ userIdentity }}</div>
+            <div class="user-role">{{ getRoleName(userIdentity) }}</div>
           </div>
-          <el-select 
-            v-model="user_identity" 
-            placeholder="切换身份" 
-            size="small" 
-            class="identity-selector"
-          >
-            <el-option label="超级管理员" value="admin" />
-            <el-divider content-position="center">部门主管</el-divider>
-            <el-option label="技术部主管" value="dept_a_manager" />
-            <el-option label="财务部主管" value="dept_b_manager" />
-            <el-divider content-position="center">普通员工</el-divider>
-            <el-option label="技术员 A1" value="user_a1" />
-            <el-option label="技术员 A2" value="user_a2" />
-            <el-option label="会计师 B1" value="user_b1" />
-            <el-divider />
-            <el-option label="访客" value="guest" />
-          </el-select>
         </div>
+        <el-select v-model="userIdentity" size="small" class="identity-selector">
+          <el-option label="超级管理员" value="admin" />
+          <el-option label="技术部主管" value="dept_a_manager" />
+          <el-option label="财务部主管" value="dept_b_manager" />
+          <el-option label="技术员 A1" value="user_a1" />
+          <el-option label="技术员 A2" value="user_a2" />
+          <el-option label="会计师 B1" value="user_b1" />
+          <el-option label="访客" value="guest" />
+        </el-select>
       </div>
     </aside>
 
-    <!-- Main Chat Area -->
     <main class="main-chat" :class="{ 'initial-view': currentMessages.length === 0 }">
-      <!-- Chat Header (Visible only in active chat) -->
-      <header class="chat-view-header" v-if="currentMessages.length > 0">
-        <span class="view-title">{{ currentConv?.title || '新对话' }}</span>
+      <header class="chat-header" v-if="currentMessages.length > 0">
+        <div class="chat-title">{{ currentConv?.title || '新对话' }}</div>
+        <div class="chat-tools">
+          <span class="status-pill" :class="{ active: webSearchEnabled }">联网 {{ webSearchEnabled ? '开启' : '关闭' }}</span>
+          <span class="status-pill" :class="{ active: !!selectedDB }">数据库 {{ selectedDB || '未选' }}</span>
+        </div>
       </header>
 
-      <!-- Initial Greeting (Only shown when empty) -->
       <div v-if="currentMessages.length === 0" class="initial-greeting">
-        <h1>用户你好</h1>
-        <h2>需要我为你做什么</h2>
+        <h1>需要我为你做什么</h1>
+        <p>现在会同时展示主回答、工具调用过程和网页搜索结果。</p>
       </div>
 
-      <!-- Messages Scroll Area -->
       <div class="messages-container" ref="scrollRef" v-show="currentMessages.length > 0">
-        <!-- Empty state block removed -->
-        
-        <div 
-          v-for="(msg, index) in currentMessages" 
-          :key="index" 
+        <div
+          v-for="msg in currentMessages"
+          :key="msg.id"
           class="message-row"
           :class="msg.role"
         >
           <div class="message-inner">
-            <div class="message-avatar">
-              <span v-if="msg.role === 'user'" class="user-icon">👤</span>
-              <div v-else class="assistant-icon">
-                <!-- Gemini Star Icon -->
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M12 2L14.5 9.5L22 12L14.5 14.5L12 22L9.5 14.5L2 12L9.5 9.5L12 2Z" fill="url(#paint0_linear)" stroke="none"/>
-                  <defs>
-                    <linearGradient id="paint0_linear" x1="2" y1="2" x2="22" y2="22" gradientUnits="userSpaceOnUse">
-                      <stop stop-color="#4E86F8"/>
-                      <stop offset="1" stop-color="#D6409F"/>
-                    </linearGradient>
-                  </defs>
-                </svg>
+            <div class="message-avatar">{{ msg.role === 'user' ? 'U' : 'AI' }}</div>
+            <div class="message-body">
+              <div v-if="msg.role === 'assistant'" class="assistant-toolbar">
+                <button
+                  class="ghost-btn"
+                  :class="{ active: selectedTraceMessageId === msg.id }"
+                  @click="selectTraceMessage(msg.id)"
+                >
+                  过程
+                </button>
+                <button
+                  class="ghost-btn"
+                  :disabled="!msg.searchResults?.length"
+                  @click="openSearchDialog(msg)"
+                >
+                  网页搜索
+                </button>
+                <span v-if="msg.traceLoading" class="minor-status">过程加载中</span>
+                <span v-else-if="msg.traceEvents?.length" class="minor-status">{{ msg.traceEvents.length }} 个事件</span>
               </div>
-            </div>
-            <div class="message-content">
-              <!-- Markdown Rendered Content -->
-              <div 
-                v-if="msg.role === 'assistant'" 
-                class="markdown-body"
-                v-html="renderMarkdown(msg.content)"
-              ></div>
-              <!-- Plain Text for User -->
+
+              <div v-if="msg.role === 'assistant'" class="markdown-body" v-html="renderMarkdown(msg.content)"></div>
               <div v-else class="user-text">{{ msg.content }}</div>
-              
-              <div v-if="msg.files && msg.files.length" class="message-files">
-                <span class="file-tag" v-for="f in msg.files" :key="f">📎 {{ f }}</span>
+
+              <div v-if="msg.files?.length" class="message-files">
+                <span v-for="file in msg.files" :key="file" class="file-tag">{{ file }}</span>
               </div>
             </div>
           </div>
         </div>
-        
-        <!-- Loading State -->
+
         <div v-if="loading" class="message-row assistant">
           <div class="message-inner">
-            <div class="message-avatar"><div class="assistant-icon">...</div></div>
-            <div class="message-content loading">
-              <span class="dot">·</span><span class="dot">·</span><span class="dot">·</span>
-            </div>
+            <div class="message-avatar">AI</div>
+            <div class="message-body loading-box">模型正在输出中...</div>
           </div>
         </div>
       </div>
 
-      <!-- Input Area -->
       <footer class="chat-footer">
-        <div class="input-container">
-          
-          <!-- New Gemini-style Input Wrapper -->
-          <div class="input-wrapper">
-            <textarea 
-                v-model="inputMessage" 
-                @keydown.enter.exact.prevent="sendMessage"
-                placeholder="输入消息..."
-                rows="1"
-                ref="textareaRef"
-                @input="resizeTextarea"
-             ></textarea>
+        <div class="input-wrapper">
+          <textarea
+            ref="textareaRef"
+            v-model="inputMessage"
+            rows="1"
+            placeholder="输入消息..."
+            @keydown.enter.exact.prevent="sendMessage"
+            @input="resizeTextarea"
+          />
 
-             <!-- File Previews (Inside the box now) -->
-             <div v-if="files.length > 0" class="file-preview-area">
-                <div v-for="(file, idx) in files" :key="idx" class="file-preview-item">
-                  <span class="file-name">{{ file.name }}</span>
-                  <span class="remove-file" @click="removeFile(idx)">×</span>
+          <div v-if="files.length > 0" class="file-preview-area">
+            <div v-for="(file, idx) in files" :key="`${file.name}-${idx}`" class="file-preview-item">
+              <span>{{ file.name }}</span>
+              <button class="remove-file" @click="removeFile(idx)">×</button>
+            </div>
+          </div>
+
+          <div class="action-bar">
+            <div class="left-tools">
+              <label class="tool-btn">
+                <input type="file" multiple style="display:none" @change="handleFileUpload" />
+                <span>附件</span>
+              </label>
+              <button class="tool-btn" :class="{ active: webSearchEnabled }" @click="toggleWebSearch">联网</button>
+              <div class="db-wrapper">
+                <button class="tool-btn" :class="{ active: !!selectedDB }" @click="toggleDBMenu">数据库</button>
+                <div v-if="showDBMenu" class="db-menu">
+                  <div class="db-item" :class="{ active: selectedDB === 'V0' }" @click="selectDB('V0')">数据库 V0</div>
+                  <div class="db-item" :class="{ active: selectedDB === 'V1' }" @click="selectDB('V1')">数据库 V1</div>
                 </div>
-             </div>
-
-             <!-- Action Bar -->
-             <div class="action-bar">
-                <div class="left-tools">
-                  <label class="tool-btn" title="上传文件">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg>
-                    <input type="file" multiple @change="handleFileUpload" style="display:none" />
-                  </label>
-                  
-                  <!-- Web Search Button -->
-                  <button 
-                    class="tool-btn" 
-                    :class="{ active: webSearchEnabled }"
-                    @click="toggleWebSearch"
-                    title="联网搜索"
-                  >
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none"
-                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                      <circle cx="11" cy="11" r="8"></circle>
-                      <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-                    </svg>
-                  </button>
-
-                  <!-- Database Button -->
-                  <div class="db-wrapper">
-                    <button
-                      class="tool-btn"
-                      :class="{ active: selectedDB !== null }"
-                      @click="toggleDBMenu"
-                      title="数据库"
-                    >
-                      <!-- database icon -->
-                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none"
-                          stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <ellipse cx="12" cy="5" rx="9" ry="3"></ellipse>
-                        <path d="M3 5v14c0 1.66 4.03 3 9 3s9-1.34 9-3V5"></path>
-                        <path d="M3 12c0 1.66 4.03 3 9 3s9-1.34 9-3"></path>
-                      </svg>
-                    </button>
-
-                    <!-- 二级菜单 -->
-                    <div v-if="showDBMenu" class="db-menu">
-                      <div
-                        class="db-item"
-                        :class="{ active: selectedDB === 'V0' }"
-                        @click="selectDB('V0')"
-                      >
-                        数据库 V0
-                      </div>
-                      <div
-                        class="db-item"
-                        :class="{ active: selectedDB === 'V1' }"
-                        @click="selectDB('V1')"
-                      >
-                        数据库 V1
-                      </div>
-                    </div>
-                  </div>
-
-                  <!-- Knowledge Base Button (Toggle Only) -->
-                  <button
-                    class="tool-btn"
-                    :class="{ active: ragEnabled }"
-                    @click="toggleRAG"
-                    title="知识库"
-                  >
-                    <!-- book icon -->
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                      <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
-                      <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
-                    </svg>
-                  </button>
-
-                </div>
-                
-                <button 
-                  class="send-btn"
-                  :disabled="!inputMessage.trim() && files.length === 0 || loading"
-                  @click="sendMessage"
-                >
-                  <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
-                </button>
-             </div>
+              </div>
+            </div>
+            <button class="send-btn" :disabled="sendDisabled" @click="sendMessage">发送</button>
           </div>
         </div>
       </footer>
-      
-      <!-- Footer Note (Always at bottom) -->
-      <div class="footer-note">
-         <div class="footer-legal">
-           <span>©2025-新拓银（深圳）人工智能科技有限公司. All rights reserved.</span>
-           <span>备案号：渝ICP备2024037824号-1</span>
-           <span>公网安备 494号待定</span>
-           <span>v1.0.0.20250203_Base_91320100MA25M8A78N</span>
-         </div>
-      </div>
     </main>
+
+    <aside class="trace-panel">
+      <div class="trace-header">
+        <div>
+          <div class="trace-title">模型过程</div>
+          <div class="trace-subtitle">展示工具调用、SQL、搜索和回答增量</div>
+        </div>
+      </div>
+
+      <div v-if="!selectedTraceMessage" class="trace-empty">
+        发送一条消息后，点击回答上的“过程”查看详情。
+      </div>
+
+      <div v-else class="trace-content">
+        <div class="trace-summary">
+          <div>最终回答长度: {{ selectedTraceMessage.content?.length || 0 }}</div>
+          <div>搜索结果数: {{ selectedTraceMessage.searchResults?.length || 0 }}</div>
+        </div>
+
+        <div v-if="selectedTraceMessage.traceLoading" class="trace-loading">正在拉取模型过程...</div>
+
+        <div v-else-if="!selectedTraceMessage.traceEvents?.length" class="trace-empty">
+          暂无过程数据。
+        </div>
+
+        <div v-else class="trace-list">
+          <div v-for="(event, idx) in selectedTraceMessage.traceEvents" :key="`${event.type}-${idx}`" class="trace-item">
+            <div class="trace-type">{{ event.type }}</div>
+            <div class="trace-meta">节点: {{ event.node || '-' }}</div>
+            <div v-if="event.tool_name" class="trace-meta">工具: {{ event.tool_name }}</div>
+            <pre v-if="event.arguments" class="trace-code">{{ formatJson(event.arguments) }}</pre>
+            <pre v-else-if="event.preview" class="trace-code">{{ event.preview }}</pre>
+            <div v-else-if="event.delta" class="trace-delta">{{ event.delta }}</div>
+            <div v-else-if="event.count !== undefined" class="trace-meta">结果数: {{ event.count }}</div>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <el-dialog v-model="searchDialogVisible" title="网页搜索结果" width="860px" top="5vh">
+      <div v-if="!activeSearchResults.length" class="search-empty">当前回答没有网页搜索结果。</div>
+      <div v-else class="search-result-list">
+        <div v-for="(item, idx) in activeSearchResults" :key="`${item.url}-${idx}`" class="search-card">
+          <div class="search-card-head">
+            <div>
+              <div class="search-main-title">{{ item.main_title || '无标题' }}</div>
+              <div class="search-sub-title">{{ item.sub_title || '无副标题' }}</div>
+            </div>
+            <a :href="item.url" target="_blank" rel="noreferrer">打开原文</a>
+          </div>
+          <div class="search-summary">{{ item.summary || '无摘要' }}</div>
+          <details class="search-details">
+            <summary>查看抓取原文</summary>
+            <pre>{{ item.raw_content || '无原文内容' }}</pre>
+          </details>
+        </div>
+      </div>
+    </el-dialog>
   </div>
 </template>
 
 <script setup>
-import { ref, reactive, computed, nextTick, onMounted, watch } from 'vue'
+import { computed, nextTick, onMounted, reactive, ref, watch } from 'vue'
 import MarkdownIt from 'markdown-it'
 import hljs from 'highlight.js'
-import 'highlight.js/styles/github.css' // Light theme for code
-import { useUserStore } from '@/stores/user'
+import { ElMessage } from 'element-plus'
+import 'highlight.js/styles/github.css'
 
-const userStore = useUserStore()
-const userName = computed(() => userStore.userInfo?.name || userStore.userInfo?.username || '用户')
+const backendPort = import.meta.env.VITE_BACKEND_PORT || '8069'
+const backendBaseUrl = import.meta.env.VITE_API_BASE_URL
+  || (import.meta.env.DEV ? `http://${window.location.hostname}:${backendPort}` : '')
 
 const md = new MarkdownIt({
   html: false,
   linkify: true,
   typographer: true,
-  highlight: function (str, lang) {
+  highlight(str, lang) {
     if (lang && hljs.getLanguage(lang)) {
       try {
-        return '<pre class="hljs"><code>' +
-               hljs.highlight(str, { language: lang, ignoreIllegals: true }).value +
-               '</code></pre>';
-      } catch (__error__) {}
+        return `<pre class="hljs"><code>${hljs.highlight(str, { language: lang, ignoreIllegals: true }).value}</code></pre>`
+      } catch (_) {}
     }
-    return '<pre class="hljs"><code>' + md.utils.escapeHtml(str) + '</code></pre>';
+    return `<pre class="hljs"><code>${md.utils.escapeHtml(str)}</code></pre>`
   }
-});
+})
 
 function renderMarkdown(text) {
-  return md.render(text || '');
+  return md.render(text || '')
+}
+
+function buildApiUrl(path) {
+  return backendBaseUrl ? `${backendBaseUrl}${path}` : path
+}
+
+async function parseJsonResponse(response) {
+  const text = await response.text()
+  let payload = null
+  try {
+    payload = text ? JSON.parse(text) : null
+  } catch (_) {
+    payload = null
+  }
+  return { text, payload }
+}
+
+function getErrorMessage(response, payload, fallbackText, defaultMessage) {
+  if (payload?.message) return payload.message
+  if (fallbackText) return fallbackText
+  return `${defaultMessage}: ${response.status}`
+}
+
+function createMessage(role, content = '', extra = {}) {
+  return {
+    id: `${role}_${Date.now()}_${Math.random().toString(16).slice(2, 8)}`,
+    role,
+    content,
+    files: [],
+    traceEvents: [],
+    traceLoading: false,
+    searchResults: [],
+    searchLoading: false,
+    ...extra
+  }
 }
 
 const conversations = ref([])
@@ -282,36 +275,71 @@ const textareaRef = ref(null)
 const webSearchEnabled = ref(false)
 const showDBMenu = ref(false)
 const selectedDB = ref(null)
-const ragEnabled = ref(false) 
-const user_identity = ref('admin') // 默认管理员以展示全量能力
+const userIdentity = ref('admin')
+const searchDialogVisible = ref(false)
+const activeSearchResults = ref([])
+const selectedTraceMessageId = ref(null)
 
-const getRoleName = (id) => {
+const currentConv = computed(() => conversations.value.find((item) => item.id === currentId.value))
+const currentMessages = computed(() => currentConv.value?.messages || [])
+const selectedTraceMessage = computed(() => {
+  if (!selectedTraceMessageId.value) return null
+  return currentMessages.value.find((item) => item.id === selectedTraceMessageId.value) || null
+})
+const sendDisabled = computed(() => (!inputMessage.value.trim() && files.value.length === 0) || loading.value)
+
+function getRoleName(id) {
   const roles = {
-    'admin': '系统管理员',
-    'dept_a_manager': '技术部主管',
-    'dept_b_manager': '财务部主管',
-    'user_a1': '高级工程师 (A1)',
-    'user_a2': '初级技术员 (A2)',
-    'user_b1': '财务会计 (B1)',
-    'guest': '访客'
+    admin: '系统管理员',
+    dept_a_manager: '技术部主管',
+    dept_b_manager: '财务部主管',
+    user_a1: '高级工程师 (A1)',
+    user_a2: '初级技术员 (A2)',
+    user_b1: '财务会计 (B1)',
+    guest: '访客'
   }
   return roles[id] || '普通用户'
 }
 
-const currentConv = computed(() => conversations.value.find(c => c.id === currentId.value))
-const currentMessages = computed(() => currentConv.value ? currentConv.value.messages : [])
+function formatJson(value) {
+  try {
+    return JSON.stringify(value, null, 2)
+  } catch (_) {
+    return String(value)
+  }
+}
+
+function saveHistory() {
+  localStorage.setItem('chatgpt_convs_v2', JSON.stringify(conversations.value))
+}
+
+function scrollToBottom() {
+  nextTick(() => {
+    if (scrollRef.value) {
+      scrollRef.value.scrollTop = scrollRef.value.scrollHeight
+    }
+  })
+}
+
+function resizeTextarea() {
+  const el = textareaRef.value
+  if (!el) return
+  el.style.height = 'auto'
+  el.style.height = `${Math.min(el.scrollHeight, 200)}px`
+}
+
+watch(inputMessage, resizeTextarea)
 
 onMounted(() => {
-  const saved = localStorage.getItem('chatgpt_convs')
+  const saved = localStorage.getItem('chatgpt_convs_v2') || localStorage.getItem('chatgpt_convs')
   if (saved) {
     try {
-      conversations.value = JSON.parse(saved)
-    } catch (e) {
-      console.error("Failed to load history", e)
+      conversations.value = JSON.parse(saved).map(normalizeConversation)
+    } catch (_) {
+      conversations.value = []
     }
   }
-  
-  if (conversations.value.length === 0) {
+  if (!conversations.value.length) {
     createNewChat()
   } else {
     currentId.value = conversations.value[0].id
@@ -319,56 +347,48 @@ onMounted(() => {
   scrollToBottom()
 })
 
-function resizeTextarea() {
-  const el = textareaRef.value
-  if(el) {
-    el.style.height = 'auto'
-    el.style.height = Math.min(el.scrollHeight, 200) + 'px'
-  }
-}
-
-watch(inputMessage, resizeTextarea)
-
 function createNewChat() {
-  const newChat = {
-    id: Date.now(),
+  const chat = {
+    id: String(Date.now()),
     title: '新对话',
     updatedAt: Date.now(),
     messages: []
   }
-  conversations.value.unshift(newChat)
-  currentId.value = newChat.id
+  conversations.value.unshift(chat)
+  currentId.value = chat.id
+  selectedTraceMessageId.value = null
   saveHistory()
 }
 
 function selectConv(id) {
   currentId.value = id
+  const firstAssistant = currentMessages.value.find((item) => item.role === 'assistant')
+  selectedTraceMessageId.value = firstAssistant?.id || null
   scrollToBottom()
 }
 
-function deleteConv(id) {
-  if(!confirm('确定要删除这个对话吗？')) return
-  
-  const index = conversations.value.findIndex(c => c.id === id)
-  if(index !== -1) {
-    conversations.value.splice(index, 1)
-    saveHistory()
-    
-    // Create new if empty, or select next available
-    if(conversations.value.length === 0) {
-      createNewChat()
-    } else if(currentId.value === id) {
-      currentId.value = conversations.value[0].id
-    }
-  }
+function selectTraceMessage(id) {
+  selectedTraceMessageId.value = id
+}
 
-  // Delete from server
-  fetch(`/api/chat/${id}`, { method: 'DELETE' })
-    .catch(err => console.error("Failed to delete server history:", err))
+function deleteConv(id) {
+  if (!window.confirm('确定要删除这个对话吗？')) return
+  const index = conversations.value.findIndex((item) => item.id === id)
+  if (index === -1) return
+  conversations.value.splice(index, 1)
+  if (!conversations.value.length) {
+    createNewChat()
+  } else if (currentId.value === id) {
+    currentId.value = conversations.value[0].id
+  }
+  saveHistory()
+  fetch(buildApiUrl(`/api/chat/${id}`), { method: 'DELETE' }).catch(() => {})
 }
 
 function handleFileUpload(event) {
-  files.value = [...files.value, ...Array.from(event.target.files)]
+  const nextFiles = Array.from(event.target.files || [])
+  files.value = [...files.value, ...nextFiles]
+  event.target.value = ''
 }
 
 function removeFile(index) {
@@ -384,112 +404,162 @@ function toggleDBMenu() {
 }
 
 function selectDB(val) {
-  if (selectedDB.value === val) {
-    selectedDB.value = null
-  } else {
-    selectedDB.value = val
-  }
+  selectedDB.value = selectedDB.value === val ? null : val
   showDBMenu.value = false
 }
 
-function toggleRAG() {
-  ragEnabled.value = !ragEnabled.value
+function openSearchDialog(message) {
+  activeSearchResults.value = message.searchResults || []
+  searchDialogVisible.value = true
 }
 
-function scrollToBottom() {
-  nextTick(() => {
-    if (scrollRef.value) {
-      scrollRef.value.scrollTop = scrollRef.value.scrollHeight
-    }
+function buildFormData(text, currentFiles, conversationId) {
+  const fd = new FormData()
+  fd.append('message', text)
+  fd.append('conversation_id', String(conversationId))
+  fd.append('web_search', String(webSearchEnabled.value))
+  fd.append('user_identity', userIdentity.value)
+  if (selectedDB.value) {
+    fd.append('db_version', selectedDB.value)
+  }
+  currentFiles.forEach((file) => fd.append('files', file))
+  return fd
+}
+
+async function streamAnswer(assistantMsg, formData) {
+  const response = await fetch(buildApiUrl('/api/chat'), {
+    method: 'POST',
+    body: formData
   })
+  if (!response.ok) {
+    const { text, payload } = await parseJsonResponse(response)
+    throw new Error(getErrorMessage(response, payload, text, '主回答接口失败'))
+  }
+  if (!response.body) {
+    throw new Error('主回答接口未返回可读流')
+  }
+  const reader = response.body.getReader()
+  const decoder = new TextDecoder()
+  while (true) {
+    const { done, value } = await reader.read()
+    if (done) break
+    assistantMsg.content += decoder.decode(value, { stream: true })
+    scrollToBottom()
+  }
 }
 
-function saveHistory() {
-  localStorage.setItem('chatgpt_convs', JSON.stringify(conversations.value))
+async function loadTrace(assistantMsg, formData) {
+  assistantMsg.traceLoading = true
+  try {
+    const response = await fetch(buildApiUrl('/api/chat/events'), {
+      method: 'POST',
+      body: formData
+    })
+    const { text, payload } = await parseJsonResponse(response)
+    if (!response.ok || !payload.success) {
+      throw new Error(getErrorMessage(response, payload, text, '过程接口失败'))
+    }
+    assistantMsg.traceEvents = payload.data?.events || []
+    if (!assistantMsg.content && payload.data?.final_answer) {
+      assistantMsg.content = payload.data.final_answer
+    }
+    if (payload.data?.search_results?.length) {
+      assistantMsg.searchResults = payload.data.search_results
+    }
+  } catch (error) {
+    assistantMsg.traceEvents = [
+      {
+        type: 'trace.error',
+        node: 'frontend',
+        preview: error.message || '过程获取失败'
+      }
+    ]
+  } finally {
+    assistantMsg.traceLoading = false
+    saveHistory()
+  }
+}
+
+async function loadSearchArtifacts(assistantMsg, formData) {
+  if (!webSearchEnabled.value) return
+  assistantMsg.searchLoading = true
+  try {
+    const response = await fetch(buildApiUrl('/api/chat/search-artifacts'), {
+      method: 'POST',
+      body: formData
+    })
+    const { text, payload } = await parseJsonResponse(response)
+    if (!response.ok || !payload.success) {
+      throw new Error(getErrorMessage(response, payload, text, '搜索结果接口失败'))
+    }
+    assistantMsg.searchResults = payload.data?.search_results || []
+  } catch (error) {
+    assistantMsg.searchResults = []
+    assistantMsg.traceEvents = [
+      ...(assistantMsg.traceEvents || []),
+      {
+        type: 'search.error',
+        node: 'frontend',
+        preview: error.message || '搜索结果获取失败'
+      }
+    ]
+  } finally {
+    assistantMsg.searchLoading = false
+    saveHistory()
+  }
 }
 
 async function sendMessage() {
-  if ((!inputMessage.value.trim() && files.value.length === 0) || loading.value) return
-  
-  const text = inputMessage.value
+  if (sendDisabled.value) return
+
+  const text = inputMessage.value.trim() || '请结合我上传的附件进行分析。'
   const currentFiles = [...files.value]
-  
   inputMessage.value = ''
   files.value = []
   resizeTextarea()
 
-  const conv = conversations.value.find(c => c.id === currentId.value)
+  const conv = currentConv.value
   if (!conv) return
 
-  conv.messages.push({
-    role: 'user',
-    content: text + (currentFiles.length ? `\n[Attached ${currentFiles.length} files]` : ''),
-    files: currentFiles.map(f => f.name)
+  const userMessage = createMessage('user', text || '[仅上传附件]', {
+    files: currentFiles.map((file) => file.name)
   })
-  
+  conv.messages.push(userMessage)
+
   if (conv.messages.length === 1) {
-    conv.title = text.slice(0, 30) || '新对话'
+    conv.title = (text || currentFiles[0]?.name || '新对话').slice(0, 30)
   }
   conv.updatedAt = Date.now()
-  scrollToBottom()
-  saveHistory()
 
-  loading.value = true
-
-  const assistantMsg = reactive({
-    role: 'assistant',
-    content: '',
-    files: []
-  })
+  const assistantMsg = reactive(createMessage('assistant', '', {
+    files: [],
+    traceLoading: true,
+    searchLoading: webSearchEnabled.value
+  }))
   conv.messages.push(assistantMsg)
+  selectedTraceMessageId.value = assistantMsg.id
+  loading.value = true
+  saveHistory()
+  scrollToBottom()
 
-  const fd = new FormData()
-  fd.append('message', text)
-  fd.append('stream', 'true')
-  // Send conversation_id so backend can manage history
-  fd.append('conversation_id', String(conv.id))
-  // Send web_search status
-  fd.append('web_search', String(webSearchEnabled.value))
-  // Send user identity
-  fd.append('user_identity', user_identity.value)
-  // Send RAG enable flag
-  fd.append('rag_enabled', String(ragEnabled.value))
-  
-  // Send db_version if selected
-  if (selectedDB.value) {
-    fd.append('db_version', selectedDB.value)
-  }
-  
-  currentFiles.forEach(f => fd.append('files', f))
+  const answerForm = buildFormData(text, currentFiles, conv.id)
+  const traceForm = buildFormData(text, currentFiles, conv.id)
+  const searchForm = buildFormData(text, currentFiles, conv.id)
 
   try {
-    const response = await fetch('/api/chat', {
-      method: 'POST',
-      body: fd,
-    })
-
-    if (!response.ok) {
-      const errText = await response.text()
-      throw new Error(`Server Error (${response.status}): ${errText.slice(0, 100)}`)
+    await Promise.allSettled([
+      streamAnswer(assistantMsg, answerForm),
+      loadTrace(assistantMsg, traceForm),
+      loadSearchArtifacts(assistantMsg, searchForm)
+    ])
+    if (!assistantMsg.content.trim()) {
+      assistantMsg.content = '未获取到模型回答。'
     }
-
-    const reader = response.body.getReader()
-    const decoder = new TextDecoder()
-
-    while (true) {
-      const { done, value } = await reader.read()
-      if (done) break
-      
-      const chunk = decoder.decode(value, { stream: true })
-      assistantMsg.content += chunk
-      scrollToBottom()
+    if (assistantMsg.searchResults?.length) {
+      ElMessage.success(`已获取 ${assistantMsg.searchResults.length} 条网页搜索结果`)
     }
-
-    saveHistory()
-
-  } catch (err) {
-    console.error(err)
-    assistantMsg.content += `\n\n**Error:** ${err.message || 'Failed to receive response.'}`
+  } catch (error) {
+    assistantMsg.content = `\n\n**Error:** ${error.message || '请求失败'}`
   } finally {
     loading.value = false
     saveHistory()
@@ -499,546 +569,565 @@ async function sendMessage() {
 </script>
 
 <style scoped>
-/* --- Light Theme Variables --- */
-.chat-container {
-  display: flex;
-  height: 100%; /* Fit to parent container */
+.chat-shell {
+  display: grid;
+  grid-template-columns: 260px minmax(0, 1fr) 360px;
+  height: 100%;
   width: 100%;
-  font-family: 'Söhne', 'ui-sans-serif', 'system-ui', -apple-system, 'Segoe UI', Roboto, Ubuntu, Cantarell, 'Noto Sans', sans-serif, 'Helvetica Neue', Arial, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
-  color: #1f1f1f;
-  background-color: #ffffff;
-  border-radius: 8px; /* Optional: Match layout rounding */
-  overflow: hidden; /* Prevent spillover */
+  background: linear-gradient(180deg, #f7f8fb 0%, #eef2f7 100%);
+  color: #1f2937;
 }
 
-/* Hide Layout Footer when in Chat */
-:global(.main-footer) {
-  display: none !important;
-}
-
-/* --- Sidebar (Light Grey) --- */
 .sidebar {
-  width: 260px;
-  background-color: #f0f4f9; /* Gemini Sidebar Color */
+  background: #f1f5f9;
+  border-right: 1px solid #dbe4ef;
   display: flex;
   flex-direction: column;
-  padding: 12px;
-  flex-shrink: 0;
+  padding: 16px;
+  min-width: 0;
+}
+
+.sidebar-header {
+  margin-bottom: 16px;
 }
 
 .new-chat-btn {
-  display: flex;
-  align-items: center;
-  gap: 12px;
   width: 100%;
-  padding: 12px 16px;
-  background: #dde3ea;
   border: none;
-  border-radius: 24px;
-  color: #444746;
+  border-radius: 14px;
+  background: #0f172a;
+  color: #fff;
+  padding: 12px 14px;
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  justify-content: center;
   cursor: pointer;
-  font-size: 14px;
-  font-weight: 500;
-  transition: background 0.2s;
-  margin-bottom: 20px;
 }
-.new-chat-btn:hover { background: #d0d7de; }
-.plus-icon { font-size: 18px; }
 
 .sidebar-list {
   flex: 1;
   overflow-y: auto;
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 8px;
 }
 
 .sidebar-item {
-  padding: 10px 16px;
-  border-radius: 20px;
-  cursor: pointer;
-  color: #444746;
   display: flex;
   align-items: center;
-  gap: 12px;
-  font-size: 15px; /* Increased from 14px */
-  transition: background 0.2s;
-  position: relative;
-  overflow: hidden;
-}
-.sidebar-item:hover { background-color: #e1e5ea; }
-.sidebar-item.active { background-color: #d3e3fd; color: #001d35; font-weight: 500; }
-
-.conv-icon { opacity: 0.6; }
-.conv-title {
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  flex: 1;
-}
-
-/* Delete Button (Hidden by default, show on hover/active) */
-.delete-btn {
-  opacity: 0;
-  color: #747775;
-  transition: opacity 0.2s, color 0.2s;
-  padding: 4px;
-  border-radius: 4px;
-}
-.sidebar-item:hover .delete-btn,
-.sidebar-item.active .delete-btn { opacity: 1; }
-.delete-btn:hover { background: #ffcccc; color: #d32f2f; }
-
-.sidebar-footer {
-  margin-top: auto;
-  padding-top: 10px;
-}
-
-.user-profile-wrapper {
-  display: flex;
-  flex-direction: column;
   gap: 10px;
   padding: 12px;
-  background: #ffffff;
-  border-radius: 12px;
-  box-shadow: 0 -2px 10px rgba(0,0,0,0.05);
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.6);
+  cursor: pointer;
 }
 
-.user-profile {
+.sidebar-item.active {
+  background: #dbeafe;
+  color: #0f172a;
+}
+
+.conv-title {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.delete-btn {
+  border: none;
+  background: transparent;
+  color: #64748b;
+  cursor: pointer;
+}
+
+.sidebar-footer {
+  margin-top: 16px;
+}
+
+.user-card {
   display: flex;
   align-items: center;
   gap: 12px;
-  color: #444746;
-}
-
-.user-info {
-  display: flex;
-  flex-direction: column;
-  line-height: 1.2;
-}
-
-.user-name {
-  font-size: 14px;
-  font-weight: 600;
-  color: #1f1f1f;
-}
-
-.user-role {
-  font-size: 11px;
-  color: #757575;
+  padding: 12px;
+  background: #fff;
+  border-radius: 14px;
+  margin-bottom: 10px;
 }
 
 .avatar {
-  width: 36px; height: 36px; background: #4080FF; color: white; border-radius: 50%;
-  display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 16px;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #2563eb, #0891b2);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+}
+
+.user-name {
+  font-weight: 600;
+}
+
+.user-role {
+  color: #64748b;
+  font-size: 12px;
 }
 
 .identity-selector {
   width: 100%;
 }
 
-/* --- Main Chat Area --- */
 .main-chat {
-  flex: 1;
   display: flex;
   flex-direction: column;
-  position: relative;
-  background-color: #ffffff;
+  min-width: 0;
+  background: #fff;
 }
 
-/* Initial View Layout (Gemini Style) */
 .main-chat.initial-view {
   justify-content: center;
-  align-items: center;
-  padding-bottom: 10vh; /* Visual balance */
-}
-
-.initial-greeting {
-  text-align: left;
-  margin-bottom: 32px; /* Reduced gap */
-  width: 100%;
-  max-width: 48rem;
-  padding: 0 16px;
-}
-.initial-greeting h1 {
-  font-size: 40px; /* Smaller */
-  font-weight: 500;
-  background: linear-gradient(90deg, #4285F4, #9B72CB, #D96570);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  margin-bottom: 8px; /* Spacing between lines */
-  letter-spacing: -1px;
-}
-.initial-greeting h2 {
-  font-size: 32px; /* Smaller */
-  font-weight: 500;
-  color: #c4c7c5;
-  margin: 0;
-  letter-spacing: -0.5px;
-}
-
-/* Override for Initial View */
-.initial-view .chat-footer {
-  position: static;
-  background: transparent;
-  padding: 0;
-  width: 100%;
-}
-/* Reduce height in initial view but style it richer */
-.initial-view .input-wrapper {
-  background: #f0f4f9;
-  min-height: 100px; /* Reduced from 160px */
-  padding: 16px 20px 10px; /* Balanced padding */
-  border-radius: 28px;
-  box-shadow: 0 4px 20px rgba(0,0,0,0.08);
-  border: 1px solid rgba(0,0,0,0.02);
-  justify-content: space-between;
-}
-.initial-view .input-wrapper:hover {
-  background: #ffffff;
-  box-shadow: 0 6px 24px rgba(0,0,0,0.12);
 }
 
 .chat-header {
-  padding: 10px 16px;
   display: flex;
+  justify-content: space-between;
   align-items: center;
-  color: #444746;
-  font-weight: 500;
-  border-bottom: 1px solid #e0e0e0;
+  padding: 16px 22px;
+  border-bottom: 1px solid #e5e7eb;
 }
 
-.chat-view-header {
-  height: 40px; /* Sorter header */
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  /* border-bottom removed */
-  background: rgba(255, 255, 255, 0.95);
-  backdrop-filter: blur(5px);
-  position: sticky;
-  top: 0;
-  z-index: 10;
-  flex-shrink: 0;
-}
-.view-title {
-  font-size: 13px; /* Smaller */
-  font-weight: 400; /* Lighter weight */
-  color: #757575; /* Lighter color */
+.chat-title {
+  font-size: 16px;
+  font-weight: 700;
 }
 
-/* Scroll Area Layout Fix */
-.messages-container {
-  flex: 1; /* Takes all available space */
-  overflow-y: auto; /* Internal scroll */
-  padding-top: 0; /* Remove padding as header是分开的 */
-  padding-bottom: 20px;
+.chat-tools {
   display: flex;
-  flex-direction: column;
-  scroll-behavior: smooth;
+  gap: 8px;
 }
 
-.empty-state {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  color: #1f1f1f;
-  margin-bottom: 100px;
+.status-pill {
+  border-radius: 999px;
+  padding: 6px 10px;
+  background: #f3f4f6;
+  color: #6b7280;
+  font-size: 12px;
 }
-.logo-placeholder {
-  font-size: 24px;
-  font-weight: bold;
-  margin-bottom: 20px;
-  background: linear-gradient(90deg, #4E86F8, #D6409F);
+
+.status-pill.active {
+  background: #dbeafe;
+  color: #1d4ed8;
+}
+
+.initial-greeting {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 24px;
+}
+
+.initial-greeting h1 {
+  font-size: 40px;
+  margin: 0 0 8px;
+  background: linear-gradient(90deg, #2563eb, #0f766e, #ca8a04);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
-.empty-state h1 { font-size: 28px; margin-bottom: 10px; font-weight: 400; }
-.empty-state p { color: #757575; }
 
-/* Message Rows */
+.initial-greeting p {
+  color: #6b7280;
+  margin: 0;
+}
+
+.messages-container {
+  flex: 1;
+  overflow-y: auto;
+  padding: 8px 0 24px;
+}
+
 .message-row {
   width: 100%;
 }
-/* No zebra striping for Gemini style, just clean white */
-.message-row.assistant { background-color: #ffffff; }
-.message-row.user { background-color: #ffffff; }
 
 .message-inner {
-  max-width: 48rem;
+  max-width: 760px;
   margin: 0 auto;
-  padding: 24px 16px;
   display: flex;
-  gap: 16px;
+  gap: 14px;
+  padding: 18px 24px;
 }
 
 .message-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: #e2e8f0;
+  color: #0f172a;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 700;
   flex-shrink: 0;
-  padding-top: 4px;
-}
-.user-icon { font-size: 24px; }
-.assistant-icon {
-  width: 28px; height: 28px;
-  animation: rotate 10s linear infinite;
-}
-@keyframes rotate {
-  0% { transform: rotate(0deg); } 
-  100% { transform: rotate(360deg); }
 }
 
-.message-content {
+.message-body {
   flex: 1;
-  font-size: 16px;
-  line-height: 1.6;
-  color: #1f1f1f;
-  overflow-x: hidden;
+  min-width: 0;
 }
 
-.user-text { white-space: pre-wrap; }
+.assistant-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 10px;
+}
 
-/* Markdown Styling Light */
+.ghost-btn {
+  border: 1px solid #d1d5db;
+  background: #fff;
+  border-radius: 999px;
+  padding: 4px 10px;
+  cursor: pointer;
+  font-size: 12px;
+}
+
+.ghost-btn.active {
+  background: #e0f2fe;
+  border-color: #7dd3fc;
+  color: #0369a1;
+}
+
+.ghost-btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.minor-status {
+  color: #64748b;
+  font-size: 12px;
+}
+
+.user-text {
+  white-space: pre-wrap;
+  line-height: 1.75;
+}
+
 :deep(.markdown-body) {
-  color: #1f1f1f !important;
-  font-family: inherit;
+  line-height: 1.75;
+  color: #111827;
 }
-:deep(p) { margin-bottom: 1rem; }
-:deep(pre) {
-  background: #f6f8fa !important;
-  padding: 16px;
-  border-radius: 8px;
+
+:deep(.markdown-body pre) {
+  background: #0f172a;
+  color: #e5e7eb;
+  border-radius: 14px;
+  padding: 14px;
   overflow-x: auto;
-  margin: 10px 0;
-  border: 1px solid #d0d7de;
-}
-:deep(code) {
-  font-family: 'Consolas', monospace;
-  font-size: 0.9em;
-  color: #24292f;
 }
 
-/* --- Input Area (Fixed Bottom) --- */
+.message-files {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-top: 10px;
+}
+
+.file-tag {
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: #eff6ff;
+  color: #1d4ed8;
+  font-size: 12px;
+}
+
+.loading-box {
+  color: #64748b;
+}
+
 .chat-footer {
-  /* No absolute positioning! */
-  background: #ffffff;
-  padding: 10px 0 60px; /* Increased bottom padding for footer-note space */
-  width: 100%;
-  flex-shrink: 0; /* Prevent shrinking */
+  border-top: 1px solid #e5e7eb;
+  padding: 16px 24px 18px;
+  background: #fff;
 }
 
-.input-container {
-  max-width: 48rem;
+.input-wrapper {
+  max-width: 760px;
   margin: 0 auto;
-  padding: 0 16px;
+  border: 1px solid #dbe4ef;
+  border-radius: 20px;
+  padding: 14px 16px 10px;
+  background: #f8fafc;
   position: relative;
+}
+
+textarea {
+  width: 100%;
+  border: none;
+  resize: none;
+  background: transparent;
+  font: inherit;
+  color: #111827;
+  min-height: 28px;
+  max-height: 200px;
+}
+
+textarea:focus {
+  outline: none;
 }
 
 .file-preview-area {
   display: flex;
-  gap: 10px;
-  margin-top: 8px;
-  margin-bottom: 8px;
+  gap: 8px;
   flex-wrap: wrap;
-  padding: 0 4px;
+  margin: 10px 0;
 }
+
 .file-preview-item {
-  background: #ffffff;
-  padding: 4px 10px;
-  border-radius: 6px;
-  font-size: 12px;
   display: flex;
   align-items: center;
-  gap: 6px;
-  border: 1px solid #e0e0e0;
-}
-.remove-file { cursor: pointer; color: #d32f2f; font-weight: bold; padding: 0 4px; }
-
-/* New Input Wrapper (The Box) */
-.input-wrapper {
-  background: #f0f4f9;
-  border: 1px solid transparent;
-  border-radius: 16px; /* Slightly less rounded than pill for multi-line feel */
-  padding: 12px 16px 8px;
-  display: flex;
-  flex-direction: column;
-  transition: background 0.2s, box-shadow 0.2s;
+  gap: 8px;
+  padding: 6px 10px;
+  border-radius: 12px;
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  font-size: 12px;
 }
 
-.input-wrapper:focus-within {
-  background: #ffffff;
-  box-shadow: 0 1px 6px rgba(0,0,0,0.15);
-  border-color: #d0d7de;
-}
-
-textarea {
-  flex: 1;
-  background: transparent;
+.remove-file {
   border: none;
-  color: #1f1f1f;
-  resize: none;
-  max-height: 200px;
-  font-family: inherit;
-  font-size: 16px;
-  line-height: 1.5;
-  padding: 4px 0 0; /* Reduced bottom padding */
-  margin: 0;
-  min-height: 24px;
+  background: transparent;
+  cursor: pointer;
+  color: #dc2626;
 }
-textarea:focus { outline: none; }
 
-/* Action Bar at Bottom */
 .action-bar {
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  margin-top: 2px; /* Reduced gap */
+  justify-content: space-between;
+  gap: 12px;
 }
 
 .left-tools {
   display: flex;
-  gap: 4px; /* Tighter buttons */
+  align-items: center;
+  gap: 8px;
 }
 
-.tool-btn {
-  color: #444746;
-  cursor: pointer;
-  padding: 6px; /* Smaller padding */
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 50%;
+.tool-btn,
+.send-btn {
   border: none;
-  background: transparent;
-  transition: background 0.2s;
+  border-radius: 999px;
+  background: #fff;
+  padding: 8px 12px;
+  cursor: pointer;
 }
-.tool-btn:hover:not(:disabled) { background: #e1e5ea; color: #1f1f1f; }
-.tool-btn:disabled { opacity: 0.5; cursor: default; }
-/* Active state for tool buttons (e.g. Web Search) */
+
 .tool-btn.active {
-  color: #4285F4;
-  background-color: #e8f0fe;
+  background: #dbeafe;
+  color: #1d4ed8;
 }
 
 .send-btn {
-  background: transparent;
-  color: #1f1f1f;
-  border: none;
-  border-radius: 50%;
-  width: 36px;
-  height: 36px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  transition: background 0.2s;
+  background: #0f172a;
+  color: #fff;
 }
+
 .send-btn:disabled {
-  color: #c4c7c5;
-  cursor: default;
-}
-.send-btn:hover:not(:disabled) {
-  background: #e1e5ea;
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 
-.footer-note {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  width: 100%;
-  text-align: center;
-  color: #757575;
-  font-size: 11px;
-  padding-bottom: 8px;
-  line-height: 1.5;
-  background: rgba(255,255,255,0.8); /* Optional: semi-transparent bg if overlaying */
-  pointer-events: none; /* Let clicks pass through if needed, though links need events */
-}
-/* Re-enable pointer events for links inside footer */
-.footer-note * { pointer-events: auto; }
-
-.footer-legal {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 12px;
-  opacity: 0.8;
-}
-
-.footer-note {
-  text-align: center;
-  color: #757575;
-  font-size: 11px;
-  margin-top: 12px;
-  padding-bottom: 8px;
-  line-height: 1.5;
-}
-
-.footer-legal {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 12px;
-  opacity: 0.8;
-}
-
-.loading .dot {
-  color: #444746;
-  animation: blink 1.4s infinite both;
-  font-size: 24px;
-}
-.loading .dot:nth-child(2) { animation-delay: 0.2s; }
-.loading .dot:nth-child(3) { animation-delay: 0.4s; }
-
-@keyframes blink {
-  0% { opacity: 0.2; } 
-  20% { opacity: 1; } 
-  100% { opacity: 0.2; }
-}
-
-/* Database Menu */
 .db-wrapper {
   position: relative;
-  display: flex;
-  align-items: center;
 }
 
 .db-menu {
   position: absolute;
-  bottom: 100%;
-  left: 50%;
-  transform: translateX(-50%);
-  margin-bottom: 10px;
-  background: #ffffff;
-  border: 1px solid #e0e0e0;
-  border-radius: 8px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-  padding: 4px;
+  left: 0;
+  bottom: 44px;
   min-width: 120px;
-  z-index: 20;
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
+  background: #fff;
+  border: 1px solid #dbe4ef;
+  border-radius: 12px;
+  box-shadow: 0 12px 24px rgba(15, 23, 42, 0.12);
+  overflow: hidden;
 }
 
 .db-item {
-  padding: 8px 12px;
-  font-size: 13px;
-  color: #444746;
+  padding: 10px 12px;
   cursor: pointer;
-  border-radius: 6px;
-  white-space: nowrap;
-  transition: background 0.2s, color 0.2s;
-  text-align: center;
 }
 
-.db-item:hover {
-  background-color: #f0f4f9;
-}
-
+.db-item:hover,
 .db-item.active {
-  color: #1967d2;
-  background-color: #e8f0fe;
-  font-weight: 500;
+  background: #eff6ff;
+}
+
+.trace-panel {
+  border-left: 1px solid #dbe4ef;
+  background: #f8fafc;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.trace-header {
+  padding: 18px 18px 14px;
+  border-bottom: 1px solid #dbe4ef;
+}
+
+.trace-title {
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.trace-subtitle {
+  font-size: 12px;
+  color: #64748b;
+  margin-top: 4px;
+}
+
+.trace-content,
+.trace-empty {
+  padding: 16px 18px;
+  overflow-y: auto;
+}
+
+.trace-empty {
+  color: #64748b;
+}
+
+.trace-summary {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-bottom: 14px;
+}
+
+.trace-summary > div {
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 10px;
+  font-size: 12px;
+}
+
+.trace-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.trace-item {
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 14px;
+  padding: 12px;
+}
+
+.trace-type {
+  font-weight: 700;
+  color: #0f172a;
+  margin-bottom: 6px;
+}
+
+.trace-meta,
+.trace-delta,
+.trace-loading {
+  font-size: 12px;
+  color: #475569;
+}
+
+.trace-code {
+  margin: 8px 0 0;
+  padding: 10px;
+  border-radius: 10px;
+  background: #0f172a;
+  color: #e5e7eb;
+  font-size: 12px;
+  overflow-x: auto;
+  white-space: pre-wrap;
+}
+
+.search-empty {
+  color: #64748b;
+}
+
+.search-result-list {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  max-height: 70vh;
+  overflow-y: auto;
+}
+
+.search-card {
+  border: 1px solid #e5e7eb;
+  border-radius: 16px;
+  padding: 16px;
+  background: #f8fafc;
+}
+
+.search-card-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+
+.search-main-title {
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.search-sub-title {
+  font-size: 12px;
+  color: #64748b;
+  margin-top: 4px;
+}
+
+.search-summary {
+  line-height: 1.7;
+  margin-bottom: 10px;
+}
+
+.search-details pre {
+  white-space: pre-wrap;
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  padding: 12px;
+  border-radius: 12px;
+  max-height: 240px;
+  overflow-y: auto;
+}
+
+@media (max-width: 1400px) {
+  .chat-shell {
+    grid-template-columns: 240px minmax(0, 1fr);
+  }
+
+  .trace-panel {
+    display: none;
+  }
+}
+
+@media (max-width: 900px) {
+  .chat-shell {
+    grid-template-columns: 1fr;
+  }
+
+  .sidebar {
+    display: none;
+  }
+
+  .message-inner,
+  .input-wrapper {
+    max-width: 100%;
+  }
 }
 </style>

@@ -54,7 +54,7 @@ const fetchTree = async () => {
   loading.value = true
   try {
     const res = await axios.get('/api/test/file_tree')
-    treeData.value = res.data
+    treeData.value = res.data.data || []
   } catch (err) {
     ElMessage.error('获取文件树失败')
   } finally {
