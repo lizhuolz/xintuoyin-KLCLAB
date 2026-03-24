@@ -11,6 +11,7 @@ from langchain_core.messages import HumanMessage
 
 summary_model = os.getenv("RESEARCH_SUMMARY_MODEL", "gpt-4o")
 max_results = int(os.getenv("RESEARCH_MAX_RESULTS", 5))
+max_raw_content_chars = int(os.getenv("RESEARCH_RAW_CONTENT_MAX_CHARS", 4000))
 
 # --- 1. 修改模型输出结构 (从 List 改为单个 Item，因为每个线程只处理一个) ---
 class SearchResultItem(BaseModel):
@@ -37,6 +38,8 @@ def process_single_result(raw_result: dict) -> dict:
     title = raw_result.get("title", "")
     snippet = raw_result.get("content", "")
     raw_content = raw_result.get("raw_content", "未获取到原文")
+    if isinstance(raw_content, str) and len(raw_content) > max_raw_content_chars:
+        raw_content = raw_content[:max_raw_content_chars] + " ...(已截断)"
     
     prompt = (
         "请作为信息提取员，为以下网页片段提取大标题、提炼小标题并总结摘要。\n\n"

@@ -16,7 +16,6 @@ from fastapi.responses import JSONResponse, PlainTextResponse, StreamingResponse
 from fastapi.staticfiles import StaticFiles
 
 from langchain_core.messages import AIMessage, AIMessageChunk, HumanMessage, SystemMessage, ToolMessage
-from langgraph.checkpoint.memory import MemorySaver
 
 # 确保 backend 目录在 sys.path 中，防止模块导入失败
 current_dir = os.path.dirname(os.path.abspath(__file__))
@@ -60,8 +59,7 @@ for path in [HISTORY_ROOT, FEEDBACK_ROOT, CHAT_UPLOAD_ROOT, EXCELLENT_DIR, NEGAT
 app.mount("/api/static/feedbacks", StaticFiles(directory=str(FEEDBACK_ROOT)), name="feedbacks")
 app.mount("/api/static/chat_uploads", StaticFiles(directory=str(CHAT_UPLOAD_ROOT)), name="chat_uploads")
 
-memory = MemorySaver()
-agent_app = graph_builder.compile(checkpointer=memory)
+agent_app = graph_builder.compile()
 kb_service = KBService()
 VALID_FEEDBACK_TYPES = {"like", "dislike"}
 
