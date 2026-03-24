@@ -3,15 +3,15 @@ import sqlparse
 import copy
 import re
 from openai import OpenAI
+import os
 
 # MySQL Info
-HOST = '183.69.138.62'
-PORT = 33666
-USER = '严丹丹'
-PASSWD = '123456789'
-DB_NAME = 'r_d_test'
-
-MAX_REVISE_ROUND = 4
+HOST = os.environ["HOST"]
+PORT = int(os.environ["PORT"])
+USER = os.environ["USER"]
+PASSWD = os.environ["PASSWD"]
+DB_NAME = os.environ["DB_NAME"]
+MAX_REVISE_ROUND = int(os.environ["MAX_REVISE_ROUND"])
 
 REVISE_PROMPT ='''
 以下是一个在MySQL上执行的语句：
@@ -52,7 +52,7 @@ class DB:
     def __init__(self, 
                  base_url='https://api.claudeshop.top/v1', 
                  model_name='gpt-4o' ,
-                 api_key = "sk-pMyKRA0l2LRns2k0BuBipp1gDmI2HG98ZXATEyOS0MMAJNJH"
+                 api_key =None
                  ):
         
         # init MySQL
