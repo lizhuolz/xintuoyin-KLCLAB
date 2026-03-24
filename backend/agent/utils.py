@@ -11,16 +11,25 @@ FAISS_INDEX_PATH = os.getenv("QUERY_DB_PATH", "./data/local_db_query")
 EMBEDDING_MODEL = os.getenv("QUERY_EMBEDDING_MODEL", "BAAI/bge-base-zh-v1.5")
 
 
-# --- 🎯 核心更改：初始化本地 Embedding 模型 ---
-# 使用北京智源（BAAI）开源的 bge-small-zh-v1.5，体积小（不到100MB），速度极快，中文效果极佳
-embeddings = HuggingFaceEmbeddings(
-    model_name=EMBEDDING_MODEL,
-    model_kwargs={'device': 'cpu'}, # 如果你的机器有N卡，可以改为 'cuda' 获得几十倍加速
-    encode_kwargs={'normalize_embeddings': True} # 计算余弦相似度时建议开启归一化
-)
+_embeddings = None
+_vector_db = None
+
+
+def get_embeddings():
+    global _embeddings
+    if _embeddings is None:
+        # 延迟加载 embedding 模型，避免服务启动阶段阻塞。
+        _embeddings = HuggingFaceEmbeddings(
+            model_name=EMBEDDING_MODEL,
+            model_kwargs={'device': 'cpu'},
+            encode_kwargs={'normalize_embeddings': True}
+        )
+    return _embeddings
+
 
 def load_or_init_db():
     """加载本地历史题库，如果不存在则使用种子数据初始化"""
+    embeddings = get_embeddings()
     if os.path.exists(FAISS_INDEX_PATH):
         # 允许加载本地文件
         return FAISS.load_local(FAISS_INDEX_PATH, embeddings, allow_dangerous_deserialization=True)
@@ -39,8 +48,12 @@ def load_or_init_db():
         db.save_local(FAISS_INDEX_PATH)
         return db
 
-# 全局加载向量库（常驻内存）
-vector_db = load_or_init_db()
+
+def get_vector_db():
+    global _vector_db
+    if _vector_db is None:
+        _vector_db = load_or_init_db()
+    return _vector_db
 
 
 # 推荐问答函数
@@ -51,6 +64,7 @@ def get_semantic_recommendations(user_query: str) -> list[str]:
     """
     try:
         # k=4 为了容错，防命中当前一模一样的问题
+        vector_db = get_vector_db()
         results = vector_db.similarity_search(user_query, k=4)
     except Exception as e:
         print(f"[后台提示] 本地语义检索失败: {e}")

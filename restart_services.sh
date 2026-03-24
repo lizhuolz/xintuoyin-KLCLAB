@@ -17,10 +17,9 @@ if [ -f $PID_FILE ]; then
     
     if [ -n "$BACKEND_PID" ]; then
         echo "   停止旧后端 (PID: $BACKEND_PID)..."
-        # 使用 kill -9 确保彻底杀死可能卡住的 gunicorn 进程
         kill -9 $BACKEND_PID 2>/dev/null || true
-        # 额外清理孤儿进程 (如果有)
         pkill -f "gunicorn.*app:app" 2>/dev/null || true
+        pkill -f "python -m uvicorn app:app" 2>/dev/null || true
     fi
     
     if [ -n "$FRONTEND_PID" ]; then
@@ -32,20 +31,15 @@ else
 fi
 
 # 2. 启动后端
-echo "🚀 [1/2] 启动后端 (使用 Pixi 环境)..."
+echo "🚀 [1/2] 启动后端 (使用 Conda xtyAgent 环境)..."
 cd backend || exit
 
-# 关键：加载配置并使用 pixi run 启动
-# 如果你的 setting.sh 和 env.sh 已经换到了 script/ 目录下
-source script/setting.sh 2>/dev/null || echo "⚠️  Warning: script/setting.sh not found"
-source script/env.sh 2>/dev/null || echo "⚠️  Warning: script/env.sh not found"
-
-# 使用 pixi run 启动 gunicorn，确保环境变量和依赖正确
-nohup env CUDA_VISIBLE_DEVICES=5 pixi run gunicorn -w 2 -k uvicorn.workers.UvicornWorker \
-    --log-level info \
-    --access-logfile - --error-logfile - --capture-output \
-    -b 0.0.0.0:8000 app:app \
-    >> ../$LOG_DIR/backend.log 2>&1 &
+# 关键：通过独立 shell 加载 Conda 环境和后端配置
+CONDA_SH="/home/lyq/anaconda3/etc/profile.d/conda.sh"
+BACKEND_PY="/home/lyq/anaconda3/envs/xtyAgent/bin/python"
+BACKEND_ROOT="/home/lyq/xintuoyin-KLCLAB/backend"
+BACKEND_CMD="cd $BACKEND_ROOT && source $CONDA_SH && conda activate xtyAgent && source script/setting.sh && source script/env.sh && exec env PYTHONUNBUFFERED=1 CUDA_VISIBLE_DEVICES=0,3 $BACKEND_PY -m uvicorn app:app --host 0.0.0.0 --port 8000"
+setsid bash -lc "$BACKEND_CMD" >> ../$LOG_DIR/backend.log 2>&1 < /dev/null &
 
 NEW_BACKEND_PID=$!
 echo "✅ 后端 PID: $NEW_BACKEND_PID"

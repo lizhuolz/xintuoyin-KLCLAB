@@ -1,0 +1,177 @@
+/home/lyq/xintuoyin-KLCLAB/backend/agent/tools/search.py:23: LangChainDeprecationWarning: The class `TavilySearchResults` was deprecated in LangChain 0.3.25 and will be removed in 1.0. An updated version of the class exists in the `langchain-tavily package and should be used instead. To use it run `pip install -U `langchain-tavily` and import as `from `langchain_tavily import TavilySearch``.
+  base_search = TavilySearchResults(
+2026-03-24 21:25:56 [debug    ] Initialized classification model device=device(type='cuda', index=0) model=Model(path='unitary/unbiased-toxic-roberta', subfolder='', revision='36295dd80b422dc49f40052021430dae76241adc', onnx_path='ProtectAI/unbiased-toxic-roberta-onnx', onnx_revision='34480fa958f6657ad835c345808475755b6974a7', onnx_subfolder='', onnx_filename='model.onnx', kwargs={}, pipeline_kwargs={'batch_size': 1, 'device': device(type='cuda', index=0), 'padding': 'max_length', 'top_k': None, 'function_to_apply': 'sigmoid', 'return_token_type_ids': False, 'max_length': 512, 'truncation': True}, tokenizer_kwargs={})
+Device set to use cuda:0
+2026-03-24 21:25:56 [debug    ] Initialized classification model device=device(type='cuda', index=0) model=Model(path='madhurjindal/autonlp-Gibberish-Detector-492513457', subfolder='', revision='fddf42c3008ad61cc481f90d02dd0712ba1ee2d8', onnx_path='madhurjindal/autonlp-Gibberish-Detector-492513457', onnx_revision='fddf42c3008ad61cc481f90d02dd0712ba1ee2d8', onnx_subfolder='onnx', onnx_filename='model.onnx', kwargs={}, pipeline_kwargs={'batch_size': 1, 'device': device(type='cuda', index=0), 'return_token_type_ids': False, 'max_length': 512, 'truncation': True}, tokenizer_kwargs={})
+Device set to use cuda:0
+2026-03-24 21:25:56 [debug    ] Initialized classification model device=device(type='cuda', index=0) model=Model(path='ProtectAI/distilroberta-base-rejection-v1', subfolder='', revision='65584967c3f22ff7723e5370c65e0e76791e6055', onnx_path='ProtectAI/distilroberta-base-rejection-v1', onnx_revision='65584967c3f22ff7723e5370c65e0e76791e6055', onnx_subfolder='onnx', onnx_filename='model.onnx', kwargs={}, pipeline_kwargs={'batch_size': 1, 'device': device(type='cuda', index=0), 'return_token_type_ids': False, 'max_length': 128, 'truncation': True}, tokenizer_kwargs={})
+Device set to use cuda:0
+2026-03-24 21:25:57 [debug    ] Initialized classification model device=device(type='cuda', index=0) model=Model(path='MoritzLaurer/roberta-base-zeroshot-v2.0-c', subfolder='', revision='d825e740e0c59881cf0b0b1481ccf726b6d65341', onnx_path='protectai/MoritzLaurer-roberta-base-zeroshot-v2.0-c-onnx', onnx_revision='fde5343dbad32f1a5470890505c72ec656db6dbe', onnx_subfolder='', onnx_filename='model.onnx', kwargs={}, pipeline_kwargs={'batch_size': 1, 'device': device(type='cuda', index=0), 'return_token_type_ids': False, 'max_length': 512, 'truncation': True}, tokenizer_kwargs={})
+Device set to use cuda:0
+INFO:     Started server process [4046368]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
+INFO:     127.0.0.1:52500 - "GET /openapi.json HTTP/1.1" 200 OK
+INFO:     127.0.0.1:35274 - "GET /api/test/file_tree HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:35290 - "GET /api/test/file_tree HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:35306 - "GET /api/feedback/list?name=&enterprise=&type=dislike HTTP/1.1" 200 OK
+INFO:     127.0.0.1:35322 - "GET /api/history/list?search= HTTP/1.1" 200 OK
+INFO:     127.0.0.1:35334 - "GET /api/kb/list HTTP/1.1" 200 OK
+INFO:     127.0.0.1:35342 - "GET /api/history/list?search= HTTP/1.1" 200 OK
+INFO:     127.0.0.1:35358 - "GET /api/history/1774327348285 HTTP/1.1" 200 OK
+2026-03-24 21:26:45 [debug    ] No banned substrings found
+2026-03-24 21:26:45 [debug    ] Scanner completed              elapsed_time_seconds=0.000448 is_valid=True scanner=BanSubstrings
+2026-03-24 21:26:45 [debug    ] No invisible characters found
+2026-03-24 21:26:45 [debug    ] Scanner completed              elapsed_time_seconds=0.000212 is_valid=True scanner=InvisibleText
+2026-03-24 21:26:46 [debug    ] No secrets detected in the prompt
+2026-03-24 21:26:46 [debug    ] Scanner completed              elapsed_time_seconds=0.074127 is_valid=True scanner=Secrets
+2026-03-24 21:26:46 [debug    ] Not toxicity found in the text results=[[{'label': 'toxicity', 'score': 0.0005177815328352153}, {'label': 'insult', 'score': 0.00016920040070544928}, {'label': 'male', 'score': 0.00012487989442888647}, {'label': 'female', 'score': 9.523965127300471e-05}, {'label': 'christian', 'score': 9.171805868390948e-05}, {'label': 'psychiatric_or_mental_illness', 'score': 7.42709671612829e-05}, {'label': 'muslim', 'score': 7.267226465046406e-05}, {'label': 'white', 'score': 3.849195491056889e-05}, {'label': 'threat', 'score': 3.744587957044132e-05}, {'label': 'obscene', 'score': 3.4912111004814506e-05}, {'label': 'jewish', 'score': 3.368809848325327e-05}, {'label': 'identity_attack', 'score': 2.917973142757546e-05}, {'label': 'homosexual_gay_or_lesbian', 'score': 2.3997772586881183e-05}, {'label': 'black', 'score': 2.2651604012935422e-05}, {'label': 'sexual_explicit', 'score': 1.6743635569582693e-05}, {'label': 'severe_toxicity', 'score': 1.0145663509320002e-06}]]
+2026-03-24 21:26:46 [debug    ] Scanner completed              elapsed_time_seconds=0.252207 is_valid=True scanner=Toxicity
+2026-03-24 21:26:46 [debug    ] Gibberish detection finished   results=[{'label': 'mild gibberish', 'score': 0.29843053221702576}]
+2026-03-24 21:26:46 [debug    ] No gibberish in the text       highest_score=0.3 threshold=0.9
+2026-03-24 21:26:46 [debug    ] Scanner completed              elapsed_time_seconds=0.016191 is_valid=True scanner=Gibberish
+2026-03-24 21:26:46 [info     ] Scanned prompt                 elapsed_time_seconds=0.343947 scores={'BanSubstrings': -1.0, 'InvisibleText': 0.0, 'Secrets': -1.0, 'Toxicity': -1.0, 'Gibberish': -0.7}
+INFO:     127.0.0.1:51488 - "POST /api/chat HTTP/1.1" 200 OK
+INFO:     127.0.0.1:47706 - "GET /api/chat/new_session HTTP/1.1" 200 OK
+2026-03-24 21:27:10 [debug    ] No banned substrings found
+2026-03-24 21:27:10 [debug    ] Scanner completed              elapsed_time_seconds=0.000442 is_valid=True scanner=BanSubstrings
+2026-03-24 21:27:10 [debug    ] No invisible characters found
+2026-03-24 21:27:10 [debug    ] Scanner completed              elapsed_time_seconds=0.000179 is_valid=True scanner=InvisibleText
+2026-03-24 21:27:10 [debug    ] No secrets detected in the prompt
+2026-03-24 21:27:10 [debug    ] Scanner completed              elapsed_time_seconds=0.007967 is_valid=True scanner=Secrets
+2026-03-24 21:27:10 [debug    ] Not toxicity found in the text results=[[{'label': 'toxicity', 'score': 0.0005177815328352153}, {'label': 'insult', 'score': 0.00016920040070544928}, {'label': 'male', 'score': 0.00012487989442888647}, {'label': 'female', 'score': 9.523965127300471e-05}, {'label': 'christian', 'score': 9.171805868390948e-05}, {'label': 'psychiatric_or_mental_illness', 'score': 7.42709671612829e-05}, {'label': 'muslim', 'score': 7.267226465046406e-05}, {'label': 'white', 'score': 3.849195491056889e-05}, {'label': 'threat', 'score': 3.744587957044132e-05}, {'label': 'obscene', 'score': 3.4912111004814506e-05}, {'label': 'jewish', 'score': 3.368809848325327e-05}, {'label': 'identity_attack', 'score': 2.917973142757546e-05}, {'label': 'homosexual_gay_or_lesbian', 'score': 2.3997772586881183e-05}, {'label': 'black', 'score': 2.2651604012935422e-05}, {'label': 'sexual_explicit', 'score': 1.6743635569582693e-05}, {'label': 'severe_toxicity', 'score': 1.0145663509320002e-06}]]
+2026-03-24 21:27:10 [debug    ] Scanner completed              elapsed_time_seconds=0.025782 is_valid=True scanner=Toxicity
+2026-03-24 21:27:10 [debug    ] Gibberish detection finished   results=[{'label': 'mild gibberish', 'score': 0.29843053221702576}]
+2026-03-24 21:27:10 [debug    ] No gibberish in the text       highest_score=0.3 threshold=0.9
+2026-03-24 21:27:10 [debug    ] Scanner completed              elapsed_time_seconds=0.012908 is_valid=True scanner=Gibberish
+2026-03-24 21:27:10 [info     ] Scanned prompt                 elapsed_time_seconds=0.048401 scores={'BanSubstrings': -1.0, 'InvisibleText': 0.0, 'Secrets': -1.0, 'Toxicity': -1.0, 'Gibberish': -0.7}
+INFO:     127.0.0.1:41172 - "POST /api/chat HTTP/1.1" 200 OK
+INFO:     127.0.0.1:35396 - "GET /api/kb/list HTTP/1.1" 200 OK
+INFO:     127.0.0.1:35398 - "GET /api/history/list?search= HTTP/1.1" 200 OK
+INFO:     127.0.0.1:35402 - "GET /api/feedback/list?name=&enterprise=&type=like HTTP/1.1" 200 OK
+INFO:     127.0.0.1:35408 - "GET /api/feedback/list?name=&enterprise=&type=dislike HTTP/1.1" 200 OK
+INFO:     127.0.0.1:35424 - "GET /api/test/file_tree HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:35430 - "GET /api/feedback/list?name=&enterprise=&type=dislike HTTP/1.1" 200 OK
+INFO:     127.0.0.1:35438 - "GET /api/feedback/list?name=&enterprise=&type=like HTTP/1.1" 200 OK
+INFO:     127.0.0.1:35452 - "GET /api/history/list?search= HTTP/1.1" 200 OK
+INFO:     127.0.0.1:35466 - "GET /api/kb/list HTTP/1.1" 200 OK
+INFO:     127.0.0.1:39096 - "GET /api/history/list?search= HTTP/1.1" 200 OK
+INFO:     127.0.0.1:39102 - "GET /api/history/1774327348285 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:39114 - "GET /api/history/verifystream1 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:39128 - "GET /api/history/testlive8000 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:39130 - "GET /api/chat/new_session HTTP/1.1" 200 OK
+INFO:     127.0.0.1:39140 - "GET /api/chat/new_session HTTP/1.1" 200 OK
+2026-03-24 21:27:38 [debug    ] No banned substrings found
+2026-03-24 21:27:38 [debug    ] Scanner completed              elapsed_time_seconds=0.000785 is_valid=True scanner=BanSubstrings
+2026-03-24 21:27:38 [debug    ] No invisible characters found
+2026-03-24 21:27:38 [debug    ] Scanner completed              elapsed_time_seconds=0.000215 is_valid=True scanner=InvisibleText
+2026-03-24 21:27:39 [debug    ] No secrets detected in the prompt
+2026-03-24 21:27:39 [debug    ] Scanner completed              elapsed_time_seconds=0.120469 is_valid=True scanner=Secrets
+2026-03-24 21:27:39 [debug    ] Not toxicity found in the text results=[[{'label': 'toxicity', 'score': 0.00036106008337810636}, {'label': 'male', 'score': 0.00016959517961367965}, {'label': 'female', 'score': 0.0001323621836490929}, {'label': 'insult', 'score': 0.00010190602188231423}, {'label': 'psychiatric_or_mental_illness', 'score': 9.301864338340238e-05}, {'label': 'muslim', 'score': 8.422463724855334e-05}, {'label': 'christian', 'score': 8.34735983517021e-05}, {'label': 'white', 'score': 7.052203000057489e-05}, {'label': 'jewish', 'score': 4.0730337786953896e-05}, {'label': 'homosexual_gay_or_lesbian', 'score': 3.998838292318396e-05}, {'label': 'black', 'score': 3.873646346619353e-05}, {'label': 'identity_attack', 'score': 3.395541716599837e-05}, {'label': 'obscene', 'score': 3.054123590118252e-05}, {'label': 'threat', 'score': 2.754241540969815e-05}, {'label': 'sexual_explicit', 'score': 1.9279899788671173e-05}, {'label': 'severe_toxicity', 'score': 1.2430391507223248e-06}]]
+2026-03-24 21:27:39 [debug    ] Scanner completed              elapsed_time_seconds=0.011698 is_valid=True scanner=Toxicity
+2026-03-24 21:27:39 [debug    ] Gibberish detection finished   results=[{'label': 'clean', 'score': 0.2751922011375427}]
+2026-03-24 21:27:39 [debug    ] No gibberish in the text       highest_score=0.72 threshold=0.9
+2026-03-24 21:27:39 [debug    ] Scanner completed              elapsed_time_seconds=0.0061 is_valid=True scanner=Gibberish
+2026-03-24 21:27:39 [info     ] Scanned prompt                 elapsed_time_seconds=0.140039 scores={'BanSubstrings': -1.0, 'InvisibleText': 0.0, 'Secrets': -1.0, 'Toxicity': -1.0, 'Gibberish': -0.2}
+INFO:     127.0.0.1:42822 - "POST /api/chat HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56654 - "GET /api/feedback/list?name=&enterprise=&type=like HTTP/1.1" 200 OK
+2026-03-24 21:28:38 [debug    ] No banned substrings found
+2026-03-24 21:28:38 [debug    ] Scanner completed              elapsed_time_seconds=0.000435 is_valid=True scanner=BanSubstrings
+2026-03-24 21:28:38 [debug    ] No invisible characters found
+2026-03-24 21:28:38 [debug    ] Scanner completed              elapsed_time_seconds=0.000232 is_valid=True scanner=InvisibleText
+2026-03-24 21:28:38 [debug    ] No secrets detected in the prompt
+2026-03-24 21:28:38 [debug    ] Scanner completed              elapsed_time_seconds=0.006472 is_valid=True scanner=Secrets
+2026-03-24 21:28:38 [debug    ] Not toxicity found in the text results=[[{'label': 'toxicity', 'score': 0.0005177815328352153}, {'label': 'insult', 'score': 0.00016920040070544928}, {'label': 'male', 'score': 0.00012487989442888647}, {'label': 'female', 'score': 9.523965127300471e-05}, {'label': 'christian', 'score': 9.171805868390948e-05}, {'label': 'psychiatric_or_mental_illness', 'score': 7.42709671612829e-05}, {'label': 'muslim', 'score': 7.267226465046406e-05}, {'label': 'white', 'score': 3.849195491056889e-05}, {'label': 'threat', 'score': 3.744587957044132e-05}, {'label': 'obscene', 'score': 3.4912111004814506e-05}, {'label': 'jewish', 'score': 3.368809848325327e-05}, {'label': 'identity_attack', 'score': 2.917973142757546e-05}, {'label': 'homosexual_gay_or_lesbian', 'score': 2.3997772586881183e-05}, {'label': 'black', 'score': 2.2651604012935422e-05}, {'label': 'sexual_explicit', 'score': 1.6743635569582693e-05}, {'label': 'severe_toxicity', 'score': 1.0145663509320002e-06}]]
+2026-03-24 21:28:38 [debug    ] Scanner completed              elapsed_time_seconds=0.011411 is_valid=True scanner=Toxicity
+2026-03-24 21:28:38 [debug    ] Gibberish detection finished   results=[{'label': 'mild gibberish', 'score': 0.29843053221702576}]
+2026-03-24 21:28:38 [debug    ] No gibberish in the text       highest_score=0.3 threshold=0.9
+2026-03-24 21:28:38 [debug    ] Scanner completed              elapsed_time_seconds=0.005205 is_valid=True scanner=Gibberish
+2026-03-24 21:28:38 [info     ] Scanned prompt                 elapsed_time_seconds=0.024497 scores={'BanSubstrings': -1.0, 'InvisibleText': 0.0, 'Secrets': -1.0, 'Toxicity': -1.0, 'Gibberish': -0.7}
+INFO:     127.0.0.1:47286 - "POST /api/chat HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54674 - "GET /api/feedback/list?name=&enterprise=&type=dislike HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54678 - "GET /api/test/file_tree HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:58712 - "GET /api/feedback/list?name=&enterprise=&type=dislike HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58726 - "GET /api/feedback/list?name=&enterprise=&type=like HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58736 - "GET /api/history/list?search= HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58740 - "GET /api/history/list?search= HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58746 - "GET /api/history/1774327348285 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58756 - "GET /api/chat/new_session HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58764 - "GET /api/chat/new_session HTTP/1.1" 200 OK
+2026-03-24 21:29:03 [debug    ] No banned substrings found
+2026-03-24 21:29:03 [debug    ] Scanner completed              elapsed_time_seconds=0.000419 is_valid=True scanner=BanSubstrings
+2026-03-24 21:29:03 [debug    ] No invisible characters found
+2026-03-24 21:29:03 [debug    ] Scanner completed              elapsed_time_seconds=0.000206 is_valid=True scanner=InvisibleText
+2026-03-24 21:29:03 [debug    ] No secrets detected in the prompt
+2026-03-24 21:29:03 [debug    ] Scanner completed              elapsed_time_seconds=0.007904 is_valid=True scanner=Secrets
+2026-03-24 21:29:03 [debug    ] Not toxicity found in the text results=[[{'label': 'toxicity', 'score': 0.0005177815328352153}, {'label': 'insult', 'score': 0.00016920040070544928}, {'label': 'male', 'score': 0.00012487989442888647}, {'label': 'female', 'score': 9.523965127300471e-05}, {'label': 'christian', 'score': 9.171805868390948e-05}, {'label': 'psychiatric_or_mental_illness', 'score': 7.42709671612829e-05}, {'label': 'muslim', 'score': 7.267226465046406e-05}, {'label': 'white', 'score': 3.849195491056889e-05}, {'label': 'threat', 'score': 3.744587957044132e-05}, {'label': 'obscene', 'score': 3.4912111004814506e-05}, {'label': 'jewish', 'score': 3.368809848325327e-05}, {'label': 'identity_attack', 'score': 2.917973142757546e-05}, {'label': 'homosexual_gay_or_lesbian', 'score': 2.3997772586881183e-05}, {'label': 'black', 'score': 2.2651604012935422e-05}, {'label': 'sexual_explicit', 'score': 1.6743635569582693e-05}, {'label': 'severe_toxicity', 'score': 1.0145663509320002e-06}]]
+2026-03-24 21:29:03 [debug    ] Scanner completed              elapsed_time_seconds=0.025511 is_valid=True scanner=Toxicity
+2026-03-24 21:29:03 [debug    ] Gibberish detection finished   results=[{'label': 'mild gibberish', 'score': 0.29843053221702576}]
+2026-03-24 21:29:03 [debug    ] No gibberish in the text       highest_score=0.3 threshold=0.9
+2026-03-24 21:29:03 [debug    ] Scanner completed              elapsed_time_seconds=0.011932 is_valid=True scanner=Gibberish
+2026-03-24 21:29:03 [info     ] Scanned prompt                 elapsed_time_seconds=0.047076 scores={'BanSubstrings': -1.0, 'InvisibleText': 0.0, 'Secrets': -1.0, 'Toxicity': -1.0, 'Gibberish': -0.7}
+INFO:     127.0.0.1:58768 - "POST /api/chat HTTP/1.1" 200 OK
+/home/lyq/xintuoyin-KLCLAB/backend/agent/tools/search.py:23: LangChainDeprecationWarning: The class `TavilySearchResults` was deprecated in LangChain 0.3.25 and will be removed in 1.0. An updated version of the class exists in the `langchain-tavily package and should be used instead. To use it run `pip install -U `langchain-tavily` and import as `from `langchain_tavily import TavilySearch``.
+  base_search = TavilySearchResults(
+2026-03-24 21:29:48 [debug    ] Initialized classification model device=device(type='cuda', index=0) model=Model(path='unitary/unbiased-toxic-roberta', subfolder='', revision='36295dd80b422dc49f40052021430dae76241adc', onnx_path='ProtectAI/unbiased-toxic-roberta-onnx', onnx_revision='34480fa958f6657ad835c345808475755b6974a7', onnx_subfolder='', onnx_filename='model.onnx', kwargs={}, pipeline_kwargs={'batch_size': 1, 'device': device(type='cuda', index=0), 'padding': 'max_length', 'top_k': None, 'function_to_apply': 'sigmoid', 'return_token_type_ids': False, 'max_length': 512, 'truncation': True}, tokenizer_kwargs={})
+Device set to use cuda:0
+2026-03-24 21:29:48 [debug    ] Initialized classification model device=device(type='cuda', index=0) model=Model(path='madhurjindal/autonlp-Gibberish-Detector-492513457', subfolder='', revision='fddf42c3008ad61cc481f90d02dd0712ba1ee2d8', onnx_path='madhurjindal/autonlp-Gibberish-Detector-492513457', onnx_revision='fddf42c3008ad61cc481f90d02dd0712ba1ee2d8', onnx_subfolder='onnx', onnx_filename='model.onnx', kwargs={}, pipeline_kwargs={'batch_size': 1, 'device': device(type='cuda', index=0), 'return_token_type_ids': False, 'max_length': 512, 'truncation': True}, tokenizer_kwargs={})
+Device set to use cuda:0
+2026-03-24 21:29:48 [debug    ] Initialized classification model device=device(type='cuda', index=0) model=Model(path='ProtectAI/distilroberta-base-rejection-v1', subfolder='', revision='65584967c3f22ff7723e5370c65e0e76791e6055', onnx_path='ProtectAI/distilroberta-base-rejection-v1', onnx_revision='65584967c3f22ff7723e5370c65e0e76791e6055', onnx_subfolder='onnx', onnx_filename='model.onnx', kwargs={}, pipeline_kwargs={'batch_size': 1, 'device': device(type='cuda', index=0), 'return_token_type_ids': False, 'max_length': 128, 'truncation': True}, tokenizer_kwargs={})
+Device set to use cuda:0
+2026-03-24 21:29:49 [debug    ] Initialized classification model device=device(type='cuda', index=0) model=Model(path='MoritzLaurer/roberta-base-zeroshot-v2.0-c', subfolder='', revision='d825e740e0c59881cf0b0b1481ccf726b6d65341', onnx_path='protectai/MoritzLaurer-roberta-base-zeroshot-v2.0-c-onnx', onnx_revision='fde5343dbad32f1a5470890505c72ec656db6dbe', onnx_subfolder='', onnx_filename='model.onnx', kwargs={}, pipeline_kwargs={'batch_size': 1, 'device': device(type='cuda', index=0), 'return_token_type_ids': False, 'max_length': 512, 'truncation': True}, tokenizer_kwargs={})
+Device set to use cuda:0
+INFO:     Started server process [4049204]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
+INFO:     127.0.0.1:46988 - "GET /api/history/list?search= HTTP/1.1" 200 OK
+INFO:     127.0.0.1:46990 - "GET /api/history/1774327348285 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:47004 - "GET /api/kb/list HTTP/1.1" 200 OK
+INFO:     127.0.0.1:47018 - "GET /api/history/list?search= HTTP/1.1" 200 OK
+INFO:     127.0.0.1:47026 - "GET /api/feedback/list?name=&enterprise=&type=like HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59334 - "GET /api/feedback/list?name=&enterprise=&type=dislike HTTP/1.1" 200 OK
+2026-03-24 21:30:42 [debug    ] No banned substrings found
+2026-03-24 21:30:42 [debug    ] Scanner completed              elapsed_time_seconds=0.000445 is_valid=True scanner=BanSubstrings
+2026-03-24 21:30:42 [debug    ] No invisible characters found
+2026-03-24 21:30:42 [debug    ] Scanner completed              elapsed_time_seconds=0.000118 is_valid=True scanner=InvisibleText
+2026-03-24 21:30:42 [debug    ] No secrets detected in the prompt
+2026-03-24 21:30:42 [debug    ] Scanner completed              elapsed_time_seconds=0.071962 is_valid=True scanner=Secrets
+2026-03-24 21:30:43 [debug    ] Not toxicity found in the text results=[[{'label': 'toxicity', 'score': 0.0005177815328352153}, {'label': 'insult', 'score': 0.00016920040070544928}, {'label': 'male', 'score': 0.00012487989442888647}, {'label': 'female', 'score': 9.523965127300471e-05}, {'label': 'christian', 'score': 9.171805868390948e-05}, {'label': 'psychiatric_or_mental_illness', 'score': 7.42709671612829e-05}, {'label': 'muslim', 'score': 7.267226465046406e-05}, {'label': 'white', 'score': 3.849195491056889e-05}, {'label': 'threat', 'score': 3.744587957044132e-05}, {'label': 'obscene', 'score': 3.4912111004814506e-05}, {'label': 'jewish', 'score': 3.368809848325327e-05}, {'label': 'identity_attack', 'score': 2.917973142757546e-05}, {'label': 'homosexual_gay_or_lesbian', 'score': 2.3997772586881183e-05}, {'label': 'black', 'score': 2.2651604012935422e-05}, {'label': 'sexual_explicit', 'score': 1.6743635569582693e-05}, {'label': 'severe_toxicity', 'score': 1.0145663509320002e-06}]]
+2026-03-24 21:30:43 [debug    ] Scanner completed              elapsed_time_seconds=0.231876 is_valid=True scanner=Toxicity
+2026-03-24 21:30:43 [debug    ] Gibberish detection finished   results=[{'label': 'mild gibberish', 'score': 0.29843053221702576}]
+2026-03-24 21:30:43 [debug    ] No gibberish in the text       highest_score=0.3 threshold=0.9
+2026-03-24 21:30:43 [debug    ] Scanner completed              elapsed_time_seconds=0.018138 is_valid=True scanner=Gibberish
+2026-03-24 21:30:43 [info     ] Scanned prompt                 elapsed_time_seconds=0.323175 scores={'BanSubstrings': -1.0, 'InvisibleText': 0.0, 'Secrets': -1.0, 'Toxicity': -1.0, 'Gibberish': -0.7}
+INFO:     127.0.0.1:58988 - "POST /api/chat HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58998 - "GET /api/feedback/list?name=&enterprise=&type=dislike HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54394 - "GET /api/history/list?search= HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54406 - "GET /api/history/1774327348285 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54412 - "GET /api/chat/new_session HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54422 - "GET /api/chat/new_session HTTP/1.1" 200 OK
+2026-03-24 21:30:49 [debug    ] No banned substrings found
+2026-03-24 21:30:49 [debug    ] Scanner completed              elapsed_time_seconds=0.000314 is_valid=True scanner=BanSubstrings
+2026-03-24 21:30:49 [debug    ] No invisible characters found
+2026-03-24 21:30:49 [debug    ] Scanner completed              elapsed_time_seconds=0.000105 is_valid=True scanner=InvisibleText
+2026-03-24 21:30:49 [debug    ] No secrets detected in the prompt
+2026-03-24 21:30:49 [debug    ] Scanner completed              elapsed_time_seconds=0.004579 is_valid=True scanner=Secrets
+2026-03-24 21:30:49 [debug    ] Not toxicity found in the text results=[[{'label': 'toxicity', 'score': 0.0005177815328352153}, {'label': 'insult', 'score': 0.00016920040070544928}, {'label': 'male', 'score': 0.00012487989442888647}, {'label': 'female', 'score': 9.523965127300471e-05}, {'label': 'christian', 'score': 9.171805868390948e-05}, {'label': 'psychiatric_or_mental_illness', 'score': 7.42709671612829e-05}, {'label': 'muslim', 'score': 7.267226465046406e-05}, {'label': 'white', 'score': 3.849195491056889e-05}, {'label': 'threat', 'score': 3.744587957044132e-05}, {'label': 'obscene', 'score': 3.4912111004814506e-05}, {'label': 'jewish', 'score': 3.368809848325327e-05}, {'label': 'identity_attack', 'score': 2.917973142757546e-05}, {'label': 'homosexual_gay_or_lesbian', 'score': 2.3997772586881183e-05}, {'label': 'black', 'score': 2.2651604012935422e-05}, {'label': 'sexual_explicit', 'score': 1.6743635569582693e-05}, {'label': 'severe_toxicity', 'score': 1.0145663509320002e-06}]]
+2026-03-24 21:30:49 [debug    ] Scanner completed              elapsed_time_seconds=0.013439 is_valid=True scanner=Toxicity
+2026-03-24 21:30:49 [debug    ] Gibberish detection finished   results=[{'label': 'mild gibberish', 'score': 0.29843053221702576}]
+2026-03-24 21:30:49 [debug    ] No gibberish in the text       highest_score=0.3 threshold=0.9
+2026-03-24 21:30:49 [debug    ] Scanner completed              elapsed_time_seconds=0.006938 is_valid=True scanner=Gibberish
+2026-03-24 21:30:49 [info     ] Scanned prompt                 elapsed_time_seconds=0.025975 scores={'BanSubstrings': -1.0, 'InvisibleText': 0.0, 'Secrets': -1.0, 'Toxicity': -1.0, 'Gibberish': -0.7}
+INFO:     127.0.0.1:54438 - "POST /api/chat HTTP/1.1" 200 OK
+2026-03-24 21:30:58 [debug    ] No banned substrings found
+2026-03-24 21:30:58 [debug    ] Scanner completed              elapsed_time_seconds=0.000431 is_valid=True scanner=BanSubstrings
+2026-03-24 21:30:58 [debug    ] No invisible characters found
+2026-03-24 21:30:58 [debug    ] Scanner completed              elapsed_time_seconds=0.000183 is_valid=True scanner=InvisibleText
+2026-03-24 21:30:58 [debug    ] No secrets detected in the prompt
+2026-03-24 21:30:58 [debug    ] Scanner completed              elapsed_time_seconds=0.126315 is_valid=True scanner=Secrets
+2026-03-24 21:30:58 [debug    ] Not toxicity found in the text results=[[{'label': 'toxicity', 'score': 0.000385638588340953}, {'label': 'male', 'score': 0.00018192268908023834}, {'label': 'insult', 'score': 0.00011913407070096582}, {'label': 'female', 'score': 0.00011811749573098496}, {'label': 'psychiatric_or_mental_illness', 'score': 8.757252362556756e-05}, {'label': 'white', 'score': 7.955495675560087e-05}, {'label': 'muslim', 'score': 7.210229523479939e-05}, {'label': 'christian', 'score': 6.317934457911178e-05}, {'label': 'black', 'score': 3.8407728425227106e-05}, {'label': 'homosexual_gay_or_lesbian', 'score': 3.414042657823302e-05}, {'label': 'obscene', 'score': 3.1062550988281146e-05}, {'label': 'identity_attack', 'score': 3.0940125725464895e-05}, {'label': 'jewish', 'score': 3.0896044336259365e-05}, {'label': 'threat', 'score': 2.4316095732501708e-05}, {'label': 'sexual_explicit', 'score': 1.7297661543125287e-05}, {'label': 'severe_toxicity', 'score': 1.0817598194989841e-06}]]
+2026-03-24 21:30:58 [debug    ] Scanner completed              elapsed_time_seconds=0.012653 is_valid=True scanner=Toxicity
+2026-03-24 21:30:58 [debug    ] Gibberish detection finished   results=[{'label': 'word salad', 'score': 0.2727639377117157}]
+2026-03-24 21:30:58 [debug    ] No gibberish in the text       highest_score=0.27 threshold=0.9
+2026-03-24 21:30:58 [debug    ] Scanner completed              elapsed_time_seconds=0.006584 is_valid=True scanner=Gibberish
+2026-03-24 21:30:58 [info     ] Scanned prompt                 elapsed_time_seconds=0.146907 scores={'BanSubstrings': -1.0, 'InvisibleText': 0.0, 'Secrets': -1.0, 'Toxicity': -1.0, 'Gibberish': -0.7}
+INFO:     127.0.0.1:52364 - "POST /api/chat HTTP/1.1" 200 OK

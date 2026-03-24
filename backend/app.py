@@ -149,8 +149,8 @@ async def chat_endpoint(
             # 3. 调用 Agent 执行图，流式获取结果
             async for msg, metadata in agent_app.astream(inputs, config=config, stream_mode="messages"):
                 node_name = metadata.get("langgraph_node", "")
-                # 处理 AI 回复的文本块
-                if node_name in ["chatbot_web", "chatbot_local"] and isinstance(msg, AIMessageChunk):
+                # 兼容 invoke() 产出的 AIMessage 和流式产出的 AIMessageChunk。
+                if node_name in ["chatbot_web", "chatbot_local", "sql_answer"] and isinstance(msg, (AIMessageChunk, AIMessage)):
                     if msg.content:
                         yield msg.content
                         full_ai_response += msg.content
