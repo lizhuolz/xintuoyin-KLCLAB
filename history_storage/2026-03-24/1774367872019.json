@@ -1,0 +1,54 @@
+{
+  "conversation_id": "1774367872019",
+  "title": "我们公司的总员工是多少",
+  "created_at": "1774367890416",
+  "updated_at": "1774367915953",
+  "createdAt": "2026/03/24 23:58:10",
+  "updatedAt": "2026/03/24 23:58:35",
+  "message_count": 1,
+  "user": {
+    "name": "王颖奇",
+    "phone": "15323720032",
+    "categoryName": "图湃（北京）医疗科技"
+  },
+  "messages": [
+    {
+      "message_index": 0,
+      "question": "我们公司的总员工是多少",
+      "files": [],
+      "uploaded_files": [],
+      "file_contexts": [],
+      "web_search": false,
+      "db_version": null,
+      "answer": "目前我无法从知识库中检索到关于公司总员工数量的信息。如果您有相关的文件或数据可以提供，我将能够更好地帮助您。或者，您可以尝试联系公司的人力资源部门以获取准确的员工数量。",
+      "resource": [],
+      "recommend_answer": [
+        "如何联系公司人力资源部门",
+        "公司员工数量在哪里可以查到",
+        "公司员工数量变化趋势如何"
+      ],
+      "feedback": null,
+      "thinking_text": "在正式回答前，我先做了几步准备：\n1. 我调用了 rag_tool，输入大致是：{\"question\": \"我们公司的总员工是多少\"}。\n对应上面第 1 步，rag_tool 返回了这样的关键信息：检索异常: Nested MetadataFilters are not supported.。\n整理完这些信息后，我再把最终答案组织成对你更自然的回复。",
+      "thinking_steps": [
+        {
+          "kind": "call",
+          "node_name": "chatbot_local",
+          "tool_name": "rag_tool",
+          "preview": "{\"question\": \"我们公司的总员工是多少\"}",
+          "tool_call_id": "call_aQxNmMxXXIJLmDpQvbDFh8lU"
+        },
+        {
+          "kind": "result",
+          "node_name": "tools_local",
+          "tool_name": "rag_tool",
+          "preview": "检索异常: Nested MetadataFilters are not supported.",
+          "tool_call_id": "call_aQxNmMxXXIJLmDpQvbDFh8lU"
+        }
+      ],
+      "created_at": "1774367915953",
+      "updated_at": "1774367915953",
+      "createdAt": "2026/03/24 23:58:35",
+      "updatedAt": "2026/03/24 23:58:35"
+    }
+  ]
+}

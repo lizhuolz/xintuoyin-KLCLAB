@@ -1,0 +1,10 @@
+[
+  {
+    "role": "user",
+    "content": "请使用计算器计算 12*(3+4)"
+  },
+  {
+    "role": "assistant",
+    "content": "计算结果是 84。"
+  }
+]

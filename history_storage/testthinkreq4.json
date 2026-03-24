@@ -1,0 +1,52 @@
+[
+  {
+    "role": "user",
+    "content": "请使用计算器计算 77+23"
+  },
+  {
+    "role": "assistant",
+    "content": "计算结果是 100。",
+    "thinking_text": "在正式回答前，我先做了几步准备：\n1. 我调用了 calculator，输入大致是：{\"expression\": \"77+23\"}。\n对应上面第 1 步，calculator 返回了这样的关键信息：100.0。\n整理完这些信息后，我再把最终答案组织成对你更自然的回复。",
+    "thinking_steps": [
+      {
+        "kind": "call",
+        "node_name": "chatbot_local",
+        "tool_name": "calculator",
+        "preview": "{\"expression\": \"77+23\"}",
+        "tool_call_id": "call_0WRaJ0HxUa4bbS2tkJXFheF3"
+      },
+      {
+        "kind": "result",
+        "node_name": "tools_local",
+        "tool_name": "calculator",
+        "preview": "100.0",
+        "tool_call_id": "call_0WRaJ0HxUa4bbS2tkJXFheF3"
+      }
+    ]
+  },
+  {
+    "role": "user",
+    "content": "使用计算器计算784934+42734"
+  },
+  {
+    "role": "assistant",
+    "content": "计算结果是 827668。",
+    "thinking_text": "在正式回答前，我先做了几步准备：\n1. 我调用了 calculator，输入大致是：{\"expression\": \"784934+42734\"}。\n对应上面第 1 步，calculator 返回了这样的关键信息：827668.0。\n整理完这些信息后，我再把最终答案组织成对你更自然的回复。",
+    "thinking_steps": [
+      {
+        "kind": "call",
+        "node_name": "chatbot_local",
+        "tool_name": "calculator",
+        "preview": "{\"expression\": \"784934+42734\"}",
+        "tool_call_id": "call_fdLsIKAPU4mce0KjOVhk0bOP"
+      },
+      {
+        "kind": "result",
+        "node_name": "tools_local",
+        "tool_name": "calculator",
+        "preview": "827668.0",
+        "tool_call_id": "call_fdLsIKAPU4mce0KjOVhk0bOP"
+      }
+    ]
+  }
+]

@@ -1,0 +1,19 @@
+{
+  "id": "fb_1774360151552_5",
+  "conversation_id": "1774360151552",
+  "message_index": 5,
+  "type": "like",
+  "status": "like",
+  "is_canceled": false,
+  "target_question": "帮我计算381 + 3428347293 ，用计算器",
+  "target_answer": "计算结果是3428347674。",
+  "contact_name": "王颖奇",
+  "contact_phone": "15323720032",
+  "enterprise": "图湃（北京）医疗科技",
+  "reasons": [],
+  "comment": "",
+  "images": [],
+  "updatedAt": "2026-03-24 21:52:37",
+  "process_status": "未处理",
+  "createdAt": "2026-03-24 21:52:37"
+}

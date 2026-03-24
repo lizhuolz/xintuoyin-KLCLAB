@@ -1,0 +1,27 @@
+[
+  {
+    "role": "user",
+    "content": "请使用计算器计算 12*(3+4)"
+  },
+  {
+    "role": "assistant",
+    "content": "计算结果是 84。",
+    "thinking_text": "在正式回答前，我先做了几步准备：\n1. 我调用了 calculator，输入大致是：{\"expression\": \"12*(3+4)\"}。\n对应上面第 1 步，calculator 返回了这样的关键信息：84.0。\n整理完这些信息后，我再把最终答案组织成对你更自然的回复。",
+    "thinking_steps": [
+      {
+        "kind": "call",
+        "node_name": "chatbot_local",
+        "tool_name": "calculator",
+        "preview": "{\"expression\": \"12*(3+4)\"}",
+        "tool_call_id": "call_gNnAZ0CyAZtnOudBhqCIQ1Ds"
+      },
+      {
+        "kind": "result",
+        "node_name": "tools_local",
+        "tool_name": "calculator",
+        "preview": "84.0",
+        "tool_call_id": "call_gNnAZ0CyAZtnOudBhqCIQ1Ds"
+      }
+    ]
+  }
+]

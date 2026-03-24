@@ -14,6 +14,10 @@
   "comment": "",
   "images": [],
   "updatedAt": "2026-03-24 18:17:52",
-  "process_status": "未处理",
-  "createdAt": "2026-03-24 18:17:52"
+  "process_status": "已处理",
+  "createdAt": "2026-03-24 18:17:52",
+  "processor": "frontend_e2e",
+  "processed_at": "1774365401323",
+  "processedAt": "2026/03/24 23:16:41",
+  "process_result": "已处理(未收录)"
 }

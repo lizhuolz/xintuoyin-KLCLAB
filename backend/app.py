@@ -1,16 +1,22 @@
 import json
 import os
+import re
 import sys
 import shutil
-from typing import List, Optional, AsyncGenerator
+import zipfile
+import subprocess
 from pathlib import Path
 from datetime import datetime
-from fastapi import FastAPI, UploadFile, File, Form, Query, Path as FastPath
+from typing import AsyncIterator, List, Optional
+from xml.etree import ElementTree as ET
+
+from fastapi import Body, FastAPI, File, Form, Header, Query, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import StreamingResponse, JSONResponse
+from fastapi.responses import JSONResponse, PlainTextResponse, StreamingResponse
 from fastapi.staticfiles import StaticFiles
 
-from langchain_core.messages import HumanMessage, SystemMessage, AIMessage, AIMessageChunk, ToolMessage
+from langchain_core.messages import AIMessage, AIMessageChunk, HumanMessage, SystemMessage, ToolMessage
+from langgraph.checkpoint.memory import MemorySaver
 
 # 确保 backend 目录在 sys.path 中，防止模块导入失败
 current_dir = os.path.dirname(os.path.abspath(__file__))
@@ -18,16 +24,20 @@ if current_dir not in sys.path:
     sys.path.insert(0, current_dir)
 
 from agent.build_graph import graph_builder
-from agent.tools.rag_tool import force_refresh_index 
-from utils.security import check_input_safety, check_output_safety 
+from utils.security import check_input_safety, check_output_safety
+from services.kb_service import KBService
+
+try:
+    from pypdf import PdfReader
+except Exception:
+    PdfReader = None
 
 app = FastAPI(
     title="研发猫 AI 系统 - 后端接口服务",
-    description="支持流式对话、层级 RAG 检索、对话审计及反馈处理的核心后端服务。",
-    version="1.0.0"
+    description="支持对话、历史、反馈、知识库管理的后端服务。",
+    version="2.0.0"
 )
 
-# 允许跨域请求（CORS），方便前端本地调试
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -36,560 +46,1359 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# 物理目录路径配置
 ROOT_DIR = Path(current_dir).parent
-HISTORY_DIR = ROOT_DIR / "history_storage"
+HISTORY_ROOT = ROOT_DIR / "history_storage"
 FEEDBACK_ROOT = ROOT_DIR / "feedbacks"
+CHAT_UPLOAD_ROOT = ROOT_DIR / "uploads" / "chat"
 USER_JSON_PATH = ROOT_DIR / "user.json"
-
-# 反馈收录分类目录
 EXCELLENT_DIR = FEEDBACK_ROOT / "excellent_answers"
 NEGATIVE_QA_DIR = FEEDBACK_ROOT / "negative_answers"
 
-# 确保必要的存储目录存在
-HISTORY_DIR.mkdir(exist_ok=True)
-FEEDBACK_ROOT.mkdir(exist_ok=True)
-EXCELLENT_DIR.mkdir(exist_ok=True)
-NEGATIVE_QA_DIR.mkdir(exist_ok=True)
+for path in [HISTORY_ROOT, FEEDBACK_ROOT, CHAT_UPLOAD_ROOT, EXCELLENT_DIR, NEGATIVE_QA_DIR]:
+    path.mkdir(parents=True, exist_ok=True)
 
-def get_logged_in_user():
-    """从本地 user.json 读取当前模拟登录的用户信息"""
-    if USER_JSON_PATH.exists():
-        with open(USER_JSON_PATH, "r", encoding="utf-8") as f:
+app.mount("/api/static/feedbacks", StaticFiles(directory=str(FEEDBACK_ROOT)), name="feedbacks")
+app.mount("/api/static/chat_uploads", StaticFiles(directory=str(CHAT_UPLOAD_ROOT)), name="chat_uploads")
+
+memory = MemorySaver()
+agent_app = graph_builder.compile(checkpointer=memory)
+kb_service = KBService()
+VALID_FEEDBACK_TYPES = {"like", "dislike"}
+
+
+def env_int(name: str, default: int) -> int:
+    try:
+        return int(os.getenv(name, default))
+    except (TypeError, ValueError):
+        return int(default)
+
+
+def env_float(name: str, default: float) -> float:
+    try:
+        return float(os.getenv(name, default))
+    except (TypeError, ValueError):
+        return float(default)
+
+
+def now_ms() -> str:
+    return str(int(datetime.now().timestamp() * 1000))
+
+
+def now_display() -> str:
+    return datetime.now().strftime("%Y/%m/%d %H:%M:%S")
+
+
+def today_str() -> str:
+    return datetime.now().strftime("%Y-%m-%d")
+
+
+def success_response(msg: str, data=None):
+    return {"code": 0, "msg": msg, "data": data if data is not None else {}}
+
+
+def error_response(msg: str, data=None, status_code: int = 400):
+    return JSONResponse(
+        status_code=status_code,
+        content={"code": 1, "msg": msg, "data": data if data is not None else {}}
+    )
+
+
+def read_json(path: Path, default):
+    if not path.exists():
+        return default
+    try:
+        with open(path, "r", encoding="utf-8") as f:
             return json.load(f)
+    except (OSError, json.JSONDecodeError, TypeError, ValueError):
+        return default
+
+
+def write_json(path: Path, data):
+    path.parent.mkdir(parents=True, exist_ok=True)
+    with open(path, "w", encoding="utf-8") as f:
+        json.dump(data, f, ensure_ascii=False, indent=2)
+
+
+def cleanup_empty_parents(path: Path, stop_at: Path):
+    current = path.parent
+    while current != stop_at and current.exists():
+        try:
+            current.rmdir()
+        except OSError:
+            break
+        current = current.parent
+
+
+def parse_optional_millis(value: Optional[str], field_name: str) -> Optional[int]:
+    if value in (None, ""):
+        return None
+    try:
+        return int(str(value))
+    except (TypeError, ValueError):
+        raise ValueError(f"{field_name} 必须是毫秒时间戳字符串或整数")
+
+
+def ensure_id_list(data: dict, *keys: str) -> list[str]:
+    for key in keys:
+        value = data.get(key)
+        if value in (None, ""):
+            continue
+        if not isinstance(value, list):
+            raise ValueError(f"{key} 必须是列表")
+        return [str(item) for item in value if str(item).strip()]
+    return []
+
+
+def validate_feedback_type(value: str) -> str:
+    if value not in VALID_FEEDBACK_TYPES:
+        raise ValueError("type 仅支持 like 或 dislike")
+    return value
+
+
+def safe_segment(value: str) -> str:
+    safe = "".join(c for c in str(value) if c.isalnum() or c in ("-", "_", "."))
+    return safe or now_ms()
+
+
+def get_logged_in_user(access_token: Optional[str] = None):
+    if USER_JSON_PATH.exists():
+        try:
+            with open(USER_JSON_PATH, "r", encoding="utf-8") as f:
+                user = json.load(f)
+                return {
+                    "name": user.get("name", "演示用户"),
+                    "company": user.get("company", "演示公司"),
+                    "phone": user.get("phone", ""),
+                    "department": user.get("department", ""),
+                    "ip_address": user.get("ip_address", "127.0.0.1"),
+                    "user_id": user.get("user_id", "UID_DEMO"),
+                    "access_token": access_token or ""
+                }
+        except Exception:
+            pass
     return {
         "name": "演示用户",
         "company": "演示公司",
         "phone": "13800000000",
+        "department": "",
         "ip_address": "127.0.0.1",
-        "user_id": "UID_DEMO"
+        "user_id": "UID_DEMO",
+        "access_token": access_token or ""
     }
 
-# 挂载静态资源目录，用于前端直接预览反馈截图
-app.mount("/api/static/feedbacks", StaticFiles(directory=str(FEEDBACK_ROOT)), name="feedbacks")
 
-from langgraph.checkpoint.memory import MemorySaver
+def build_user_brief(user: dict):
+    return {
+        "name": user.get("name", ""),
+        "phone": user.get("phone", ""),
+        "categoryName": user.get("company", "")
+    }
 
-# 编译 Agent 引擎 (注入 MemorySaver 实现状态检查点，支持自动上下文关联)
-memory = MemorySaver()
-agent_app = graph_builder.compile(checkpointer=memory) 
 
-# ----------------------------- 
-# 引导逻辑：生成推荐提问
-# ----------------------------- 
-async def generate_recommendations(user_msg: str, ai_msg: str) -> str:
-    """根据当次对话内容，智能生成 3 个用户可能感兴趣的追问建议"""
+def iter_history_paths():
+    for path in HISTORY_ROOT.rglob("*.json"):
+        yield path
+
+
+def resolve_history_path(conversation_id: str) -> Optional[Path]:
+    safe_id = safe_segment(conversation_id)
+    direct = HISTORY_ROOT / f"{safe_id}.json"
+    if direct.exists():
+        return direct
+    dated = sorted(HISTORY_ROOT.glob(f"*/{safe_id}.json"), reverse=True)
+    if dated:
+        return dated[0]
+    return None
+
+
+def build_history_path(conversation_id: str, date_str: Optional[str] = None) -> Path:
+    return HISTORY_ROOT / (date_str or today_str()) / f"{safe_segment(conversation_id)}.json"
+
+
+def empty_history_record(conversation_id: str, user: Optional[dict] = None):
+    user = user or get_logged_in_user()
+    timestamp = now_ms()
+    display = now_display()
+    return {
+        "conversation_id": conversation_id,
+        "title": "",
+        "created_at": timestamp,
+        "updated_at": timestamp,
+        "createdAt": display,
+        "updatedAt": display,
+        "message_count": 0,
+        "user": build_user_brief(user),
+        "messages": []
+    }
+
+
+def normalize_legacy_history(conversation_id: str, payload, user: Optional[dict] = None):
+    if isinstance(payload, dict) and isinstance(payload.get("messages"), list):
+        record = payload
+        record.setdefault("conversation_id", conversation_id)
+        record.setdefault("title", record.get("messages", [{}])[0].get("question", "") if record.get("messages") else "")
+        record.setdefault("message_count", len(record.get("messages", [])))
+        record.setdefault("created_at", now_ms())
+        record.setdefault("updated_at", record.get("created_at", now_ms()))
+        record.setdefault("createdAt", now_display())
+        record.setdefault("updatedAt", record.get("createdAt", now_display()))
+        record.setdefault("user", build_user_brief(user or get_logged_in_user()))
+        return record
+
+    record = empty_history_record(conversation_id, user)
+    legacy_messages = payload if isinstance(payload, list) else []
+    round_index = 0
+    i = 0
+    while i < len(legacy_messages):
+        current = legacy_messages[i] if isinstance(legacy_messages[i], dict) else {}
+        if current.get("role") == "user":
+            assistant = {}
+            if i + 1 < len(legacy_messages) and isinstance(legacy_messages[i + 1], dict) and legacy_messages[i + 1].get("role") == "assistant":
+                assistant = legacy_messages[i + 1]
+                i += 1
+            message = {
+                "message_index": round_index,
+                "question": current.get("content", ""),
+                "files": current.get("files", []),
+                "uploaded_files": current.get("uploaded_files", []),
+                "web_search": bool(current.get("web_search", False)),
+                "db_version": current.get("db_version"),
+                "answer": assistant.get("content", ""),
+                "resource": assistant.get("resource", []),
+                "recommend_answer": assistant.get("recommend_answer", []),
+                "feedback": assistant.get("feedback"),
+                "thinking_text": assistant.get("thinking_text"),
+                "thinking_steps": assistant.get("thinking_steps", []),
+                "created_at": assistant.get("created_at") or current.get("created_at") or now_ms(),
+                "updated_at": assistant.get("updated_at") or current.get("updated_at") or now_ms(),
+                "createdAt": assistant.get("createdAt") or current.get("createdAt") or now_display(),
+                "updatedAt": assistant.get("updatedAt") or current.get("updatedAt") or now_display()
+            }
+            record["messages"].append(message)
+            round_index += 1
+        i += 1
+    record["message_count"] = len(record["messages"])
+    record["title"] = record["messages"][0]["question"] if record["messages"] else ""
+    return record
+
+
+def load_history_record(conversation_id: str, user: Optional[dict] = None):
+    path = resolve_history_path(conversation_id)
+    if not path:
+        return empty_history_record(conversation_id, user), build_history_path(conversation_id)
+    payload = read_json(path, {})
+    return normalize_legacy_history(conversation_id, payload, user), path
+
+
+def save_history_record(record: dict, path: Optional[Path] = None):
+    record["title"] = record.get("messages", [{}])[0].get("question", "") if record.get("messages") else ""
+    record["message_count"] = len(record.get("messages", []))
+    record["updated_at"] = now_ms()
+    record["updatedAt"] = now_display()
+    target_path = path or resolve_history_path(record["conversation_id"]) or build_history_path(record["conversation_id"])
+    write_json(target_path, record)
+    return target_path
+
+
+def list_history_records():
+    records = []
+    for path in iter_history_paths():
+        try:
+            payload = read_json(path, {})
+            conversation_id = path.stem
+            record = normalize_legacy_history(conversation_id, payload)
+            record["storage_date"] = path.parent.name if path.parent != HISTORY_ROOT else ""
+            records.append(record)
+        except Exception:
+            continue
+    return records
+
+
+def save_chat_uploads(conversation_id: str, message_index: int, files: List[UploadFile]):
+    saved = []
+    if not files:
+        return saved
+    base_dir = CHAT_UPLOAD_ROOT / today_str() / safe_segment(conversation_id) / str(message_index)
+    base_dir.mkdir(parents=True, exist_ok=True)
+    for upload in files:
+        original_name = Path(upload.filename or "unnamed_file").name
+        final_name = original_name
+        stem = Path(original_name).stem
+        suffix = Path(original_name).suffix
+        index = 1
+        while (base_dir / final_name).exists():
+            final_name = f"{stem}_{index}{suffix}"
+            index += 1
+        with open(base_dir / final_name, "wb") as out:
+            shutil.copyfileobj(upload.file, out)
+        relative = Path(today_str()) / safe_segment(conversation_id) / str(message_index) / final_name
+        saved.append({
+            "file_id": f"file_{now_ms()}_{len(saved)}",
+            "filename": final_name,
+            "url": f"/api/static/chat_uploads/{relative.as_posix()}",
+            "relative_path": relative.as_posix()
+        })
+    return saved
+
+
+MAX_FILE_TEXT_CHARS = env_int("CHAT_FILE_TEXT_MAX_CHARS", 12000)
+MAX_HISTORY_ROUNDS = env_int("CHAT_HISTORY_MAX_ROUNDS", 6)
+FILE_HISTORY_SNIPPET_CHARS = env_int("CHAT_FILE_HISTORY_SNIPPET_CHARS", 3000)
+
+
+def _compact_text(text: str, limit: int = MAX_FILE_TEXT_CHARS) -> str:
+    compact = re.sub(r"\s+", " ", str(text or "")).strip()
+    if len(compact) <= limit:
+        return compact
+    return compact[:limit] + " ...(已截断)"
+
+
+def _extract_pdf_text(path: Path) -> str:
+    parts = []
+    if PdfReader is not None:
+        try:
+            reader = PdfReader(str(path))
+            for page in reader.pages:
+                parts.append(page.extract_text() or "")
+        except Exception:
+            parts = []
+    if not ''.join(parts).strip():
+        try:
+            result = subprocess.run(["pdftotext", str(path), "-"], capture_output=True, text=True, check=True)
+            return _compact_text(result.stdout)
+        except Exception:
+            return ""
+    return _compact_text('\n'.join(parts))
+
+
+def _extract_text_nodes_from_xml(xml_bytes: bytes) -> list[str]:
+    try:
+        root = ET.fromstring(xml_bytes)
+    except Exception:
+        return []
+    texts = []
+    for elem in root.iter():
+        if elem.tag.endswith('}t') or elem.tag == 't':
+            if elem.text and elem.text.strip():
+                texts.append(elem.text.strip())
+    return texts
+
+
+def _extract_docx_text(path: Path) -> str:
+    try:
+        with zipfile.ZipFile(path) as zf:
+            data = zf.read('word/document.xml')
+    except Exception:
+        return ''
+    return _compact_text('\n'.join(_extract_text_nodes_from_xml(data)))
+
+
+def _extract_pptx_text(path: Path) -> str:
+    texts = []
+    try:
+        with zipfile.ZipFile(path) as zf:
+            for name in sorted(zf.namelist()):
+                if name.startswith('ppt/slides/slide') and name.endswith('.xml'):
+                    texts.extend(_extract_text_nodes_from_xml(zf.read(name)))
+    except Exception:
+        return ''
+    return _compact_text('\n'.join(texts))
+
+
+def _extract_xlsx_text(path: Path) -> str:
+    try:
+        with zipfile.ZipFile(path) as zf:
+            shared_strings = []
+            if 'xl/sharedStrings.xml' in zf.namelist():
+                shared_strings = _extract_text_nodes_from_xml(zf.read('xl/sharedStrings.xml'))
+            parts = []
+            for name in sorted(zf.namelist()):
+                if not (name.startswith('xl/worksheets/sheet') and name.endswith('.xml')):
+                    continue
+                try:
+                    root = ET.fromstring(zf.read(name))
+                except Exception:
+                    continue
+                sheet_rows = []
+                for cell in root.iter():
+                    if not cell.tag.endswith('}c'):
+                        continue
+                    value = ''
+                    cell_type = cell.attrib.get('t')
+                    value_node = next((child for child in cell if child.tag.endswith('}v')), None)
+                    if value_node is None or value_node.text is None:
+                        continue
+                    raw = value_node.text.strip()
+                    if cell_type == 's' and raw.isdigit():
+                        idx = int(raw)
+                        if 0 <= idx < len(shared_strings):
+                            value = shared_strings[idx]
+                    else:
+                        value = raw
+                    if value:
+                        sheet_rows.append(value)
+                if sheet_rows:
+                    parts.append(' | '.join(sheet_rows))
+    except Exception:
+        return ''
+    return _compact_text('\n'.join(parts))
+
+
+def extract_uploaded_file_text(file_path: Path) -> str:
+    suffix = file_path.suffix.lower()
+    try:
+        if suffix in {'.txt', '.md', '.csv', '.json', '.py', '.log'}:
+            return _compact_text(file_path.read_text(encoding='utf-8', errors='ignore'))
+        if suffix == '.pdf':
+            return _extract_pdf_text(file_path)
+        if suffix == '.docx':
+            return _extract_docx_text(file_path)
+        if suffix == '.pptx':
+            return _extract_pptx_text(file_path)
+        if suffix == '.xlsx':
+            return _extract_xlsx_text(file_path)
+        if suffix in {'.doc', '.xls', '.ppt'}:
+            return '该文件为旧版 Office 二进制格式，当前服务暂不支持直接抽取正文，请转换为 docx/xlsx/pptx 后重试。'
+        return '该文件类型暂不支持正文抽取，但文件已上传保存。'
+    except Exception as exc:
+        return f'文件解析失败：{exc}'
+
+
+def build_uploaded_file_contexts(uploaded_files: List[dict]) -> list[dict]:
+    contexts = []
+    for item in uploaded_files or []:
+        relative_path = item.get('relative_path')
+        if not relative_path:
+            continue
+        file_path = CHAT_UPLOAD_ROOT / relative_path
+        if not file_path.exists():
+            continue
+        extracted_text = extract_uploaded_file_text(file_path)
+        contexts.append({
+            'filename': item.get('filename', file_path.name),
+            'text': extracted_text,
+        })
+    return contexts
+
+
+def compose_chat_prompt(current_message: str, history_record: dict, file_contexts: Optional[list[dict]] = None) -> str:
+    parts = []
+    history_messages = history_record.get('messages', [])[-MAX_HISTORY_ROUNDS:]
+    if history_messages:
+        history_lines = ['【历史对话上下文】']
+        for idx, item in enumerate(history_messages, start=1):
+            question = (item.get('question') or '').strip()
+            answer = (item.get('answer') or '').strip()
+            if question:
+                history_lines.append(f'第{idx}轮用户：{question}')
+            prior_file_contexts = item.get('file_contexts') or []
+            for file_item in prior_file_contexts:
+                filename = file_item.get('filename', '未命名文件')
+                text = _compact_text(file_item.get('text', ''), FILE_HISTORY_SNIPPET_CHARS)
+                if text:
+                    history_lines.append(f'第{idx}轮附件《{filename}》内容摘要：{text}')
+            if answer:
+                history_lines.append(f'第{idx}轮助手：{answer}')
+        parts.append('\n'.join(history_lines))
+
+    current_file_contexts = file_contexts or []
+    if current_file_contexts:
+        file_lines = ['【本轮上传文件内容】']
+        for idx, item in enumerate(current_file_contexts, start=1):
+            file_lines.append(f'文件{idx}：{item.get("filename", "未命名文件")}')
+            file_lines.append(item.get('text') or '文件内容为空，或暂未成功解析。')
+        parts.append('\n'.join(file_lines))
+
+    parts.append(
+        '【当前用户问题】\n'
+        f'{current_message}\n\n'
+        '【回答要求】\n'
+        '1. 必须同时结合历史对话、本轮问题和上传文件内容进行回答。\n'
+        '2. 如果上面已经给出了上传文件正文或摘要，说明系统已经成功读取文件；此时不要再说“无法读取附件”或类似表述。\n'
+        '3. 如果上传文件中有可用信息，优先基于文件内容回答，并明确提到文件名。\n'
+        '4. 如果文件未解析成功或内容不足，请明确说明，不要假装已经读到。\n'
+        '5. 不要忽略用户本轮输入的文字问题。'
+    )
+    return '\n\n'.join(part for part in parts if part.strip())
+
+
+def find_feedback_dir(feedback_id: str) -> Optional[Path]:
+    matches = sorted(FEEDBACK_ROOT.glob(f"*/{feedback_id}"), reverse=True)
+    return matches[0] if matches else None
+
+
+def get_feedback_dir(feedback_id: str) -> Path:
+    existing = find_feedback_dir(feedback_id)
+    if existing:
+        return existing
+    return FEEDBACK_ROOT / today_str() / feedback_id
+
+
+def parse_reasons(raw_reasons):
+    if raw_reasons in (None, "", []):
+        return []
+    if isinstance(raw_reasons, list):
+        return raw_reasons
+    if isinstance(raw_reasons, dict):
+        return [value for value in raw_reasons.values() if value]
+    try:
+        parsed = json.loads(raw_reasons)
+        if isinstance(parsed, dict):
+            return [value for value in parsed.values() if value]
+        if isinstance(parsed, list):
+            return parsed
+        return [parsed]
+    except Exception:
+        return [raw_reasons]
+
+
+def update_message_feedback(conversation_id: str, message_index: int, feedback_state):
+    record, path = load_history_record(conversation_id)
+    if 0 <= message_index < len(record.get("messages", [])):
+        record["messages"][message_index]["feedback"] = feedback_state
+        record["messages"][message_index]["updated_at"] = now_ms()
+        record["messages"][message_index]["updatedAt"] = now_display()
+        save_history_record(record, path)
+        return record["messages"][message_index], record, path
+    return None, record, path
+
+
+def build_feedback_summary(info: dict):
+    return {
+        "id": info.get("id"),
+        "conversation_id": info.get("conversation_id"),
+        "message_index": info.get("message_index"),
+        "type": info.get("type"),
+        "state": info.get("state"),
+        "reasons": info.get("reasons", []),
+        "comment": info.get("comment", ""),
+        "pictures": info.get("pictures", []),
+        "name": info.get("name", ""),
+        "enterprise": info.get("enterprise", ""),
+        "phone": info.get("phone", ""),
+        "time": info.get("time", ""),
+        "update_time": info.get("update_time", ""),
+        "createdAt": info.get("createdAt", ""),
+        "updatedAt": info.get("updatedAt", ""),
+        "process_status": info.get("process_status", "未处理")
+    }
+
+
+async def generate_recommendations(user_msg: str, ai_msg: str) -> List[str]:
     try:
         from llama_index.core import Settings
         import re
-        llm = Settings.llm 
+        llm = Settings.llm
         prompt = f"""你是一个对话引导助手。
 根据以下对话内容，预测用户接下来最感兴趣、最可能追问的3个问题。
 要求：1. 每个问题不超过20个字。2. 必须以纯JSON字符串数组格式返回。3. 不要包含任何多余解释。
 用户问题: {user_msg}
-AI回答: {ai_msg[:500]}"""
+AI回答: {ai_msg[:env_int("CHAT_RECOMMENDATION_INPUT_LIMIT", 500)]}"""
         response = await llm.acomplete(prompt)
         text = str(response).strip()
         match = re.search(r"\[.*\]", text, re.DOTALL)
-        return match.group(0) if match else "[]"
-    except: return "[]"
+        if not match:
+            return []
+        parsed = json.loads(match.group(0))
+        return parsed[:env_int("CHAT_RECOMMENDATION_COUNT", 3)] if isinstance(parsed, list) else []
+    except Exception:
+        return []
 
-# ----------------------------- 
-# 对话接口 (Chat APIs)
-# ----------------------------- 
 
-@app.get("/api/chat/new_session", 
-    summary="初始化并获取新会话 ID", 
-    description="在开启一个全新的对话窗口前调用。后端生成基于时间戳的唯一标识，用于后续关联上下文记忆。",
-    responses={200: {"description": "成功生成并返回唯一会话 ID"}}
-)
-async def create_new_session():
-    new_id = f"{int(datetime.now().timestamp() * 1000)}"
-    return {"conversation_id": new_id}
+def _compact_preview(value, limit: int = 240) -> str:
+    if isinstance(value, (dict, list)):
+        text = json.dumps(value, ensure_ascii=False)
+    else:
+        text = str(value or "")
+    text = " ".join(text.split())
+    if len(text) > limit:
+        return text[: limit - 3] + "..."
+    return text
 
-@app.post("/api/chat", 
-    summary="AI 流式对话检索接口", 
-    description="系统核心接口。支持上传附件分析、联网实时搜索、以及针对知识库的 RAG 增强检索。响应采用 HTTP Streaming 实时推送文本。",
-    responses={
-        200: {"description": "流式文本响应，包含 [SOURCES_JSON] 和 [RECOMMENDATIONS] 标记"}, 
-        400: {"description": "安全拦截（包含违禁词）或请求参数非法"},
-        422: {"description": "字段验证失败（如缺失必填参数）"}
+
+def _format_tool_result_preview(tool_name: str, content) -> str:
+    if tool_name == "tavily_search_with_summary":
+        try:
+            results = json.loads(content).get("results", [])
+            titles = [item.get("main_title") or item.get("url") for item in results[:2] if item.get("main_title") or item.get("url")]
+            summary = f"检索到 {len(results)} 条结果"
+            if titles:
+                summary += "：" + "；".join(titles)
+            return summary
+        except Exception:
+            pass
+    return _compact_preview(content)
+
+
+def _tool_trace_event(kind: str, node_name: str, tool_name: str, preview: str, tool_call_id: Optional[str] = None) -> dict:
+    return {
+        "kind": kind,
+        "node_name": node_name,
+        "tool_name": tool_name,
+        "preview": preview,
+        "tool_call_id": tool_call_id,
     }
-)
-async def chat_endpoint(
-    message: str = Form(..., description="用户输入的提问文本内容"),
-    files: List[UploadFile] = File(None, description="用户上传的附件列表（可选），支持 PDF、Word、Excel、PPT、Markdown 等格式"),
-    system_prompt: str = Form("You are a helpful assistant", description="AI 的人格设定或系统提示词"),
-    conversation_id: str = Form(..., description="对话唯一标识。相同 ID 的连续请求将自动加载上下文记忆"),
-    web_search: bool = Form(False, description="是否启用联网搜索功能以获取最新互联网资讯"),
-    db_version: Optional[str] = Form(None, description="指定特定的向量数据库版本（可选）"),
-    # kb_category: Optional[str] = Form(None, description="限定检索的知识库范围（如：全量、部门、或特定分类）"),
-    user_identity: Optional[str] = Form("guest", description="用户身份标识，用于权限隔离和行为审计") 
-):
-    # 1. 基础安全校验
-    sanitized_message, is_safe, error_msg = check_input_safety(message)
-    if not is_safe:
-        async def safety_error_stream(): yield f"⚠️ [安全拦截] {error_msg}"
-        return StreamingResponse(safety_error_stream(), media_type="text/plain")
 
-    # 2. 构造 Agent 运行参数
+
+def _format_thinking_text(events: List[dict]) -> str:
+    if not events:
+        return "这次回答没有额外调用工具，我直接根据已有上下文完成了回复。"
+
+    lines = ["在正式回答前，我先做了几步准备："]
+    call_map = {}
+    step_no = 1
+
+    for event in events:
+        kind = event.get("kind")
+        tool_name = event.get("tool_name", "工具")
+        preview = event.get("preview", "")
+        tool_call_id = event.get("tool_call_id")
+
+        if kind == "call":
+            line = f"{step_no}. 我调用了 {tool_name}"
+            if preview:
+                line += f"，输入大致是：{preview}"
+            line += "。"
+            lines.append(line)
+            if tool_call_id:
+                call_map[tool_call_id] = step_no
+            step_no += 1
+        elif kind == "result":
+            linked_step = call_map.get(tool_call_id)
+            prefix = f"对应上面第 {linked_step} 步，" if linked_step else f"{step_no}. "
+            line = f"{prefix}{tool_name} 返回了这样的关键信息：{preview or '已完成处理。'}"
+            if not line.endswith("。"):
+                line += "。"
+            lines.append(line)
+            if linked_step is None:
+                step_no += 1
+
+    lines.append("整理完这些信息后，我再把最终答案组织成对你更自然的回复。")
+    return "\n".join(lines)
+
+
+def _sse_event(payload: dict) -> str:
+    return f"data: {json.dumps(payload, ensure_ascii=False)}\n\n"
+
+
+async def iterate_chat_events(message: str, conversation_id: str, system_prompt: str, web_search: bool, user_identity: str):
     inputs = {
-        "messages": [SystemMessage(content=system_prompt), HumanMessage(content=sanitized_message)],
-        "enable_web": web_search, 
-        "select_model": "gpt-4o", 
-        "user_identity": user_identity 
+        "messages": [SystemMessage(content=system_prompt), HumanMessage(content=message)],
+        "enable_web": web_search,
+        "select_model": os.getenv("CHAT_MODEL_NAME", "gpt-4o"),
+        "user_identity": user_identity,
     }
-
-    # 注入线程 ID 激活上下文记忆
     config = {"configurable": {"thread_id": conversation_id}}
 
-    async def response_stream():
-        full_ai_response = ""
-        try:
-            # 3. 调用 Agent 执行图，流式获取结果
-            async for msg, metadata in agent_app.astream(inputs, config=config, stream_mode="messages"):
-                node_name = metadata.get("langgraph_node", "")
-                # 兼容 invoke() 产出的 AIMessage 和流式产出的 AIMessageChunk。
-                if node_name in ["chatbot_web", "chatbot_local", "sql_answer"] and isinstance(msg, (AIMessageChunk, AIMessage)):
-                    if msg.content:
-                        yield msg.content
-                        full_ai_response += msg.content
-                # 处理联网搜索返回的参考链接
-                elif isinstance(msg, ToolMessage) and msg.name == "tavily_search_with_summary":
+    full_ai_response = ""
+    sources = []
+    tool_trace_events = []
+    emitted_trace_keys = set()
+
+    async for msg, metadata in agent_app.astream(inputs, config=config, stream_mode="messages"):
+        node_name = metadata.get("langgraph_node", "")
+
+        if isinstance(msg, AIMessage) and getattr(msg, "tool_calls", None):
+            for idx, tool_call in enumerate(msg.tool_calls):
+                tool_name = tool_call.get("name") or "unknown_tool"
+                tool_call_id = tool_call.get("id") or f"{node_name}:{tool_name}:{idx}"
+                trace_key = f"call:{tool_call_id}"
+                if trace_key not in emitted_trace_keys:
+                    emitted_trace_keys.add(trace_key)
+                    tool_trace_events.append(_tool_trace_event(
+                        "call",
+                        node_name,
+                        tool_name,
+                        _compact_preview(tool_call.get("args", {})),
+                        tool_call_id,
+                    ))
+                    yield {
+                        "type": "thinking",
+                        "thinking_text": _format_thinking_text(tool_trace_events),
+                        "thinking_steps": list(tool_trace_events),
+                    }
+
+        if isinstance(msg, ToolMessage):
+            tool_name = msg.name or "unknown_tool"
+            tool_call_id = getattr(msg, "tool_call_id", None)
+            trace_key = f"result:{tool_call_id or node_name}:{tool_name}:{_compact_preview(msg.content, 80)}"
+            if trace_key not in emitted_trace_keys:
+                emitted_trace_keys.add(trace_key)
+                tool_trace_events.append(_tool_trace_event(
+                    "result",
+                    node_name,
+                    tool_name,
+                    _format_tool_result_preview(tool_name, msg.content),
+                    tool_call_id,
+                ))
+                if tool_name == "tavily_search_with_summary":
                     try:
                         results = json.loads(msg.content).get("results", [])
-                        clean = [{"main_title": r.get("main_title"), "url": r.get("url"), "summary": r.get("summary")} for r in results]
-                        yield f"\n[SOURCES_JSON]:{json.dumps(clean, ensure_ascii=False)}\n"
-                    except: pass
-            
-            # 4. 会话结束后的补充逻辑
-            if full_ai_response:
-                # 生成追问建议并推送到流末尾
-                rec_json = await generate_recommendations(sanitized_message, full_ai_response)
-                if rec_json and rec_json != "[]": yield f"\n[RECOMMENDATIONS]:{rec_json}\n"
-                
-                # 持久化保存本次对话记录到物理文件（用于审计）
-                safe_id = "".join(c for c in conversation_id if c.isalnum() or c in ('-', '_'))
-                path = HISTORY_DIR / f"{safe_id}.json"
-                history = []
-                if path.exists():
-                    with open(path, "r", encoding="utf-8") as f: history = json.load(f)
-                history.append({"role": "user", "content": sanitized_message})
-                history.append({"role": "assistant", "content": full_ai_response})
-                with open(path, "w", encoding="utf-8") as f: json.dump(history, f, ensure_ascii=False, indent=2)
-        except Exception as e: 
-            yield f"\n[系统错误: {str(e)}]"
+                        sources = [
+                            {
+                                "link": item.get("url", ""),
+                                "title": item.get("main_title", ""),
+                                "content": item.get("summary", ""),
+                            }
+                            for item in results
+                        ]
+                    except Exception:
+                        pass
+                yield {
+                    "type": "thinking",
+                    "thinking_text": _format_thinking_text(tool_trace_events),
+                    "thinking_steps": list(tool_trace_events),
+                }
 
-    return StreamingResponse(response_stream(), media_type="text/plain")
+        if node_name in ["chatbot_web", "chatbot_local", "sql_answer"] and isinstance(msg, (AIMessageChunk, AIMessage)):
+            if msg.content:
+                full_ai_response += msg.content
+                yield {"type": "answer_delta", "delta": msg.content}
 
-# ----------------------------- 
-# 历史维护 (History APIs)
-# ----------------------------- 
+    checked_answer = full_ai_response
+    is_safe, safety_msg = check_output_safety(message, full_ai_response)
+    if not is_safe:
+        checked_answer = f"⚠️ [安全拦截] {safety_msg}"
+        yield {"type": "answer_replace", "content": checked_answer}
 
-@app.get("/api/history/list", 
-    summary="获取对话历史摘要列表", 
-    description="用于管理后台。支持按关键字搜索标题或对话内容，支持按时间范围筛选。",
-    responses={200: {"description": "返回历史记录数组，包含标题、消息数、更新时间等"}}
-)
+    yield {
+        "type": "complete",
+        "result": {
+            "answer": checked_answer,
+            "sources": sources,
+            "thinking_steps": list(tool_trace_events),
+            "thinking_text": _format_thinking_text(tool_trace_events),
+        }
+    }
+
+
+async def run_chat(message: str, conversation_id: str, system_prompt: str, web_search: bool, user_identity: str):
+    answer = ""
+    sources = []
+    thinking_steps = []
+    async for event in iterate_chat_events(message, conversation_id, system_prompt, web_search, user_identity):
+        if event.get("type") == "complete":
+            result = event.get("result", {})
+            answer = result.get("answer", "")
+            sources = result.get("sources", [])
+            thinking_steps = result.get("thinking_steps", [])
+    return answer, sources, thinking_steps
+
+
+async def _thinking_text_stream(text: str, chunk_size: Optional[int] = None) -> AsyncIterator[str]:
+    content = text or "这次回答没有额外调用工具，我直接根据已有上下文完成了回复。"
+    chunk_size = chunk_size or env_int("CHAT_THINKING_CHUNK_SIZE", 48)
+    for index in range(0, len(content), chunk_size):
+        yield content[index:index + chunk_size]
+
+
+@app.get("/api/chat/new_session")
+async def create_new_session():
+    conversation_id = now_ms()
+    return success_response("新建对话成功", {"conversation_id": conversation_id})
+
+
+@app.post("/api/chat")
+async def chat_endpoint(
+    message: str = Form(...),
+    conversation_id: str = Form(...),
+    files: List[UploadFile] = File(None),
+    system_prompt: str = Form("You are a helpful assistant"),
+    web_search: bool = Form(False),
+    db_version: Optional[str] = Form(None),
+    user_identity: Optional[str] = Form("guest"),
+    stream: bool = Form(True),
+    accessToken: Optional[str] = Header(None),
+):
+    sanitized_message, is_safe, error_msg = check_input_safety(message)
+    if not is_safe:
+        return error_response("发送对话失败", {"reason": error_msg}, 400)
+
+    user = get_logged_in_user(accessToken)
+    history_record, history_path = load_history_record(conversation_id, user)
+    message_index = len(history_record.get("messages", []))
+    uploaded_files = save_chat_uploads(conversation_id, message_index, files or [])
+    file_contexts = build_uploaded_file_contexts(uploaded_files)
+    model_message = compose_chat_prompt(sanitized_message, history_record, file_contexts)
+
+    if not stream:
+        try:
+            answer, sources, thinking_steps = await run_chat(
+                model_message,
+                conversation_id,
+                system_prompt,
+                web_search,
+                user_identity or "guest",
+            )
+        except Exception as exc:
+            return error_response("发送对话失败", {"reason": str(exc)}, 500)
+
+        recommend_answer = await generate_recommendations(sanitized_message, answer)
+        message_item = {
+            "message_index": message_index,
+            "question": sanitized_message,
+            "files": [item["filename"] for item in uploaded_files],
+            "uploaded_files": uploaded_files,
+            "file_contexts": file_contexts,
+            "web_search": bool(web_search),
+            "db_version": db_version,
+            "answer": answer,
+            "resource": sources,
+            "recommend_answer": recommend_answer,
+            "feedback": None,
+            "thinking_text": _format_thinking_text(thinking_steps),
+            "thinking_steps": thinking_steps,
+            "created_at": now_ms(),
+            "updated_at": now_ms(),
+            "createdAt": now_display(),
+            "updatedAt": now_display(),
+        }
+        history_record["user"] = build_user_brief(user)
+        history_record.setdefault("messages", []).append(message_item)
+        save_history_record(history_record, history_path)
+        return success_response("发送对话成功", message_item)
+
+    async def event_stream():
+        try:
+            latest_answer = ""
+            latest_sources = []
+            latest_thinking_steps = []
+            latest_thinking_text = ""
+            async for event in iterate_chat_events(
+                model_message,
+                conversation_id,
+                system_prompt,
+                web_search,
+                user_identity or "guest",
+            ):
+                event_type = event.get("type")
+                if event_type == "answer_delta":
+                    latest_answer += event.get("delta", "")
+                    yield _sse_event(event)
+                elif event_type == "answer_replace":
+                    latest_answer = event.get("content", "")
+                    yield _sse_event(event)
+                elif event_type == "thinking":
+                    latest_thinking_steps = event.get("thinking_steps", [])
+                    latest_thinking_text = event.get("thinking_text", "")
+                    yield _sse_event(event)
+                elif event_type == "complete":
+                    result = event.get("result", {})
+                    latest_answer = result.get("answer", latest_answer)
+                    latest_sources = result.get("sources", latest_sources)
+                    latest_thinking_steps = result.get("thinking_steps", latest_thinking_steps)
+                    latest_thinking_text = result.get("thinking_text", latest_thinking_text)
+                    recommend_answer = await generate_recommendations(sanitized_message, latest_answer)
+                    message_item = {
+                        "message_index": message_index,
+                        "question": sanitized_message,
+                        "files": [item["filename"] for item in uploaded_files],
+                        "uploaded_files": uploaded_files,
+                        "file_contexts": file_contexts,
+                        "web_search": bool(web_search),
+                        "db_version": db_version,
+                        "answer": latest_answer,
+                        "resource": latest_sources,
+                        "recommend_answer": recommend_answer,
+                        "feedback": None,
+                        "thinking_text": latest_thinking_text,
+                        "thinking_steps": latest_thinking_steps,
+                        "created_at": now_ms(),
+                        "updated_at": now_ms(),
+                        "createdAt": now_display(),
+                        "updatedAt": now_display(),
+                    }
+                    history_record["user"] = build_user_brief(user)
+                    history_record.setdefault("messages", []).append(message_item)
+                    save_history_record(history_record, history_path)
+                    yield _sse_event({"type": "done", "data": message_item})
+                    return
+        except Exception as exc:
+            yield _sse_event({"type": "error", "message": str(exc)})
+
+    headers = {"Cache-Control": "no-cache", "X-Accel-Buffering": "no"}
+    return StreamingResponse(event_stream(), media_type="text/event-stream", headers=headers)
+
+
+@app.get("/api/chat/{conversation_id}/title")
+async def get_chat_title(conversation_id: str):
+    history_record, _ = load_history_record(conversation_id)
+    if not history_record.get("messages"):
+        return error_response("获取标题失败", {"conversation_id": conversation_id}, 404)
+    first_question = history_record["messages"][0].get("question", "")
+    return success_response("获取标题成功", {
+        "conversation_id": conversation_id,
+        "title": first_question,
+        "question": first_question,
+    })
+
+
+@app.post("/api/upload")
+async def upload_chat_files(
+    conversation_id: str = Form(...),
+    message_index: Optional[int] = Form(None),
+    files: List[UploadFile] = File(...),
+):
+    history_record, history_path = load_history_record(conversation_id)
+    target_index = message_index if message_index is not None else len(history_record.get("messages", []))
+    if target_index < 0:
+        return error_response("上传文件失败", {"reason": "message_index 不能为负数"}, 400)
+    uploaded_files = save_chat_uploads(conversation_id, target_index, files or [])
+
+    if 0 <= target_index < len(history_record.get("messages", [])):
+        history_record["messages"][target_index].setdefault("uploaded_files", []).extend(uploaded_files)
+        history_record["messages"][target_index]["files"] = [item["filename"] for item in history_record["messages"][target_index]["uploaded_files"]]
+        save_history_record(history_record, history_path)
+
+    return success_response("上传文件成功", {
+        "conversation_id": conversation_id,
+        "message_index": target_index,
+        "files": uploaded_files,
+    })
+
+
+@app.get("/api/history/list")
 async def list_histories(
-    search: str = Query("", description="搜索关键词，支持匹配标题及对话正文"), 
-    start_time: float = Query(None, description="起始时间戳（Unix Timestamp，秒）"), 
-    end_time: float = Query(None, description="结束时间戳（Unix Timestamp，秒）")
+    search: str = Query(""),
+    start_time: Optional[str] = Query(None),
+    end_time: Optional[str] = Query(None),
 ):
-    user = get_logged_in_user()
     results = []
-    for f in HISTORY_DIR.glob("*.json"):
-        try:
-            mtime = os.path.getmtime(f)
-            if start_time and mtime < start_time: continue
-            if end_time and mtime > end_time: continue
+    try:
+        start_ms = parse_optional_millis(start_time, "start_time")
+        end_ms = parse_optional_millis(end_time, "end_time")
+    except ValueError as exc:
+        return error_response("获取历史记录失败", {"reason": str(exc)}, 400)
+    for record in list_history_records():
+        updated_at = int(record.get("updated_at") or 0)
+        if start_ms is not None and updated_at < start_ms:
+            continue
+        if end_ms is not None and updated_at > end_ms:
+            continue
+        title = record.get("title", "")
+        text_blob = "\n".join(
+            f"{item.get('question', '')}\n{item.get('answer', '')}"
+            for item in record.get("messages", [])
+        )
+        if search and search.lower() not in (title + text_blob).lower():
+            continue
+        results.append({
+            "conversation_id": record.get("conversation_id"),
+            "title": title,
+            "updated_at": record.get("updated_at", ""),
+            "updatedAt": record.get("updatedAt", ""),
+            "message_count": record.get("message_count", 0),
+            "user": record.get("user", {}),
+        })
+    results.sort(key=lambda item: item.get("updated_at", ""), reverse=True)
+    return success_response("获取历史记录成功", {"list": results, "total": len(results)})
 
-            with open(f, "r", encoding="utf-8") as file:
-                content = json.load(file)
-                if search:
-                    text_blob = "".join([m.get("content", "") for m in content]).lower()
-                    if search.lower() not in text_blob: continue
-                results.append({
-                    "id": f.stem, 
-                    "title": content[0]["content"][:30] if content else "空对话", 
-                    "updatedAt": mtime, 
-                    "messageCount": len(content),
-                    "ip_address": user["ip_address"],
-                    "user_id_display": user["user_id"],
-                    "record_id": f"REC_{f.stem}"
-                })
-        except: pass
-    results.sort(key=lambda x: x["updatedAt"], reverse=True)
-    return results
 
-@app.delete("/api/chat/{conversation_id}", 
-    summary="删除单条对话历史记录", 
-    description="物理删除服务器上存储的对应 JSON 历史文件。",
-    responses={200: {"description": "删除成功"}, 404: {"description": "未找到对应的历史记录"}}
-)
-async def delete_history(
-    conversation_id: str = FastPath(..., description="要删除的会话唯一 ID")
+@app.get("/api/history/{conversation_id}")
+async def get_history_detail(conversation_id: str):
+    history_record, _ = load_history_record(conversation_id)
+    if not history_record.get("messages"):
+        return error_response("获取历史详情失败", {"conversation_id": conversation_id}, 404)
+    return success_response("获取历史详情成功", history_record)
+
+
+@app.delete("/api/chat/{conversation_id}")
+async def delete_history(conversation_id: str):
+    path = resolve_history_path(conversation_id)
+    if not path:
+        return error_response("删除历史对话失败", {"conversation_id": conversation_id}, 404)
+    path.unlink()
+    cleanup_empty_parents(path, HISTORY_ROOT)
+    return success_response("删除历史对话成功", {"conversation_id": conversation_id})
+
+
+@app.post("/api/history/batch_delete")
+async def batch_delete_history(data: dict = Body(...)):
+    try:
+        ids = ensure_id_list(data, "ids", "conversation_ids")
+    except ValueError as exc:
+        return error_response("批量删除历史对话失败", {"reason": str(exc)}, 400)
+    deleted = []
+    for conversation_id in ids:
+        path = resolve_history_path(conversation_id)
+        if path:
+            path.unlink()
+            cleanup_empty_parents(path, HISTORY_ROOT)
+            deleted.append(conversation_id)
+    return success_response("批量删除历史对话成功", {"deleted_ids": deleted})
+
+
+@app.get("/api/chat/{conversation_id}/thinking")
+async def get_chat_thinking(
+    conversation_id: str,
+    message_index: Optional[int] = Query(None),
+    stream: bool = Query(True),
 ):
-    path = HISTORY_DIR / f"{conversation_id}.json"
-    if path.exists(): 
-        os.remove(path)
-        return {"status": "success"}
-    return JSONResponse(status_code=404, content={"error": "not found"})
+    history_record, _ = load_history_record(conversation_id)
+    messages = history_record.get("messages", [])
+    if not messages:
+        return error_response("获取思考过程失败", {"conversation_id": conversation_id}, 404)
+    target = messages[-1] if message_index is None else next((item for item in messages if item.get("message_index") == message_index), None)
+    if not target:
+        return error_response("获取思考过程失败", {"conversation_id": conversation_id, "message_index": message_index}, 404)
+    thinking_text = target.get("thinking_text") or "这次回答没有额外调用工具，我直接根据已有上下文完成了回复。"
+    if stream:
+        headers = {"Cache-Control": "no-cache", "X-Accel-Buffering": "no"}
+        return StreamingResponse(_thinking_text_stream(thinking_text), media_type="text/plain; charset=utf-8", headers=headers)
+    return PlainTextResponse(thinking_text)
 
-@app.post("/api/history/batch_delete", 
-    summary="批量删除对话历史", 
-    description="根据传入的 ID 列表，批量清理物理历史文件。",
-    responses={200: {"description": "批量删除操作完成"}, 422: {"description": "参数格式错误"}}
-)
-async def batch_delete_history(data: dict):
-    ids = data.get("ids", [])
-    for hid in ids:
-        path = HISTORY_DIR / f"{hid}.json"
-        if path.exists(): os.remove(path)
-    return {"status": "success"}
 
-@app.get("/api/history/{conversation_id}", 
-    summary="获取指定对话的详细内容", 
-    description="加载并返回该会话完整的 User 和 Assistant 消息数组。",
-    responses={200: {"description": "返回消息数组"}, 404: {"description": "记录不存在"}}
-)
-async def get_history_detail(
-    conversation_id: str = FastPath(..., description="会话 ID")
-):
-    path = HISTORY_DIR / f"{conversation_id}.json"
-    if path.exists():
-        with open(path, "r", encoding="utf-8") as f: return json.load(f)
-    return JSONResponse(status_code=404, content={"error": "not found"})
-
-# ----------------------------- 
-# 反馈维护 (Feedback APIs)
-# ----------------------------- 
-
-@app.post("/api/chat/feedback", 
-    summary="提交用户反馈 (点赞/点踩)", 
-    description="当用户点击点赞或点踩时触发。支持状态切换逻辑：再次点击相同类型视为取消，点击不同类型视为覆盖。操作会同步回写到对话历史 JSON 中。",
-    responses={200: {"description": "反馈状态已更新并同步至历史记录"}}
-)
+@app.post("/api/chat/feedback")
 async def save_feedback(
-    conversation_id: str = Form(..., description="关联的会话 ID"),
-    message_index: int = Form(..., description="反馈的消息在历史数组中的索引位置"),
-    type: str = Form(..., description="反馈类型：'like'（赞）或 'dislike'（踩）"), 
-    reasons: Optional[str] = Form(None, description="勾选的理由分类（JSON 字符串）"),
-    comment: Optional[str] = Form(None, description="用户的详细文字评价"),
-    files: List[UploadFile] = File(None, description="用户上传的反馈截图列表")
+    conversation_id: str = Form(...),
+    message_index: int = Form(...),
+    type: str = Form(...),
+    reasons: Optional[str] = Form(None),
+    comment: Optional[str] = Form(None),
+    pictures: List[UploadFile] = File(None),
+    files: List[UploadFile] = File(None),
+    accessToken: Optional[str] = Header(None),
 ):
-    user = get_logged_in_user()
-    
-    # 1. 核心逻辑：更新历史记录中的反馈状态
-    hist_path = HISTORY_DIR / f"{conversation_id}.json"
-    current_feedback_state = None
-    target_question, target_answer = "未知问题", "未知回答"
-    
-    if hist_path.exists():
-        try:
-            with open(hist_path, "r", encoding="utf-8") as f:
-                history = json.load(f)
-            
-            if 0 <= message_index < len(history):
-                msg = history[message_index]
-                old_feedback = msg.get("feedback")
-                
-                # 状态机切换
-                if old_feedback == type:
-                    # 再次点击相同类型 -> 取消
-                    msg["feedback"] = None
-                    current_feedback_state = "canceled"
-                else:
-                    # 不同类型或首次评价 -> 设置/覆盖
-                    msg["feedback"] = type
-                    current_feedback_state = type
-                
-                # 校验逻辑：如果是点踩且不是取消操作，必须有内容
-                if current_feedback_state == 'dislike':
-                    # 只要 reasons(解析后), comment, files 任意一个有值就行
-                    has_reasons = False
-                    if reasons:
-                        try:
-                            r_data = json.loads(reasons)
-                            has_reasons = any(v for v in r_data.values() if v) if isinstance(r_data, dict) else bool(r_data)
-                        except: has_reasons = True
-                    
-                    if not any([has_reasons, comment, files]):
-                        return JSONResponse(
-                            status_code=400, 
-                            content={"error": "点踩反馈必须填写原因、描述或上传截图"}
-                        )
+    try:
+        type = validate_feedback_type(type)
+    except ValueError as exc:
+        return error_response("提交反馈失败", {"reason": str(exc)}, 400)
 
-                # 提取 QA 快照用于反馈存证
-                target_answer = msg.get("content", "")
-                if message_index > 0:
-                    target_question = history[message_index - 1].get("content", "")
-            
-            # 回写历史文件
-            with open(hist_path, "w", encoding="utf-8") as f:
-                json.dump(history, f, ensure_ascii=False, indent=2)
-        except Exception as e:
-            print(f"Error updating history feedback: {e}")
+    if message_index < 0:
+        return error_response("提交反馈失败", {"reason": "message_index 不能为负数"}, 400)
 
-    # 2. 物理存证逻辑 (Option B: 幂等文件夹)
-    # 反馈 ID 采用固定格式：fb_{会话ID}_{索引}
-    feedback_id = f"fb_{conversation_id}_{message_index}"
-    
-    # 为了追溯，我们按首个反馈生成的日期存放，如果已存在则沿用
-    today = datetime.now().strftime("%Y-%m-%d")
-    # 查找是否已有该反馈的目录（可能在不同日期）
-    existing_dirs = list(FEEDBACK_ROOT.glob(f"**/{feedback_id}"))
-    if existing_dirs:
-        target_dir = existing_dirs[0]
+    user = get_logged_in_user(accessToken)
+    history_record, history_path = load_history_record(conversation_id)
+    messages = history_record.get("messages", [])
+    if not (0 <= message_index < len(messages)):
+        return error_response("提交反馈失败", {"conversation_id": conversation_id, "message_index": message_index}, 404)
+
+    target_message = messages[message_index]
+    old_feedback = target_message.get("feedback")
+    if old_feedback == type:
+        feedback_state = None
+        state = None
     else:
-        target_dir = FEEDBACK_ROOT / today / feedback_id
-    
+        feedback_state = type
+        state = type
+
+    reason_list = parse_reasons(reasons)
+    upload_list = pictures or files or []
+    if state == "dislike" and not any([reason_list, comment, upload_list]):
+        return error_response("提交反馈失败", {"reason": "点踩反馈必须填写原因、描述或上传截图"}, 400)
+
+    target_message["feedback"] = feedback_state
+    target_message["updated_at"] = now_ms()
+    target_message["updatedAt"] = now_display()
+    save_history_record(history_record, history_path)
+
+    feedback_id = f"fb_{conversation_id}_{message_index}"
+    target_dir = get_feedback_dir(feedback_id)
     target_dir.mkdir(parents=True, exist_ok=True)
-    
-    # 保存/更新反馈数据
     info_path = target_dir / "feedback.json"
-    image_names = []
-    
-    # 如果是追加图片
-    if info_path.exists():
-        try:
-            with open(info_path, "r", encoding="utf-8") as f:
-                old_info = json.load(f)
-                image_names = old_info.get("images", [])
-        except: pass
+    existing = read_json(info_path, {}) if info_path.exists() else {}
+    picture_names = existing.get("pictures", [])
+    for upload in upload_list:
+        original_name = Path(upload.filename or "feedback_image").name
+        final_name = original_name
+        stem = Path(original_name).stem
+        suffix = Path(original_name).suffix
+        index = 1
+        while (target_dir / final_name).exists():
+            final_name = f"{stem}_{index}{suffix}"
+            index += 1
+        with open(target_dir / final_name, "wb") as out:
+            shutil.copyfileobj(upload.file, out)
+        picture_names.append(final_name)
 
-    # 保存新上传的图片
-    for i, f in enumerate(files or []):
-        ext = os.path.splitext(f.filename)[1]
-        name = f"feedback_{len(image_names) + i}{ext}"
-        with open(target_dir / name, "wb") as out:
-            shutil.copyfileobj(f.file, out)
-        image_names.append(name)
-    
-    # 解析原因
-    reason_list = []
-    if reasons:
-        try:
-            r_data = json.loads(reasons)
-            reason_list = [v for v in r_data.values() if v] if isinstance(r_data, dict) else r_data
-        except: reason_list = [reasons]
-
-    # 构建完整的反馈详情
-    info = {
+    current_time = now_ms()
+    question = target_message.get("question", "")
+    answer = target_message.get("answer", "")
+    feedback_info = {
         "id": feedback_id,
         "conversation_id": conversation_id,
         "message_index": message_index,
         "type": type,
-        "status": current_feedback_state, # "like", "dislike", "canceled"
-        "is_canceled": current_feedback_state == "canceled",
-        "target_question": target_question,
-        "target_answer": target_answer,
-        "contact_name": user["name"],
-        "contact_phone": user["phone"],
-        "enterprise": user["company"],
+        "state": state,
+        "time": existing.get("time") or current_time,
+        "update_time": current_time,
+        "createdAt": existing.get("createdAt") or now_display(),
+        "updatedAt": now_display(),
         "reasons": reason_list,
         "comment": comment or "",
-        "images": image_names,
-        "updatedAt": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-        "process_status": "未处理"
+        "pictures": picture_names,
+        "name": user.get("name", ""),
+        "enterprise": user.get("company", ""),
+        "phone": user.get("phone", ""),
+        "question": question,
+        "answer": answer,
+        "process_status": existing.get("process_status", "未处理")
     }
-    
-    # 如果是首次创建，记录 createdAt
-    if not info_path.exists():
-        info["createdAt"] = info["updatedAt"]
-    else:
-        # 保留原有的 createdAt
-        try:
-            with open(info_path, "r", encoding="utf-8") as f:
-                old_info = json.load(f)
-                info["createdAt"] = old_info.get("createdAt", info["updatedAt"])
-        except: pass
+    write_json(info_path, feedback_info)
+    return success_response("提交反馈成功", build_feedback_summary(feedback_info))
 
-    with open(info_path, "w", encoding="utf-8") as f:
-        json.dump(info, f, ensure_ascii=False, indent=2)
-        
-    return {
-        "status": "success", 
-        "feedback_state": current_feedback_state,
-        "id": feedback_id
+
+@app.post("/api/feedback/upload_pictures")
+async def upload_feedback_pictures(
+    conversation_id: str = Form(...),
+    message_index: int = Form(...),
+    pictures: List[UploadFile] = File(...),
+):
+    if message_index < 0:
+        return error_response("上传图片失败", {"reason": "message_index 不能为负数"}, 400)
+
+    feedback_id = f"fb_{conversation_id}_{message_index}"
+    target_dir = get_feedback_dir(feedback_id)
+    target_dir.mkdir(parents=True, exist_ok=True)
+    saved = []
+    for upload in pictures or []:
+        original_name = Path(upload.filename or "feedback_image").name
+        final_name = original_name
+        stem = Path(original_name).stem
+        suffix = Path(original_name).suffix
+        index = 1
+        while (target_dir / final_name).exists():
+            final_name = f"{stem}_{index}{suffix}"
+            index += 1
+        with open(target_dir / final_name, "wb") as out:
+            shutil.copyfileobj(upload.file, out)
+        saved.append({
+            "file_id": f"pic_{now_ms()}_{len(saved)}",
+            "filename": final_name,
+            "url": f"/api/static/feedbacks/{target_dir.relative_to(FEEDBACK_ROOT).as_posix()}/{final_name}",
+        })
+    info_path = target_dir / "feedback.json"
+    info = read_json(info_path, {}) if info_path.exists() else {
+        "id": feedback_id,
+        "conversation_id": conversation_id,
+        "message_index": message_index,
+        "pictures": []
     }
+    info["pictures"] = list(dict.fromkeys((info.get("pictures") or []) + [item["filename"] for item in saved]))
+    info.setdefault("time", now_ms())
+    info["update_time"] = now_ms()
+    info.setdefault("createdAt", now_display())
+    info["updatedAt"] = now_display()
+    write_json(info_path, info)
+    return success_response("上传图片成功", {
+        "conversation_id": conversation_id,
+        "message_index": message_index,
+        "pictures": saved,
+    })
 
-@app.get("/api/feedback/detail/{date}/{id}",
-    summary="获取单条反馈详情",
-    description="根据日期目录和反馈 ID 加载完整的反馈 JSON 数据。",
-    responses={200: {"description": "返回反馈详情内容"}, 404: {"description": "反馈不存在"}}
-)
-async def get_feedback_detail(
-    date: str = FastPath(..., description="反馈日期目录"), 
-    id: str = FastPath(..., description="反馈唯一 ID")
-):
-    f_path = FEEDBACK_ROOT / date / id / "feedback.json"
-    if f_path.exists():
-        with open(f_path, "r", encoding="utf-8") as f:
-            return json.load(f)
-    return JSONResponse(status_code=404, content={"error": "feedback record not found"})
 
-@app.post("/api/feedback/process", 
-    summary="管理端处理反馈 (审核并收录)", 
-    description="对反馈进行人工审核。支持收录到优秀回答或负面案例库，并同步更新处理状态。",
-    responses={200: {"description": "处理状态更新成功"}, 404: {"description": "反馈记录不存在"}}
-)
-async def process_feedback(data: dict):
-    # 明确参数提取
-    date_path = data.get("date_path")
-    fid = data.get("id")
-    processor = data.get("processor", "系统管理员")
-    is_collect = data.get("is_collect", False) # 是否收录
-    
-    f_path = FEEDBACK_ROOT / date_path / fid / "feedback.json"
-    if not f_path.exists(): return JSONResponse(status_code=404, content={"error": "not found"})
-    
-    with open(f_path, "r", encoding="utf-8") as f: info = json.load(f)
-    
-    # 更新基础处理状态
-    info["process_status"] = "已处理"
-    info["processor"] = processor
-    info["processedAt"] = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    
-    # 执行收录逻辑
-    if is_collect:
-        # 如果是点赞则收录到优秀库，点踩收录到负面库
-        target_dir = EXCELLENT_DIR if info["type"] == "like" else NEGATIVE_QA_DIR
-        info["process_result"] = "已收录"
-        
-        collect_file = target_dir / f"{fid}.json"
-        with open(collect_file, "w", encoding="utf-8") as out:
-            json.dump({
-                "question": info.get("target_question"),
-                "answer": info.get("target_answer"),
-                "feedback_id": fid,
-                "original_type": info["type"],
-                "collectedAt": info["processedAt"]
-            }, out, ensure_ascii=False, indent=2)
-    else:
-        info["process_result"] = "已处理 (未收录)"
-
-    # 回写更新后的详情
-    with open(f_path, "w", encoding="utf-8") as f:
-        json.dump(info, f, ensure_ascii=False, indent=2)
-        
-    return {"status": "success", "data": info}
-
-@app.delete("/api/feedback/{date}/{id}", 
-    summary="删除指定反馈记录", 
-    description="删除整个反馈文件夹及其下的所有截图和 JSON 文件。",
-    responses={200: {"description": "成功物理删除"}, 404: {"description": "反馈不存在"}}
-)
-async def delete_feedback(
-    date: str = FastPath(..., description="反馈日期目录 (如 2025-03-11)"), 
-    id: str = FastPath(..., description="反馈唯一 ID")
-):
-    target_dir = FEEDBACK_ROOT / date / id
-    if target_dir.exists() and target_dir.is_dir():
-        shutil.rmtree(target_dir)
-        return {"status": "success"}
-    return JSONResponse(status_code=404, content={"error": "not found"})
-
-@app.get("/api/feedback/list", 
-    summary="获取反馈审计全量列表", 
-    description="扫描服务器反馈目录，返回结构化的反馈详情列表。",
-    responses={200: {"description": "返回反馈详情数组"}}
-)
+@app.get("/api/feedback/list")
 async def list_feedbacks(
-    name: str = Query("", description="按反馈人姓名筛选"), 
-    enterprise: str = Query("", description="按所属企业筛选"), 
-    type: str = Query("", description="按类型(like/dislike)筛选")
+    name: str = Query(""),
+    enterprise: str = Query(""),
+    type: str = Query(""),
+    start_time: Optional[str] = Query(None),
+    end_time: Optional[str] = Query(None),
 ):
     results = []
-    for f_json in FEEDBACK_ROOT.glob("**/feedback.json"):
-        if "excellent_answers" in str(f_json) or "negative_answers" in str(f_json): continue
-        try:
-            with open(f_json, "r", encoding="utf-8") as f:
-                d = json.load(f)
-                if name and name.lower() not in d.get("contact_name", "").lower(): continue
-                if enterprise and enterprise.lower() not in d.get("enterprise", "").lower(): continue
-                if type and d.get("type", "") != type: continue
-                results.append(d)
-        except: pass
-    results.sort(key=lambda x: x.get("createdAt", ""), reverse=True)
-    return results
+    try:
+        start_ms = parse_optional_millis(start_time, "start_time")
+        end_ms = parse_optional_millis(end_time, "end_time")
+    except ValueError as exc:
+        return error_response("获取历史记录失败", {"reason": str(exc)}, 400)
+    for path in FEEDBACK_ROOT.glob("*/fb_*/feedback.json"):
+        info = read_json(path, {})
+        if name and name.lower() not in info.get("name", "").lower():
+            continue
+        if enterprise and enterprise.lower() not in info.get("enterprise", "").lower():
+            continue
+        if type and info.get("type") != type:
+            continue
+        update_time = int(info.get("update_time") or 0)
+        if start_ms is not None and update_time < start_ms:
+            continue
+        if end_ms is not None and update_time > end_ms:
+            continue
+        results.append(build_feedback_summary(info))
+    results.sort(key=lambda item: item.get("update_time", ""), reverse=True)
+    return success_response("获取反馈列表成功", {"list": results, "total": len(results)})
 
-# ----------------------------- 
-# 知识库与工具 (Knowledge Base APIs)
-# ----------------------------- 
 
-from services.kb_service import KBService
-kb_service = KBService()
+@app.get("/api/feedback/{feedback_id}")
+async def get_feedback_detail_by_id(feedback_id: str):
+    target_dir = find_feedback_dir(feedback_id)
+    if not target_dir:
+        return error_response("获取反馈详情失败", {"id": feedback_id}, 404)
+    return success_response("获取反馈详情成功", read_json(target_dir / "feedback.json", {}))
 
-@app.get("/api/kb/list", summary="获取所有知识库的基本信息列表")
-async def get_kb_list(): return kb_service.load_all()
 
-@app.post("/api/kb/create", 
-    summary="创建一个新的知识库", 
-    description="根据用户信息和所选分类，后端会自动在物理路径创建对应文件夹并初始化元数据。",
-    responses={200: {"description": "知识库创建成功并已准备好接收文件"}}
-)
+@app.get("/api/feedback/detail/{date}/{id}")
+async def get_feedback_detail(date: str, id: str):
+    path = FEEDBACK_ROOT / date / id / "feedback.json"
+    if not path.exists():
+        return error_response("获取反馈详情失败", {"id": id}, 404)
+    return success_response("获取反馈详情成功", read_json(path, {}))
+
+
+@app.post("/api/feedback/process")
+async def process_feedback(data: dict = Body(...)):
+    date_path = data.get("date_path")
+    feedback_id = str(data.get("id") or "").strip()
+    if not feedback_id:
+        return error_response("处理反馈失败", {"reason": "id 不能为空"}, 400)
+    processor = data.get("processor", "系统管理员")
+    is_collect = bool(data.get("is_collect", False))
+
+    target_dir = FEEDBACK_ROOT / date_path / feedback_id if date_path else find_feedback_dir(feedback_id)
+    if not target_dir or not (target_dir / "feedback.json").exists():
+        return error_response("处理反馈失败", {"id": feedback_id}, 404)
+
+    info_path = target_dir / "feedback.json"
+    info = read_json(info_path, {})
+    info["process_status"] = "已处理"
+    info["processor"] = processor
+    info["processed_at"] = now_ms()
+    info["processedAt"] = now_display()
+    if is_collect:
+        target_file = (EXCELLENT_DIR if info.get("type") == "like" else NEGATIVE_QA_DIR) / f"{feedback_id}.json"
+        write_json(target_file, {
+            "question": info.get("question", ""),
+            "answer": info.get("answer", ""),
+            "feedback_id": feedback_id,
+            "original_type": info.get("type"),
+            "collected_at": now_ms(),
+            "collectedAt": now_display(),
+        })
+        info["process_result"] = "已收录"
+    else:
+        info["process_result"] = "已处理(未收录)"
+    write_json(info_path, info)
+    return success_response("处理反馈成功", info)
+
+
+@app.post("/api/feedback/batch_delete")
+async def batch_delete_feedback(data: dict = Body(...)):
+    try:
+        ids = ensure_id_list(data, "ids")
+    except ValueError as exc:
+        return error_response("批量删除反馈失败", {"reason": str(exc)}, 400)
+    deleted = []
+    for feedback_id in ids:
+        target_dir = find_feedback_dir(feedback_id)
+        if target_dir and target_dir.exists():
+            shutil.rmtree(target_dir)
+            deleted.append(feedback_id)
+    return success_response("批量删除反馈成功", {"deleted_ids": deleted})
+
+
+@app.delete("/api/feedback/{date}/{id}")
+async def delete_feedback(date: str, id: str):
+    target_dir = FEEDBACK_ROOT / date / id
+    if not target_dir.exists():
+        return error_response("删除反馈失败", {"id": id}, 404)
+    shutil.rmtree(target_dir)
+    cleanup_empty_parents(target_dir, FEEDBACK_ROOT)
+    return success_response("删除反馈成功", {"id": id})
+
+
+@app.get("/api/kb/list")
+async def get_kb_list():
+    items = kb_service.load_all()
+    return success_response("获取知识库列表成功", {"list": items, "total": len(items)})
+
+
+@app.get("/api/kb/{id}")
+async def get_kb_detail(id: str, url: Optional[str] = Query(None)):
+    _ = url
+    detail = kb_service.get_kb_detail(id)
+    if not detail:
+        return error_response("获取知识库详情失败", {"id": id}, 404)
+    return success_response("获取知识库详情成功", detail)
+
+
+@app.post("/api/kb/create")
 async def create_kb(
-    name: str = Form(..., description="知识库名称"), 
-    category: str = Form(..., description="知识库分类（企业知识库、部门知识库、个人知识库）"),
-    model: str = Form("openai", description="使用的向量 Embedding 模型（默认为 openai）")
-): 
-    return kb_service.create_kb(name, category=category, model=model)
+    name: str = Form(...),
+    category: str = Form(...),
+    model: str = Form("openai"),
+):
+    created = kb_service.create_kb(name=name, category=category, model=model)
+    return success_response("创建知识库成功", created)
 
-@app.post("/api/kb/update", 
-    summary="更新知识库元数据（含启用/禁用状态）", 
-    description="支持修改名称、备注、以及开关状态。状态变更会触发 RAG 索引的实时热重载。",
-    responses={200: {"description": "更新成功"}, 404: {"description": "知识库不存在"}}
-)
+
+@app.post("/api/kb/update")
 async def update_kb(
-    id: str = Form(..., description="知识库唯一 ID"),
-    name: Optional[str] = Form(None, description="新的名称"),
-    remark: Optional[str] = Form(None, description="新的备注说明"),
-    enabled: Optional[str] = Form(None, description="是否启用 ('true'/'false')"),
-    users: Optional[str] = Form(None, description="有权访问的用户列表 (JSON 数组)")
+    id: str = Form(...),
+    name: Optional[str] = Form(None),
+    remark: Optional[str] = Form(None),
+    enabled: Optional[str] = Form(None),
+    users: Optional[str] = Form(None),
 ):
     update_data = {}
-    if name is not None: update_data["name"] = name
-    if remark is not None: update_data["remark"] = remark
-    if enabled is not None: update_data["enabled"] = enabled.lower() == 'true'
-    if users is not None: update_data["users"] = json.loads(users)
-    
-    result = kb_service.update_kb(id, update_data)
-    if result: return result
-    return JSONResponse(status_code=404, content={"error": "failed"})
+    if name is not None:
+        update_data["name"] = name
+    if remark is not None:
+        update_data["remark"] = remark
+    if enabled is not None:
+        update_data["enabled"] = enabled.lower() == "true"
+    if users:
+        try:
+            update_data["users"] = json.loads(users)
+        except Exception:
+            return error_response("更新知识库失败", {"reason": "users 字段不是合法 JSON"}, 400)
+    updated = kb_service.update_kb(id, update_data)
+    if not updated:
+        return error_response("更新知识库失败", {"id": id}, 404)
+    return success_response("更新知识库成功", updated)
 
-@app.get("/api/kb/{id}/files", 
-    summary="获取指定知识库下的文件清单", 
-    responses={200: {"description": "返回文件详情列表，含名称、大小、上传时间等"}}
-)
-async def list_kb_files(id: str = FastPath(..., description="知识库 ID")):
-    return kb_service.list_files(id)
 
-@app.post("/api/kb/{id}/upload", 
-    summary="向知识库上传文档并自动索引", 
-    description="上传文件后，系统会自动触发文本切片及向量 Embedding，并更新 RAG 索引。",
-    responses={200: {"description": "上传并索引成功"}}
-)
+@app.delete("/api/kb/{id}")
+async def delete_kb(id: str):
+    deleted = kb_service.delete_kb(id)
+    if not deleted:
+        return error_response("删除知识库失败", {"id": id}, 404)
+    return success_response("删除知识库成功", deleted)
+
+
+@app.get("/api/kb/{id}/files")
+async def list_kb_files(id: str):
+    detail = kb_service.get_kb_detail(id)
+    if not detail:
+        return error_response("获取知识库文件失败", {"id": id}, 404)
+    return success_response("获取知识库文件成功", {
+        "id": id,
+        "url": detail.get("url", ""),
+        "files": detail.get("files", []),
+    })
+
+
+@app.post("/api/kb/{id}/upload")
 async def upload_kb_file(
-    id: str = FastPath(..., description="知识库 ID"), 
-    file: UploadFile = File(..., description="要上传的物理文件")
+    id: str,
+    files: List[UploadFile] = File(...),
 ):
-    if kb_service.save_file(id, file): return {"status": "success"}
-    return JSONResponse(status_code=404, content={"error": "failed"})
+    result = kb_service.save_files(id, files)
+    if result is None:
+        return error_response("上传知识库文档失败", {"id": id}, 404)
+    return success_response("上传知识库文档成功", {"id": id, "files": result})
 
-@app.post("/api/kb/{id}/delete_file", 
-    summary="从知识库中永久删除指定文档", 
-    description="删除物理文件，并同步清理向量索引中的相关数据。",
-    responses={200: {"description": "删除及索引同步成功"}}
-)
-async def delete_kb_file(
-    id: str = FastPath(..., description="知识库 ID"), 
-    filename: str = Form(..., description="要删除的文件完整名称")
-):
-    if kb_service.delete_file(id, filename): return {"status": "success"}
-    return JSONResponse(status_code=404, content={"error": "failed"})
+
+@app.post("/api/kb/{id}/delete_files")
+async def delete_kb_files(id: str, data: dict = Body(...)):
+    try:
+        filenames = ensure_id_list(data, "filenames", "files")
+    except ValueError as exc:
+        return error_response("删除知识库文档失败", {"reason": str(exc)}, 400)
+    deleted = kb_service.delete_files(id, filenames)
+    if deleted is None:
+        return error_response("删除知识库文档失败", {"id": id}, 404)
+    return success_response("删除知识库文档成功", {"id": id, "deleted_files": deleted})
+
+
+@app.post("/api/kb/{id}/delete_file")
+async def delete_kb_file(id: str, filename: str = Form(...)):
+    detail = kb_service.get_kb_detail(id)
+    if not detail:
+        return error_response("删除知识库文档失败", {"id": id}, 404)
+    deleted = kb_service.delete_files(id, [filename]) or []
+    return success_response("删除知识库文档成功", {"id": id, "deleted_files": deleted})
+
 
 if __name__ == "__main__":
     import uvicorn
-    # 本地启动命令：pixi run python app.py
     uvicorn.run("app:app", host="0.0.0.0", port=8000, reload=False)

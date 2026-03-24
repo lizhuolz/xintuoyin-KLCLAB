@@ -1,0 +1,37 @@
+[
+  {
+    "role": "user",
+    "content": "帮我计算213123+3123，用计算器"
+  },
+  {
+    "role": "assistant",
+    "content": "213123 加上 3123 等于 216246。",
+    "thinking_text": "在正式回答前，我先做了几步准备：\n1. 我调用了 calculator，输入大致是：{\"expression\": \"213123+3123\"}。\n对应上面第 1 步，calculator 返回了这样的关键信息：216246.0。\n整理完这些信息后，我再把最终答案组织成对你更自然的回复。",
+    "thinking_steps": [
+      {
+        "kind": "call",
+        "node_name": "chatbot_local",
+        "tool_name": "calculator",
+        "preview": "{\"expression\": \"213123+3123\"}",
+        "tool_call_id": "call_xLbydIAWxljo75Ir5WQ5BLe2"
+      },
+      {
+        "kind": "result",
+        "node_name": "tools_local",
+        "tool_name": "calculator",
+        "preview": "216246.0",
+        "tool_call_id": "call_xLbydIAWxljo75Ir5WQ5BLe2"
+      }
+    ]
+  },
+  {
+    "role": "user",
+    "content": "计算器能计算百分比吗？"
+  },
+  {
+    "role": "assistant",
+    "content": "是的，计算器可以计算百分比。你可以通过将百分比转换为小数来进行计算。例如，计算 20% 的某个数值，你可以将 20% 转换为 0.20，然后乘以该数值。请告诉我你具体需要计算的百分比问题，我可以帮你解决。",
+    "thinking_text": "这次回答没有额外调用工具，我直接根据已有上下文完成了回复。",
+    "thinking_steps": []
+  }
+]

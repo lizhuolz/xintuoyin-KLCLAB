@@ -1,0 +1,30 @@
+{
+  "id": "fb_1774369418483_0",
+  "conversation_id": "1774369418483",
+  "message_index": 0,
+  "type": "dislike",
+  "state": "dislike",
+  "time": "1774369453285",
+  "update_time": "1774369453501",
+  "createdAt": "2026/03/25 00:24:13",
+  "updatedAt": "2026/03/25 00:24:13",
+  "reasons": [],
+  "comment": "答案不够完整",
+  "pictures": [
+    "probe.png",
+    "probe_1.png",
+    "probe_2.png",
+    "probe_3.png",
+    "probe_4.png"
+  ],
+  "name": "王颖奇",
+  "enterprise": "图湃（北京）医疗科技",
+  "phone": "15323720032",
+  "question": "请根据附件告诉我项目代号和交付日期",
+  "answer": "根据文件`probe.txt`的内容，项目代号是“北极星”，交付日期是“2026-04-15”。",
+  "process_status": "已处理",
+  "processor": "api_probe",
+  "processed_at": "1774369453789",
+  "processedAt": "2026/03/25 00:24:13",
+  "process_result": "已处理(未收录)"
+}

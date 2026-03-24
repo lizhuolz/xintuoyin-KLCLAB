@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import os
 
 from langchain_core.messages import SystemMessage
 from langchain_openai import ChatOpenAI
@@ -17,10 +18,30 @@ from langchain_core.messages import AIMessage, BaseMessage, HumanMessage, System
 from agent.utils import extract_last_user_text, safe_json_load
 
 # 获得一个chatbot节点
+def _env_int(name: str, default: int) -> int:
+    try:
+        return int(os.getenv(name, default))
+    except (TypeError, ValueError):
+        return int(default)
+
+
+def _env_float(name: str, default: float) -> float:
+    try:
+        return float(os.getenv(name, default))
+    except (TypeError, ValueError):
+        return float(default)
+
+
 def make_chatbot_node(temperature: float, tools, system_prompt: str = "你是一个专业的人工智能助手。",streaming=True):
     def chatbot_node(state: GraphState):
         model = state["select_model"]
-        llm = ChatOpenAI(model=model, temperature=temperature,streaming=streaming).bind_tools(tools)
+        llm = ChatOpenAI(
+            model=model,
+            temperature=_env_float("CHAT_MODEL_TEMPERATURE", temperature),
+            streaming=streaming,
+            max_tokens=_env_int("CHAT_MODEL_MAX_TOKENS", 4096),
+            timeout=_env_float("CHAT_MODEL_TIMEOUT", 120),
+        ).bind_tools(tools)
         
         # 强化指令：要求 AI 尊重原文
         instruction = (
@@ -41,7 +62,7 @@ def make_chatbot_node(temperature: float, tools, system_prompt: str = "你是一
 def make_should_sql_node(SQL_TOOL_NAME) -> GraphState:
     
     def res(state: GraphState):
-        judge_llm = ChatOpenAI(model=state["select_model"], temperature=0)
+        judge_llm = ChatOpenAI(model=state["select_model"], temperature=_env_float("SQL_ROUTE_TEMPERATURE", 0.0), max_tokens=_env_int("CHAT_MODEL_MAX_TOKENS", 4096), timeout=_env_float("CHAT_MODEL_TIMEOUT", 120))
         user_text = extract_last_user_text(state["messages"])
         system = SystemMessage(
             content=(

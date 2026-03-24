@@ -1,0 +1,92 @@
+{
+  "conversation_id": "1774367993235",
+  "title": "帮我使用数据库工具来查询目前公司的特殊收入是多少？",
+  "created_at": "1774368013307",
+  "updated_at": "1774368093846",
+  "createdAt": "2026/03/25 00:00:13",
+  "updatedAt": "2026/03/25 00:01:33",
+  "message_count": 2,
+  "user": {
+    "name": "王颖奇",
+    "phone": "15323720032",
+    "categoryName": "图湃（北京）医疗科技"
+  },
+  "messages": [
+    {
+      "message_index": 0,
+      "question": "帮我使用数据库工具来查询目前公司的特殊收入是多少？",
+      "files": [],
+      "uploaded_files": [],
+      "file_contexts": [],
+      "web_search": false,
+      "db_version": null,
+      "answer": "根据数据库查询结果，目前公司的特殊收入数据为空或未记录。可能需要进一步核实数据来源或确认是否有相关记录。",
+      "resource": [],
+      "recommend_answer": [
+        "为什么特殊收入数据为空？",
+        "如何核实数据来源？",
+        "有没有其他方法查询收入？"
+      ],
+      "feedback": null,
+      "thinking_text": "在正式回答前，我先做了几步准备：\n1. 我调用了 sql_tool，输入大致是：{\"question\": \"查询目前公司的特殊收入是多少？\"}。\n对应上面第 1 步，sql_tool 返回了这样的关键信息：{\"rowcount\": 1, \"fields\": [\"total_special_income\"], \"data\": [{\"total_special_income\": null}]}。\n整理完这些信息后，我再把最终答案组织成对你更自然的回复。",
+      "thinking_steps": [
+        {
+          "kind": "call",
+          "node_name": "chatbot_local",
+          "tool_name": "sql_tool",
+          "preview": "{\"question\": \"查询目前公司的特殊收入是多少？\"}",
+          "tool_call_id": "call_nKw9hP4PxNTJYztWhJsbYrxw"
+        },
+        {
+          "kind": "result",
+          "node_name": "tools_local",
+          "tool_name": "sql_tool",
+          "preview": "{\"rowcount\": 1, \"fields\": [\"total_special_income\"], \"data\": [{\"total_special_income\": null}]}",
+          "tool_call_id": "call_nKw9hP4PxNTJYztWhJsbYrxw"
+        }
+      ],
+      "created_at": "1774368043223",
+      "updated_at": "1774368043223",
+      "createdAt": "2026/03/25 00:00:43",
+      "updatedAt": "2026/03/25 00:00:43"
+    },
+    {
+      "message_index": 1,
+      "question": "帮我使用数据库工具来查询目前公司的人数是多少？",
+      "files": [],
+      "uploaded_files": [],
+      "file_contexts": [],
+      "web_search": false,
+      "db_version": null,
+      "answer": "根据数据库查询结果，目前公司的人数记录为0。这可能意味着数据未更新或记录有误，建议进一步核实数据来源或确认是否有相关记录。",
+      "resource": [],
+      "recommend_answer": [
+        "数据来源如何核实？",
+        "如何更新数据库记录？",
+        "是否有其他查询方法？"
+      ],
+      "feedback": null,
+      "thinking_text": "在正式回答前，我先做了几步准备：\n1. 我调用了 sql_tool，输入大致是：{\"question\": \"查询目前公司的人数是多少？\"}。\n对应上面第 1 步，sql_tool 返回了这样的关键信息：{\"rowcount\": 1, \"fields\": [\"COUNT(*)\"], \"data\": [{\"COUNT(*)\": 0}]}。\n整理完这些信息后，我再把最终答案组织成对你更自然的回复。",
+      "thinking_steps": [
+        {
+          "kind": "call",
+          "node_name": "chatbot_local",
+          "tool_name": "sql_tool",
+          "preview": "{\"question\": \"查询目前公司的人数是多少？\"}",
+          "tool_call_id": "call_xrshyXZSMCv2u6p9Yz0pPpgh"
+        },
+        {
+          "kind": "result",
+          "node_name": "tools_local",
+          "tool_name": "sql_tool",
+          "preview": "{\"rowcount\": 1, \"fields\": [\"COUNT(*)\"], \"data\": [{\"COUNT(*)\": 0}]}",
+          "tool_call_id": "call_xrshyXZSMCv2u6p9Yz0pPpgh"
+        }
+      ],
+      "created_at": "1774368093846",
+      "updated_at": "1774368093846",
+      "createdAt": "2026/03/25 00:01:33",
+      "updatedAt": "2026/03/25 00:01:33"
+    }
+  ]
+}

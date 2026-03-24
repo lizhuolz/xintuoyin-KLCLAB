@@ -1,17 +1,33 @@
-import pymysql
-import sqlparse
 import copy
+import os
+import pymysql
 import re
+import sqlparse
 from openai import OpenAI
 
-# MySQL Info
-HOST = '183.69.138.62'
-PORT = 33666
-USER = 'hagongda'
-PASSWD = 'ha.G/o[tEst]n%gD*a'
-DB_NAME = 'r_d_test'
 
-MAX_REVISE_ROUND = 4
+def _env_int(name, default):
+    try:
+        return int(os.getenv(name, default))
+    except (TypeError, ValueError):
+        return int(default)
+
+
+def _env_float(name, default):
+    try:
+        return float(os.getenv(name, default))
+    except (TypeError, ValueError):
+        return float(default)
+
+
+# MySQL Info
+HOST = os.getenv("DB_MYSQL_HOST", '183.69.138.62')
+PORT = _env_int("DB_MYSQL_PORT", 33666)
+USER = os.getenv("DB_MYSQL_USER", 'hagongda')
+PASSWD = os.getenv("DB_MYSQL_PASSWORD", 'ha.G/o[tEst]n%gD*a')
+DB_NAME = os.getenv("DB_MYSQL_NAME", 'r_d_test')
+
+MAX_REVISE_ROUND = _env_int("DB_MAX_REVISE_ROUND", 4)
 
 REVISE_PROMPT ='''
 以下是一个在MySQL上执行的语句：
@@ -50,11 +66,20 @@ SQL_USER_TEMPLATE = """### Database Schema
 
 class DB:
     def __init__(self, 
-                 base_url='https://api.claudeshop.top/v1', 
-                 model_name='gpt-4o' ,
-                 api_key = "sk-pMyKRA0l2LRns2k0BuBipp1gDmI2HG98ZXATEyOS0MMAJNJH"
+                 base_url=None, 
+                 model_name=None,
+                 api_key=None
                  ):
         
+        base_url = base_url or os.getenv("DB_LLM_BASE_URL") or os.getenv("OPENAI_API_BASE") or 'https://api.claudeshop.top/v1'
+        model_name = model_name or os.getenv("DB_LLM_MODEL_NAME", 'gpt-4o')
+        api_key = api_key or os.getenv("DB_LLM_API_KEY") or os.getenv("OPENAI_API_KEY") or ""
+        self.selector_temperature = _env_float("DB_LLM_SELECTOR_TEMPERATURE", 0.1)
+        self.selector_max_tokens = _env_int("DB_LLM_SELECTOR_MAX_TOKENS", 1024)
+        self.generate_temperature = _env_float("DB_LLM_GENERATE_TEMPERATURE", 0.0)
+        self.generate_max_tokens = _env_int("DB_LLM_GENERATE_MAX_TOKENS", 1024)
+        self.revise_temperature = _env_float("DB_LLM_REVISE_TEMPERATURE", 0.0)
+
         # init MySQL
         self.conn = None
         self.cur = None
@@ -228,8 +253,8 @@ class DB:
             response = self.client.chat.completions.create(
                 model=self.model_name,
                 messages=messages,
-                temperature=0.1, 
-                max_tokens=1024,
+                temperature=self.selector_temperature, 
+                max_tokens=self.selector_max_tokens,
                 stop=["</RES>"] 
             )
             
@@ -286,8 +311,8 @@ class DB:
             response = self.client.chat.completions.create(
                 model=self.model_name,
                 messages=messages,
-                temperature=0.0,
-                max_tokens=1024,
+                temperature=self.generate_temperature,
+                max_tokens=self.generate_max_tokens,
             )
             
             raw_output = response.choices[0].message.content
@@ -322,7 +347,7 @@ class DB:
              response = self.client.chat.completions.create(
                 model=self.model_name,
                 messages=messages,
-                temperature=0.0
+                temperature=self.revise_temperature
             )
              content = response.choices[0].message.content
              match = re.search(r"<SQL>(.*?)</SQL>", content, re.DOTALL)

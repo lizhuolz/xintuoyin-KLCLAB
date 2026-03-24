@@ -23,13 +23,13 @@ USER_JSON_FILE = BASE_DIR / "user.json"
 
 # --- 配置 LlamaIndex ---
 Settings.llm = OpenAI(
-    model="gpt-4o",
+    model=os.environ.get("RAG_LLM_MODEL", "gpt-4o"),
     api_key=os.environ.get("OPENAI_API_KEY"),
     api_base=os.environ.get("OPENAI_API_BASE"),
-    temperature=0.1
+    temperature=float(os.environ.get("RAG_LLM_TEMPERATURE", 0.1))
 )
 Settings.embed_model = OpenAIEmbedding(
-    model="text-embedding-3-small",
+    model=os.environ.get("RAG_EMBED_MODEL", "text-embedding-3-small"),
     api_key=os.environ.get("OPENAI_API_KEY"),
     api_base=os.environ.get("OPENAI_API_BASE"),
 )
