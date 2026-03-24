@@ -8,8 +8,8 @@ from utils.functions import query_LLM_ollama
 # predefined info
 HOST = '183.69.138.62'
 PORT = 33666
-USER = '严丹丹'
-PASSWD = '123456789'
+USER = 'hagongda'
+PASSWD = 'ha.G/o[tEst]n%gD*a'
 DB_NAME = 'r_d_test'
 
 TEMPLATE = """### Task

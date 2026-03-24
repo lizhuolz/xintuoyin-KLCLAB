@@ -1,0 +1,19 @@
+{
+  "id": "fb_1773928544577_1",
+  "conversation_id": "1773928544577",
+  "message_index": 1,
+  "type": "dislike",
+  "status": "canceled",
+  "is_canceled": true,
+  "target_question": "1",
+  "target_answer": "你好！请问有什么我可以帮助你的吗？",
+  "contact_name": "王颖奇",
+  "contact_phone": "15323720032",
+  "enterprise": "图湃（北京）医疗科技",
+  "reasons": [],
+  "comment": "",
+  "images": [],
+  "updatedAt": "2026-03-19 22:04:57",
+  "process_status": "未处理",
+  "createdAt": "2026-03-19 21:59:15"
+}

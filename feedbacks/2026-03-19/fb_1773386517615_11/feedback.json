@@ -1,0 +1,19 @@
+{
+  "id": "fb_1773386517615_11",
+  "conversation_id": "1773386517615",
+  "message_index": 11,
+  "type": "like",
+  "status": "like",
+  "is_canceled": false,
+  "target_question": "查找员工工资",
+  "target_answer": "请问你是要查找某个特定员工的工资信息，还是想了解公司整体的工资结构或政策？请提供更多信息，以便我更好地帮助你。",
+  "contact_name": "王颖奇",
+  "contact_phone": "15323720032",
+  "enterprise": "图湃（北京）医疗科技",
+  "reasons": [],
+  "comment": "",
+  "images": [],
+  "updatedAt": "2026-03-19 23:36:31",
+  "process_status": "未处理",
+  "createdAt": "2026-03-19 21:06:35"
+}

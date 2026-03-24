@@ -395,7 +395,7 @@ async function handleSingleDelete(row) {
     
     if(String(currentId.value) === String(row.id)) {
       if(conversations.value.length) selectConv(conversations.value[0].id)
-      else createNewChat()
+      else await createNewChat()
     }
     
     refreshManagerList(managerSearch.value)
@@ -428,7 +428,7 @@ async function handleBatchDelete() {
     
     if(currentWasDeleted) {
       if(conversations.value.length) selectConv(conversations.value[0].id)
-      else createNewChat()
+      else await createNewChat()
     }
     
     refreshManagerList(managerSearch.value);
@@ -436,7 +436,7 @@ async function handleBatchDelete() {
   } catch(e) {}
 }
 
-// 反馈逻辑 (点踩重构)
+// 反馈逻辑 (状态同步重构)
 const feedbackVisible = ref(false);
 const currentFeedbackMsgIndex = ref(-1);
 const feedbackForm = reactive({ 
@@ -446,22 +446,29 @@ const feedbackForm = reactive({
 const feedbackFiles = ref([]);
 
 const handleLike = async (msg, index) => {
-  msg.liked = !msg.liked;
-  if(msg.liked) {
+  // 切换本地状态 (Like 逻辑维持 Toggle)
+  const isNowLiked = !msg.liked;
+  msg.liked = isNowLiked;
+  if (isNowLiked) msg.disliked = false;
+
+  const fd = new FormData();
+  fd.append('conversation_id', String(currentId.value));
+  fd.append('message_index', String(index));
+  fd.append('type', 'like');
+  try { await fetch('/api/chat/feedback', { method: 'POST', body: fd }); } catch(e) {}
+}
+
+const handleDislike = async (msg, index) => {
+  if (msg.disliked) {
+    // 已经是点踩状态（表示之前提交过信息），再次点击视为直接取消
     msg.disliked = false;
     const fd = new FormData();
     fd.append('conversation_id', String(currentId.value));
     fd.append('message_index', String(index));
-    fd.append('type', 'like');
-    // 后端会根据 user.json 自动填充，这里可以不用传，保持静默
+    fd.append('type', 'dislike');
     try { await fetch('/api/chat/feedback', { method: 'POST', body: fd }); } catch(e) {}
-  }
-}
-
-const handleDislike = (msg, index) => {
-  msg.disliked = !msg.disliked;
-  if(msg.disliked) {
-    msg.liked = false;
+  } else {
+    // 尚未点踩，弹出反馈框。注意：此时不改变 msg.disliked，不亮按钮。
     currentFeedbackMsgIndex.value = index;
     // 重置表单
     feedbackForm.reasons = { question: '', answer: '', report: '' };
@@ -474,6 +481,13 @@ const handleDislike = (msg, index) => {
 const handleFeedbackFile = (file) => { feedbackFiles.value.push(file.raw); }
 
 const submitFeedback = async () => {
+  // 校验前端必填 (至少选一个原因或填了评论)
+  const hasReason = Object.values(feedbackForm.reasons).some(v => !!v);
+  if (!hasReason && !feedbackForm.comment.trim() && feedbackFiles.value.length === 0) {
+    ElMessage.warning("请至少选择一个原因或填写文字描述");
+    return;
+  }
+
   const fd = new FormData();
   fd.append('conversation_id', String(currentId.value));
   fd.append('message_index', String(currentFeedbackMsgIndex.value));
@@ -486,7 +500,16 @@ const submitFeedback = async () => {
     const res = await fetch('/api/chat/feedback', { method: 'POST', body: fd });
     if(res.ok) {
       ElMessage.success("感谢您的反馈！");
+      // 只有提交成功后，才在 UI 上亮起按钮
+      const msg = currentMessages.value[currentFeedbackMsgIndex.value];
+      if (msg) {
+        msg.disliked = true;
+        msg.liked = false;
+      }
       feedbackVisible.value = false;
+    } else {
+      const err = await res.json();
+      ElMessage.error(err.error || "提交失败");
     }
   } catch (e) { ElMessage.error("提交失败"); }
 }
@@ -496,7 +519,7 @@ const copyText = (t) => { navigator.clipboard.writeText(t).then(()=>ElMessage.su
 
 onMounted(async () => {
   await fetchConversations();
-  if (!conversations.value.length) createNewChat()
+  if (!conversations.value.length) await createNewChat()
   else selectConv(conversations.value[0].id)
 })
 
@@ -506,15 +529,30 @@ async function selectConv(id) {
   if (conv && conv.messages.length === 0 && conv.title !== '新对话') {
     try {
       const res = await fetch(`/api/history/${id}`)
-      if (res.ok) conv.messages = await res.json()
+      if (res.ok) {
+        const rawMsgs = await res.json()
+        // 映射后端 feedback 字段到前端状态
+        conv.messages = rawMsgs.map(m => ({
+          ...m,
+          liked: m.feedback === 'like',
+          disliked: m.feedback === 'dislike'
+        }))
+      }
     } catch (e) {}
   }
   nextTick(scrollToBottom)
 }
 
-const createNewChat = () => {
-  const n = { id: String(Date.now()), title: '新对话', messages: [] }
-  conversations.value.unshift(n); currentId.value = n.id;
+const createNewChat = async () => {
+  try {
+    const res = await fetch('/api/chat/new_session');
+    const data = await res.json();
+    const n = { id: data.conversation_id, title: '新对话', messages: [] }
+    conversations.value.unshift(n); currentId.value = n.id;
+  } catch (e) {
+    const n = { id: String(Date.now()), title: '新对话', messages: [] }
+    conversations.value.unshift(n); currentId.value = n.id;
+  }
 }
 
 const handleFileUpload = (e) => {

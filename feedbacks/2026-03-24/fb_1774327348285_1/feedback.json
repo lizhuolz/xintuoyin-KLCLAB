@@ -1,0 +1,19 @@
+{
+  "id": "fb_1774327348285_1",
+  "conversation_id": "1774327348285",
+  "message_index": 1,
+  "type": "like",
+  "status": "like",
+  "is_canceled": false,
+  "target_question": "解读文件",
+  "target_answer": "请提供您需要解读的文件内容或文件的具体问题，我将帮助您进行解读。",
+  "contact_name": "王颖奇",
+  "contact_phone": "15323720032",
+  "enterprise": "图湃（北京）医疗科技",
+  "reasons": [],
+  "comment": "",
+  "images": [],
+  "updatedAt": "2026-03-24 18:17:52",
+  "process_status": "未处理",
+  "createdAt": "2026-03-24 18:17:52"
+}

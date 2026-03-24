@@ -1,0 +1,42 @@
+[
+  {
+    "role": "user",
+    "content": "你好"
+  },
+  {
+    "role": "assistant",
+    "content": "你好！有什么我可以帮助你的吗？"
+  },
+  {
+    "role": "user",
+    "content": "介绍百度公司，返回链接"
+  },
+  {
+    "role": "assistant",
+    "content": "百度公司成立于2000年，是一家全球领先的人工智能公司，最初作为搜索引擎平台，后来发展成为人工智能领域的先锋。百度拥有完整的AI技术栈，从深度学习框架到模型和应用程序，拥有行业领先的自研技术。百度的产品和服务组合多样化，覆盖数亿用户、数百万开发者和数十万企业。百度将其领先的AI能力整合到产品中，推动创新应用。\n\n百度的使命是“用科技让复杂的世界更简单”，并致力于通过技术创新简化复杂世界。百度的愿景是“成为最懂用户，并能帮助人们成长的全球顶级高科技公司”。\n\n百度公司总部位于北京市海淀区中关村，创始人李彦宏拥有“超链分析”技术专利，使中国成为全球仅有的几个拥有搜索引擎核心技术的国家之一。百度每天响应来自100余个国家和地区的数十亿次搜索请求，是网民获取中文信息的主要入口。\n\n百度在人工智能领域的投资包括深度学习、对话式人工智能操作系统、自动驾驶、AI芯片等前沿领域，使得百度成为一个拥有强大互联网基础的领先AI公司。\n\n更多信息可以访问百度的官方网站：[百度官网](https://www.baidu.com)和百度的LinkedIn页面：[Baidu LinkedIn](https://cn.linkedin.com/company/baidu-inc)。\n\n参考链接：\n- [百度企业介绍](https://cspro.org/cms/show.action?code=publish_8ac21fad707fbfd0017080c42a780003&newsid=1debe16252804914afc6e13a47fab852&channelid=0000000111)\n- [百度公司介绍 - 维基百科](https://zh.wikipedia.org/wiki/%E7%99%BE%E5%BA%A6)\n- [Baidu - LinkedIn](https://cn.linkedin.com/company/baidu-inc)"
+  },
+  {
+    "role": "user",
+    "content": "介绍百度公司"
+  },
+  {
+    "role": "assistant",
+    "content": "百度公司成立于2000年，是一家全球领先的人工智能公司，最初作为搜索引擎平台，后来发展成为人工智能领域的先锋。百度拥有完整的AI技术栈，从深度学习框架到模型和应用程序，拥有行业领先的自研技术。百度的产品和服务组合多样化，覆盖数亿用户、数百万开发者和数十万企业。百度将其领先的AI能力整合到产品中，推动创新应用。\n\n百度的使命是“用科技让复杂的世界更简单”，并致力于通过技术创新简化复杂世界。百度的愿景是“成为最懂用户，并能帮助人们成长的全球顶级高科技公司”。\n\n百度公司总部位于北京市海淀区中关村，创始人李彦宏拥有“超链分析”技术专利，使中国成为全球仅有的几个拥有搜索引擎核心技术的国家之一。百度每天响应来自100余个国家和地区的数十亿次搜索请求，是网民获取中文信息的主要入口。\n\n百度在人工智能领域的投资包括深度学习、对话式人工智能操作系统、自动驾驶、AI芯片等前沿领域，使得百度成为一个拥有强大互联网基础的领先AI公司。\n\n更多信息可以访问百度的官方网站：[百度官网](https://www.baidu.com)和百度的LinkedIn页面：[Baidu LinkedIn](https://cn.linkedin.com/company/baidu-inc)。\n\n参考链接：\n- [百度企业介绍](https://cspro.org/cms/show.action?code=publish_8ac21fad707fbfd0017080c42a780003&newsid=1debe16252804914afc6e13a47fab852&channelid=0000000111)\n- [百度公司介绍 - 维基百科](https://zh.wikipedia.org/wiki/%E7%99%BE%E5%BA%A6)\n- [Baidu - LinkedIn](https://cn.linkedin.com/company/baidu-inc)"
+  },
+  {
+    "role": "user",
+    "content": "介绍百度公司"
+  },
+  {
+    "role": "assistant",
+    "content": "百度公司成立于2000年，是一家全球领先的人工智能公司，最初作为搜索引擎平台，后来发展成为人工智能领域的先锋。百度拥有完整的AI技术栈，从深度学习框架到模型和应用程序，拥有行业领先的自研技术。百度的产品和服务组合多样化，覆盖数亿用户、数百万开发者和数十万企业。百度将其领先的AI能力整合到产品中，推动创新应用。\n\n百度的使命是“用科技让复杂的世界更简单”，并致力于通过技术创新简化复杂世界。百度的愿景是“成为最懂用户，并能帮助人们成长的全球顶级高科技公司”。\n\n百度公司总部位于北京市海淀区中关村，创始人李彦宏拥有“超链分析”技术专利，使中国成为全球仅有的几个拥有搜索引擎核心技术的国家之一。百度每天响应来自100余个国家和地区的数十亿次搜索请求，是网民获取中文信息的主要入口。\n\n百度在人工智能领域的投资包括深度学习、对话式人工智能操作系统、自动驾驶、AI芯片等前沿领域，使得百度成为一个拥有强大互联网基础的领先AI公司。\n\n更多信息可以访问百度的官方网站：[百度官网](https://www.baidu.com)和百度的LinkedIn页面：[Baidu LinkedIn](https://cn.linkedin.com/company/baidu-inc)。\n\n参考链接：\n- [百度企业介绍](https://cspro.org/cms/show.action?code=publish_8ac21fad707fbfd0017080c42a780003&newsid=1debe16252804914afc6e13a47fab852&channelid=0000000111)\n- [百度公司介绍 - 维基百科](https://zh.wikipedia.org/wiki/%E7%99%BE%E5%BA%A6)\n- [Baidu - LinkedIn](https://cn.linkedin.com/company/baidu-inc)"
+  },
+  {
+    "role": "user",
+    "content": "介绍百度公司"
+  },
+  {
+    "role": "assistant",
+    "content": "百度公司成立于2000年，是一家全球领先的人工智能公司，最初作为搜索引擎平台，后来发展成为人工智能领域的先锋。百度拥有完整的AI技术栈，从深度学习框架到模型和应用程序，拥有行业领先的自研技术。百度的产品和服务组合多样化，覆盖数亿用户、数百万开发者和数十万企业。百度将其领先的AI能力整合到产品中，推动创新应用。\n\n百度的使命是“用科技让复杂的世界更简单”，并致力于通过技术创新简化复杂世界。百度的愿景是“成为最懂用户，并能帮助人们成长的全球顶级高科技公司”。\n\n百度公司总部位于北京市海淀区中关村，创始人李彦宏拥有“超链分析”技术专利，使中国成为全球仅有的几个拥有搜索引擎核心技术的国家之一。百度每天响应来自100余个国家和地区的数十亿次搜索请求，是网民获取中文信息的主要入口。\n\n百度在人工智能领域的投资包括深度学习、对话式人工智能操作系统、自动驾驶、AI芯片等前沿领域，使得百度成为一个拥有强大互联网基础的领先AI公司。\n\n更多信息可以访问百度的官方网站：[百度官网](https://www.baidu.com)和百度的LinkedIn页面：[Baidu LinkedIn](https://cn.linkedin.com/company/baidu-inc)。\n\n参考链接：\n- [百度企业介绍](https://cspro.org/cms/show.action?code=publish_8ac21fad707fbfd0017080c42a780003&newsid=1debe16252804914afc6e13a47fab852&channelid=0000000111)\n- [百度公司介绍 - 维基百科](https://zh.wikipedia.org/wiki/%E7%99%BE%E5%BA%A6)\n- [Baidu - LinkedIn](https://cn.linkedin.com/company/baidu-inc)"
+  }
+]

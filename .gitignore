@@ -18,8 +18,7 @@ yarn-error.log*
 __pycache__/
 *.py[cod]
 *.so
-backend/storage/
-backend/history_storage/
+
 
 # IDE
 .vscode/
@@ -27,7 +26,7 @@ backend/history_storage/
 
 # Custom
 .geminiignore
-logs/
-*pids
+
+
 
 nohup.out

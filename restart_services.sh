@@ -41,7 +41,7 @@ source script/setting.sh 2>/dev/null || echo "⚠️  Warning: script/setting.sh
 source script/env.sh 2>/dev/null || echo "⚠️  Warning: script/env.sh not found"
 
 # 使用 pixi run 启动 gunicorn，确保环境变量和依赖正确
-nohup env CUDA_VISIBLE_DEVICE=5 pixi run gunicorn -w 2 -k uvicorn.workers.UvicornWorker \
+nohup env CUDA_VISIBLE_DEVICES=5 pixi run gunicorn -w 2 -k uvicorn.workers.UvicornWorker \
     --log-level info \
     --access-logfile - --error-logfile - --capture-output \
     -b 0.0.0.0:8000 app:app \
