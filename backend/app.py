@@ -11,6 +11,7 @@ from typing import AsyncIterator, List, Optional
 from xml.etree import ElementTree as ET
 
 from fastapi import Body, FastAPI, File, Form, Header, Query, UploadFile
+from fastapi.openapi.utils import get_openapi
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse, PlainTextResponse, StreamingResponse
 from fastapi.staticfiles import StaticFiles
@@ -34,12 +35,29 @@ except Exception:
 app = FastAPI(
     title="研发猫 AI 系统 - 后端接口服务",
     description="支持对话、历史、反馈、知识库管理的后端服务。",
-    version="2.0.0"
+    version="2.0.0",
+    openapi_url=None,
+    openapi_tags=[
+        {"name": "对话", "description": "会话创建、对话交互、思考过程与附件上传接口。"},
+        {"name": "历史记录", "description": "历史对话的查询、详情查看与删除接口。"},
+        {"name": "反馈", "description": "点赞点踩反馈、截图上传、反馈处理与删除接口。"},
+        {"name": "知识库", "description": "知识库创建、更新、文件管理与删除接口。"},
+    ]
 )
+
+ALLOWED_ORIGINS = [
+    "http://localhost:3000",
+    "http://127.0.0.1:3000",
+    "http://localhost:5173",
+    "http://127.0.0.1:5173",
+    "http://localhost:4173",
+    "http://127.0.0.1:4173",
+]
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=ALLOWED_ORIGINS,
+    allow_origin_regex=r"https://.*\.ngrok-free\.dev",
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -88,6 +106,25 @@ def now_display() -> str:
 
 def today_str() -> str:
     return datetime.now().strftime("%Y-%m-%d")
+
+
+def custom_openapi_schema():
+    if app.openapi_schema:
+        return app.openapi_schema
+    app.openapi_schema = get_openapi(
+        title=app.title,
+        version=app.version,
+        description=app.description,
+        routes=app.routes,
+        tags=app.openapi_tags,
+    )
+    return app.openapi_schema
+
+
+@app.get("/openapi.json", include_in_schema=False)
+async def openapi_json():
+    schema = custom_openapi_schema()
+    return JSONResponse(content=schema, media_type="application/json; charset=utf-8")
 
 
 def success_response(msg: str, data=None):
@@ -790,13 +827,13 @@ async def _thinking_text_stream(text: str, chunk_size: Optional[int] = None) -> 
         yield content[index:index + chunk_size]
 
 
-@app.get("/api/chat/new_session")
+@app.get("/api/chat/new_session", tags=["对话"], summary="创建新会话", description="创建一个新的对话会话并返回 conversation_id。")
 async def create_new_session():
     conversation_id = now_ms()
     return success_response("新建对话成功", {"conversation_id": conversation_id})
 
 
-@app.post("/api/chat")
+@app.post("/api/chat", tags=["对话"], summary="发送对话消息", description="提交用户问题、附件和对话参数，返回模型回复；支持流式和非流式两种模式。")
 async def chat_endpoint(
     message: str = Form(...),
     conversation_id: str = Form(...),
@@ -918,7 +955,7 @@ async def chat_endpoint(
     return StreamingResponse(event_stream(), media_type="text/event-stream", headers=headers)
 
 
-@app.get("/api/chat/{conversation_id}/title")
+@app.get("/api/chat/{conversation_id}/title", tags=["对话"], summary="获取会话标题", description="读取指定会话的首轮问题，并将其作为会话标题返回。")
 async def get_chat_title(conversation_id: str):
     history_record, _ = load_history_record(conversation_id)
     if not history_record.get("messages"):
@@ -931,7 +968,7 @@ async def get_chat_title(conversation_id: str):
     })
 
 
-@app.post("/api/upload")
+@app.post("/api/upload", tags=["对话"], summary="上传对话附件", description="为指定会话和消息轮次上传附件，并记录到历史消息中。")
 async def upload_chat_files(
     conversation_id: str = Form(...),
     message_index: Optional[int] = Form(None),
@@ -955,7 +992,7 @@ async def upload_chat_files(
     })
 
 
-@app.get("/api/history/list")
+@app.get("/api/history/list", tags=["历史记录"], summary="查询历史记录列表", description="按关键词和时间范围筛选历史对话列表。")
 async def list_histories(
     search: str = Query(""),
     start_time: Optional[str] = Query(None),
@@ -992,7 +1029,7 @@ async def list_histories(
     return success_response("获取历史记录成功", {"list": results, "total": len(results)})
 
 
-@app.get("/api/history/{conversation_id}")
+@app.get("/api/history/{conversation_id}", tags=["历史记录"], summary="获取历史记录详情", description="返回指定 conversation_id 的完整历史对话内容。")
 async def get_history_detail(conversation_id: str):
     history_record, _ = load_history_record(conversation_id)
     if not history_record.get("messages"):
@@ -1000,7 +1037,7 @@ async def get_history_detail(conversation_id: str):
     return success_response("获取历史详情成功", history_record)
 
 
-@app.delete("/api/chat/{conversation_id}")
+@app.delete("/api/chat/{conversation_id}", tags=["历史记录"], summary="删除单条历史记录", description="删除指定会话的历史记录文件，并清理空目录。")
 async def delete_history(conversation_id: str):
     path = resolve_history_path(conversation_id)
     if not path:
@@ -1010,7 +1047,7 @@ async def delete_history(conversation_id: str):
     return success_response("删除历史对话成功", {"conversation_id": conversation_id})
 
 
-@app.post("/api/history/batch_delete")
+@app.post("/api/history/batch_delete", tags=["历史记录"], summary="批量删除历史记录", description="根据传入的会话 ID 列表批量删除历史对话。")
 async def batch_delete_history(data: dict = Body(...)):
     try:
         ids = ensure_id_list(data, "ids", "conversation_ids")
@@ -1026,7 +1063,7 @@ async def batch_delete_history(data: dict = Body(...)):
     return success_response("批量删除历史对话成功", {"deleted_ids": deleted})
 
 
-@app.get("/api/chat/{conversation_id}/thinking")
+@app.get("/api/chat/{conversation_id}/thinking", tags=["对话"], summary="获取思考过程", description="查看指定会话某一轮消息的思考过程，支持流式和非流式返回。")
 async def get_chat_thinking(
     conversation_id: str,
     message_index: Optional[int] = Query(None),
@@ -1046,7 +1083,7 @@ async def get_chat_thinking(
     return PlainTextResponse(thinking_text)
 
 
-@app.post("/api/chat/feedback")
+@app.post("/api/chat/feedback", tags=["反馈"], summary="提交对话反馈", description="对指定消息提交点赞或点踩反馈，并可附带原因、文字说明和图片。")
 async def save_feedback(
     conversation_id: str = Form(...),
     message_index: int = Form(...),
@@ -1136,7 +1173,7 @@ async def save_feedback(
     return success_response("提交反馈成功", build_feedback_summary(feedback_info))
 
 
-@app.post("/api/feedback/upload_pictures")
+@app.post("/api/feedback/upload_pictures", tags=["反馈"], summary="上传反馈图片", description="为指定反馈补充上传截图图片。")
 async def upload_feedback_pictures(
     conversation_id: str = Form(...),
     message_index: int = Form(...),
@@ -1185,7 +1222,7 @@ async def upload_feedback_pictures(
     })
 
 
-@app.get("/api/feedback/list")
+@app.get("/api/feedback/list", tags=["反馈"], summary="查询反馈列表", description="按姓名、企业、反馈类型和时间范围筛选反馈记录。")
 async def list_feedbacks(
     name: str = Query(""),
     enterprise: str = Query(""),
@@ -1217,7 +1254,7 @@ async def list_feedbacks(
     return success_response("获取反馈列表成功", {"list": results, "total": len(results)})
 
 
-@app.get("/api/feedback/{feedback_id}")
+@app.get("/api/feedback/{feedback_id}", tags=["反馈"], summary="通过反馈 ID 获取详情", description="根据反馈 ID 返回对应的反馈详情。")
 async def get_feedback_detail_by_id(feedback_id: str):
     target_dir = find_feedback_dir(feedback_id)
     if not target_dir:
@@ -1225,7 +1262,7 @@ async def get_feedback_detail_by_id(feedback_id: str):
     return success_response("获取反馈详情成功", read_json(target_dir / "feedback.json", {}))
 
 
-@app.get("/api/feedback/detail/{date}/{id}")
+@app.get("/api/feedback/detail/{date}/{id}", tags=["反馈"], summary="按日期路径获取反馈详情", description="根据日期目录和反馈 ID 读取反馈详情。")
 async def get_feedback_detail(date: str, id: str):
     path = FEEDBACK_ROOT / date / id / "feedback.json"
     if not path.exists():
@@ -1233,7 +1270,7 @@ async def get_feedback_detail(date: str, id: str):
     return success_response("获取反馈详情成功", read_json(path, {}))
 
 
-@app.post("/api/feedback/process")
+@app.post("/api/feedback/process", tags=["反馈"], summary="处理反馈", description="将反馈标记为已处理，并可选择收录到优秀问答或负向问答库。")
 async def process_feedback(data: dict = Body(...)):
     date_path = data.get("date_path")
     feedback_id = str(data.get("id") or "").strip()
@@ -1269,7 +1306,7 @@ async def process_feedback(data: dict = Body(...)):
     return success_response("处理反馈成功", info)
 
 
-@app.post("/api/feedback/batch_delete")
+@app.post("/api/feedback/batch_delete", tags=["反馈"], summary="批量删除反馈", description="根据反馈 ID 列表批量删除反馈目录。")
 async def batch_delete_feedback(data: dict = Body(...)):
     try:
         ids = ensure_id_list(data, "ids")
@@ -1284,7 +1321,7 @@ async def batch_delete_feedback(data: dict = Body(...)):
     return success_response("批量删除反馈成功", {"deleted_ids": deleted})
 
 
-@app.delete("/api/feedback/{date}/{id}")
+@app.delete("/api/feedback/{date}/{id}", tags=["反馈"], summary="删除单条反馈", description="根据日期目录和反馈 ID 删除指定反馈。")
 async def delete_feedback(date: str, id: str):
     target_dir = FEEDBACK_ROOT / date / id
     if not target_dir.exists():
@@ -1294,13 +1331,13 @@ async def delete_feedback(date: str, id: str):
     return success_response("删除反馈成功", {"id": id})
 
 
-@app.get("/api/kb/list")
+@app.get("/api/kb/list", tags=["知识库"], summary="获取知识库列表", description="返回当前所有知识库的基础信息列表。")
 async def get_kb_list():
     items = kb_service.load_all()
     return success_response("获取知识库列表成功", {"list": items, "total": len(items)})
 
 
-@app.get("/api/kb/{id}")
+@app.get("/api/kb/{id}", tags=["知识库"], summary="获取知识库详情", description="根据知识库 ID 返回知识库详情。")
 async def get_kb_detail(id: str, url: Optional[str] = Query(None)):
     _ = url
     detail = kb_service.get_kb_detail(id)
@@ -1309,7 +1346,7 @@ async def get_kb_detail(id: str, url: Optional[str] = Query(None)):
     return success_response("获取知识库详情成功", detail)
 
 
-@app.post("/api/kb/create")
+@app.post("/api/kb/create", tags=["知识库"], summary="创建知识库", description="创建一个新的知识库，并指定分类和模型类型。")
 async def create_kb(
     name: str = Form(...),
     category: str = Form(...),
@@ -1319,7 +1356,7 @@ async def create_kb(
     return success_response("创建知识库成功", created)
 
 
-@app.post("/api/kb/update")
+@app.post("/api/kb/update", tags=["知识库"], summary="更新知识库", description="更新知识库名称、备注、启用状态或授权用户。")
 async def update_kb(
     id: str = Form(...),
     name: Optional[str] = Form(None),
@@ -1345,7 +1382,7 @@ async def update_kb(
     return success_response("更新知识库成功", updated)
 
 
-@app.delete("/api/kb/{id}")
+@app.delete("/api/kb/{id}", tags=["知识库"], summary="删除知识库", description="删除指定知识库及其元数据。")
 async def delete_kb(id: str):
     deleted = kb_service.delete_kb(id)
     if not deleted:
@@ -1353,7 +1390,7 @@ async def delete_kb(id: str):
     return success_response("删除知识库成功", deleted)
 
 
-@app.get("/api/kb/{id}/files")
+@app.get("/api/kb/{id}/files", tags=["知识库"], summary="获取知识库文件列表", description="返回指定知识库关联的文件列表和访问地址。")
 async def list_kb_files(id: str):
     detail = kb_service.get_kb_detail(id)
     if not detail:
@@ -1365,7 +1402,7 @@ async def list_kb_files(id: str):
     })
 
 
-@app.post("/api/kb/{id}/upload")
+@app.post("/api/kb/{id}/upload", tags=["知识库"], summary="上传知识库文件", description="向指定知识库上传一个或多个文档文件。")
 async def upload_kb_file(
     id: str,
     files: List[UploadFile] = File(...),
@@ -1376,7 +1413,7 @@ async def upload_kb_file(
     return success_response("上传知识库文档成功", {"id": id, "files": result})
 
 
-@app.post("/api/kb/{id}/delete_files")
+@app.post("/api/kb/{id}/delete_files", tags=["知识库"], summary="批量删除知识库文件", description="从指定知识库中批量删除多个文件。")
 async def delete_kb_files(id: str, data: dict = Body(...)):
     try:
         filenames = ensure_id_list(data, "filenames", "files")
@@ -1388,7 +1425,7 @@ async def delete_kb_files(id: str, data: dict = Body(...)):
     return success_response("删除知识库文档成功", {"id": id, "deleted_files": deleted})
 
 
-@app.post("/api/kb/{id}/delete_file")
+@app.post("/api/kb/{id}/delete_file", tags=["知识库"], summary="删除单个知识库文件", description="从指定知识库中删除单个文件。")
 async def delete_kb_file(id: str, filename: str = Form(...)):
     detail = kb_service.get_kb_detail(id)
     if not detail:

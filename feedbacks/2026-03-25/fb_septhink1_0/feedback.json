@@ -1,0 +1,20 @@
+{
+  "id": "fb_septhink1_0",
+  "conversation_id": "septhink1",
+  "message_index": 0,
+  "type": "like",
+  "state": null,
+  "time": "1774407245695",
+  "update_time": "1774407248955",
+  "createdAt": "2026/03/25 10:54:05",
+  "updatedAt": "2026/03/25 10:54:08",
+  "reasons": [],
+  "comment": "",
+  "pictures": [],
+  "name": "王颖奇",
+  "enterprise": "图湃（北京）医疗科技",
+  "phone": "15323720032",
+  "question": "请使用计算器计算 12*(3+4)",
+  "answer": "计算结果是 84。",
+  "process_status": "未处理"
+}

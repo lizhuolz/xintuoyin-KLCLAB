@@ -1,0 +1,20 @@
+{
+  "id": "fb_testthinkreq3_0",
+  "conversation_id": "testthinkreq3",
+  "message_index": 0,
+  "type": "like",
+  "state": "like",
+  "time": "1774420420779",
+  "update_time": "1774420420779",
+  "createdAt": "2026/03/25 14:33:40",
+  "updatedAt": "2026/03/25 14:33:40",
+  "reasons": [],
+  "comment": "",
+  "pictures": [],
+  "name": "王颖奇",
+  "enterprise": "图湃（北京）医疗科技",
+  "phone": "15323720032",
+  "question": "请使用计算器计算 99+1",
+  "answer": "计算结果是 100。",
+  "process_status": "未处理"
+}

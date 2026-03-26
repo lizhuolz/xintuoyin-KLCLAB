@@ -1,0 +1,124 @@
+{
+  "conversation_id": "1774372887783",
+  "title": "帮我查询张雪峰最近怎么了",
+  "created_at": "1774372899502",
+  "updated_at": "1774372947740",
+  "createdAt": "2026/03/25 01:21:39",
+  "updatedAt": "2026/03/25 01:22:27",
+  "message_count": 2,
+  "user": {
+    "name": "王颖奇",
+    "phone": "15323720032",
+    "categoryName": "图湃（北京）医疗科技"
+  },
+  "messages": [
+    {
+      "message_index": 0,
+      "question": "帮我查询张雪峰最近怎么了",
+      "files": [],
+      "uploaded_files": [],
+      "file_contexts": [],
+      "web_search": true,
+      "db_version": null,
+      "answer": "根据最近的新闻报道，张雪峰被传心脏骤停正在苏州抢救，相关账号停止直播。据报道，张雪峰的公司合伙人对此事表示“暂时无可奉告”，而他的助理称自己人在成都，不太清楚此事。张雪峰最近一次在朋友圈发布内容是在3月22日，当日打卡7公里，3月累计跑步72公里。此前，他曾因过度劳累导致胸闷心悸而住院。根据[新浪新闻](https://news.sina.cn/sh/2026-03-24/detail-inhsavwy0481231.d.html?vt=4&pos=108)的报道，张雪峰的相关抖音账号在3月24日停止了直播。\n\n此外，张雪峰是一位知名的考研辅导讲师和网络红人，以其独特的教育理念和风格在网络上迅速走红。他的职业生涯充满争议，包括课程定价、公司经营异常及个人言论等问题。根据[百度百科](https://baike.baidu.com/item/%E5%BC%A0%E9%9B%AA%E5%B3%B0/19735806)的记载，张雪峰曾因其言论多次引发热议。\n\n更多详细信息可以参考[维基百科](https://zh.wikipedia.org/wiki/%E5%BC%A0%E9%9B%AA%E5%B3%B0)和[百度百科](https://baike.baidu.com/item/%E5%BC%A0%E9%9B%AA%E5%B3%B0/19735806)。",
+      "resource": [
+        {
+          "link": "https://zh.wikipedia.org/wiki/%E5%BC%A0%E9%9B%AA%E5%B3%B0",
+          "title": "张雪峰 - 维基百科，自由的百科全书",
+          "content": "张雪峰，原名张子彪，是一位知名的考研辅导讲师和网络红人，以其独特的教育理念和风格在网络上迅速走红。"
+        },
+        {
+          "link": "https://news.sina.cn/sh/2026-03-24/detail-inhsavwy0481231.d.html?vt=4&pos=108",
+          "title": "张雪峰被传心脏骤停正在抢救，相关账号停止直播 - 新浪新闻",
+          "content": "张雪峰被传心脏骤停正在抢救，相关账号停止直播。"
+        },
+        {
+          "link": "https://baike.baidu.com/item/%E5%BC%A0%E9%9B%AA%E5%B3%B0/19735806",
+          "title": "张雪峰_百度百科",
+          "content": "张雪峰，知名教育从业者，因其独特的教育观点和多次引发热议的言论而备受关注。近年来，他的职业生涯充满争议，包括课程定价、公司经营异常及个人言论等。"
+        }
+      ],
+      "recommend_answer": [
+        "张雪峰目前的健康状况如何？",
+        "张雪峰的公司有什么回应？",
+        "张雪峰的助理有最新消息吗？"
+      ],
+      "feedback": null,
+      "thinking_text": "在正式回答前，我先做了几步准备：\n1. 我调用了 tavily_search_with_summary，输入大致是：{\"query\": \"张雪峰最近新闻\"}。\n对应上面第 1 步，tavily_search_with_summary 返回了这样的关键信息：检索到 3 条结果：张雪峰 - 维基百科，自由的百科全书；张雪峰被传心脏骤停正在抢救，相关账号停止直播 - 新浪新闻。\n整理完这些信息后，我再把最终答案组织成对你更自然的回复。",
+      "thinking_steps": [
+        {
+          "kind": "call",
+          "node_name": "chatbot_web",
+          "tool_name": "tavily_search_with_summary",
+          "preview": "{\"query\": \"张雪峰最近新闻\"}",
+          "tool_call_id": "call_w7hMssW4cqDfddm34SdNYgXZ"
+        },
+        {
+          "kind": "result",
+          "node_name": "tools_web",
+          "tool_name": "tavily_search_with_summary",
+          "preview": "检索到 3 条结果：张雪峰 - 维基百科，自由的百科全书；张雪峰被传心脏骤停正在抢救，相关账号停止直播 - 新浪新闻",
+          "tool_call_id": "call_w7hMssW4cqDfddm34SdNYgXZ"
+        }
+      ],
+      "created_at": "1774372919533",
+      "updated_at": "1774372919533",
+      "createdAt": "2026/03/25 01:21:59",
+      "updatedAt": "2026/03/25 01:21:59"
+    },
+    {
+      "message_index": 1,
+      "question": "张雪峰目前的健康状况如何？",
+      "files": [],
+      "uploaded_files": [],
+      "file_contexts": [],
+      "web_search": true,
+      "db_version": null,
+      "answer": "根据最新的报道，张雪峰因心源性猝死去世。事件发生在2026年3月24日，他在家中跑步机上突发心脏骤停，尽管医院全力抢救，仍未能挽回生命。张雪峰的离世对教育界及万千家庭造成了巨大损失。更多详细信息可以参考[网易新闻](https://www.163.com/dy/article/KOQPI9BK05535LAY.html)和[南方网](https://www.nfnews.com/content/K3BDbDwYoY.html)。",
+      "resource": [
+        {
+          "link": "https://www.nfnews.com/content/K3BDbDwYoY.html",
+          "title": "健康状况引关注的张雪峰：以考研辅导走红，曾因胸闷心悸送医",
+          "content": "张雪峰因考研辅导走红，拥有千万粉丝，但因健康问题和争议言论引发关注。曾因过度劳累送医，直播中使用污言秽语被禁言。其言论引发文科生群体不满，遭到起诉。"
+        },
+        {
+          "link": "https://www.163.com/dy/article/KOQPI9BK05535LAY.html",
+          "title": "41岁张雪峰去世：家中跑步机上突发心脏骤停，医院抢救病历流出",
+          "content": "张雪峰因心源性猝死去世，事件引发全网哀悼与关注。尽管医院全力抢救，仍未能挽回生命。其离世对教育界及万千家庭造成巨大损失。"
+        },
+        {
+          "link": "https://zh.wikipedia.org/wiki/%E5%BC%A0%E9%9B%AA%E5%B3%B0",
+          "title": "张雪峰 - 维基百科，自由的百科全书",
+          "content": "张雪峰，原名张子彪，是一位知名的考研辅导讲师和网络红人，因其在考研志愿填报和大学专业选择领域的专业知识而广受欢迎。他是苏州研途教育科技有限公司的联合创始人，并因一段考研院校专业选择的讲座视频而迅速走红。"
+        }
+      ],
+      "recommend_answer": [
+        "张雪峰去世的具体原因是什么？",
+        "张雪峰的家人有什么反应？",
+        "张雪峰的追悼会安排如何？"
+      ],
+      "feedback": null,
+      "thinking_text": "在正式回答前，我先做了几步准备：\n1. 我调用了 tavily_search_with_summary，输入大致是：{\"query\": \"张雪峰健康状况\"}。\n对应上面第 1 步，tavily_search_with_summary 返回了这样的关键信息：检索到 3 条结果：健康状况引关注的张雪峰：以考研辅导走红，曾因胸闷心悸送医；41岁张雪峰去世：家中跑步机上突发心脏骤停，医院抢救病历流出。\n整理完这些信息后，我再把最终答案组织成对你更自然的回复。",
+      "thinking_steps": [
+        {
+          "kind": "call",
+          "node_name": "chatbot_web",
+          "tool_name": "tavily_search_with_summary",
+          "preview": "{\"query\": \"张雪峰健康状况\"}",
+          "tool_call_id": "call_eCoHwvv2SSlCdneuKrFWFqzY"
+        },
+        {
+          "kind": "result",
+          "node_name": "tools_web",
+          "tool_name": "tavily_search_with_summary",
+          "preview": "检索到 3 条结果：健康状况引关注的张雪峰：以考研辅导走红，曾因胸闷心悸送医；41岁张雪峰去世：家中跑步机上突发心脏骤停，医院抢救病历流出",
+          "tool_call_id": "call_eCoHwvv2SSlCdneuKrFWFqzY"
+        }
+      ],
+      "created_at": "1774372947739",
+      "updated_at": "1774372947739",
+      "createdAt": "2026/03/25 01:22:27",
+      "updatedAt": "2026/03/25 01:22:27"
+    }
+  ]
+}

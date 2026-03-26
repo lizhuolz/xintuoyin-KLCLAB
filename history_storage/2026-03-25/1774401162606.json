@@ -1,0 +1,39 @@
+{
+  "conversation_id": "1774401162606",
+  "title": "张晓峰",
+  "created_at": "1774419315572",
+  "updated_at": "1774420805007",
+  "createdAt": "2026/03/25 14:15:15",
+  "updatedAt": "2026/03/25 14:40:05",
+  "message_count": 1,
+  "user": {
+    "name": "王颖奇",
+    "phone": "15323720032",
+    "categoryName": "图湃（北京）医疗科技"
+  },
+  "messages": [
+    {
+      "message_index": 0,
+      "question": "张晓峰",
+      "files": [],
+      "uploaded_files": [],
+      "file_contexts": [],
+      "web_search": false,
+      "db_version": null,
+      "answer": "看起来您提到了一个名字“张晓峰”，但没有提供更多的上下文或相关文件。如果您有具体的问题或者需要关于张晓峰的特定信息，请提供更多的细节或上传相关的文件，以便我能更好地帮助您。如果有文件需要解析，请确保文件已成功上传并解析。",
+      "resource": [],
+      "recommend_answer": [
+        "张晓峰是谁？",
+        "张晓峰的背景是什么？",
+        "张晓峰在哪工作？"
+      ],
+      "feedback": "like",
+      "thinking_text": "这次回答没有额外调用工具，我直接根据已有上下文完成了回复。",
+      "thinking_steps": [],
+      "created_at": "1774419324123",
+      "updated_at": "1774420805007",
+      "createdAt": "2026/03/25 14:15:24",
+      "updatedAt": "2026/03/25 14:40:05"
+    }
+  ]
+}

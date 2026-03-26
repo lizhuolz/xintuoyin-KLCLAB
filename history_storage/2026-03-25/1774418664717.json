@@ -1,0 +1,70 @@
+{
+  "conversation_id": "1774418664717",
+  "title": "上网搜索最近张雪峰老师怎么了？",
+  "created_at": "1774418679816",
+  "updated_at": "1774418707200",
+  "createdAt": "2026/03/25 14:04:39",
+  "updatedAt": "2026/03/25 14:05:07",
+  "message_count": 1,
+  "user": {
+    "name": "王颖奇",
+    "phone": "15323720032",
+    "categoryName": "图湃（北京）医疗科技"
+  },
+  "messages": [
+    {
+      "message_index": 0,
+      "question": "上网搜索最近张雪峰老师怎么了？",
+      "files": [],
+      "uploaded_files": [],
+      "file_contexts": [],
+      "web_search": true,
+      "db_version": null,
+      "answer": "根据最新的新闻报道，张雪峰老师于2026年3月24日在苏州因心源性猝死去世，享年41岁。此前，他曾因过度劳累住院。讣告中确认了他的死讯，并表示抢救无效。张雪峰是知名的教育博主和考研指导教师，他的突然去世引发了广泛的关注和哀悼。\n\n详细信息可以参考以下链接：\n- [文学城新闻](https://www.wenxuecity.com/news/2026/03/24/126587530.html)\n- [网易新闻](https://www.163.com/dy/article/KOQO5V4U05535LAY.html)\n- [网易新闻](https://www.163.com/dy/article/KOQO2EJR05535LAY.html)",
+      "resource": [
+        {
+          "link": "https://www.wenxuecity.com/news/2026/03/24/126587530.html",
+          "title": "张雪峰官方发布讣告证实其去世因心源性猝死离世",
+          "content": "张雪峰于2026年3月24日在苏州因心源性猝死去世，享年41岁。此前曾因过度劳累住院。"
+        },
+        {
+          "link": "https://www.163.com/dy/article/KOQO5V4U05535LAY.html",
+          "title": "张雪峰突发心脏病去世，仅41岁",
+          "content": "张雪峰心脏骤停传闻引发广泛关注，尽管相关公司否认异常，直播中断与头像变黑白等细节加剧了公众疑虑。"
+        },
+        {
+          "link": "https://www.163.com/dy/article/KOQO2EJR05535LAY.html",
+          "title": "41岁张雪峰被证实在苏州去世：医院抢救病例流出，最后露面照曝光",
+          "content": "知名升学规划与考研指导名师张雪峰因心源性猝死去世，享年41岁。"
+        }
+      ],
+      "recommend_answer": [
+        "张雪峰老师的生平介绍？",
+        "他的去世对教育界影响？",
+        "有哪些悼念活动或纪念？"
+      ],
+      "feedback": null,
+      "thinking_text": "在正式回答前，我先做了几步准备：\n1. 我调用了 tavily_search_with_summary，输入大致是：{\"query\": \"张雪峰最近新闻\"}。\n对应上面第 1 步，tavily_search_with_summary 返回了这样的关键信息：检索到 3 条结果：张雪峰官方发布讣告证实其去世因心源性猝死离世；张雪峰突发心脏病去世，仅41岁。\n整理完这些信息后，我再把最终答案组织成对你更自然的回复。",
+      "thinking_steps": [
+        {
+          "kind": "call",
+          "node_name": "chatbot_web",
+          "tool_name": "tavily_search_with_summary",
+          "preview": "{\"query\": \"张雪峰最近新闻\"}",
+          "tool_call_id": "call_p2xb1XyC1VFV7qBwXYnIUrG4"
+        },
+        {
+          "kind": "result",
+          "node_name": "tools_web",
+          "tool_name": "tavily_search_with_summary",
+          "preview": "检索到 3 条结果：张雪峰官方发布讣告证实其去世因心源性猝死离世；张雪峰突发心脏病去世，仅41岁",
+          "tool_call_id": "call_p2xb1XyC1VFV7qBwXYnIUrG4"
+        }
+      ],
+      "created_at": "1774418707200",
+      "updated_at": "1774418707200",
+      "createdAt": "2026/03/25 14:05:07",
+      "updatedAt": "2026/03/25 14:05:07"
+    }
+  ]
+}
