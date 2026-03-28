@@ -4,18 +4,20 @@ unset http_proxy
 unset https_proxy
 unset all_proxy
 
+SETTING_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+BACKEND_ROOT="$(cd "$SETTING_DIR/.." && pwd)"
 export CUDA_VISIBLE_DEVICES=0
 # Search / web retrieval
 export RESEARCH_MAX_RESULTS=3
-export RESEARCH_SUMMARY_MODEL="Qwen3.5-27B"
+export RESEARCH_SUMMARY_MODEL="Qwen3-32B"
 export RESEARCH_SUMMARY_TEMPERATURE=0
 
 # Query embedding / local retrieval
 export QUERY_EMBEDDING_MODEL="BAAI/bge-base-zh-v1.5"
-export QUERY_DB_PATH="./data/local_db_query"
+export QUERY_DB_PATH="${QUERY_DB_PATH:-$BACKEND_ROOT/data/local_db_query}"
 
 # Main chat model
-export CHAT_MODEL_NAME="Qwen3.5-27B"
+export CHAT_MODEL_NAME="Qwen3-32B"
 export CHAT_MODEL_TEMPERATURE=0
 export CHAT_MODEL_MAX_TOKENS=4096
 export CHAT_MODEL_TIMEOUT=120
@@ -30,18 +32,43 @@ export CHAT_RECOMMENDATION_COUNT=3
 # Chat context assembly / streaming
 export CHAT_HISTORY_MAX_ROUNDS=6
 export CHAT_FILE_TEXT_MAX_CHARS=12000
+export KB_FILE_TEXT_MAX_CHARS=40000
 export CHAT_FILE_HISTORY_SNIPPET_CHARS=3000
 export CHAT_THINKING_CHUNK_SIZE=48
 
+# RAG storage backend
+# milvus: enterprise vector database backend used for KB chunk indexing and retrieval.
+export RAG_VECTOR_BACKEND="milvus"
+
+# Milvus connection / collection settings
+# MILVUS_URI can point to a milvus-lite local db file or a standalone Milvus endpoint.
+export KL_MILVUS_URI="${KL_MILVUS_URI:-$BACKEND_ROOT/data/milvus/klclab_milvus.db}"
+export KL_MILVUS_TOKEN=""
+export KL_MILVUS_DB_NAME="default"
+export MILVUS_COLLECTION="klclab_kb_chunks"
+export MILVUS_CONSISTENCY_LEVEL="Bounded"
+export MILVUS_INDEX_TYPE="AUTOINDEX"
+export MILVUS_METRIC_TYPE="COSINE"
+
+# Milvus embedding / chunking settings
+# MILVUS_EMBED_DIM must match the embedding model output dimension.
+export MILVUS_EMBED_DIM=512
+export MILVUS_BATCH_SIZE=32
+export MILVUS_TOP_K=5
+export MILVUS_SCORE_THRESHOLD=0.35
+export MILVUS_CHUNK_SIZE=800
+export MILVUS_CHUNK_OVERLAP=120
+
 # RAG model settings
-export RAG_LLM_MODEL="Qwen3.5-27B"
+export RAG_LLM_MODEL="Qwen3-32B"
 export RAG_LLM_TEMPERATURE=0.1
-export RAG_EMBED_MODEL="text-embedding-3-small"
+export RAG_EMBED_MODEL="AI-ModelScope/bge-small-zh-v1.5"
+export RAG_EMBED_DEVICE="cpu"
 
 # SQL tool LLM settings
 # DB_LLM_API_KEY is optional; if unset, code falls back to OPENAI_API_KEY.
 export DB_LLM_BASE_URL="http://0.0.0.0:62272/v1"   #"" 
-export DB_LLM_MODEL_NAME="Qwen3.5-27B"
+export DB_LLM_MODEL_NAME="Qwen3-32B"
 export DB_LLM_SELECTOR_TEMPERATURE=0.1
 export DB_LLM_SELECTOR_MAX_TOKENS=1024
 export DB_LLM_GENERATE_TEMPERATURE=0.0

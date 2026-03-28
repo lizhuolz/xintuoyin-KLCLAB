@@ -1,0 +1,35 @@
+{
+  "conversation_id": "1774705014739",
+  "title": "请严格使用知识库回答：RAG接口验收库中的知识库测试口令、项目负责人、上线日期分别是什么？如果没有命中知识库就明确说未找到。",
+  "created_at": "1774705023771",
+  "updated_at": "1774705027912",
+  "createdAt": "2026/03/28 21:37:03",
+  "updatedAt": "2026/03/28 21:37:07",
+  "message_count": 1,
+  "user": {
+    "name": "王颖奇",
+    "phone": "15323720032",
+    "categoryName": "图湃（北京）医疗科技"
+  },
+  "messages": [
+    {
+      "message_index": 0,
+      "question": "请严格使用知识库回答：RAG接口验收库中的知识库测试口令、项目负责人、上线日期分别是什么？如果没有命中知识库就明确说未找到。",
+      "files": [],
+      "uploaded_files": [],
+      "file_contexts": [],
+      "web_search": false,
+      "db_version": null,
+      "answer": "根据您的要求，我将调用 `sql_tool` 来查询 RAG 接口验收库中的知识库测试口令、项目负责人、上线日期信息。\n\n```json\n{\n  \"query\": \"SELECT test_password, project_manager, go_live_date FROM rag_interface_acceptance_db WHERE knowledge_base_name = 'RAG接口验收库'\"\n}\n```",
+      "resource": [],
+      "recommend_answer": [],
+      "feedback": null,
+      "thinking_text": "这次回答没有额外调用工具，我直接根据已有上下文完成了回复。",
+      "thinking_steps": [],
+      "created_at": "1774705027912",
+      "updated_at": "1774705027912",
+      "createdAt": "2026/03/28 21:37:07",
+      "updatedAt": "2026/03/28 21:37:07"
+    }
+  ]
+}

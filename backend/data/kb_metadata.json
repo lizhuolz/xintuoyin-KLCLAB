@@ -49,5 +49,26 @@
     "updated_at": "1774419896672",
     "createdAt": "2026/03/25 14:23:36",
     "updatedAt": "2026/03/25 14:24:56"
+  },
+  {
+    "id": "kb_1774702385271",
+    "name": "Milvus联调测试库",
+    "model": "openai",
+    "category": "个人知识库",
+    "owner_info": "图湃（北京）医疗科技/技术部",
+    "physical_path": "个人知识库/王颖奇/Milvus联调测试库",
+    "remark": "",
+    "users": [
+      {
+        "name": "王颖奇",
+        "phone": "15323720032",
+        "categoryName": "图湃（北京）医疗科技"
+      }
+    ],
+    "enabled": true,
+    "created_at": "1774702385271",
+    "updated_at": "1774702451398",
+    "createdAt": "2026/03/28 20:53:05",
+    "updatedAt": "2026/03/28 20:54:11"
   }
 ]

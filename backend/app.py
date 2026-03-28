@@ -1376,7 +1376,10 @@ async def update_kb(
             update_data["users"] = json.loads(users)
         except Exception:
             return error_response("更新知识库失败", {"reason": "users 字段不是合法 JSON"}, 400)
-    updated = kb_service.update_kb(id, update_data)
+    try:
+        updated = kb_service.update_kb(id, update_data)
+    except Exception as exc:
+        return error_response("更新知识库失败", {"reason": str(exc)}, 500)
     if not updated:
         return error_response("更新知识库失败", {"id": id}, 404)
     return success_response("更新知识库成功", updated)
@@ -1384,7 +1387,10 @@ async def update_kb(
 
 @app.delete("/api/kb/{id}", tags=["知识库"], summary="删除知识库", description="删除指定知识库及其元数据。")
 async def delete_kb(id: str):
-    deleted = kb_service.delete_kb(id)
+    try:
+        deleted = kb_service.delete_kb(id)
+    except Exception as exc:
+        return error_response("删除知识库失败", {"reason": str(exc)}, 500)
     if not deleted:
         return error_response("删除知识库失败", {"id": id}, 404)
     return success_response("删除知识库成功", deleted)
@@ -1407,7 +1413,10 @@ async def upload_kb_file(
     id: str,
     files: List[UploadFile] = File(...),
 ):
-    result = kb_service.save_files(id, files)
+    try:
+        result = kb_service.save_files(id, files)
+    except Exception as exc:
+        return error_response("上传知识库文档失败", {"reason": str(exc)}, 500)
     if result is None:
         return error_response("上传知识库文档失败", {"id": id}, 404)
     return success_response("上传知识库文档成功", {"id": id, "files": result})
@@ -1419,7 +1428,10 @@ async def delete_kb_files(id: str, data: dict = Body(...)):
         filenames = ensure_id_list(data, "filenames", "files")
     except ValueError as exc:
         return error_response("删除知识库文档失败", {"reason": str(exc)}, 400)
-    deleted = kb_service.delete_files(id, filenames)
+    try:
+        deleted = kb_service.delete_files(id, filenames)
+    except Exception as exc:
+        return error_response("删除知识库文档失败", {"reason": str(exc)}, 500)
     if deleted is None:
         return error_response("删除知识库文档失败", {"id": id}, 404)
     return success_response("删除知识库文档成功", {"id": id, "deleted_files": deleted})
@@ -1430,7 +1442,10 @@ async def delete_kb_file(id: str, filename: str = Form(...)):
     detail = kb_service.get_kb_detail(id)
     if not detail:
         return error_response("删除知识库文档失败", {"id": id}, 404)
-    deleted = kb_service.delete_files(id, [filename]) or []
+    try:
+        deleted = kb_service.delete_files(id, [filename]) or []
+    except Exception as exc:
+        return error_response("删除知识库文档失败", {"reason": str(exc)}, 500)
     return success_response("删除知识库文档成功", {"id": id, "deleted_files": deleted})
 
 

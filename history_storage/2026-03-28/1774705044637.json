@@ -1,0 +1,35 @@
+{
+  "conversation_id": "1774705044637",
+  "title": "不要使用数据库工具，也不要编造。请调用知识库检索工具rag_tool，回答知识库测试口令、项目负责人、上线日期。",
+  "created_at": "1774705061654",
+  "updated_at": "1774705062257",
+  "createdAt": "2026/03/28 21:37:41",
+  "updatedAt": "2026/03/28 21:37:42",
+  "message_count": 1,
+  "user": {
+    "name": "王颖奇",
+    "phone": "15323720032",
+    "categoryName": "图湃（北京）医疗科技"
+  },
+  "messages": [
+    {
+      "message_index": 0,
+      "question": "不要使用数据库工具，也不要编造。请调用知识库检索工具rag_tool，回答知识库测试口令、项目负责人、上线日期。",
+      "files": [],
+      "uploaded_files": [],
+      "file_contexts": [],
+      "web_search": false,
+      "db_version": null,
+      "answer": "",
+      "resource": [],
+      "recommend_answer": [],
+      "feedback": null,
+      "thinking_text": "这次回答没有额外调用工具，我直接根据已有上下文完成了回复。",
+      "thinking_steps": [],
+      "created_at": "1774705062257",
+      "updated_at": "1774705062257",
+      "createdAt": "2026/03/28 21:37:42",
+      "updatedAt": "2026/03/28 21:37:42"
+    }
+  ]
+}

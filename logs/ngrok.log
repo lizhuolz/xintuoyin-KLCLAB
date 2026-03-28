@@ -9,3 +9,4 @@ t=2026-03-28T15:49:15+0800 lvl=info msg="started tunnel" obj=tunnels name=comman
 t=2026-03-28T15:49:18+0800 lvl=warn msg="failed to check for update" obj=updater err="Post \"https://update.equinox.io/check\": context deadline exceeded"
 t=2026-03-28T15:49:29+0800 lvl=info msg="join connections" obj=join id=2ef6505d062f l=127.0.0.1:8000 r=141.11.146.78:1101
 t=2026-03-28T15:49:35+0800 lvl=info msg="join connections" obj=join id=d98c1ba33d22 l=127.0.0.1:8000 r=141.11.146.78:1101
+t=2026-03-28T21:49:20+0800 lvl=info msg="update available" obj=updater
