@@ -1,22 +1,11 @@
-t=2026-03-26T17:41:17+0800 lvl=info msg="no configuration paths supplied"
-t=2026-03-26T17:41:17+0800 lvl=info msg="using configuration at default config path" path=/home/lyq/.config/ngrok/ngrok.yml
-t=2026-03-26T17:41:17+0800 lvl=info msg="open config file" path=/home/lyq/.config/ngrok/ngrok.yml err=nil
-t=2026-03-26T17:41:17+0800 lvl=info msg="FIPS 140 mode" enabled=false
-t=2026-03-26T17:41:17+0800 lvl=info msg="starting web service" obj=web addr=127.0.0.1:4040 allow_hosts=[]
-t=2026-03-26T17:41:17+0800 lvl=info msg="client session established" obj=tunnels.session
-t=2026-03-26T17:41:17+0800 lvl=info msg="tunnel session started" obj=tunnels.session
-t=2026-03-26T17:41:18+0800 lvl=info msg="started tunnel" obj=tunnels name=command_line addr=http://localhost:8000 url=https://pulplike-partingly-emilee.ngrok-free.dev
-t=2026-03-26T17:41:22+0800 lvl=warn msg="failed to check for update" obj=updater err="Post \"https://update.equinox.io/check\": context deadline exceeded"
-t=2026-03-26T17:41:24+0800 lvl=info msg="join connections" obj=join id=10281630ec29 l=127.0.0.1:8000 r=141.11.146.78:47351
-t=2026-03-26T17:41:29+0800 lvl=info msg="join connections" obj=join id=6386da5a781e l=127.0.0.1:8000 r=141.11.146.78:47351
-t=2026-03-26T17:41:39+0800 lvl=info msg="join connections" obj=join id=2770fc01d8c8 l=127.0.0.1:8000 r=141.11.146.78:47351
-t=2026-03-26T17:41:52+0800 lvl=info msg="join connections" obj=join id=214c4aac4054 l=127.0.0.1:8000 r=141.11.146.78:47351
-t=2026-03-26T17:42:23+0800 lvl=info msg="join connections" obj=join id=7df3347d94a9 l=127.0.0.1:8000 r=141.11.146.78:24831
-t=2026-03-26T17:43:07+0800 lvl=info msg="join connections" obj=join id=8b96851ca46c l=127.0.0.1:8000 r=39.98.74.226:32894
-t=2026-03-26T17:56:18+0800 lvl=info msg="join connections" obj=join id=93c52f5d6d7e l=127.0.0.1:8000 r=125.80.210.172:55166
-t=2026-03-26T17:57:05+0800 lvl=info msg="join connections" obj=join id=ecaf9ef96e70 l=127.0.0.1:8000 r=125.80.210.172:55339
-t=2026-03-26T17:57:22+0800 lvl=info msg="join connections" obj=join id=4f80fb3e58af l=127.0.0.1:8000 r=125.80.210.172:55377
-t=2026-03-26T18:15:53+0800 lvl=info msg="join connections" obj=join id=79eb4cca41fa l=127.0.0.1:8000 r=113.251.83.122:57715
-t=2026-03-26T18:17:15+0800 lvl=info msg="join connections" obj=join id=1c2201c10604 l=127.0.0.1:8000 r=13.220.30.32:49154
-t=2026-03-26T18:18:07+0800 lvl=info msg="join connections" obj=join id=45fdf1abd016 l=127.0.0.1:8000 r=113.251.83.122:58012
-t=2026-03-26T18:18:40+0800 lvl=info msg="join connections" obj=join id=c2ef60173a98 l=127.0.0.1:8000 r=113.251.83.122:58138
+t=2026-03-28T15:49:13+0800 lvl=info msg="no configuration paths supplied"
+t=2026-03-28T15:49:13+0800 lvl=info msg="using configuration at default config path" path=/home/lyq/.config/ngrok/ngrok.yml
+t=2026-03-28T15:49:13+0800 lvl=info msg="open config file" path=/home/lyq/.config/ngrok/ngrok.yml err=nil
+t=2026-03-28T15:49:13+0800 lvl=info msg="FIPS 140 mode" enabled=false
+t=2026-03-28T15:49:13+0800 lvl=info msg="starting web service" obj=web addr=127.0.0.1:4040 allow_hosts=[]
+t=2026-03-28T15:49:15+0800 lvl=info msg="client session established" obj=tunnels.session
+t=2026-03-28T15:49:15+0800 lvl=info msg="tunnel session started" obj=tunnels.session
+t=2026-03-28T15:49:15+0800 lvl=info msg="started tunnel" obj=tunnels name=command_line addr=http://localhost:8000 url=https://pulplike-partingly-emilee.ngrok-free.dev
+t=2026-03-28T15:49:18+0800 lvl=warn msg="failed to check for update" obj=updater err="Post \"https://update.equinox.io/check\": context deadline exceeded"
+t=2026-03-28T15:49:29+0800 lvl=info msg="join connections" obj=join id=2ef6505d062f l=127.0.0.1:8000 r=141.11.146.78:1101
+t=2026-03-28T15:49:35+0800 lvl=info msg="join connections" obj=join id=d98c1ba33d22 l=127.0.0.1:8000 r=141.11.146.78:1101

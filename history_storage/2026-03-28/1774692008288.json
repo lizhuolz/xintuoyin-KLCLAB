@@ -1,0 +1,54 @@
+{
+  "conversation_id": "1774692008288",
+  "title": "你好",
+  "created_at": "1774692011559",
+  "updated_at": "1774692240294",
+  "createdAt": "2026/03/28 18:00:11",
+  "updatedAt": "2026/03/28 18:04:00",
+  "message_count": 2,
+  "user": {
+    "name": "王颖奇",
+    "phone": "15323720032",
+    "categoryName": "图湃（北京）医疗科技"
+  },
+  "messages": [
+    {
+      "message_index": 0,
+      "question": "你好",
+      "files": [],
+      "uploaded_files": [],
+      "file_contexts": [],
+      "web_search": false,
+      "db_version": null,
+      "answer": "用户只是简单地说\"你好\"，这是一个打招呼的开场白。\n\n根据回答要求，我需要：\n1. 结合历史对话、本轮问题和上传文件内容\n2. 如果有上传文件，要基于文件内容回答\n3. 不要忽略用户本轮输入\n\n但是，我注意到：\n- 这是第一轮对话，没有历史对话\n- 用户只是说\"你好\"，没有具体问题\n- 没有看到任何上传文件的内容\n\n在这种情况下，我应该友好地回应用户的问候，并询问他们需要什么帮助。由于没有上传文件，我不需要提及文件内容。\n\n让我用echo工具来回复，或者直接友好地回应。\n\n实际上，对于简单的问候，我不需要调用任何工具，直接友好回应即可。\n</think>\n\n你好！👋 很高兴见到你。\n\n我是你的专业人工智能助手，可以帮你：\n- 📊 进行数学计算（四则运算、乘方、取模等）\n- 🗄️ 查询数据库信息\n- 📚 检索企业政策、部门规约、个人笔记等专业知识\n- 💬 回答各种问题\n\n请问有什么我可以帮你的吗？如果你有文件需要分析，也可以上传给我，我会基于文件内容为你提供准确的回答。",
+      "resource": [],
+      "recommend_answer": [],
+      "feedback": null,
+      "thinking_text": "这次回答没有额外调用工具，我直接根据已有上下文完成了回复。",
+      "thinking_steps": [],
+      "created_at": "1774692143527",
+      "updated_at": "1774692143527",
+      "createdAt": "2026/03/28 18:02:23",
+      "updatedAt": "2026/03/28 18:02:23"
+    },
+    {
+      "message_index": 1,
+      "question": "帮我上网查询疯狂动物城2的剧情",
+      "files": [],
+      "uploaded_files": [],
+      "file_contexts": [],
+      "web_search": true,
+      "db_version": null,
+      "answer": "用户想要查询《疯狂动物城2》的剧情。这是一个需要上网查询的问题，我应该使用tavily_search_with_summary工具来获取相关信息。\n\n根据回答要求：\n1. 需要结合历史对话、本轮问题和上传文件内容\n2. 历史对话中用户只是打招呼，没有具体问题\n3. 本轮问题是查询疯狂动物城2的剧情\n4. 没有看到任何上传文件的内容\n\n由于没有上传文件，我需要通过网络搜索来获取信息。让我调用tavily_search_with_summary工具来查询。\n</think>\n\n",
+      "resource": [],
+      "recommend_answer": [],
+      "feedback": null,
+      "thinking_text": "这次回答没有额外调用工具，我直接根据已有上下文完成了回复。",
+      "thinking_steps": [],
+      "created_at": "1774692240294",
+      "updated_at": "1774692240294",
+      "createdAt": "2026/03/28 18:04:00",
+      "updatedAt": "2026/03/28 18:04:00"
+    }
+  ]
+}

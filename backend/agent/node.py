@@ -3,10 +3,8 @@ from __future__ import annotations
 import os
 
 from langchain_core.messages import SystemMessage
-from langchain_openai import ChatOpenAI
 from langgraph.graph import MessagesState
 
-from langchain_openai import ChatOpenAI
 
 from langgraph.graph import StateGraph, START, END, MessagesState
 from langgraph.prebuilt import ToolNode
@@ -34,6 +32,8 @@ def _env_float(name: str, default: float) -> float:
 
 def make_chatbot_node(temperature: float, tools, system_prompt: str = "你是一个专业的人工智能助手。",streaming=True):
     def chatbot_node(state: GraphState):
+        from langchain_openai import ChatOpenAI
+
         model = state["select_model"]
         llm = ChatOpenAI(
             model=model,
@@ -62,6 +62,8 @@ def make_chatbot_node(temperature: float, tools, system_prompt: str = "你是一
 def make_should_sql_node(SQL_TOOL_NAME) -> GraphState:
     
     def res(state: GraphState):
+        from langchain_openai import ChatOpenAI
+
         judge_llm = ChatOpenAI(model=state["select_model"], temperature=_env_float("SQL_ROUTE_TEMPERATURE", 0.0), max_tokens=_env_int("CHAT_MODEL_MAX_TOKENS", 4096), timeout=_env_float("CHAT_MODEL_TIMEOUT", 120))
         user_text = extract_last_user_text(state["messages"])
         system = SystemMessage(
@@ -97,9 +99,9 @@ def make_should_sql_node(SQL_TOOL_NAME) -> GraphState:
 
             # 追加 system 指令引导 sql_planner 只调用 SQL 工具
             state["messages"].append(
-                SystemMessage(
+                HumanMessage(
                     content=(
-                        f"需要通过数据库查询来回答。你只能调用工具 `{SQL_TOOL_NAME}` 获取数据。"
+                        f"系统补充要求：这个问题必须通过数据库查询来回答。你只能调用工具 `{SQL_TOOL_NAME}` 获取数据，"
                         "请先发起一次工具调用获取结果，然后再基于工具返回结果回答用户。"
                     )
                 )

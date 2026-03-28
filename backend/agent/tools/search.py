@@ -6,7 +6,6 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 
 from langchain_core.tools import tool
 from langchain_community.tools.tavily_search import TavilySearchResults
-from langchain_openai import ChatOpenAI
 from langchain_core.messages import HumanMessage
 
 summary_model = os.getenv("RESEARCH_SUMMARY_MODEL", "gpt-4o")
@@ -21,17 +20,21 @@ class SearchResultItem(BaseModel):
     summary: str = Field(description="一两句话的核心内容摘要")
 
 # --- 2. 初始化工具和模型 ---
-base_search = TavilySearchResults(
-    max_results=max_results,
-    include_answer=True,
-    include_raw_content=True,
-)
+base_search = None
+summary_llm = None
 
 # 注意这里强制要求模型每次只输出一个 SearchResultItem 结构
-summary_llm = ChatOpenAI(model=summary_model, temperature=0).with_structured_output(SearchResultItem)
 
 
 # --- 3. 定义单个网页的处理任务 (供多线程调用) ---
+def get_summary_llm():
+    global summary_llm
+    if summary_llm is None:
+        from langchain_openai import ChatOpenAI
+        summary_llm = ChatOpenAI(model=summary_model, temperature=0).with_structured_output(SearchResultItem)
+    return summary_llm
+
+
 def process_single_result(raw_result: dict) -> dict:
     """处理单个搜索结果：调用 LLM 生成摘要并拼接原文"""
     url = raw_result.get("url", "")
@@ -50,7 +53,7 @@ def process_single_result(raw_result: dict) -> dict:
     
     try:
         # 调用大模型提取结构化数据
-        structured_data = summary_llm.invoke([HumanMessage(content=prompt)])
+        structured_data = get_summary_llm().invoke([HumanMessage(content=prompt)])
         
         # 将 Pydantic 对象转为字典
         item_dict = structured_data.model_dump()
@@ -74,12 +77,23 @@ def process_single_result(raw_result: dict) -> dict:
 
 
 # --- 4. 封装多线程工具 ---
+def get_base_search():
+    global base_search
+    if base_search is None:
+        base_search = TavilySearchResults(
+            max_results=max_results,
+            include_answer=True,
+            include_raw_content=True,
+        )
+    return base_search
+
+
 @tool("tavily_search_with_summary")
 def search_tool(query: str) -> str:
     """当需要查询互联网信息时使用此工具。它会返回包含大标题、小标题、摘要以及完整原始网页内容的 JSON 数据。"""
     try:
         # 1. 一次性获取所有原始搜索结果 (API限制，通常单次调用即可)
-        raw_results = base_search.invoke({"query": query})
+        raw_results = get_base_search().invoke({"query": query})
         
         # 如果没搜到东西，直接返回空
         if not raw_results:

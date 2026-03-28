@@ -1,13 +1,12 @@
 # Global backend settings
 # Source this file before starting the backend service.
-unset http_proxy
-unset https_proxy
-unset all_proxy
+# unset http_proxy
+# unset https_proxy
 
 export CUDA_VISIBLE_DEVICES=0
 # Search / web retrieval
 export RESEARCH_MAX_RESULTS=3
-export RESEARCH_SUMMARY_MODEL="Qwen3.5-27B"
+export RESEARCH_SUMMARY_MODEL="gpt-4o"
 export RESEARCH_SUMMARY_TEMPERATURE=0
 
 # Query embedding / local retrieval
@@ -15,7 +14,7 @@ export QUERY_EMBEDDING_MODEL="BAAI/bge-base-zh-v1.5"
 export QUERY_DB_PATH="./data/local_db_query"
 
 # Main chat model
-export CHAT_MODEL_NAME="Qwen3.5-27B"
+export CHAT_MODEL_NAME="gpt-4o"
 export CHAT_MODEL_TEMPERATURE=0
 export CHAT_MODEL_MAX_TOKENS=4096
 export CHAT_MODEL_TIMEOUT=120
@@ -34,14 +33,14 @@ export CHAT_FILE_HISTORY_SNIPPET_CHARS=3000
 export CHAT_THINKING_CHUNK_SIZE=48
 
 # RAG model settings
-export RAG_LLM_MODEL="Qwen3.5-27B"
+export RAG_LLM_MODEL="gpt-4o"
 export RAG_LLM_TEMPERATURE=0.1
 export RAG_EMBED_MODEL="text-embedding-3-small"
 
 # SQL tool LLM settings
 # DB_LLM_API_KEY is optional; if unset, code falls back to OPENAI_API_KEY.
-export DB_LLM_BASE_URL="http://0.0.0.0:62272/v1"   #"" 
-export DB_LLM_MODEL_NAME="Qwen3.5-27B"
+export DB_LLM_BASE_URL="https://api.claudeshop.top/v1"   #"" http://0.0.0.0:62272/v1
+export DB_LLM_MODEL_NAME="gpt-4o"
 export DB_LLM_SELECTOR_TEMPERATURE=0.1
 export DB_LLM_SELECTOR_MAX_TOKENS=1024
 export DB_LLM_GENERATE_TEMPERATURE=0.0
@@ -57,8 +56,8 @@ export DB_MYSQL_PASSWORD='ha.G/o[tEst]n%gD*a'
 export DB_MYSQL_NAME="r_d_test"
 
 
-export OPENAI_API_KEY="EMPTY" # # lyq 
-export OPENAI_API_BASE="http://0.0.0.0:62272/v1"   #https://api.claudeshop.top/v1
+export OPENAI_API_KEY="sk-pMyKRA0l2LRns2k0BuBipp1gDmI2HG98ZXATEyOS0MMAJNJH" # # lyq 
+export OPENAI_API_BASE="https://api.claudeshop.top/v1"   #https://api.claudeshop.top/v1
 export TAVILY_API_KEY=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
 export SECURITY_ENABLE_GIBBERISH=0
 export SECURITY_ENABLE_NO_REFUSAL=0

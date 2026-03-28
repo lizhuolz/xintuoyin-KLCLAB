@@ -4,7 +4,6 @@ from typing import Any, Dict, List, Literal, TypedDict
 from langchain_core.messages import AIMessage, BaseMessage, HumanMessage, SystemMessage
 import os
 from langchain_community.vectorstores import FAISS
-from langchain_huggingface import HuggingFaceEmbeddings
 
 # 向量库本地持久化路径
 FAISS_INDEX_PATH = os.getenv("QUERY_DB_PATH", "./data/local_db_query")
@@ -18,6 +17,9 @@ _vector_db = None
 def get_embeddings():
     global _embeddings
     if _embeddings is None:
+        # 将 HuggingFace 相关导入也延迟到真正使用时，避免 CLI 启动阶段卡在模块初始化。
+        from langchain_huggingface import HuggingFaceEmbeddings
+
         # 延迟加载 embedding 模型，避免服务启动阶段阻塞。
         _embeddings = HuggingFaceEmbeddings(
             model_name=EMBEDDING_MODEL,

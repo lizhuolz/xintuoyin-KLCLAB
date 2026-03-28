@@ -1,0 +1,35 @@
+{
+  "conversation_id": "1774694349792",
+  "title": "帮我去数据库查询最近的发票总额度是多少,然后回答我的问题",
+  "created_at": "1774694360491",
+  "updated_at": "1774694361981",
+  "createdAt": "2026/03/28 18:39:20",
+  "updatedAt": "2026/03/28 18:39:21",
+  "message_count": 1,
+  "user": {
+    "name": "王颖奇",
+    "phone": "15323720032",
+    "categoryName": "图湃（北京）医疗科技"
+  },
+  "messages": [
+    {
+      "message_index": 0,
+      "question": "帮我去数据库查询最近的发票总额度是多少,然后回答我的问题",
+      "files": [],
+      "uploaded_files": [],
+      "file_contexts": [],
+      "web_search": false,
+      "db_version": null,
+      "answer": "根据您的要求，我将调用数据库查询工具来获取最近的发票总额度信息。让我执行这个操作。\n```json\n{\n  \"name\": \"sql_tool\",\n  \"arguments\": {\n    \"query\": \"SELECT SUM(amount) as total_amount FROM invoices ORDER BY invoice_date DESC LIMIT 10\"\n  }\n}\n```",
+      "resource": [],
+      "recommend_answer": [],
+      "feedback": null,
+      "thinking_text": "这次回答没有额外调用工具，我直接根据已有上下文完成了回复。",
+      "thinking_steps": [],
+      "created_at": "1774694361981",
+      "updated_at": "1774694361981",
+      "createdAt": "2026/03/28 18:39:21",
+      "updatedAt": "2026/03/28 18:39:21"
+    }
+  ]
+}

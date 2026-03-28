@@ -2,7 +2,6 @@ from __future__ import annotations
 from agent.node import make_chatbot_node
 from agent.tools import LOCAL_TOOLS,WEB_TOOLS,SQL_TOOLS,SQL_TOOL_NAME
 from langchain_core.messages import AIMessage, BaseMessage, HumanMessage, SystemMessage
-from langchain_openai import ChatOpenAI
 
 from langgraph.graph import StateGraph, START, END, MessagesState
 from langgraph.prebuilt import ToolNode

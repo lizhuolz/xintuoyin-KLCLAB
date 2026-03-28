@@ -1,39 +1,53 @@
 import os
-from typing import Tuple, Dict, Any, List
+from typing import Tuple
 # 引入 LLM Guard 组件
 from llm_guard.vault import Vault
 from llm_guard import scan_prompt, scan_output
 from llm_guard.input_scanners import (
-    Anonymize, BanSubstrings, Gibberish, InvisibleText, 
-    PromptInjection, Secrets, TokenLimit, Toxicity
+    BanSubstrings, Gibberish, InvisibleText,
+    Secrets, Toxicity,
 )
-from llm_guard.output_scanners import NoRefusal, Deanonymize, BanTopics
+from llm_guard.output_scanners import NoRefusal, BanTopics
+
+
+def _env_enabled(name: str, default: bool = True) -> bool:
+    value = os.getenv(name)
+    if value is None:
+        return default
+    return value.strip().lower() not in {"0", "false", "no", "off"}
+
 
 # 初始化 Vault (单例模式)
 _VAULT = Vault()
 
-# 定义输入防御层 (Input Scanners)
+# 定义输入防御层
 _INPUT_SCANNERS = [
     BanSubstrings(
         substrings=[
             "炸弹", "生化武器", "自杀", "ignore previous instructions"
         ],
         match_type="str",
-        case_sensitive=False
+        case_sensitive=False,
     ),
-    # PromptInjection(threshold=0.9), # 调高阈值，减少误报
     InvisibleText(),
     Secrets(redact_mode="partial"),
-    # TokenLimit(limit=4000), # 放宽长度限制
-    Toxicity(threshold=0.9), # 调高阈值
-    Gibberish(threshold=0.9), # 调开阈值，防止技术类乱码误判
 ]
 
-# 定义输出防御层 (Output Scanners)
-_OUTPUT_SCANNERS = [
-    NoRefusal(),
-    BanTopics(topics=["explosives", "weapons"], threshold=0.9), # 调高阈值
-]
+if _env_enabled("SECURITY_ENABLE_TOXICITY", True):
+    _INPUT_SCANNERS.append(Toxicity(threshold=0.9))
+
+if _env_enabled("SECURITY_ENABLE_GIBBERISH", True):
+    _INPUT_SCANNERS.append(Gibberish(threshold=0.9))
+
+# 定义输出防御层
+_OUTPUT_SCANNERS = []
+
+if _env_enabled("SECURITY_ENABLE_NO_REFUSAL", True):
+    _OUTPUT_SCANNERS.append(NoRefusal())
+
+if _env_enabled("SECURITY_ENABLE_BAN_TOPICS", True):
+    _OUTPUT_SCANNERS.append(BanTopics(topics=["explosives", "weapons"], threshold=0.9))
+
 
 def check_input_safety(text: str) -> Tuple[str, bool, str]:
     """
@@ -42,7 +56,7 @@ def check_input_safety(text: str) -> Tuple[str, bool, str]:
     """
     try:
         sanitized_prompt, results_valid, results_score = scan_prompt(_INPUT_SCANNERS, text)
-        
+
         if any(not is_valid for is_valid in results_valid.values()):
             errors = []
             for scanner_name, is_valid in results_valid.items():
@@ -50,12 +64,12 @@ def check_input_safety(text: str) -> Tuple[str, bool, str]:
                     score = results_score.get(scanner_name, 0)
                     errors.append(f"{scanner_name} (score: {score})")
             return text, False, f"输入包含违规内容，已被防火墙拦截: {', '.join(errors)}"
-        
+
         return sanitized_prompt, True, ""
     except Exception as e:
         print(f"Safety check error (Input): {e}")
-        # 出错时默认放行，避免阻断业务，但记录日志
-        return text, True, "" 
+        return text, True, ""
+
 
 def check_output_safety(prompt: str, response: str) -> Tuple[bool, str]:
     """
@@ -63,6 +77,9 @@ def check_output_safety(prompt: str, response: str) -> Tuple[bool, str]:
     Returns: (is_valid, warning_msg)
     """
     try:
+        if not _OUTPUT_SCANNERS:
+            return True, ""
+
         _, out_valid, _ = scan_output(_OUTPUT_SCANNERS, prompt, response)
         if any(not is_valid for is_valid in out_valid.values()):
             errors = [k for k, v in out_valid.items() if not v]

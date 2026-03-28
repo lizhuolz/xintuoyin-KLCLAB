@@ -718,7 +718,7 @@ def _sse_event(payload: dict) -> str:
 
 async def iterate_chat_events(message: str, conversation_id: str, system_prompt: str, web_search: bool, user_identity: str):
     inputs = {
-        "messages": [SystemMessage(content=system_prompt), HumanMessage(content=message)],
+        "messages": [HumanMessage(content=message)],
         "enable_web": web_search,
         "select_model": os.getenv("CHAT_MODEL_NAME", "gpt-4o"),
         "user_identity": user_identity,
