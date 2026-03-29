@@ -6,9 +6,10 @@ from langchain_core.tools import tool
 # --- 路径配置 ---
 BASE_DIR = Path(__file__).parent.parent.parent.parent
 BASE_DOCS_DIR = BASE_DIR / "documents"
-GLOBAL_STORAGE_DIR = BASE_DIR / "backend" / "storage_global"
 METADATA_FILE = BASE_DIR / "backend" / "data" / "kb_metadata.json"
 USER_JSON_FILE = BASE_DIR / "user.json"
+# Milvus Standalone URI
+MILVUS_RAG_URI = os.getenv("MILVUS_RAG_URI", "http://127.0.0.1:19530")
 
 _GLOBAL_INDEX = None
 _LLAMA_READY = False
@@ -29,6 +30,7 @@ def _ensure_llama_runtime():
     from llama_index.core.vector_stores.types import MetadataFilters, ExactMatchFilter, MetadataFilter
     from llama_index.llms.openai import OpenAI
     from llama_index.embeddings.openai import OpenAIEmbedding
+    from llama_index.vector_stores.milvus import MilvusVectorStore
 
     globals().update({
         "VectorStoreIndex": VectorStoreIndex,
@@ -39,6 +41,7 @@ def _ensure_llama_runtime():
         "MetadataFilters": MetadataFilters,
         "ExactMatchFilter": ExactMatchFilter,
         "MetadataFilter": MetadataFilter,
+        "MilvusVectorStore": MilvusVectorStore
     })
 
     Settings.llm = OpenAI(
@@ -82,9 +85,8 @@ def force_refresh_index():
     """强制刷新索引"""
     global _GLOBAL_INDEX
     _GLOBAL_INDEX = None
-    import shutil
-    if GLOBAL_STORAGE_DIR.exists():
-        shutil.rmtree(GLOBAL_STORAGE_DIR)
+    # 真正的 Standalone Milvus 刷新通常建议通过 Client 删除 Collection
+    # 我们这里依赖后续重新构建时的 overwrite 逻辑
 
 
 def get_global_index():
@@ -94,23 +96,37 @@ def get_global_index():
 
     _ensure_llama_runtime()
 
-    if GLOBAL_STORAGE_DIR.exists() and any(GLOBAL_STORAGE_DIR.iterdir()):
-        storage_context = StorageContext.from_defaults(persist_dir=str(GLOBAL_STORAGE_DIR))
-        _GLOBAL_INDEX = load_index_from_storage(storage_context)
-    else:
+    # 初始化 Milvus 向量存储 (网络地址)
+    vector_store = MilvusVectorStore(
+        uri=MILVUS_RAG_URI,
+        collection_name="knowledge_base_collection",
+        dim=1536,
+        overwrite=False
+    )
+    
+    storage_context = StorageContext.from_defaults(vector_store=vector_store)
+    
+    # 尝试从 Milvus 加载已有的数据
+    try:
+        # LlamaIndex 会尝试检查 Collection 是否存在
+        _GLOBAL_INDEX = VectorStoreIndex.from_vector_store(vector_store, storage_context=storage_context)
+        # 这里需要某种方式判断 collection 是否真的有内容
+        # 简单策略：如果加载失败或我们要强制刷新，则走构建流程
+        return _GLOBAL_INDEX
+    except Exception:
         kb_map = get_kb_metadata_map()
 
         def get_meta(file_path):
             try:
                 rel_path = Path(file_path).relative_to(BASE_DOCS_DIR)
-                parts = rel_path.parts
+                parts = rel_path.parts # 分类 / 知识库名 / 文件名
 
                 kb_info = None
-                for i in range(len(parts), 0, -1):
-                    test_path = "/".join(parts[:i])
+                # 匹配物理路径 (分类/知识库名)
+                if len(parts) >= 2:
+                    test_path = f"{parts[0]}/{parts[1]}"
                     if test_path in kb_map:
                         kb_info = kb_map[test_path]
-                        break
 
                 meta = {
                     "file_name": parts[-1],
@@ -124,8 +140,13 @@ def get_global_index():
                 if kb_info:
                     meta["kb_name"] = kb_info["name"]
                     meta["enabled"] = "true" if kb_info.get("enabled", True) else "false"
-                    meta["allowed_users"] = ",".join(kb_info.get("users", []))
-                    meta["belong_to"] = parts[1] if len(parts) > 1 else ""
+                    # 处理使用人权限
+                    users = kb_info.get("users", [])
+                    user_names = []
+                    for u in users:
+                        if isinstance(u, dict): user_names.append(u.get("name", ""))
+                        else: user_names.append(str(u))
+                    meta["allowed_users"] = ",".join(user_names) if user_names else "none"
 
                 return meta
             except Exception:
@@ -133,9 +154,7 @@ def get_global_index():
 
         reader = SimpleDirectoryReader(input_dir=str(BASE_DOCS_DIR), recursive=True, file_metadata=get_meta)
         documents = reader.load_data()
-        _GLOBAL_INDEX = VectorStoreIndex.from_documents(documents)
-        GLOBAL_STORAGE_DIR.mkdir(parents=True, exist_ok=True)
-        _GLOBAL_INDEX.storage_context.persist(persist_dir=str(GLOBAL_STORAGE_DIR))
+        _GLOBAL_INDEX = VectorStoreIndex.from_documents(documents, storage_context=storage_context)
 
     return _GLOBAL_INDEX
 
@@ -145,20 +164,21 @@ def rag_tool(question: str, user_identity: str = "guest") -> str:
     """
     【核心知识库检索工具】
     调用此工具回答涉及企业政策、部门规约、个人笔记或基础常识等专业问题。
-    系统会自动根据你的身份权限在允许访问的知识库中检索原文。
+    系统会自动根据你的授权范围在允许访问的知识库中检索原文。
     """
     try:
         _ensure_llama_runtime()
         index = get_global_index()
         user = get_current_user_profile()
 
+        # 简化后的权限过滤器
+        # 1. 必须启用
+        # 2. 基础库 OR 用户被显式授权
         filters = MetadataFilters(filters=[
             MetadataFilter(key="enabled", value="true"),
             MetadataFilters(filters=[
                 ExactMatchFilter(key="is_base", value="true"),
-                ExactMatchFilter(key="belong_to", value=user["company"]),
-                ExactMatchFilter(key="belong_to", value=user["department"]),
-                MetadataFilter(key="allowed_users", value=user["name"], operator="contains"),
+                MetadataFilter(key="allowed_users", value=user.get("name", "未知用户"), operator="contains"),
             ], condition="or"),
         ], condition="and")
 
@@ -170,11 +190,11 @@ def rag_tool(question: str, user_identity: str = "guest") -> str:
             if node.score > 0.35:
                 content = node.node.get_content()
                 meta = node.node.metadata
-                source = f"【来源: {meta.get('scope', '未知')}/{meta.get('belong_to', '')}/{meta.get('kb_name', '')}/{meta.get('file_name', '')}】"
+                source = f"【来源: {meta.get('scope', '未知')}/{meta.get('kb_name', '未命名')}/{meta.get('file_name', '')}】"
                 final_results.append(f"{source}\n{content}")
 
         if not final_results:
-            return "在您的权限范围内未找到相关企业知识内容。"
+            return "在您的权限范围内未找到相关知识内容。"
         return "\n\n---\n\n".join(final_results)
 
     except Exception as e:

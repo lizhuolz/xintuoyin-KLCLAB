@@ -3,6 +3,7 @@ import os
 import shutil
 from pathlib import Path
 from datetime import datetime
+from services.storage_service import storage_service
 
 # 路径定义
 BASE_DIR = Path(__file__).parent.parent
@@ -20,7 +21,7 @@ class KBService:
         if not METADATA_FILE.exists():
             with open(METADATA_FILE, "w", encoding="utf-8") as f:
                 json.dump([], f, ensure_ascii=False, indent=2)
-        DOCS_DIR.mkdir(parents=True, exist_ok=True)
+        # 本地 DOCS_DIR 依然保留，用于存放元数据或临时缓存，但实际文件将存入 MinIO
 
     def _get_user_info(self):
         if USER_JSON_FILE.exists():
@@ -64,10 +65,11 @@ class KBService:
         return normalized
 
     def _format_kb(self, kb):
-        full_path = DOCS_DIR / kb.get("physical_path", "")
-        file_count = 0
-        if full_path.exists():
-            file_count = len([f for f in full_path.iterdir() if f.is_file()])
+        # 统计 MinIO 中的文件数量
+        prefix = f"documents/{kb.get('physical_path', '')}/"
+        minio_files = storage_service.list_files(prefix)
+        file_count = len(minio_files)
+        
         return {
             "id": kb.get("id"),
             "name": kb.get("name", ""),
@@ -97,21 +99,17 @@ class KBService:
         all_kb = self._read_all_raw()
         kb_id = f"kb_{self._now_ms()}"
 
-        if "企业" in category:
-            owner_folder = user.get("company", "通用公司")
-        elif "部门" in category:
-            owner_folder = user.get("department", "通用部门")
+        # 核心逻辑变更：不再区分企业/部门等级，除基础库外全部扁平化
+        if "基础" in category:
+            category_folder = "基础知识库"
         else:
-            owner_folder = user.get("name", "访客")
+            category_folder = "用户知识库"
 
         safe_name = "".join([c for c in name if c.isalnum() or c in (" ", "_", "-")]).strip() or kb_id
-        physical_path = f"{category}/{owner_folder}/{safe_name}"
-        full_path = DOCS_DIR / physical_path
-        if full_path.exists():
-            physical_path = f"{category}/{owner_folder}/{safe_name}_{datetime.now().strftime('%H%M%S')}"
-            full_path = DOCS_DIR / physical_path
-        full_path.mkdir(parents=True, exist_ok=True)
-
+        # 物理路径简化为：分类/知识库名
+        physical_path = f"{category_folder}/{safe_name}"
+        
+        # 检查物理前缀冲突 (MinIO 是虚拟目录，我们通过 metadata 检查)
         now_ms = self._now_ms()
         now_display = self._now_display()
         new_kb = {
@@ -119,7 +117,7 @@ class KBService:
             "name": name,
             "model": model,
             "category": category,
-            "owner_info": f"{user.get('company', '')}/{user.get('department', '')}",
+            "owner_info": user.get("name", "未知用户"), # 仅记录创建者
             "physical_path": physical_path,
             "remark": "",
             "users": [{
@@ -169,9 +167,11 @@ class KBService:
         target = next((item for item in all_kb if item.get("id") == kb_id), None)
         if not target:
             return None
-        full_path = DOCS_DIR / target.get("physical_path", "")
-        if full_path.exists():
-            shutil.rmtree(full_path)
+        
+        # 删除 MinIO 中的物理文件
+        prefix = f"documents/{target.get('physical_path', '')}/"
+        storage_service.delete_files_by_prefix(prefix)
+        
         remain = [item for item in all_kb if item.get("id") != kb_id]
         self._write_all_raw(remain)
         return self._format_kb(target)
@@ -180,21 +180,24 @@ class KBService:
         kb = self.get_kb(kb_id)
         if not kb:
             return []
-        full_path = DOCS_DIR / kb.get("physical_path", "")
-        if not full_path.exists():
-            return []
+        
+        prefix = f"documents/{kb.get('physical_path', '')}/"
+        minio_files = storage_service.list_files(prefix)
+        
         results = []
-        for file_path in sorted(full_path.iterdir(), key=lambda p: p.stat().st_mtime, reverse=True):
-            if not file_path.is_file():
-                continue
-            uploaded_at = str(int(file_path.stat().st_mtime * 1000))
+        for obj in sorted(minio_files, key=lambda x: x['last_modified'], reverse=True):
+            obj_name = obj['object_name']
+            filename = obj_name.split('/')[-1]
+            if not filename: continue
+            
+            uploaded_at = str(int(obj['last_modified'].timestamp() * 1000))
             results.append({
-                "file_id": f"{kb_id}:{file_path.name}",
-                "name": file_path.name,
-                "url": f"{kb.get('physical_path', '').rstrip('/')}/{file_path.name}",
-                "size": file_path.stat().st_size,
+                "file_id": f"{kb_id}:{filename}",
+                "name": filename,
+                "url": storage_service.get_presigned_url(obj_name),
+                "size": obj['size'],
                 "uploaded_at": uploaded_at,
-                "uploadedAt": datetime.fromtimestamp(file_path.stat().st_mtime).strftime("%Y/%m/%d %H:%M:%S")
+                "uploadedAt": obj['last_modified'].strftime("%Y/%m/%d %H:%M:%S")
             })
         return results
 
@@ -202,21 +205,18 @@ class KBService:
         kb = self.get_kb(kb_id)
         if not kb:
             return None
-        target_dir = DOCS_DIR / kb.get("physical_path", "")
-        target_dir.mkdir(parents=True, exist_ok=True)
+        
+        base_prefix = f"documents/{kb.get('physical_path', '')}"
         saved = []
         for file_obj in file_objs or []:
             original_name = Path(file_obj.filename or "unnamed_file").name
-            final_name = original_name
-            stem = Path(original_name).stem
-            suffix = Path(original_name).suffix
-            index = 1
-            while (target_dir / final_name).exists():
-                final_name = f"{stem}_{index}{suffix}"
-                index += 1
-            with open(target_dir / final_name, "wb") as f:
-                f.write(file_obj.file.read())
-            saved.append(final_name)
+            # 这里简单处理，如果重名直接覆盖或加时间戳（MinIO 覆盖是默认行为）
+            object_name = f"{base_prefix}/{original_name}"
+            
+            # 流式上传到 MinIO
+            if storage_service.upload_file_obj(file_obj.file, object_name, getattr(file_obj, 'content_type', 'application/octet-stream')):
+                saved.append(original_name)
+        
         if saved:
             self.update_kb(kb_id, {})
         return self.list_files(kb_id)
@@ -229,14 +229,15 @@ class KBService:
         kb = self.get_kb(kb_id)
         if not kb:
             return None
-        target_dir = DOCS_DIR / kb.get("physical_path", "")
+        
+        base_prefix = f"documents/{kb.get('physical_path', '')}"
         deleted = []
         for filename in filenames or []:
             safe_name = Path(filename).name
-            file_path = target_dir / safe_name
-            if file_path.exists() and file_path.is_file():
-                os.remove(file_path)
+            object_name = f"{base_prefix}/{safe_name}"
+            if storage_service.delete_file(object_name):
                 deleted.append(safe_name)
+        
         if deleted:
             self.update_kb(kb_id, {})
         return deleted
