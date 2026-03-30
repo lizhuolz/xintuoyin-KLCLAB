@@ -26,6 +26,7 @@ if current_dir not in sys.path:
 from agent.build_graph import graph_builder
 from utils.security import check_input_safety, check_output_safety
 from services.kb_service import KBService
+from services.storage_service import storage_service
 
 try:
     from pypdf import PdfReader
@@ -353,26 +354,32 @@ def save_chat_uploads(conversation_id: str, message_index: int, files: List[Uplo
     saved = []
     if not files:
         return saved
-    base_dir = CHAT_UPLOAD_ROOT / today_str() / safe_segment(conversation_id) / str(message_index)
-    base_dir.mkdir(parents=True, exist_ok=True)
+    prefix = f"chat/{today_str()}/{safe_segment(conversation_id)}/{message_index}"
+    existing_names = {
+        item["object_name"].rsplit("/", 1)[-1]
+        for item in storage_service.list_files(prefix + "/")
+    }
     for upload in files:
         original_name = Path(upload.filename or "unnamed_file").name
-        final_name = original_name
         stem = Path(original_name).stem
         suffix = Path(original_name).suffix
-        index = 1
-        while (base_dir / final_name).exists():
-            final_name = f"{stem}_{index}{suffix}"
-            index += 1
-        with open(base_dir / final_name, "wb") as out:
-            shutil.copyfileobj(upload.file, out)
-        relative = Path(today_str()) / safe_segment(conversation_id) / str(message_index) / final_name
-        saved.append({
-            "file_id": f"file_{now_ms()}_{len(saved)}",
-            "filename": final_name,
-            "url": f"/api/static/chat_uploads/{relative.as_posix()}",
-            "relative_path": relative.as_posix()
-        })
+        final_name = original_name
+        counter = 1
+        while final_name in existing_names:
+            final_name = f"{stem}_{counter}{suffix}"
+            counter += 1
+        existing_names.add(final_name)
+        object_name = f"{prefix}/{final_name}"
+
+        # 直接流式上传到 MinIO
+        if storage_service.upload_file_obj(upload.file, object_name, getattr(upload, 'content_type', 'application/octet-stream')):
+            saved.append({
+                "file_id": f"file_{now_ms()}_{len(saved)}",
+                "filename": final_name,
+                "url": storage_service.get_presigned_url(object_name),
+                "relative_path": object_name,
+                "object_name": object_name
+            })
     return saved
 
 
@@ -499,20 +506,25 @@ def extract_uploaded_file_text(file_path: Path) -> str:
         return f'文件解析失败：{exc}'
 
 
+import tempfile
+import uuid
+
 def build_uploaded_file_contexts(uploaded_files: List[dict]) -> list[dict]:
     contexts = []
     for item in uploaded_files or []:
-        relative_path = item.get('relative_path')
-        if not relative_path:
+        object_name = item.get('object_name') or item.get('relative_path')
+        if not object_name:
             continue
-        file_path = CHAT_UPLOAD_ROOT / relative_path
-        if not file_path.exists():
-            continue
-        extracted_text = extract_uploaded_file_text(file_path)
-        contexts.append({
-            'filename': item.get('filename', file_path.name),
-            'text': extracted_text,
-        })
+
+        with tempfile.TemporaryDirectory() as tmpdir:
+            tmp_path = Path(tmpdir) / item.get('filename', f"tmp_{uuid.uuid4().hex}")
+            # 从 MinIO 下载到临时文件进行正文抽取
+            if storage_service.download_file(object_name, str(tmp_path)):
+                extracted_text = extract_uploaded_file_text(tmp_path)
+                contexts.append({
+                    'filename': item.get('filename', tmp_path.name),
+                    'text': extracted_text,
+                })
     return contexts
 
 
@@ -894,6 +906,7 @@ async def chat_endpoint(
         return success_response("发送对话成功", message_item)
 
     async def event_stream():
+        emitted_answer_delta = False
         try:
             latest_answer = ""
             latest_sources = []
@@ -909,6 +922,7 @@ async def chat_endpoint(
                 event_type = event.get("type")
                 if event_type == "answer_delta":
                     latest_answer += event.get("delta", "")
+                    emitted_answer_delta = True
                     yield _sse_event(event)
                 elif event_type == "answer_replace":
                     latest_answer = event.get("content", "")
@@ -949,7 +963,44 @@ async def chat_endpoint(
                     yield _sse_event({"type": "done", "data": message_item})
                     return
         except Exception as exc:
-            yield _sse_event({"type": "error", "message": str(exc)})
+            if emitted_answer_delta:
+                yield _sse_event({"type": "error", "message": str(exc)})
+                return
+            try:
+                answer, sources, thinking_steps = await run_chat(
+                    model_message,
+                    conversation_id,
+                    system_prompt,
+                    web_search,
+                    user_identity or "guest",
+                )
+                recommend_answer = await generate_recommendations(sanitized_message, answer)
+                message_item = {
+                    "message_index": message_index,
+                    "question": sanitized_message,
+                    "files": [item["filename"] for item in uploaded_files],
+                    "uploaded_files": uploaded_files,
+                    "file_contexts": file_contexts,
+                    "web_search": bool(web_search),
+                    "db_version": db_version,
+                    "answer": answer,
+                    "resource": sources,
+                    "recommend_answer": recommend_answer,
+                    "feedback": None,
+                    "thinking_text": _format_thinking_text(thinking_steps),
+                    "thinking_steps": thinking_steps,
+                    "created_at": now_ms(),
+                    "updated_at": now_ms(),
+                    "createdAt": now_display(),
+                    "updatedAt": now_display(),
+                }
+                history_record["user"] = build_user_brief(user)
+                history_record.setdefault("messages", []).append(message_item)
+                save_history_record(history_record, history_path)
+                yield _sse_event({"type": "answer_delta", "delta": answer})
+                yield _sse_event({"type": "done", "data": message_item})
+            except Exception as fallback_exc:
+                yield _sse_event({"type": "error", "message": str(fallback_exc)})
 
     headers = {"Cache-Control": "no-cache", "X-Accel-Buffering": "no"}
     return StreamingResponse(event_stream(), media_type="text/event-stream", headers=headers)
@@ -1132,19 +1183,33 @@ async def save_feedback(
     target_dir.mkdir(parents=True, exist_ok=True)
     info_path = target_dir / "feedback.json"
     existing = read_json(info_path, {}) if info_path.exists() else {}
-    picture_names = existing.get("pictures", [])
+    
+    # 获取已有的图片列表（兼容 object 格式）
+    pictures_list = existing.get("pictures_list", [])
+    picture_names = [p["filename"] for p in pictures_list] if isinstance(pictures_list, list) and pictures_list and isinstance(pictures_list[0], dict) else existing.get("pictures", [])
+
     for upload in upload_list:
         original_name = Path(upload.filename or "feedback_image").name
-        final_name = original_name
         stem = Path(original_name).stem
         suffix = Path(original_name).suffix
-        index = 1
-        while (target_dir / final_name).exists():
-            final_name = f"{stem}_{index}{suffix}"
-            index += 1
-        with open(target_dir / final_name, "wb") as out:
-            shutil.copyfileobj(upload.file, out)
-        picture_names.append(final_name)
+        final_name = original_name
+        counter = 1
+        while final_name in picture_names:
+            final_name = f"{stem}_{counter}{suffix}"
+            counter += 1
+
+        # MinIO 路径
+        object_name = f"feedback/{today_str()}/{feedback_id}/{final_name}"
+        
+        if storage_service.upload_file_obj(upload.file, object_name, getattr(upload, 'content_type', 'image/png')):
+            picture_info = {
+                "filename": final_name,
+                "object_name": object_name,
+                "url": storage_service.get_presigned_url(object_name)
+            }
+            if isinstance(pictures_list, list):
+                pictures_list.append(picture_info)
+            picture_names.append(final_name)
 
     current_time = now_ms()
     question = target_message.get("question", "")
@@ -1162,6 +1227,7 @@ async def save_feedback(
         "reasons": reason_list,
         "comment": comment or "",
         "pictures": picture_names,
+        "pictures_list": pictures_list,
         "name": user.get("name", ""),
         "enterprise": user.get("company", ""),
         "phone": user.get("phone", ""),
@@ -1185,31 +1251,43 @@ async def upload_feedback_pictures(
     feedback_id = f"fb_{conversation_id}_{message_index}"
     target_dir = get_feedback_dir(feedback_id)
     target_dir.mkdir(parents=True, exist_ok=True)
-    saved = []
-    for upload in pictures or []:
-        original_name = Path(upload.filename or "feedback_image").name
-        final_name = original_name
-        stem = Path(original_name).stem
-        suffix = Path(original_name).suffix
-        index = 1
-        while (target_dir / final_name).exists():
-            final_name = f"{stem}_{index}{suffix}"
-            index += 1
-        with open(target_dir / final_name, "wb") as out:
-            shutil.copyfileobj(upload.file, out)
-        saved.append({
-            "file_id": f"pic_{now_ms()}_{len(saved)}",
-            "filename": final_name,
-            "url": f"/api/static/feedbacks/{target_dir.relative_to(FEEDBACK_ROOT).as_posix()}/{final_name}",
-        })
+    
     info_path = target_dir / "feedback.json"
     info = read_json(info_path, {}) if info_path.exists() else {
         "id": feedback_id,
         "conversation_id": conversation_id,
         "message_index": message_index,
-        "pictures": []
+        "pictures": [],
+        "pictures_list": []
     }
+    
+    pictures_list = info.get("pictures_list", [])
+    existing_names = {item.get("filename") for item in pictures_list if isinstance(item, dict) and item.get("filename")}
+    saved = []
+    for upload in pictures or []:
+        original_name = Path(upload.filename or "feedback_image").name
+        stem = Path(original_name).stem
+        suffix = Path(original_name).suffix
+        final_name = original_name
+        counter = 1
+        while final_name in existing_names:
+            final_name = f"{stem}_{counter}{suffix}"
+            counter += 1
+        existing_names.add(final_name)
+        object_name = f"feedback/{today_str()}/{feedback_id}/{final_name}"
+
+        if storage_service.upload_file_obj(upload.file, object_name, getattr(upload, 'content_type', 'image/png')):
+            pic_item = {
+                "file_id": f"pic_{now_ms()}_{len(saved)}",
+                "filename": final_name,
+                "object_name": object_name,
+                "url": storage_service.get_presigned_url(object_name),
+            }
+            saved.append(pic_item)
+            pictures_list.append(pic_item)
+
     info["pictures"] = list(dict.fromkeys((info.get("pictures") or []) + [item["filename"] for item in saved]))
+    info["pictures_list"] = pictures_list
     info.setdefault("time", now_ms())
     info["update_time"] = now_ms()
     info.setdefault("createdAt", now_display())

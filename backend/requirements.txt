@@ -11,3 +11,5 @@ langchain-core
 langchain>=1.1.3,<2
 tavily-python>=0.7.15,<0.8
 pymilvus>=2.5,<3
+langchain-milvus>=0.2,<0.3
+minio
