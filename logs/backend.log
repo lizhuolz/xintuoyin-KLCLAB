@@ -411,3 +411,109 @@ INFO:     127.0.0.1:36438 - "GET /api/history/1774706759906?_t=1774706851939 HTT
 INFO:     127.0.0.1:36452 - "GET /api/kb/list?_t=1774706855864 HTTP/1.1" 200 OK
 INFO:     127.0.0.1:49352 - "GET /api/history/list?search=&_t=1774706857696 HTTP/1.1" 200 OK
 INFO:     127.0.0.1:49354 - "GET /api/history/1774706792458?_t=1774706857732 HTTP/1.1" 200 OK
+WARNING: All log messages before absl::InitializeLog() is called are written to STDERR
+I0000 00:00:1774706943.254853 1906084 chttp2_transport.cc:1353] unix:/tmp/tmp992pw14n_klclab_milvus.db.sock: Got goaway [11] err=UNAVAILABLE:GOAWAY received; Error code: 11; Debug Text: too_many_pings {http2_error:11, grpc_status:14}
+E0000 00:00:1774706943.254991 1906084 chttp2_transport.cc:1385] unix:/tmp/tmp992pw14n_klclab_milvus.db.sock: Received a GOAWAY with error code ENHANCE_YOUR_CALM and debug data equal to "too_many_pings". Current keepalive time (before throttling): 10000ms
+INFO:     113.251.89.57:0 - "GET /favicon.ico HTTP/1.1" 404 Not Found
+INFO:     113.251.89.57:0 - "GET /favicon.ico HTTP/1.1" 404 Not Found
+INFO:     39.98.81.185:0 - "GET /api/history/list?search=&start_time=&end_time= HTTP/1.1" 200 OK
+INFO:     39.98.81.185:0 - "GET /api/feedback/list?name=&enterprise=&type=&start_time=&end_time= HTTP/1.1" 200 OK
+INFO:     Started server process [2609456]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
+INFO:     141.11.146.78:0 - "GET / HTTP/1.1" 404 Not Found
+INFO:     141.11.146.78:0 - "GET /favicon.ico HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:36340 - "GET /api/kb/list?_t=1774844470085 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:36350 - "GET /api/history/list?search=&_t=1774844471260 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:36366 - "GET /api/history/1774706792458?_t=1774844471298 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:36376 - "GET /api/chat/new_session?_t=1774844472590 HTTP/1.1" 200 OK
+2026-03-30 12:21:17 [debug    ] No banned substrings found
+2026-03-30 12:21:17 [debug    ] Scanner completed              elapsed_time_seconds=0.000528 is_valid=True scanner=BanSubstrings
+2026-03-30 12:21:17 [debug    ] No invisible characters found
+2026-03-30 12:21:17 [debug    ] Scanner completed              elapsed_time_seconds=0.000195 is_valid=True scanner=InvisibleText
+2026-03-30 12:21:17 [debug    ] No secrets detected in the prompt
+2026-03-30 12:21:17 [debug    ] Scanner completed              elapsed_time_seconds=0.181368 is_valid=True scanner=Secrets
+2026-03-30 12:21:17 [info     ] Scanned prompt                 elapsed_time_seconds=0.182697 scores={'BanSubstrings': -1.0, 'InvisibleText': 0.0, 'Secrets': -1.0}
+INFO:     127.0.0.1:59260 - "POST /api/chat HTTP/1.1" 200 OK
+2026-03-30 12:21:51 [debug    ] No banned substrings found
+2026-03-30 12:21:51 [debug    ] Scanner completed              elapsed_time_seconds=0.000484 is_valid=True scanner=BanSubstrings
+2026-03-30 12:21:51 [debug    ] No invisible characters found
+2026-03-30 12:21:51 [debug    ] Scanner completed              elapsed_time_seconds=0.000197 is_valid=True scanner=InvisibleText
+2026-03-30 12:21:51 [debug    ] No secrets detected in the prompt
+2026-03-30 12:21:51 [debug    ] Scanner completed              elapsed_time_seconds=0.010992 is_valid=True scanner=Secrets
+2026-03-30 12:21:51 [info     ] Scanned prompt                 elapsed_time_seconds=0.012417 scores={'BanSubstrings': -1.0, 'InvisibleText': 0.0, 'Secrets': -1.0}
+INFO:     127.0.0.1:52054 - "POST /api/chat HTTP/1.1" 200 OK
+Downloading Model from https://www.modelscope.cn to directory: /home/lyq/.cache/modelscope/hub/models/AI-ModelScope/bge-small-zh-v1.5
+2026-03-30 12:22:09,390 - modelscope - INFO - Target directory already exists, skipping creation.
+WARNING: All log messages before absl::InitializeLog() is called are written to STDERR
+I0000 00:00:1774844668.024854 2610434 chttp2_transport.cc:1353] unix:/tmp/tmpt5u8xa02_klclab_milvus.db.sock: Got goaway [11] err=UNAVAILABLE:GOAWAY received; Error code: 11; Debug Text: too_many_pings {grpc_status:14, http2_error:11}
+E0000 00:00:1774844668.024984 2610434 chttp2_transport.cc:1385] unix:/tmp/tmpt5u8xa02_klclab_milvus.db.sock: Received a GOAWAY with error code ENHANCE_YOUR_CALM and debug data equal to "too_many_pings". Current keepalive time (before throttling): 10000ms
+2026-03-30 12:25:39 [debug    ] No banned substrings found
+2026-03-30 12:25:39 [debug    ] Scanner completed              elapsed_time_seconds=0.000459 is_valid=True scanner=BanSubstrings
+2026-03-30 12:25:39 [debug    ] No invisible characters found
+2026-03-30 12:25:39 [debug    ] Scanner completed              elapsed_time_seconds=0.000195 is_valid=True scanner=InvisibleText
+2026-03-30 12:25:39 [debug    ] No secrets detected in the prompt
+2026-03-30 12:25:39 [debug    ] Scanner completed              elapsed_time_seconds=0.010808 is_valid=True scanner=Secrets
+2026-03-30 12:25:39 [info     ] Scanned prompt                 elapsed_time_seconds=0.012157 scores={'BanSubstrings': -1.0, 'InvisibleText': 0.0, 'Secrets': -1.0}
+INFO:     127.0.0.1:52226 - "POST /api/chat HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52676 - "GET /api/history/1774705014739?_t=1774844826638 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52680 - "GET /api/history/1774706759898?_t=1774844827052 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52690 - "GET /api/chat/new_session?_t=1774844828060 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52702 - "GET /api/chat/new_session?_t=1774844828644 HTTP/1.1" 200 OK
+2026-03-30 12:27:22 [debug    ] No banned substrings found
+2026-03-30 12:27:22 [debug    ] Scanner completed              elapsed_time_seconds=0.000455 is_valid=True scanner=BanSubstrings
+2026-03-30 12:27:22 [debug    ] No invisible characters found
+2026-03-30 12:27:22 [debug    ] Scanner completed              elapsed_time_seconds=0.000207 is_valid=True scanner=InvisibleText
+2026-03-30 12:27:22 [debug    ] No secrets detected in the prompt
+2026-03-30 12:27:22 [debug    ] Scanner completed              elapsed_time_seconds=0.010844 is_valid=True scanner=Secrets
+2026-03-30 12:27:22 [info     ] Scanned prompt                 elapsed_time_seconds=0.012212 scores={'BanSubstrings': -1.0, 'InvisibleText': 0.0, 'Secrets': -1.0}
+INFO:     127.0.0.1:44592 - "POST /api/chat HTTP/1.1" 200 OK
+I0000 00:00:1774844903.024825 2610434 chttp2_transport.cc:1353] unix:/tmp/tmpt5u8xa02_klclab_milvus.db.sock: Got goaway [11] err=UNAVAILABLE:GOAWAY received; Error code: 11; Debug Text: too_many_pings {grpc_status:14, http2_error:11}
+E0000 00:00:1774844903.024935 2610434 chttp2_transport.cc:1385] unix:/tmp/tmpt5u8xa02_klclab_milvus.db.sock: Received a GOAWAY with error code ENHANCE_YOUR_CALM and debug data equal to "too_many_pings". Current keepalive time (before throttling): 20000ms
+INFO:     127.0.0.1:55040 - "GET /api/chat/new_session?_t=1774845095988 HTTP/1.1" 200 OK
+2026-03-30 12:31:59 [debug    ] No banned substrings found
+2026-03-30 12:31:59 [debug    ] Scanner completed              elapsed_time_seconds=0.000437 is_valid=True scanner=BanSubstrings
+2026-03-30 12:31:59 [debug    ] No invisible characters found
+2026-03-30 12:31:59 [debug    ] Scanner completed              elapsed_time_seconds=0.000217 is_valid=True scanner=InvisibleText
+2026-03-30 12:31:59 [debug    ] No secrets detected in the prompt
+2026-03-30 12:31:59 [debug    ] Scanner completed              elapsed_time_seconds=0.010499 is_valid=True scanner=Secrets
+2026-03-30 12:31:59 [info     ] Scanned prompt                 elapsed_time_seconds=0.011919 scores={'BanSubstrings': -1.0, 'InvisibleText': 0.0, 'Secrets': -1.0}
+INFO:     127.0.0.1:51276 - "POST /api/chat HTTP/1.1" 200 OK
+2026-03-30 12:33:41 [debug    ] No banned substrings found
+2026-03-30 12:33:41 [debug    ] Scanner completed              elapsed_time_seconds=0.000922 is_valid=True scanner=BanSubstrings
+2026-03-30 12:33:41 [debug    ] No invisible characters found
+2026-03-30 12:33:41 [debug    ] Scanner completed              elapsed_time_seconds=0.000213 is_valid=True scanner=InvisibleText
+2026-03-30 12:33:41 [debug    ] No secrets detected in the prompt
+2026-03-30 12:33:41 [debug    ] Scanner completed              elapsed_time_seconds=0.012221 is_valid=True scanner=Secrets
+2026-03-30 12:33:41 [info     ] Scanned prompt                 elapsed_time_seconds=0.014162 scores={'BanSubstrings': -1.0, 'InvisibleText': 0.0, 'Secrets': -1.0}
+INFO:     127.0.0.1:55010 - "POST /api/chat HTTP/1.1" 200 OK
+DB initialized. All-in-Qwen Mode @ http://0.0.0.0:62272/v1 (model='Qwen3-32B')
+--- Pipeline Execution Round 1 ---
+Error in select_table: Error code: 400 - {'error': {'message': "This model's maximum context length is 30000 tokens. However, you requested 1024 output tokens and your prompt contains at least 28977 input tokens, for a total of at least 30001 tokens. Please reduce the length of the input prompt or the number of requested output tokens. (parameter=input_tokens, value=28977)", 'type': 'BadRequestError', 'param': 'input_tokens', 'code': 400}}
+Selected Tables: []
+Error: No tables were selected.
+--- Pipeline Execution Round 2 ---
+Error in select_table: Error code: 400 - {'error': {'message': "This model's maximum context length is 30000 tokens. However, you requested 1024 output tokens and your prompt contains at least 28977 input tokens, for a total of at least 30001 tokens. Please reduce the length of the input prompt or the number of requested output tokens. (parameter=input_tokens, value=28977)", 'type': 'BadRequestError', 'param': 'input_tokens', 'code': 400}}
+Selected Tables: []
+Error: No tables were selected.
+--- Pipeline Execution Round 3 ---
+Error in select_table: Error code: 400 - {'error': {'message': "This model's maximum context length is 30000 tokens. However, you requested 1024 output tokens and your prompt contains at least 28977 input tokens, for a total of at least 30001 tokens. Please reduce the length of the input prompt or the number of requested output tokens. (parameter=input_tokens, value=28977)", 'type': 'BadRequestError', 'param': 'input_tokens', 'code': 400}}
+Selected Tables: []
+Error: No tables were selected.
+--- Pipeline Execution Round 4 ---
+Error in select_table: Error code: 400 - {'error': {'message': "This model's maximum context length is 30000 tokens. However, you requested 1024 output tokens and your prompt contains at least 28977 input tokens, for a total of at least 30001 tokens. Please reduce the length of the input prompt or the number of requested output tokens. (parameter=input_tokens, value=28977)", 'type': 'BadRequestError', 'param': 'input_tokens', 'code': 400}}
+Selected Tables: []
+Error: No tables were selected.
+INFO:     127.0.0.1:35796 - "GET /api/history/list?search=&_t=1774860979466 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:35800 - "GET /api/history/1774845096342?_t=1774860979515 HTTP/1.1" 200 OK
+2026-03-30 16:56:28 [debug    ] No banned substrings found
+2026-03-30 16:56:28 [debug    ] Scanner completed              elapsed_time_seconds=0.000965 is_valid=True scanner=BanSubstrings
+2026-03-30 16:56:28 [debug    ] No invisible characters found
+2026-03-30 16:56:28 [debug    ] Scanner completed              elapsed_time_seconds=0.00023 is_valid=True scanner=InvisibleText
+2026-03-30 16:56:28 [debug    ] No secrets detected in the prompt
+2026-03-30 16:56:28 [debug    ] Scanner completed              elapsed_time_seconds=0.014862 is_valid=True scanner=Secrets
+2026-03-30 16:56:28 [info     ] Scanned prompt                 elapsed_time_seconds=0.016823 scores={'BanSubstrings': -1.0, 'InvisibleText': 0.0, 'Secrets': -1.0}
+INFO:     127.0.0.1:40104 - "POST /api/chat HTTP/1.1" 200 OK
+INFO:     127.0.0.1:45634 - "POST /api/chat/feedback HTTP/1.1" 200 OK
+INFO:     113.251.89.57:0 - "GET /api/chat/new_session?_t=1774862639561 HTTP/1.1" 200 OK

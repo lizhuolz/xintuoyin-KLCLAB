@@ -1,0 +1,12 @@
+vllm bench serve \
+  --backend openai \
+  --base-url http://127.0.0.1:62272 \
+  --endpoint /v1/completions \
+  --served-model-name Qwen3-32B \
+  --model /data1/dlx/projects/vllm_xty/model \
+  --tokenizer /data1/dlx/projects/vllm_xty/model \
+  --dataset-name random \
+  --random-input-len 2048 \
+  --random-output-len 1024 \
+  --num-prompts 10 \
+  --max-concurrency 10

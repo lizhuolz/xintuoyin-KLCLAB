@@ -1,0 +1,2 @@
+{"request_id": 0, "concurrency": 2, "ok": true, "timed_out": false, "status_code": 200, "latency_s": 1.5596657720161602, "prompt_tokens": 67, "completion_tokens": 32, "total_tokens": 99, "error_type": null, "error_message": null}
+{"request_id": 1, "concurrency": 2, "ok": true, "timed_out": false, "status_code": 200, "latency_s": 1.559578389977105, "prompt_tokens": 67, "completion_tokens": 32, "total_tokens": 99, "error_type": null, "error_message": null}
