@@ -1,16 +1,19 @@
 #!/bin/bash
-# Milvus Standalone 启动脚本 (基于 milvus pypi 包)
+set -euo pipefail
 
-MILVUS_DIR="/data1/dlx/projects/xintuoyin/milvus"
-DATA_DIR="$MILVUS_DIR/data"
-LOG_FILE="$MILVUS_DIR/milvus_server.log"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+source "$SCRIPT_DIR/runtime_paths.sh"
 
-mkdir -p "$DATA_DIR"
+MILVUS_PORT="${MILVUS_PORT:-19530}"
+
+mkdir -p "$XTY_MILVUS_DATA_DIR" "$(dirname "$XTY_MILVUS_LOG_FILE")"
 
 echo "正在启动 Milvus Standalone 服务..."
-# 使用 pixi 环境中的 milvus-server 命令启动
-# 指定监听端口为 19530
-nohup pixi run milvus-server --data "$DATA_DIR" > "$LOG_FILE" 2>&1 &
+echo "  data: $XTY_MILVUS_DATA_DIR"
+echo "  log : $XTY_MILVUS_LOG_FILE"
+echo "  port: $MILVUS_PORT"
 
-echo "Milvus 正在后台启动，日志请查看: $LOG_FILE"
-echo "API 地址: http://127.0.0.1:19530"
+nohup pixi run milvus-server --data "$XTY_MILVUS_DATA_DIR" > "$XTY_MILVUS_LOG_FILE" 2>&1 &
+
+echo "Milvus 正在后台启动，日志请查看: $XTY_MILVUS_LOG_FILE"
+echo "API 地址: http://127.0.0.1:$MILVUS_PORT"

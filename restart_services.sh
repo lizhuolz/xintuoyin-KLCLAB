@@ -1,69 +1,109 @@
 #!/bin/bash
+set -euo pipefail
 
-# ================= 配置区 =================
-LOG_DIR="./logs"
-PID_FILE="./pids.server"
-# =========================================
+ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+source "$ROOT_DIR/runtime_paths.sh"
 
-mkdir -p $LOG_DIR
+LOG_DIR="$ROOT_DIR/logs"
+PID_FILE="$ROOT_DIR/pids.server"
+BACKEND_ROOT="$ROOT_DIR/backend"
+FRONTEND_ROOT="$ROOT_DIR/frontend"
+BACKEND_PORT="${BACKEND_PORT:-8000}"
+FRONTEND_HOST="${FRONTEND_HOST:-0.0.0.0}"
+FRONTEND_PORT="${FRONTEND_PORT:-5173}"
+
+mkdir -p "$LOG_DIR"
+
+find_conda_sh() {
+    if command -v conda >/dev/null 2>&1; then
+        local conda_base
+        conda_base="$(conda info --base 2>/dev/null || true)"
+        if [ -n "$conda_base" ] && [ -f "$conda_base/etc/profile.d/conda.sh" ]; then
+            echo "$conda_base/etc/profile.d/conda.sh"
+            return
+        fi
+    fi
+    if [ -n "${CONDA_EXE:-}" ] && [ -f "$(dirname "$(dirname "$CONDA_EXE")")/etc/profile.d/conda.sh" ]; then
+        echo "$(dirname "$(dirname "$CONDA_EXE")")/etc/profile.d/conda.sh"
+        return
+    fi
+    if command -v conda >/dev/null 2>&1; then
+        local conda_bin
+        conda_bin="$(command -v conda)"
+        if [ -f "$(dirname "$(dirname "$conda_bin")")/etc/profile.d/conda.sh" ]; then
+            echo "$(dirname "$(dirname "$conda_bin")")/etc/profile.d/conda.sh"
+            return
+        fi
+    fi
+    local candidates=(
+        "$HOME/anaconda3/etc/profile.d/conda.sh"
+        "$HOME/miniconda3/etc/profile.d/conda.sh"
+        "/opt/conda/etc/profile.d/conda.sh"
+    )
+    local item
+    for item in "${candidates[@]}"; do
+        if [ -f "$item" ]; then
+            echo "$item"
+            return
+        fi
+    done
+    return 1
+}
+
+CONDA_SH="$(find_conda_sh || true)"
+if [ -z "$CONDA_SH" ]; then
+    echo "未找到 conda.sh，请先安装 Conda 或设置 CONDA_EXE。"
+    exit 1
+fi
 
 echo "🔄 正在重启业务服务 (Backend + Frontend)..."
 echo "🛑 (隧道 Tunnel 将保持运行)"
 
-# 1. 停止旧的业务进程 (保留 tunnel)
-if [ -f $PID_FILE ]; then
-    BACKEND_PID=$(grep "backend=" $PID_FILE | cut -d= -f2)
-    FRONTEND_PID=$(grep "frontend=" $PID_FILE | cut -d= -f2)
-    
-    if [ -n "$BACKEND_PID" ]; then
+if [ -f "$PID_FILE" ]; then
+    BACKEND_PID="$(grep "backend=" "$PID_FILE" | cut -d= -f2 || true)"
+    FRONTEND_PID="$(grep "frontend=" "$PID_FILE" | cut -d= -f2 || true)"
+
+    if [ -n "${BACKEND_PID:-}" ]; then
         echo "   停止旧后端 (PID: $BACKEND_PID)..."
-        kill -9 $BACKEND_PID 2>/dev/null || true
+        kill -9 "$BACKEND_PID" 2>/dev/null || true
         pkill -f "gunicorn.*app:app" 2>/dev/null || true
         pkill -f "python -m uvicorn app:app" 2>/dev/null || true
     fi
-    
-    if [ -n "$FRONTEND_PID" ]; then
+
+    if [ -n "${FRONTEND_PID:-}" ]; then
         echo "   停止旧前端 (PID: $FRONTEND_PID)..."
-        kill -9 $FRONTEND_PID 2>/dev/null || true
+        kill -9 "$FRONTEND_PID" 2>/dev/null || true
     fi
+    pkill -f "vite --host" 2>/dev/null || true
+    pkill -f "npm run dev -- --host" 2>/dev/null || true
 else
     echo "⚠️  PID 文件不存在，假定无服务运行。"
 fi
 
-# 2. 启动后端
-echo "🚀 [1/2] 启动后端 (使用 Conda xtyAgent 环境)..."
-cd backend || exit
-
-# 关键：通过独立 shell 加载 Conda 环境和后端配置
-CONDA_SH="/home/lyq/anaconda3/etc/profile.d/conda.sh"
-BACKEND_PY="/home/lyq/anaconda3/envs/xtyAgent/bin/python"
-BACKEND_ROOT="/home/lyq/xintuoyin-KLCLAB/backend"
-BACKEND_CMD="cd $BACKEND_ROOT && source $CONDA_SH && conda activate xtyAgent && source script/setting.sh && source script/env.sh && exec env PYTHONUNBUFFERED=1 CUDA_VISIBLE_DEVICES=0,3 $BACKEND_PY -m uvicorn app:app --host 0.0.0.0 --port 8000"
-setsid bash -lc "$BACKEND_CMD" >> ../$LOG_DIR/backend.log 2>&1 < /dev/null &
-
+echo "🚀 [1/2] 启动后端 (使用 Conda $XTY_CONDA_ENV_NAME 环境)..."
+cd "$BACKEND_ROOT"
+BACKEND_CMD="cd '$BACKEND_ROOT' && source '$CONDA_SH' && conda activate '$XTY_CONDA_ENV_NAME' && source script/setting.sh && source script/env.sh && exec env PYTHONUNBUFFERED=1 python -m uvicorn app:app --host 0.0.0.0 --port '$BACKEND_PORT'"
+setsid bash -lc "$BACKEND_CMD" >> "$LOG_DIR/backend.log" 2>&1 < /dev/null &
 NEW_BACKEND_PID=$!
 echo "✅ 后端 PID: $NEW_BACKEND_PID"
-cd ..
+cd "$ROOT_DIR"
 
-# 3. 启动前端
 echo "🚀 [2/2] 启动前端..."
-cd frontend || exit
-# 同样建议使用 pixi run (如果前端也是 pixi 管理) 或直接 npm
-nohup npm run dev > ../$LOG_DIR/frontend.log 2>&1 &
+cd "$FRONTEND_ROOT"
+nohup npm run dev -- --host "$FRONTEND_HOST" --port "$FRONTEND_PORT" > "$LOG_DIR/frontend.log" 2>&1 &
 NEW_FRONTEND_PID=$!
 echo "✅ 前端 PID: $NEW_FRONTEND_PID"
-cd ..
+cd "$ROOT_DIR"
 
-# 4. 更新 PID 文件 (保留 tunnel 行)
 TUNNEL_LINE=""
-if [ -f $PID_FILE ]; then
-    TUNNEL_LINE=$(grep "tunnel=" $PID_FILE)
+if [ -f "$PID_FILE" ]; then
+    TUNNEL_LINE="$(grep "tunnel=" "$PID_FILE" || true)"
 fi
 
-echo "backend=$NEW_BACKEND_PID" > $PID_FILE
-echo "frontend=$NEW_FRONTEND_PID" >> $PID_FILE
+echo "backend=$NEW_BACKEND_PID" > "$PID_FILE"
+echo "frontend=$NEW_FRONTEND_PID" >> "$PID_FILE"
 if [ -n "$TUNNEL_LINE" ]; then
-    echo "$TUNNEL_LINE" >> $PID_FILE
+    echo "$TUNNEL_LINE" >> "$PID_FILE"
     echo "🔗 隧道保持活跃。"
 else
     echo "⚠️  警告: 未检测到隧道进程记录。请运行 ./start_tunnel_only.sh 启动穿透。"

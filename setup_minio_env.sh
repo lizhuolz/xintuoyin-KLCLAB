@@ -1,33 +1,29 @@
 #!/bin/bash
-# MinIO 设置脚本
+set -euo pipefail
 
-MINIO_DIR="/data1/dlx/projects/xintuoyin/minio"
-DATA_DIR="$MINIO_DIR/data"
-BIN_DIR="$MINIO_DIR/bin"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+source "$SCRIPT_DIR/runtime_paths.sh"
 
-mkdir -p "$DATA_DIR"
-mkdir -p "$BIN_DIR"
+MINIO_BINARY_PATH="${MINIO_BINARY_PATH:-$XTY_MINIO_BIN_DIR/minio}"
+MINIO_RELEASE_URL="${MINIO_RELEASE_URL:-https://dl.min.io/server/minio/release/linux-amd64/minio}"
 
-echo "正在下载 MinIO 二进制文件..."
-if [ ! -f "$BIN_DIR/minio" ]; then
-    curl -L https://dl.min.io/server/minio/release/linux-amd64/minio -o "$BIN_DIR/minio"
-    chmod +x "$BIN_DIR/minio"
+mkdir -p "$XTY_MINIO_DATA_DIR" "$XTY_MINIO_BIN_DIR" "$XTY_MINIO_CONFIG_DIR"
+
+echo "准备 MinIO 运行目录..."
+echo "  root: $XTY_MINIO_ROOT"
+echo "  data: $XTY_MINIO_DATA_DIR"
+echo "  bin : $XTY_MINIO_BIN_DIR"
+
+if [ ! -x "$MINIO_BINARY_PATH" ]; then
+    echo "正在下载 MinIO 二进制文件..."
+    curl -L "$MINIO_RELEASE_URL" -o "$MINIO_BINARY_PATH"
+    chmod +x "$MINIO_BINARY_PATH"
+else
+    echo "MinIO 二进制已存在: $MINIO_BINARY_PATH"
 fi
 
-# 创建启动脚本
-cat << 'EOF' > "$MINIO_DIR/start_minio.sh"
-#!/bin/bash
-export MINIO_ROOT_USER=minioadmin
-export MINIO_ROOT_PASSWORD=minioadmin
-# 注意：生产环境建议修改上述密码
-
-/data1/dlx/projects/xintuoyin/minio/bin/minio server /data1/dlx/projects/xintuoyin/minio/data --address ":9000" --console-address ":9001"
-EOF
-
-chmod +x "$MINIO_DIR/start_minio.sh"
-
 echo "MinIO 环境准备就绪。"
-echo "启动脚本: $MINIO_DIR/start_minio.sh"
-echo "数据目录: $DATA_DIR"
-echo "API 地址: http://127.0.0.1:9000"
-echo "控制台地址: http://127.0.0.1:9001"
+echo "启动命令: ./start_minio.sh"
+echo "也可自定义目录:"
+echo "  export XTY_MINIO_ROOT=/your/runtime/minio"
+echo "  ./setup_minio_env.sh"
