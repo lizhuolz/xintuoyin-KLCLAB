@@ -9,3 +9,16 @@ t=2026-03-28T15:49:15+0800 lvl=info msg="started tunnel" obj=tunnels name=comman
 t=2026-03-28T15:49:18+0800 lvl=warn msg="failed to check for update" obj=updater err="Post \"https://update.equinox.io/check\": context deadline exceeded"
 t=2026-03-28T15:49:29+0800 lvl=info msg="join connections" obj=join id=2ef6505d062f l=127.0.0.1:8000 r=141.11.146.78:1101
 t=2026-03-28T15:49:35+0800 lvl=info msg="join connections" obj=join id=d98c1ba33d22 l=127.0.0.1:8000 r=141.11.146.78:1101
+t=2026-03-28T21:49:20+0800 lvl=info msg="update available" obj=updater
+t=2026-03-29T03:49:22+0800 lvl=info msg="update available" obj=updater
+t=2026-03-29T09:49:23+0800 lvl=info msg="update available" obj=updater
+t=2026-03-29T15:49:24+0800 lvl=info msg="update available" obj=updater
+t=2026-03-29T21:49:26+0800 lvl=info msg="update available" obj=updater
+t=2026-03-30T03:49:28+0800 lvl=info msg="update available" obj=updater
+t=2026-03-30T09:18:30+0800 lvl=info msg="join connections" obj=join id=c32c20ccf351 l=127.0.0.1:8000 r=113.251.89.57:50695
+t=2026-03-30T09:49:29+0800 lvl=info msg="update available" obj=updater
+t=2026-03-30T11:51:19+0800 lvl=info msg="join connections" obj=join id=7c1f5e796a75 l=127.0.0.1:8000 r=39.98.81.185:56630
+t=2026-03-30T11:51:31+0800 lvl=info msg="join connections" obj=join id=15236f3969ce l=127.0.0.1:8000 r=39.98.81.185:56630
+t=2026-03-30T12:20:50+0800 lvl=info msg="join connections" obj=join id=52e070cdf89d l=127.0.0.1:8000 r=141.11.146.78:36794
+t=2026-03-30T15:49:30+0800 lvl=info msg="update available" obj=updater
+t=2026-03-30T17:24:00+0800 lvl=info msg="join connections" obj=join id=b0feafa3e7b4 l=127.0.0.1:8000 r=113.251.89.57:61256

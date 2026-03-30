@@ -2,10 +2,10 @@
   "conversation_id": "1774694374305",
   "title": "你好",
   "created_at": "1774694377119",
-  "updated_at": "1774694471328",
+  "updated_at": "1774700752426",
   "createdAt": "2026/03/28 18:39:37",
-  "updatedAt": "2026/03/28 18:41:11",
-  "message_count": 7,
+  "updatedAt": "2026/03/28 20:25:52",
+  "message_count": 8,
   "user": {
     "name": "王颖奇",
     "phone": "15323720032",
@@ -141,9 +141,28 @@
       "thinking_text": "这次回答没有额外调用工具，我直接根据已有上下文完成了回复。",
       "thinking_steps": [],
       "created_at": "1774694471328",
-      "updated_at": "1774694471328",
+      "updated_at": "1774700719270",
       "createdAt": "2026/03/28 18:41:11",
-      "updatedAt": "2026/03/28 18:41:11"
+      "updatedAt": "2026/03/28 20:25:19"
+    },
+    {
+      "message_index": 7,
+      "question": "你好",
+      "files": [],
+      "uploaded_files": [],
+      "file_contexts": [],
+      "web_search": false,
+      "db_version": null,
+      "answer": "你好！根据我们的对话历史，你之前询问过关于煮鸡蛋、将大象放进冰箱以及编写冒泡排序代码等问题。目前没有新的上传文件或具体问题需要结合文件内容回答。如果你有其他问题或需要帮助，请随时告诉我！",
+      "resource": [],
+      "recommend_answer": [],
+      "feedback": null,
+      "thinking_text": "这次回答没有额外调用工具，我直接根据已有上下文完成了回复。",
+      "thinking_steps": [],
+      "created_at": "1774700752426",
+      "updated_at": "1774700752426",
+      "createdAt": "2026/03/28 20:25:52",
+      "updatedAt": "2026/03/28 20:25:52"
     }
   ]
 }

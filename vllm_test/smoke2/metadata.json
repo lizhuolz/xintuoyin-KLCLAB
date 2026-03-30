@@ -1,0 +1,16 @@
+{
+  "generated_at": "2026-03-30T12:57:42",
+  "base_url": "http://127.0.0.1:62272",
+  "endpoint": "/v1/completions",
+  "model_name": "Qwen3-32B",
+  "model_path": "/data1/dlx/projects/vllm_xty/model",
+  "tokenizer_path": "/data1/dlx/projects/vllm_xty/model",
+  "input_len_target": 64,
+  "output_len_target": 32,
+  "prompt_tokens_actual": 67,
+  "timeout_seconds": 60,
+  "concurrencies": [
+    2
+  ],
+  "min_requests": 2
+}

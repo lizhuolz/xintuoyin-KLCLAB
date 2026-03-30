@@ -1,0 +1,231 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1500" height="1280" viewBox="0 0 1500 1280">
+<rect width="100%" height="100%" fill="#f7fafc"/>
+<text x="70" y="40" font-size="30" font-weight="700" fill="#102a43">VLLM Throughput Benchmark Dashboard</text>
+<text x="70" y="64" font-size="13" fill="#486581">Endpoint: http://127.0.0.1:62272/v1/completions | Payload: 2048 input / 1024 output tokens | Timeout: 180s</text>
+<rect x="70" y="90" width="650" height="290" rx="14" fill="#ffffff" stroke="#d8dee9"/>
+<text x="88" y="118" font-size="18" font-weight="700" fill="#102a43">Latency Curve</text>
+<text x="88" y="138" font-size="12" fill="#486581">Latency (ms)</text>
+<line x1="125" y1="112.0" x2="680" y2="112.0" stroke="#e6edf3"/>
+<text x="117" y="116.0" text-anchor="end" font-size="11" fill="#7b8794">198314.0</text>
+<line x1="125" y1="165.0" x2="680" y2="165.0" stroke="#e6edf3"/>
+<text x="117" y="169.0" text-anchor="end" font-size="11" fill="#7b8794">148735.5</text>
+<line x1="125" y1="218.0" x2="680" y2="218.0" stroke="#e6edf3"/>
+<text x="117" y="222.0" text-anchor="end" font-size="11" fill="#7b8794">99157.0</text>
+<line x1="125" y1="271.0" x2="680" y2="271.0" stroke="#e6edf3"/>
+<text x="117" y="275.0" text-anchor="end" font-size="11" fill="#7b8794">49578.5</text>
+<line x1="125" y1="324.0" x2="680" y2="324.0" stroke="#e6edf3"/>
+<text x="117" y="328.0" text-anchor="end" font-size="11" fill="#7b8794">0.0</text>
+<line x1="125.0" y1="112" x2="125.0" y2="324" stroke="#f0f4f8"/>
+<text x="125.0" y="346" text-anchor="middle" font-size="11" fill="#7b8794">5</text>
+<line x1="142.9" y1="112" x2="142.9" y2="324" stroke="#f0f4f8"/>
+<text x="142.9" y="346" text-anchor="middle" font-size="11" fill="#7b8794">10</text>
+<line x1="178.7" y1="112" x2="178.7" y2="324" stroke="#f0f4f8"/>
+<text x="178.7" y="346" text-anchor="middle" font-size="11" fill="#7b8794">20</text>
+<line x1="250.3" y1="112" x2="250.3" y2="324" stroke="#f0f4f8"/>
+<text x="250.3" y="346" text-anchor="middle" font-size="11" fill="#7b8794">40</text>
+<line x1="393.5" y1="112" x2="393.5" y2="324" stroke="#f0f4f8"/>
+<text x="393.5" y="346" text-anchor="middle" font-size="11" fill="#7b8794">80</text>
+<line x1="680.0" y1="112" x2="680.0" y2="324" stroke="#f0f4f8"/>
+<text x="680.0" y="346" text-anchor="middle" font-size="11" fill="#7b8794">160</text>
+<text x="402.5" y="366" text-anchor="middle" font-size="12" fill="#486581">Concurrency</text>
+<line x1="570" y1="116" x2="588" y2="116" stroke="#0b6e4f" stroke-width="3"/>
+<text x="594" y="120" font-size="12" fill="#334e68">Mean</text>
+<path d="M 125.0 266.6 L 142.9 261.5 L 178.7 251.5 L 250.3 235.0 L 393.5 198.3 L 680.0 137.5" fill="none" stroke="#0b6e4f" stroke-width="3"/>
+<circle cx="125.0" cy="266.6" r="4" fill="#0b6e4f"/>
+<circle cx="142.9" cy="261.5" r="4" fill="#0b6e4f"/>
+<circle cx="178.7" cy="251.5" r="4" fill="#0b6e4f"/>
+<circle cx="250.3" cy="235.0" r="4" fill="#0b6e4f"/>
+<circle cx="393.5" cy="198.3" r="4" fill="#0b6e4f"/>
+<circle cx="680.0" cy="137.5" r="4" fill="#0b6e4f"/>
+<line x1="570" y1="134" x2="588" y2="134" stroke="#c44900" stroke-width="3"/>
+<text x="594" y="138" font-size="12" fill="#334e68">P99</text>
+<path d="M 125.0 266.5 L 142.9 261.5 L 178.7 251.4 L 250.3 234.8 L 393.5 195.7 L 680.0 131.3" fill="none" stroke="#c44900" stroke-width="3"/>
+<circle cx="125.0" cy="266.5" r="4" fill="#c44900"/>
+<circle cx="142.9" cy="261.5" r="4" fill="#c44900"/>
+<circle cx="178.7" cy="251.4" r="4" fill="#c44900"/>
+<circle cx="250.3" cy="234.8" r="4" fill="#c44900"/>
+<circle cx="393.5" cy="195.7" r="4" fill="#c44900"/>
+<circle cx="680.0" cy="131.3" r="4" fill="#c44900"/>
+<rect x="780" y="90" width="650" height="290" rx="14" fill="#ffffff" stroke="#d8dee9"/>
+<text x="798" y="118" font-size="18" font-weight="700" fill="#102a43">Timeout Curve</text>
+<text x="798" y="138" font-size="12" fill="#486581">Rate (%)</text>
+<line x1="835" y1="112.0" x2="1390" y2="112.0" stroke="#e6edf3"/>
+<text x="827" y="116.0" text-anchor="end" font-size="11" fill="#7b8794">53.6</text>
+<line x1="835" y1="165.0" x2="1390" y2="165.0" stroke="#e6edf3"/>
+<text x="827" y="169.0" text-anchor="end" font-size="11" fill="#7b8794">40.2</text>
+<line x1="835" y1="218.0" x2="1390" y2="218.0" stroke="#e6edf3"/>
+<text x="827" y="222.0" text-anchor="end" font-size="11" fill="#7b8794">26.8</text>
+<line x1="835" y1="271.0" x2="1390" y2="271.0" stroke="#e6edf3"/>
+<text x="827" y="275.0" text-anchor="end" font-size="11" fill="#7b8794">13.4</text>
+<line x1="835" y1="324.0" x2="1390" y2="324.0" stroke="#e6edf3"/>
+<text x="827" y="328.0" text-anchor="end" font-size="11" fill="#7b8794">0.0</text>
+<line x1="835.0" y1="112" x2="835.0" y2="324" stroke="#f0f4f8"/>
+<text x="835.0" y="346" text-anchor="middle" font-size="11" fill="#7b8794">5</text>
+<line x1="852.9" y1="112" x2="852.9" y2="324" stroke="#f0f4f8"/>
+<text x="852.9" y="346" text-anchor="middle" font-size="11" fill="#7b8794">10</text>
+<line x1="888.7" y1="112" x2="888.7" y2="324" stroke="#f0f4f8"/>
+<text x="888.7" y="346" text-anchor="middle" font-size="11" fill="#7b8794">20</text>
+<line x1="960.3" y1="112" x2="960.3" y2="324" stroke="#f0f4f8"/>
+<text x="960.3" y="346" text-anchor="middle" font-size="11" fill="#7b8794">40</text>
+<line x1="1103.5" y1="112" x2="1103.5" y2="324" stroke="#f0f4f8"/>
+<text x="1103.5" y="346" text-anchor="middle" font-size="11" fill="#7b8794">80</text>
+<line x1="1390.0" y1="112" x2="1390.0" y2="324" stroke="#f0f4f8"/>
+<text x="1390.0" y="346" text-anchor="middle" font-size="11" fill="#7b8794">160</text>
+<text x="1112.5" y="366" text-anchor="middle" font-size="12" fill="#486581">Concurrency</text>
+<line x1="1280" y1="116" x2="1298" y2="116" stroke="#9a031e" stroke-width="3"/>
+<text x="1304" y="120" font-size="12" fill="#334e68">Timeout</text>
+<path d="M 835.0 324.0 L 852.9 324.0 L 888.7 324.0 L 960.3 324.0 L 1103.5 324.0 L 1390.0 131.3" fill="none" stroke="#9a031e" stroke-width="3"/>
+<circle cx="835.0" cy="324.0" r="4" fill="#9a031e"/>
+<circle cx="852.9" cy="324.0" r="4" fill="#9a031e"/>
+<circle cx="888.7" cy="324.0" r="4" fill="#9a031e"/>
+<circle cx="960.3" cy="324.0" r="4" fill="#9a031e"/>
+<circle cx="1103.5" cy="324.0" r="4" fill="#9a031e"/>
+<circle cx="1390.0" cy="131.3" r="4" fill="#9a031e"/>
+<rect x="70" y="450" width="650" height="290" rx="14" fill="#ffffff" stroke="#d8dee9"/>
+<text x="88" y="478" font-size="18" font-weight="700" fill="#102a43">Request Throughput Curve</text>
+<text x="88" y="498" font-size="12" fill="#486581">req/s</text>
+<line x1="125" y1="472.0" x2="680" y2="472.0" stroke="#e6edf3"/>
+<text x="117" y="476.0" text-anchor="end" font-size="11" fill="#7b8794">0.7</text>
+<line x1="125" y1="525.0" x2="680" y2="525.0" stroke="#e6edf3"/>
+<text x="117" y="529.0" text-anchor="end" font-size="11" fill="#7b8794">0.5</text>
+<line x1="125" y1="578.0" x2="680" y2="578.0" stroke="#e6edf3"/>
+<text x="117" y="582.0" text-anchor="end" font-size="11" fill="#7b8794">0.4</text>
+<line x1="125" y1="631.0" x2="680" y2="631.0" stroke="#e6edf3"/>
+<text x="117" y="635.0" text-anchor="end" font-size="11" fill="#7b8794">0.2</text>
+<line x1="125" y1="684.0" x2="680" y2="684.0" stroke="#e6edf3"/>
+<text x="117" y="688.0" text-anchor="end" font-size="11" fill="#7b8794">0.0</text>
+<line x1="125.0" y1="472" x2="125.0" y2="684" stroke="#f0f4f8"/>
+<text x="125.0" y="706" text-anchor="middle" font-size="11" fill="#7b8794">5</text>
+<line x1="142.9" y1="472" x2="142.9" y2="684" stroke="#f0f4f8"/>
+<text x="142.9" y="706" text-anchor="middle" font-size="11" fill="#7b8794">10</text>
+<line x1="178.7" y1="472" x2="178.7" y2="684" stroke="#f0f4f8"/>
+<text x="178.7" y="706" text-anchor="middle" font-size="11" fill="#7b8794">20</text>
+<line x1="250.3" y1="472" x2="250.3" y2="684" stroke="#f0f4f8"/>
+<text x="250.3" y="706" text-anchor="middle" font-size="11" fill="#7b8794">40</text>
+<line x1="393.5" y1="472" x2="393.5" y2="684" stroke="#f0f4f8"/>
+<text x="393.5" y="706" text-anchor="middle" font-size="11" fill="#7b8794">80</text>
+<line x1="680.0" y1="472" x2="680.0" y2="684" stroke="#f0f4f8"/>
+<text x="680.0" y="706" text-anchor="middle" font-size="11" fill="#7b8794">160</text>
+<text x="402.5" y="726" text-anchor="middle" font-size="12" fill="#486581">Concurrency</text>
+<line x1="570" y1="476" x2="588" y2="476" stroke="#005f73" stroke-width="3"/>
+<text x="594" y="480" font-size="12" fill="#334e68">Successful req/s</text>
+<path d="M 125.0 657.4 L 142.9 635.7 L 178.7 600.2 L 250.3 546.6 L 393.5 491.3 L 680.0 551.6" fill="none" stroke="#005f73" stroke-width="3"/>
+<circle cx="125.0" cy="657.4" r="4" fill="#005f73"/>
+<circle cx="142.9" cy="635.7" r="4" fill="#005f73"/>
+<circle cx="178.7" cy="600.2" r="4" fill="#005f73"/>
+<circle cx="250.3" cy="546.6" r="4" fill="#005f73"/>
+<circle cx="393.5" cy="491.3" r="4" fill="#005f73"/>
+<circle cx="680.0" cy="551.6" r="4" fill="#005f73"/>
+<rect x="780" y="450" width="650" height="290" rx="14" fill="#ffffff" stroke="#d8dee9"/>
+<text x="798" y="478" font-size="18" font-weight="700" fill="#102a43">Token Throughput Curve</text>
+<text x="798" y="498" font-size="12" fill="#486581">tok/s</text>
+<line x1="835" y1="472.0" x2="1390" y2="472.0" stroke="#e6edf3"/>
+<text x="827" y="476.0" text-anchor="end" font-size="11" fill="#7b8794">2194.5</text>
+<line x1="835" y1="525.0" x2="1390" y2="525.0" stroke="#e6edf3"/>
+<text x="827" y="529.0" text-anchor="end" font-size="11" fill="#7b8794">1645.9</text>
+<line x1="835" y1="578.0" x2="1390" y2="578.0" stroke="#e6edf3"/>
+<text x="827" y="582.0" text-anchor="end" font-size="11" fill="#7b8794">1097.3</text>
+<line x1="835" y1="631.0" x2="1390" y2="631.0" stroke="#e6edf3"/>
+<text x="827" y="635.0" text-anchor="end" font-size="11" fill="#7b8794">548.6</text>
+<line x1="835" y1="684.0" x2="1390" y2="684.0" stroke="#e6edf3"/>
+<text x="827" y="688.0" text-anchor="end" font-size="11" fill="#7b8794">0.0</text>
+<line x1="835.0" y1="472" x2="835.0" y2="684" stroke="#f0f4f8"/>
+<text x="835.0" y="706" text-anchor="middle" font-size="11" fill="#7b8794">5</text>
+<line x1="852.9" y1="472" x2="852.9" y2="684" stroke="#f0f4f8"/>
+<text x="852.9" y="706" text-anchor="middle" font-size="11" fill="#7b8794">10</text>
+<line x1="888.7" y1="472" x2="888.7" y2="684" stroke="#f0f4f8"/>
+<text x="888.7" y="706" text-anchor="middle" font-size="11" fill="#7b8794">20</text>
+<line x1="960.3" y1="472" x2="960.3" y2="684" stroke="#f0f4f8"/>
+<text x="960.3" y="706" text-anchor="middle" font-size="11" fill="#7b8794">40</text>
+<line x1="1103.5" y1="472" x2="1103.5" y2="684" stroke="#f0f4f8"/>
+<text x="1103.5" y="706" text-anchor="middle" font-size="11" fill="#7b8794">80</text>
+<line x1="1390.0" y1="472" x2="1390.0" y2="684" stroke="#f0f4f8"/>
+<text x="1390.0" y="706" text-anchor="middle" font-size="11" fill="#7b8794">160</text>
+<text x="1112.5" y="726" text-anchor="middle" font-size="12" fill="#486581">Concurrency</text>
+<line x1="1280" y1="476" x2="1298" y2="476" stroke="#33658a" stroke-width="3"/>
+<text x="1304" y="480" font-size="12" fill="#334e68">Total tok/s</text>
+<path d="M 835.0 657.4 L 852.9 635.7 L 888.7 600.2 L 960.3 546.6 L 1103.5 491.3 L 1390.0 551.6" fill="none" stroke="#33658a" stroke-width="3"/>
+<circle cx="835.0" cy="657.4" r="4" fill="#33658a"/>
+<circle cx="852.9" cy="635.7" r="4" fill="#33658a"/>
+<circle cx="888.7" cy="600.2" r="4" fill="#33658a"/>
+<circle cx="960.3" cy="546.6" r="4" fill="#33658a"/>
+<circle cx="1103.5" cy="491.3" r="4" fill="#33658a"/>
+<circle cx="1390.0" cy="551.6" r="4" fill="#33658a"/>
+<rect x="70" y="820" width="1360" height="300" rx="14" fill="#ffffff" stroke="#d8dee9"/>
+<text x="90" y="848" font-size="18" font-weight="700" fill="#102a43">Summary Table</text>
+<line x1="90" y1="894" x2="1390" y2="894" stroke="#bcccdc"/>
+<text x="95" y="880" font-size="12" font-weight="700" fill="#334e68">Concurrency</text>
+<text x="220" y="880" font-size="12" font-weight="700" fill="#334e68">Requests</text>
+<text x="320" y="880" font-size="12" font-weight="700" fill="#334e68">Success</text>
+<text x="420" y="880" font-size="12" font-weight="700" fill="#334e68">Timeout</text>
+<text x="550" y="880" font-size="12" font-weight="700" fill="#334e68">Mean ms</text>
+<text x="700" y="880" font-size="12" font-weight="700" fill="#334e68">P99 ms</text>
+<text x="845" y="880" font-size="12" font-weight="700" fill="#334e68">Timeout%</text>
+<text x="980" y="880" font-size="12" font-weight="700" fill="#334e68">Req/s</text>
+<text x="1110" y="880" font-size="12" font-weight="700" fill="#334e68">Total tok/s</text>
+<text x="1260" y="880" font-size="12" font-weight="700" fill="#334e68">Wall s</text>
+<rect x="90" y="894" width="1300" height="26" fill="#f7fafc"/>
+<text x="95" y="912" font-size="12" fill="#243b53">5</text>
+<text x="220" y="912" font-size="12" fill="#243b53">10</text>
+<text x="320" y="912" font-size="12" fill="#243b53">10</text>
+<text x="420" y="912" font-size="12" fill="#243b53">0</text>
+<text x="550" y="912" font-size="12" fill="#243b53">53723.67</text>
+<text x="700" y="912" font-size="12" fill="#243b53">53780.20</text>
+<text x="845" y="912" font-size="12" fill="#243b53">0.00</text>
+<text x="980" y="912" font-size="12" fill="#243b53">0.09</text>
+<text x="1110" y="912" font-size="12" fill="#243b53">275.46</text>
+<text x="1260" y="912" font-size="12" fill="#243b53">111.56</text>
+<text x="95" y="946" font-size="12" fill="#243b53">10</text>
+<text x="220" y="946" font-size="12" fill="#243b53">10</text>
+<text x="320" y="946" font-size="12" fill="#243b53">10</text>
+<text x="420" y="946" font-size="12" fill="#243b53">0</text>
+<text x="550" y="946" font-size="12" fill="#243b53">58459.94</text>
+<text x="700" y="946" font-size="12" fill="#243b53">58483.34</text>
+<text x="845" y="946" font-size="12" fill="#243b53">0.00</text>
+<text x="980" y="946" font-size="12" fill="#243b53">0.16</text>
+<text x="1110" y="946" font-size="12" fill="#243b53">499.92</text>
+<text x="1260" y="946" font-size="12" fill="#243b53">61.47</text>
+<rect x="90" y="962" width="1300" height="26" fill="#f7fafc"/>
+<text x="95" y="980" font-size="12" fill="#243b53">20</text>
+<text x="220" y="980" font-size="12" fill="#243b53">20</text>
+<text x="320" y="980" font-size="12" fill="#243b53">20</text>
+<text x="420" y="980" font-size="12" fill="#243b53">0</text>
+<text x="550" y="980" font-size="12" fill="#243b53">67825.09</text>
+<text x="700" y="980" font-size="12" fill="#243b53">67877.24</text>
+<text x="845" y="980" font-size="12" fill="#243b53">0.00</text>
+<text x="980" y="980" font-size="12" fill="#243b53">0.28</text>
+<text x="1110" y="980" font-size="12" fill="#243b53">867.14</text>
+<text x="1260" y="980" font-size="12" fill="#243b53">70.88</text>
+<text x="95" y="1014" font-size="12" fill="#243b53">40</text>
+<text x="220" y="1014" font-size="12" fill="#243b53">40</text>
+<text x="320" y="1014" font-size="12" fill="#243b53">40</text>
+<text x="420" y="1014" font-size="12" fill="#243b53">0</text>
+<text x="550" y="1014" font-size="12" fill="#243b53">83235.00</text>
+<text x="700" y="1014" font-size="12" fill="#243b53">83420.14</text>
+<text x="845" y="1014" font-size="12" fill="#243b53">0.00</text>
+<text x="980" y="1014" font-size="12" fill="#243b53">0.46</text>
+<text x="1110" y="1014" font-size="12" fill="#243b53">1422.06</text>
+<text x="1260" y="1014" font-size="12" fill="#243b53">86.44</text>
+<rect x="90" y="1030" width="1300" height="26" fill="#f7fafc"/>
+<text x="95" y="1048" font-size="12" fill="#243b53">80</text>
+<text x="220" y="1048" font-size="12" fill="#243b53">80</text>
+<text x="320" y="1048" font-size="12" fill="#243b53">80</text>
+<text x="420" y="1048" font-size="12" fill="#243b53">0</text>
+<text x="550" y="1048" font-size="12" fill="#243b53">117575.98</text>
+<text x="700" y="1048" font-size="12" fill="#243b53">119986.00</text>
+<text x="845" y="1048" font-size="12" fill="#243b53">0.00</text>
+<text x="980" y="1048" font-size="12" fill="#243b53">0.65</text>
+<text x="1110" y="1048" font-size="12" fill="#243b53">1995.00</text>
+<text x="1260" y="1048" font-size="12" fill="#243b53">123.23</text>
+<text x="95" y="1082" font-size="12" fill="#243b53">160</text>
+<text x="220" y="1082" font-size="12" fill="#243b53">160</text>
+<text x="320" y="1082" font-size="12" fill="#243b53">82</text>
+<text x="420" y="1082" font-size="12" fill="#243b53">78</text>
+<text x="550" y="1082" font-size="12" fill="#243b53">174480.29</text>
+<text x="700" y="1082" font-size="12" fill="#243b53">180285.43</text>
+<text x="845" y="1082" font-size="12" fill="#243b53">48.75</text>
+<text x="980" y="1082" font-size="12" fill="#243b53">0.45</text>
+<text x="1110" y="1082" font-size="12" fill="#243b53">1370.26</text>
+<text x="1260" y="1082" font-size="12" fill="#243b53">183.90</text>
+<text x="90" y="1100" font-size="12" fill="#486581">Error rate stayed at 0%. At concurrency 160, 78 of 160 requests hit the 180s client timeout.</text>
+</svg>

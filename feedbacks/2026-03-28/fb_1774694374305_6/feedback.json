@@ -1,0 +1,20 @@
+{
+  "id": "fb_1774694374305_6",
+  "conversation_id": "1774694374305",
+  "message_index": 6,
+  "type": "like",
+  "state": null,
+  "time": "1774700718141",
+  "update_time": "1774700719271",
+  "createdAt": "2026/03/28 20:25:18",
+  "updatedAt": "2026/03/28 20:25:19",
+  "reasons": [],
+  "comment": "",
+  "pictures": [],
+  "name": "王颖奇",
+  "enterprise": "图湃（北京）医疗科技",
+  "phone": "15323720032",
+  "question": "写一个冒泡排序",
+  "answer": "当然可以！以下是冒泡排序的 Python 实现代码：\n\n```python\ndef bubble_sort(arr):\n    n = len(arr)\n    # 遍历所有数组元素\n    for i in range(n):\n        # 最后 i 个元素已经排好序了\n        for j in range(0, n - i - 1):\n            # 如果当前元素比下一个元素大，则交换它们\n            if arr[j] > arr[j + 1]:\n                arr[j], arr[j + 1] = arr[j + 1], arr[j]\n\n# 示例\narr = [64, 34, 25, 12, 22, 11, 90]\nbubble_sort(arr)\nprint(\"排序后的数组:\", arr)\n```\n\n### 参考资料：\n- [冒泡排序 - 维基百科](https://zh.wikipedia.org/wiki/%E5%86%92%E6%B3%A1%E6%8E%92%E5%BA%8F)\n\n如果你有其他问题，欢迎继续提问！",
+  "process_status": "未处理"
+}
