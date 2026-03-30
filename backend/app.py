@@ -350,14 +350,20 @@ def list_history_records():
     return records
 
 
-def save_chat_uploads(conversation_id: str, message_index: int, files: List[UploadFile]):
+def save_chat_uploads(
+    conversation_id: str,
+    message_index: int,
+    files: List[UploadFile],
+    existing_filenames: Optional[List[str]] = None,
+):
     saved = []
     if not files:
         return saved
     prefix = f"chat/{today_str()}/{safe_segment(conversation_id)}/{message_index}"
     existing_names = {
-        item["object_name"].rsplit("/", 1)[-1]
-        for item in storage_service.list_files(prefix + "/")
+        Path(name).name
+        for name in (existing_filenames or [])
+        if name
     }
     for upload in files:
         original_name = Path(upload.filename or "unnamed_file").name
@@ -1029,7 +1035,15 @@ async def upload_chat_files(
     target_index = message_index if message_index is not None else len(history_record.get("messages", []))
     if target_index < 0:
         return error_response("上传文件失败", {"reason": "message_index 不能为负数"}, 400)
-    uploaded_files = save_chat_uploads(conversation_id, target_index, files or [])
+    existing_uploaded_files = []
+    if 0 <= target_index < len(history_record.get("messages", [])):
+        existing_uploaded_files = history_record["messages"][target_index].get("uploaded_files", [])
+    uploaded_files = save_chat_uploads(
+        conversation_id,
+        target_index,
+        files or [],
+        existing_filenames=[item.get("filename", "") for item in existing_uploaded_files],
+    )
 
     if 0 <= target_index < len(history_record.get("messages", [])):
         history_record["messages"][target_index].setdefault("uploaded_files", []).extend(uploaded_files)

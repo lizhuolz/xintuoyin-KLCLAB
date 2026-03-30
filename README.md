@@ -184,6 +184,13 @@ python backend/tests/light_system_probe.py
 - 前端 `/api` 代理到后端
 - 知识库创建、上传、列表、删除闭环
 
+说明：
+
+- 测试报告输出到当前仓库的 `backend/tests/artifacts`
+- `5173` 是默认前端端口，`5174` 只作为额外 dev server 探测目标，不是必需实例
+- 知识库删除接口使用 `DELETE /api/kb/{id}`，不是 `POST /api/kb/{id}/delete`
+- 对话附件上传会优先保留原始文件名；只有同一条消息内出现重名文件时才会追加 `_1`、`_2`
+
 ## 8. 常见问题
 
 ### 1. 后端起来了，但文件上传失败
@@ -242,3 +249,11 @@ export MINIO_STORAGE_FULL_THRESHOLD=0
 curl -sS http://127.0.0.1:8000/api/chat/new_session
 curl -sS http://127.0.0.1:5173/api/chat/new_session
 ```
+
+## 本次回归结果
+
+截至 `2026-03-30`，已在 `main` 分支完成一轮完整回归：
+
+- API 合同测试：`66/66` 通过
+- 轻量系统联调/压测：`10/10` critical checks 通过
+- 已验证前端首页加载、前端 `/api` 代理、聊天主链路、知识库上传/删除闭环
