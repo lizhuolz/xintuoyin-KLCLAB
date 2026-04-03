@@ -27,6 +27,7 @@ from agent.build_graph import graph_builder
 from utils.security import check_input_safety, check_output_safety
 from services.kb_service import KBService
 from services.storage_service import storage_service
+from utils.DB_vllm_32B import DB as DatabaseSelector
 
 try:
     from pypdf import PdfReader
@@ -43,6 +44,7 @@ app = FastAPI(
         {"name": "历史记录", "description": "历史对话的查询、详情查看与删除接口。"},
         {"name": "反馈", "description": "点赞点踩反馈、截图上传、反馈处理与删除接口。"},
         {"name": "知识库", "description": "知识库创建、更新、文件管理与删除接口。"},
+        {"name": "数据库", "description": "数据库表字段选择与显式配置相关接口。"},
     ]
 )
 
@@ -109,6 +111,51 @@ def today_str() -> str:
     return datetime.now().strftime("%Y-%m-%d")
 
 
+def _fill_openapi_schema_descriptions(schema: dict):
+    components = schema.get("components", {}).get("schemas", {})
+
+    def resolve_schema(node):
+        if not isinstance(node, dict):
+            return None
+        ref = node.get("$ref")
+        if ref and ref.startswith("#/components/schemas/"):
+            return components.get(ref.rsplit("/", 1)[-1], {})
+        return node
+
+    def fill_schema(node):
+        node = resolve_schema(node)
+        if not isinstance(node, dict):
+            return
+        properties = node.get("properties", {})
+        for prop_name, prop_schema in properties.items():
+            if isinstance(prop_schema, dict):
+                prop_schema.setdefault("description", f"{prop_name} 字段")
+                fill_schema(prop_schema)
+        items = node.get("items")
+        if isinstance(items, dict):
+            fill_schema(items)
+        for group_name in ("allOf", "anyOf", "oneOf"):
+            for group_item in node.get(group_name, []) or []:
+                fill_schema(group_item)
+
+    for component_schema in components.values():
+        fill_schema(component_schema)
+
+    for path_item in schema.get("paths", {}).values():
+        for operation in path_item.values():
+            if not isinstance(operation, dict):
+                continue
+            for parameter in operation.get("parameters", []) or []:
+                if isinstance(parameter, dict):
+                    parameter.setdefault("description", f"{parameter.get('name', 'parameter')} 参数")
+            request_body = operation.get("requestBody")
+            if isinstance(request_body, dict):
+                request_body.setdefault("description", "请求体参数")
+                for media in request_body.get("content", {}).values():
+                    media_schema = media.get("schema")
+                    fill_schema(media_schema)
+
+
 def custom_openapi_schema():
     if app.openapi_schema:
         return app.openapi_schema
@@ -119,6 +166,7 @@ def custom_openapi_schema():
         routes=app.routes,
         tags=app.openapi_tags,
     )
+    _fill_openapi_schema_descriptions(app.openapi_schema)
     return app.openapi_schema
 
 
@@ -206,8 +254,9 @@ def get_logged_in_user(access_token: Optional[str] = None):
                     "company": user.get("company", "演示公司"),
                     "phone": user.get("phone", ""),
                     "department": user.get("department", ""),
-                    "ip_address": user.get("ip_address", "127.0.0.1"),
+                    "ip_address": user.get("ip_address") or user.get("ip") or "127.0.0.1",
                     "user_id": user.get("user_id", "UID_DEMO"),
+                    "record_id": user.get("record_id") or user.get("recordId") or user.get("RecordID") or user.get("user_id", "UID_DEMO"),
                     "access_token": access_token or ""
                 }
         except Exception:
@@ -219,6 +268,7 @@ def get_logged_in_user(access_token: Optional[str] = None):
         "department": "",
         "ip_address": "127.0.0.1",
         "user_id": "UID_DEMO",
+        "record_id": "UID_DEMO",
         "access_token": access_token or ""
     }
 
@@ -227,8 +277,147 @@ def build_user_brief(user: dict):
     return {
         "name": user.get("name", ""),
         "phone": user.get("phone", ""),
-        "categoryName": user.get("company", "")
+        "categoryName": user.get("company", ""),
+        "record_id": user.get("record_id") or user.get("user_id", ""),
+        "ip_address": user.get("ip_address", ""),
     }
+
+
+def build_user_payload(user: dict):
+    return {
+        "name": user.get("name", ""),
+        "enterprise": user.get("company", ""),
+        "phone": user.get("phone", ""),
+        "department": user.get("department", ""),
+        "record_id": user.get("record_id") or user.get("user_id", ""),
+        "ip_address": user.get("ip_address", ""),
+    }
+
+
+def normalize_page_size(page: int, size: int) -> tuple[int, int]:
+    safe_page = max(1, int(page or 1))
+    safe_size = max(1, min(100, int(size or 10)))
+    return safe_page, safe_size
+
+
+def paginate_payload(items: list, page: int, size: int) -> dict:
+    page, size = normalize_page_size(page, size)
+    total = len(items)
+    start = (page - 1) * size
+    end = start + size
+    total_pages = (total + size - 1) // size if size else 0
+    return {
+        "list": items[start:end],
+        "total": total,
+        "page": page,
+        "size": size,
+        "total_pages": total_pages,
+    }
+
+
+def build_history_list_item(record: dict) -> dict:
+    messages = record.get("messages", []) or []
+    last_message = messages[-1] if messages else {}
+    user = record.get("user") or {}
+    return {
+        "conversation_id": record.get("conversation_id"),
+        "title": record.get("title", ""),
+        "updated_at": record.get("updated_at", ""),
+        "updatedAt": record.get("updatedAt", ""),
+        "message_count": record.get("message_count", 0),
+        "last_user_input": last_message.get("question", ""),
+        "last_answer": last_message.get("answer", ""),
+        "user": {
+            "name": user.get("name", ""),
+            "phone": user.get("phone", ""),
+            "categoryName": user.get("categoryName", ""),
+            "record_id": user.get("record_id") or user.get("user_id", ""),
+            "ip_address": user.get("ip_address", ""),
+        },
+    }
+
+
+def build_feedback_type_meta(info: dict) -> dict:
+    raw_type = info.get("type")
+    primary = "点赞" if raw_type == "like" else "点踩" if raw_type == "dislike" else ""
+    labels = []
+    if primary:
+        labels.append(primary)
+    scene = info.get("feedback_scene") or "针对回答效果"
+    labels.append(scene)
+    text_blob = " ".join(str(item) for item in (info.get("reasons") or [])) + " " + str(info.get("comment") or "")
+    if any(keyword in text_blob for keyword in ["举报", "违规", "违法", "投诉"]):
+        labels.append("举报")
+    if any(keyword in text_blob for keyword in ["问题", "提问", "question"]):
+        labels.append("针对问题")
+    labels = list(dict.fromkeys([item for item in labels if item]))
+    return {
+        "primary": primary,
+        "scene": scene,
+        "labels": labels,
+        "options": ["全部", "针对问题", "针对回答效果", "举报", "点赞", "点踩"],
+    }
+
+
+def build_feedback_user(info: dict) -> dict:
+    user = info.get("user") if isinstance(info.get("user"), dict) else {}
+    return {
+        "name": user.get("name") or info.get("name", ""),
+        "enterprise": user.get("enterprise") or info.get("enterprise", ""),
+        "phone": user.get("phone") or info.get("phone", ""),
+        "record_id": user.get("record_id") or info.get("record_id", ""),
+        "ip_address": user.get("ip_address") or info.get("ip_address", ""),
+    }
+
+
+def match_feedback_type(info: dict, feedback_type: str) -> bool:
+    if not feedback_type or feedback_type == "全部":
+        return True
+    meta = build_feedback_type_meta(info)
+    if feedback_type in meta.get("labels", []):
+        return True
+    if feedback_type == info.get("type") or feedback_type == info.get("state"):
+        return True
+    return False
+
+
+def build_question_keywords(question: str) -> list[str]:
+    text = str(question or "").strip()
+    if not text:
+        return []
+    keywords = set()
+    for token in re.findall(r"[\u4e00-\u9fffA-Za-z0-9_]+", text):
+        token = token.strip()
+        if len(token) >= 2:
+            keywords.add(token)
+        if re.fullmatch(r"[\u4e00-\u9fff]+", token):
+            for size in (2, 3, 4):
+                if len(token) >= size:
+                    for idx in range(len(token) - size + 1):
+                        keywords.add(token[idx:idx + size])
+    return sorted(keywords, key=len, reverse=True)
+
+
+def fallback_select_tables(question: str, detailed: dict, limit: int = 8) -> list[str]:
+    keywords = build_question_keywords(question)
+    if not keywords:
+        return []
+    scored = []
+    for table_name, info in (detailed or {}).items():
+        haystack = " ".join([
+            str(table_name or ""),
+            str(info.get("table_comment") or ""),
+            " ".join(str(item) for item in (info.get("column_comments") or [])),
+        ]).lower()
+        score = 0
+        for keyword in keywords:
+            lowered = keyword.lower()
+            if lowered and lowered in haystack:
+                score += max(1, len(keyword))
+        if score > 0:
+            scored.append((score, table_name))
+    scored.sort(key=lambda item: (-item[0], item[1]))
+    return [table_name for _, table_name in scored[:limit]]
 
 
 def iter_history_paths():
@@ -350,20 +539,14 @@ def list_history_records():
     return records
 
 
-def save_chat_uploads(
-    conversation_id: str,
-    message_index: int,
-    files: List[UploadFile],
-    existing_filenames: Optional[List[str]] = None,
-):
+def save_chat_uploads(conversation_id: str, message_index: int, files: List[UploadFile]):
     saved = []
     if not files:
         return saved
     prefix = f"chat/{today_str()}/{safe_segment(conversation_id)}/{message_index}"
     existing_names = {
-        Path(name).name
-        for name in (existing_filenames or [])
-        if name
+        item["object_name"].rsplit("/", 1)[-1]
+        for item in storage_service.list_files(prefix + "/")
     }
     for upload in files:
         original_name = Path(upload.filename or "unnamed_file").name
@@ -623,17 +806,30 @@ def build_feedback_summary(info: dict):
         "message_index": info.get("message_index"),
         "type": info.get("type"),
         "state": info.get("state"),
+        "feedback_type": build_feedback_type_meta(info),
         "reasons": info.get("reasons", []),
         "comment": info.get("comment", ""),
         "pictures": info.get("pictures", []),
-        "name": info.get("name", ""),
-        "enterprise": info.get("enterprise", ""),
-        "phone": info.get("phone", ""),
+        "pictures_list": info.get("pictures_list", []),
+        "user": build_feedback_user(info),
         "time": info.get("time", ""),
         "update_time": info.get("update_time", ""),
+        "processed_at": info.get("processed_at", ""),
         "createdAt": info.get("createdAt", ""),
         "updatedAt": info.get("updatedAt", ""),
-        "process_status": info.get("process_status", "未处理")
+        "processedAt": info.get("processedAt", ""),
+        "times": {
+            "submit_time": info.get("time", ""),
+            "update_time": info.get("update_time", ""),
+            "processed_at": info.get("processed_at", ""),
+            "createdAt": info.get("createdAt", ""),
+            "updatedAt": info.get("updatedAt", ""),
+            "processedAt": info.get("processedAt", ""),
+        },
+        "question": info.get("question", ""),
+        "answer": info.get("answer", ""),
+        "process_status": info.get("process_status", "未处理"),
+        "process_result": info.get("process_result", ""),
     }
 
 
@@ -1035,15 +1231,7 @@ async def upload_chat_files(
     target_index = message_index if message_index is not None else len(history_record.get("messages", []))
     if target_index < 0:
         return error_response("上传文件失败", {"reason": "message_index 不能为负数"}, 400)
-    existing_uploaded_files = []
-    if 0 <= target_index < len(history_record.get("messages", [])):
-        existing_uploaded_files = history_record["messages"][target_index].get("uploaded_files", [])
-    uploaded_files = save_chat_uploads(
-        conversation_id,
-        target_index,
-        files or [],
-        existing_filenames=[item.get("filename", "") for item in existing_uploaded_files],
-    )
+    uploaded_files = save_chat_uploads(conversation_id, target_index, files or [])
 
     if 0 <= target_index < len(history_record.get("messages", [])):
         history_record["messages"][target_index].setdefault("uploaded_files", []).extend(uploaded_files)
@@ -1057,16 +1245,19 @@ async def upload_chat_files(
     })
 
 
-@app.get("/api/history/list", tags=["历史记录"], summary="查询历史记录列表", description="按关键词和时间范围筛选历史对话列表。")
+@app.get("/api/history/list", tags=["历史记录"], summary="查询历史记录列表", description="按关键词、时间范围和分页参数筛选历史对话列表。")
 async def list_histories(
-    search: str = Query(""),
-    start_time: Optional[str] = Query(None),
-    end_time: Optional[str] = Query(None),
+    search: str = Query("", description="历史记录关键词，可匹配标题、问题和回答。"),
+    start_time: Optional[str] = Query(None, description="开始时间，毫秒时间戳。"),
+    end_time: Optional[str] = Query(None, description="结束时间，毫秒时间戳。"),
+    page: int = Query(1, description="页码，从 1 开始。"),
+    size: int = Query(10, description="每页数量，默认 10。"),
 ):
     results = []
     try:
         start_ms = parse_optional_millis(start_time, "start_time")
         end_ms = parse_optional_millis(end_time, "end_time")
+        page, size = normalize_page_size(page, size)
     except ValueError as exc:
         return error_response("获取历史记录失败", {"reason": str(exc)}, 400)
     for record in list_history_records():
@@ -1082,16 +1273,9 @@ async def list_histories(
         )
         if search and search.lower() not in (title + text_blob).lower():
             continue
-        results.append({
-            "conversation_id": record.get("conversation_id"),
-            "title": title,
-            "updated_at": record.get("updated_at", ""),
-            "updatedAt": record.get("updatedAt", ""),
-            "message_count": record.get("message_count", 0),
-            "user": record.get("user", {}),
-        })
+        results.append(build_history_list_item(record))
     results.sort(key=lambda item: item.get("updated_at", ""), reverse=True)
-    return success_response("获取历史记录成功", {"list": results, "total": len(results)})
+    return success_response("获取历史记录成功", paginate_payload(results, page, size))
 
 
 @app.get("/api/history/{conversation_id}", tags=["历史记录"], summary="获取历史记录详情", description="返回指定 conversation_id 的完整历史对话内容。")
@@ -1242,9 +1426,13 @@ async def save_feedback(
         "comment": comment or "",
         "pictures": picture_names,
         "pictures_list": pictures_list,
+        "user": build_user_payload(user),
         "name": user.get("name", ""),
         "enterprise": user.get("company", ""),
         "phone": user.get("phone", ""),
+        "record_id": user.get("record_id", ""),
+        "ip_address": user.get("ip_address", ""),
+        "feedback_scene": "针对回答效果",
         "question": question,
         "answer": answer,
         "process_status": existing.get("process_status", "未处理")
@@ -1314,27 +1502,34 @@ async def upload_feedback_pictures(
     })
 
 
-@app.get("/api/feedback/list", tags=["反馈"], summary="查询反馈列表", description="按姓名、企业、反馈类型和时间范围筛选反馈记录。")
+@app.get("/api/feedback/list", tags=["反馈"], summary="查询反馈列表", description="按姓名、企业、反馈类型、时间范围和分页参数筛选反馈记录。")
 async def list_feedbacks(
-    name: str = Query(""),
-    enterprise: str = Query(""),
-    type: str = Query(""),
-    start_time: Optional[str] = Query(None),
-    end_time: Optional[str] = Query(None),
+    name: str = Query("", description="按反馈用户姓名筛选。"),
+    enterprise: str = Query("", description="按企业名称筛选。"),
+    type: str = Query("", description="兼容旧版 like/dislike 状态筛选。"),
+    feedback_type: str = Query("全部", description="前端筛选类型，支持 全部、针对问题、针对回答效果、举报、点赞、点踩。"),
+    start_time: Optional[str] = Query(None, description="开始时间，毫秒时间戳。"),
+    end_time: Optional[str] = Query(None, description="结束时间，毫秒时间戳。"),
+    page: int = Query(1, description="页码，从 1 开始。"),
+    size: int = Query(10, description="每页数量，默认 10。"),
 ):
     results = []
     try:
         start_ms = parse_optional_millis(start_time, "start_time")
         end_ms = parse_optional_millis(end_time, "end_time")
+        page, size = normalize_page_size(page, size)
     except ValueError as exc:
-        return error_response("获取历史记录失败", {"reason": str(exc)}, 400)
+        return error_response("获取反馈列表失败", {"reason": str(exc)}, 400)
     for path in FEEDBACK_ROOT.glob("*/fb_*/feedback.json"):
         info = read_json(path, {})
-        if name and name.lower() not in info.get("name", "").lower():
+        user = build_feedback_user(info)
+        if name and name.lower() not in user.get("name", "").lower():
             continue
-        if enterprise and enterprise.lower() not in info.get("enterprise", "").lower():
+        if enterprise and enterprise.lower() not in user.get("enterprise", "").lower():
             continue
         if type and info.get("type") != type:
+            continue
+        if not match_feedback_type(info, feedback_type):
             continue
         update_time = int(info.get("update_time") or 0)
         if start_ms is not None and update_time < start_ms:
@@ -1343,7 +1538,7 @@ async def list_feedbacks(
             continue
         results.append(build_feedback_summary(info))
     results.sort(key=lambda item: item.get("update_time", ""), reverse=True)
-    return success_response("获取反馈列表成功", {"list": results, "total": len(results)})
+    return success_response("获取反馈列表成功", paginate_payload(results, page, size))
 
 
 @app.get("/api/feedback/{feedback_id}", tags=["反馈"], summary="通过反馈 ID 获取详情", description="根据反馈 ID 返回对应的反馈详情。")
@@ -1351,7 +1546,7 @@ async def get_feedback_detail_by_id(feedback_id: str):
     target_dir = find_feedback_dir(feedback_id)
     if not target_dir:
         return error_response("获取反馈详情失败", {"id": feedback_id}, 404)
-    return success_response("获取反馈详情成功", read_json(target_dir / "feedback.json", {}))
+    return success_response("获取反馈详情成功", build_feedback_summary(read_json(target_dir / "feedback.json", {})))
 
 
 @app.get("/api/feedback/detail/{date}/{id}", tags=["反馈"], summary="按日期路径获取反馈详情", description="根据日期目录和反馈 ID 读取反馈详情。")
@@ -1359,7 +1554,7 @@ async def get_feedback_detail(date: str, id: str):
     path = FEEDBACK_ROOT / date / id / "feedback.json"
     if not path.exists():
         return error_response("获取反馈详情失败", {"id": id}, 404)
-    return success_response("获取反馈详情成功", read_json(path, {}))
+    return success_response("获取反馈详情成功", build_feedback_summary(read_json(path, {})))
 
 
 @app.post("/api/feedback/process", tags=["反馈"], summary="处理反馈", description="将反馈标记为已处理，并可选择收录到优秀问答或负向问答库。")
@@ -1395,7 +1590,7 @@ async def process_feedback(data: dict = Body(...)):
     else:
         info["process_result"] = "已处理(未收录)"
     write_json(info_path, info)
-    return success_response("处理反馈成功", info)
+    return success_response("处理反馈成功", build_feedback_summary(info))
 
 
 @app.post("/api/feedback/batch_delete", tags=["反馈"], summary="批量删除反馈", description="根据反馈 ID 列表批量删除反馈目录。")
@@ -1423,10 +1618,14 @@ async def delete_feedback(date: str, id: str):
     return success_response("删除反馈成功", {"id": id})
 
 
-@app.get("/api/kb/list", tags=["知识库"], summary="获取知识库列表", description="返回当前所有知识库的基础信息列表。")
-async def get_kb_list():
+@app.get("/api/kb/list", tags=["知识库"], summary="获取知识库列表", description="返回当前所有知识库的基础信息列表，支持分页。")
+async def get_kb_list(
+    page: int = Query(1, description="页码，从 1 开始。"),
+    size: int = Query(10, description="每页数量，默认 10。"),
+):
+    page, size = normalize_page_size(page, size)
     items = kb_service.load_all()
-    return success_response("获取知识库列表成功", {"list": items, "total": len(items)})
+    return success_response("获取知识库列表成功", paginate_payload(items, page, size))
 
 
 @app.get("/api/kb/{id}", tags=["知识库"], summary="获取知识库详情", description="根据知识库 ID 返回知识库详情。")
@@ -1438,23 +1637,25 @@ async def get_kb_detail(id: str, url: Optional[str] = Query(None)):
     return success_response("获取知识库详情成功", detail)
 
 
-@app.post("/api/kb/create", tags=["知识库"], summary="创建知识库", description="创建一个新的知识库，并指定分类和模型类型。")
+@app.post("/api/kb/create", tags=["知识库"], summary="创建知识库", description="创建一个新的知识库，仅需名称和模型类型，不再区分企业、部门、个人分类。")
 async def create_kb(
-    name: str = Form(...),
-    category: str = Form(...),
-    model: str = Form("openai"),
+    name: str = Form(..., description="知识库名称。"),
+    model: str = Form("openai", description="知识库使用的模型标识。"),
 ):
-    created = kb_service.create_kb(name=name, category=category, model=model)
+    created = kb_service.create_kb(name=name, model=model)
     return success_response("创建知识库成功", created)
 
 
-@app.post("/api/kb/update", tags=["知识库"], summary="更新知识库", description="更新知识库名称、备注、启用状态或授权用户。")
+@app.post("/api/kb/update", tags=["知识库"], summary="更新知识库", description="更新知识库名称、备注、启用状态、授权用户，并支持在一次请求中预览或确认文件上传和删除。")
 async def update_kb(
-    id: str = Form(...),
-    name: Optional[str] = Form(None),
-    remark: Optional[str] = Form(None),
-    enabled: Optional[str] = Form(None),
-    users: Optional[str] = Form(None),
+    id: str = Form(..., description="知识库 ID。"),
+    name: Optional[str] = Form(None, description="知识库名称。"),
+    remark: Optional[str] = Form(None, description="知识库备注。"),
+    enabled: Optional[str] = Form(None, description="是否启用，传 true/false。"),
+    users: Optional[str] = Form(None, description="授权用户 JSON 字符串。"),
+    delete_files: Optional[str] = Form(None, description="待删除文件名 JSON 数组。"),
+    confirm: bool = Form(True, description="是否确认提交。false 为仅预览，不落库。"),
+    files: List[UploadFile] = File(None, description="待上传的新文件列表。"),
 ):
     update_data = {}
     if name is not None:
@@ -1462,19 +1663,29 @@ async def update_kb(
     if remark is not None:
         update_data["remark"] = remark
     if enabled is not None:
-        update_data["enabled"] = enabled.lower() == "true"
+        update_data["enabled"] = str(enabled).lower() == "true"
     if users:
         try:
             update_data["users"] = json.loads(users)
         except Exception:
             return error_response("更新知识库失败", {"reason": "users 字段不是合法 JSON"}, 400)
+    delete_filenames = []
+    if delete_files:
+        try:
+            loaded = json.loads(delete_files)
+        except Exception:
+            return error_response("更新知识库失败", {"reason": "delete_files 字段不是合法 JSON"}, 400)
+        if not isinstance(loaded, list):
+            return error_response("更新知识库失败", {"reason": "delete_files 必须是数组"}, 400)
+        delete_filenames = [str(item) for item in loaded if str(item).strip()]
     try:
-        updated = kb_service.update_kb(id, update_data)
+        updated = kb_service.update_kb(id, update_data, new_files=files or [], delete_filenames=delete_filenames, confirm=confirm)
     except Exception as exc:
         return error_response("更新知识库失败", {"reason": str(exc)}, 500)
     if not updated:
         return error_response("更新知识库失败", {"id": id}, 404)
-    return success_response("更新知识库成功", updated)
+    msg = "预览知识库更新成功" if updated.get("preview") else "更新知识库成功"
+    return success_response(msg, updated)
 
 
 @app.delete("/api/kb/{id}", tags=["知识库"], summary="删除知识库", description="删除指定知识库及其元数据。")
@@ -1511,7 +1722,7 @@ async def upload_kb_file(
         return error_response("上传知识库文档失败", {"reason": str(exc)}, 500)
     if result is None:
         return error_response("上传知识库文档失败", {"id": id}, 404)
-    return success_response("上传知识库文档成功", {"id": id, "files": result})
+    return success_response("上传知识库文档成功", {"id": id, "files": result.get("files", []) if isinstance(result, dict) else result})
 
 
 @app.post("/api/kb/{id}/delete_files", tags=["知识库"], summary="批量删除知识库文件", description="从指定知识库中批量删除多个文件。")
@@ -1539,6 +1750,34 @@ async def delete_kb_file(id: str, filename: str = Form(...)):
     except Exception as exc:
         return error_response("删除知识库文档失败", {"reason": str(exc)}, 500)
     return success_response("删除知识库文档成功", {"id": id, "deleted_files": deleted})
+
+
+@app.get("/api/db/select_options", tags=["数据库"], summary="获取数据库显式可选字段", description="返回数据库中的表、表注释、字段注释，并可基于问题返回推荐表。")
+async def get_db_select_options(
+    question: Optional[str] = Query(None, description="可选，自然语言问题，用于返回推荐表。"),
+):
+    try:
+        db = DatabaseSelector()
+        detailed = db._extract_all_table_detailed_comments() or {}
+        selected_tables = db.select_table(question.strip()) if question and question.strip() else []
+        if question and question.strip() and not selected_tables:
+            selected_tables = fallback_select_tables(question.strip(), detailed)
+        options = []
+        for table_name, info in detailed.items():
+            options.append({
+                "table_name": table_name,
+                "table_comment": info.get("table_comment", ""),
+                "column_comments": info.get("column_comments", []),
+                "selected": table_name in selected_tables,
+            })
+        return success_response("获取数据库显式可选字段成功", {
+            "question": question or "",
+            "selected_tables": selected_tables,
+            "options": options,
+            "total": len(options),
+        })
+    except Exception as exc:
+        return error_response("获取数据库显式可选字段失败", {"reason": str(exc)}, 500)
 
 
 if __name__ == "__main__":

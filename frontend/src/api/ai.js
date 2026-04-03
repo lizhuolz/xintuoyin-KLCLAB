@@ -272,8 +272,8 @@ export const aiApi = {
   batchDeleteFeedback(ids) {
     return request.post('/feedback/batch_delete', { ids }).then((res) => unwrapResponse(res, '批量删除反馈失败'))
   },
-  listKnowledgeBases() {
-    return request.get('/kb/list').then((res) => unwrapResponse(res, '获取知识库列表失败'))
+  listKnowledgeBases(params = {}) {
+    return request.get('/kb/list', { params }).then((res) => unwrapResponse(res, '获取知识库列表失败'))
   },
   createKnowledgeBase(formData) {
     return request.post('/kb/create', formData).then((res) => unwrapResponse(res, '创建知识库失败'))
@@ -302,5 +302,8 @@ export const aiApi = {
   },
   deleteKnowledgeBaseFiles(id, filenames) {
     return request.post(`/kb/${encodeURIComponent(id)}/delete_files`, { filenames }).then((res) => unwrapResponse(res, '删除知识库文档失败'))
+  },
+  getDbSelectOptions(params = {}) {
+    return request.get('/db/select_options', { params }).then((res) => unwrapResponse(res, '获取数据库显式字段失败'))
   },
 }

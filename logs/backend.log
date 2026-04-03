@@ -517,3 +517,768 @@ INFO:     127.0.0.1:35800 - "GET /api/history/1774845096342?_t=1774860979515 HTT
 INFO:     127.0.0.1:40104 - "POST /api/chat HTTP/1.1" 200 OK
 INFO:     127.0.0.1:45634 - "POST /api/chat/feedback HTTP/1.1" 200 OK
 INFO:     113.251.89.57:0 - "GET /api/chat/new_session?_t=1774862639561 HTTP/1.1" 200 OK
+INFO:     Started server process [2842101]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
+INFO:     127.0.0.1:46388 - "GET /api/chat/new_session HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50132 - "GET /api/chat/new_session HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50144 - "GET /api/chat/new_session HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50158 - "GET /api/chat/new_session HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50172 - "GET /api/chat/new_session HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50178 - "GET /api/chat/new_session HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50184 - "GET /api/chat/new_session HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50196 - "GET /api/chat/new_session HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50204 - "GET /api/chat/new_session HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50208 - "GET /api/chat/new_session HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50212 - "GET /api/chat/new_session HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50214 - "GET /api/chat/new_session HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50226 - "GET /api/chat/new_session HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50248 - "GET /api/chat/new_session HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50232 - "GET /api/chat/new_session HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50254 - "GET /api/chat/new_session HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50262 - "GET /api/chat/new_session HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50276 - "GET /api/chat/new_session HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50292 - "GET /api/chat/new_session HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50304 - "GET /api/chat/new_session HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50306 - "GET /api/chat/new_session HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50318 - "GET /api/chat/new_session HTTP/1.1" 200 OK
+2026-03-30 19:49:42 [debug    ] No banned substrings found
+2026-03-30 19:49:42 [debug    ] Scanner completed              elapsed_time_seconds=0.000381 is_valid=True scanner=BanSubstrings
+2026-03-30 19:49:42 [debug    ] No invisible characters found
+2026-03-30 19:49:42 [debug    ] Scanner completed              elapsed_time_seconds=0.000101 is_valid=True scanner=InvisibleText
+2026-03-30 19:49:42 [debug    ] No secrets detected in the prompt
+2026-03-30 19:49:42 [debug    ] Scanner completed              elapsed_time_seconds=0.128614 is_valid=True scanner=Secrets
+2026-03-30 19:49:42 [info     ] Scanned prompt                 elapsed_time_seconds=0.129426 scores={'BanSubstrings': -1.0, 'InvisibleText': 0.0, 'Secrets': -1.0}
+INFO:     127.0.0.1:50324 - "POST /api/chat HTTP/1.1" 200 OK
+INFO:     127.0.0.1:42066 - "POST /api/chat HTTP/1.1" 422 Unprocessable Entity
+2026-03-30 19:50:00 [warning  ] Found the following banned substrings matched_substrings=['ignore previous instructions']
+2026-03-30 19:50:00 [debug    ] Scanner completed              elapsed_time_seconds=0.000283 is_valid=False scanner=BanSubstrings
+2026-03-30 19:50:00 [debug    ] Scanner completed              elapsed_time_seconds=1.1e-05 is_valid=True scanner=InvisibleText
+2026-03-30 19:50:00 [debug    ] No secrets detected in the prompt
+2026-03-30 19:50:00 [debug    ] Scanner completed              elapsed_time_seconds=0.005394 is_valid=True scanner=Secrets
+2026-03-30 19:50:00 [info     ] Scanned prompt                 elapsed_time_seconds=0.005965 scores={'BanSubstrings': 1.0, 'InvisibleText': -1.0, 'Secrets': -1.0}
+INFO:     127.0.0.1:42080 - "POST /api/chat HTTP/1.1" 400 Bad Request
+2026-03-30 19:50:00 [debug    ] No banned substrings found
+2026-03-30 19:50:00 [debug    ] Scanner completed              elapsed_time_seconds=0.000191 is_valid=True scanner=BanSubstrings
+2026-03-30 19:50:00 [debug    ] No invisible characters found
+2026-03-30 19:50:00 [debug    ] Scanner completed              elapsed_time_seconds=0.000102 is_valid=True scanner=InvisibleText
+2026-03-30 19:50:00 [debug    ] No secrets detected in the prompt
+2026-03-30 19:50:00 [debug    ] Scanner completed              elapsed_time_seconds=0.003809 is_valid=True scanner=Secrets
+2026-03-30 19:50:00 [info     ] Scanned prompt                 elapsed_time_seconds=0.004354 scores={'BanSubstrings': -1.0, 'InvisibleText': 0.0, 'Secrets': -1.0}
+INFO:     127.0.0.1:42094 - "POST /api/chat HTTP/1.1" 200 OK
+2026-03-30 19:50:29 [debug    ] No banned substrings found
+2026-03-30 19:50:29 [debug    ] Scanner completed              elapsed_time_seconds=0.001336 is_valid=True scanner=BanSubstrings
+2026-03-30 19:50:29 [debug    ] No invisible characters found
+2026-03-30 19:50:29 [debug    ] Scanner completed              elapsed_time_seconds=0.00011 is_valid=True scanner=InvisibleText
+2026-03-30 19:50:29 [debug    ] No secrets detected in the prompt
+2026-03-30 19:50:29 [debug    ] Scanner completed              elapsed_time_seconds=0.014027 is_valid=True scanner=Secrets
+2026-03-30 19:50:29 [info     ] Scanned prompt                 elapsed_time_seconds=0.016141 scores={'BanSubstrings': -1.0, 'InvisibleText': 0.0, 'Secrets': -1.0}
+INFO:     127.0.0.1:56538 - "POST /api/chat HTTP/1.1" 200 OK
+2026-03-30 19:50:58 [debug    ] No banned substrings found
+2026-03-30 19:50:58 [debug    ] Scanner completed              elapsed_time_seconds=0.000565 is_valid=True scanner=BanSubstrings
+2026-03-30 19:50:58 [debug    ] No invisible characters found
+2026-03-30 19:50:58 [debug    ] Scanner completed              elapsed_time_seconds=0.000237 is_valid=True scanner=InvisibleText
+2026-03-30 19:50:58 [debug    ] No secrets detected in the prompt
+2026-03-30 19:50:58 [debug    ] Scanner completed              elapsed_time_seconds=0.012522 is_valid=True scanner=Secrets
+2026-03-30 19:50:58 [info     ] Scanned prompt                 elapsed_time_seconds=0.014022 scores={'BanSubstrings': -1.0, 'InvisibleText': 0.0, 'Secrets': -1.0}
+INFO:     127.0.0.1:34662 - "POST /api/chat HTTP/1.1" 200 OK
+INFO:     127.0.0.1:48704 - "GET /api/chat/1774871382270/title HTTP/1.1" 200 OK
+INFO:     127.0.0.1:48712 - "GET /api/chat/not_exists_for_probe/title HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:48714 - "GET /api/chat/1774871382270/title HTTP/1.1" 200 OK
+INFO:     127.0.0.1:48720 - "GET /api/chat/1774871382270/title HTTP/1.1" 200 OK
+INFO:     127.0.0.1:48722 - "GET /api/chat/1774871382270/title HTTP/1.1" 200 OK
+INFO:     127.0.0.1:48736 - "GET /api/chat/1774871382270/title HTTP/1.1" 200 OK
+INFO:     127.0.0.1:48752 - "GET /api/chat/1774871382270/title HTTP/1.1" 200 OK
+INFO:     127.0.0.1:48760 - "GET /api/chat/1774871382270/title HTTP/1.1" 200 OK
+INFO:     127.0.0.1:48770 - "GET /api/chat/1774871382270/title HTTP/1.1" 200 OK
+INFO:     127.0.0.1:48776 - "GET /api/chat/1774871382270/title HTTP/1.1" 200 OK
+INFO:     127.0.0.1:48778 - "GET /api/chat/1774871382270/title HTTP/1.1" 200 OK
+INFO:     127.0.0.1:48784 - "GET /api/chat/1774871382270/title HTTP/1.1" 200 OK
+INFO:     127.0.0.1:48788 - "GET /api/chat/1774871382270/title HTTP/1.1" 200 OK
+INFO:     127.0.0.1:48804 - "GET /api/chat/1774871382270/title HTTP/1.1" 200 OK
+INFO:     127.0.0.1:48818 - "GET /api/chat/1774871382270/title HTTP/1.1" 200 OK
+INFO:     127.0.0.1:48826 - "GET /api/chat/1774871382270/title HTTP/1.1" 200 OK
+INFO:     127.0.0.1:48840 - "GET /api/chat/1774871382270/title HTTP/1.1" 200 OK
+INFO:     127.0.0.1:48854 - "POST /api/upload HTTP/1.1" 200 OK
+INFO:     127.0.0.1:48860 - "POST /api/upload HTTP/1.1" 400 Bad Request
+INFO:     127.0.0.1:48872 - "POST /api/upload HTTP/1.1" 200 OK
+INFO:     127.0.0.1:48880 - "POST /api/upload HTTP/1.1" 200 OK
+INFO:     127.0.0.1:48894 - "POST /api/upload HTTP/1.1" 200 OK
+INFO:     127.0.0.1:48896 - "POST /api/upload HTTP/1.1" 200 OK
+INFO:     127.0.0.1:48910 - "POST /api/upload HTTP/1.1" 200 OK
+INFO:     127.0.0.1:48916 - "GET /api/history/list HTTP/1.1" 200 OK
+INFO:     127.0.0.1:48930 - "GET /api/history/list?start_time=abc HTTP/1.1" 400 Bad Request
+INFO:     127.0.0.1:48932 - "GET /api/history/list?search=%E9%A1%B9%E7%9B%AE%E4%BB%A3%E5%8F%B7 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:48938 - "GET /api/history/list?search=__unlikely_probe_keyword__ HTTP/1.1" 200 OK
+INFO:     127.0.0.1:48942 - "GET /api/history/list HTTP/1.1" 200 OK
+INFO:     127.0.0.1:48958 - "GET /api/history/list HTTP/1.1" 200 OK
+INFO:     127.0.0.1:48962 - "GET /api/history/list HTTP/1.1" 200 OK
+INFO:     127.0.0.1:48964 - "GET /api/history/list HTTP/1.1" 200 OK
+INFO:     127.0.0.1:48972 - "GET /api/history/list HTTP/1.1" 200 OK
+INFO:     127.0.0.1:48988 - "GET /api/history/list HTTP/1.1" 200 OK
+INFO:     127.0.0.1:48990 - "GET /api/history/list HTTP/1.1" 200 OK
+INFO:     127.0.0.1:48994 - "GET /api/history/list HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49010 - "GET /api/history/list HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49012 - "GET /api/history/list HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49028 - "GET /api/history/list HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49036 - "GET /api/history/list HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49048 - "GET /api/history/list HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49052 - "GET /api/history/list HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49068 - "GET /api/history/list HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49070 - "GET /api/history/list HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49084 - "GET /api/history/list HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49096 - "GET /api/history/list HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49102 - "GET /api/history/list HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49106 - "GET /api/history/list HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49122 - "GET /api/history/1774871382270 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49136 - "GET /api/history/not_exists_for_probe HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:49142 - "GET /api/history/1774871382270 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49146 - "GET /api/history/1774871382270 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49152 - "GET /api/history/1774871382270 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49178 - "GET /api/history/1774871382270 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49162 - "GET /api/history/1774871382270 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49186 - "GET /api/history/1774871382270 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49194 - "GET /api/history/1774871382270 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49196 - "GET /api/history/1774871382270 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49200 - "GET /api/history/1774871382270 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49206 - "GET /api/history/1774871382270 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49212 - "GET /api/history/1774871382270 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49218 - "GET /api/history/1774871382270 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49226 - "GET /api/history/1774871382270 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49232 - "GET /api/history/1774871382270 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49238 - "GET /api/history/1774871382270 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49252 - "GET /api/chat/1774871382270/thinking?message_index=0&stream=false HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49264 - "GET /api/chat/1774871382270/thinking?message_index=9999&stream=false HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:49278 - "GET /api/chat/not_exists_for_probe/thinking?stream=false HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:49282 - "GET /api/chat/1774871382270/thinking?stream=false HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49296 - "GET /api/chat/1774871382270/thinking?stream=false HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49312 - "GET /api/chat/1774871382270/thinking?stream=false HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49322 - "GET /api/chat/1774871382270/thinking?stream=false HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49338 - "GET /api/chat/1774871382270/thinking?stream=false HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49344 - "GET /api/chat/1774871382270/thinking?stream=false HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49354 - "GET /api/chat/1774871382270/thinking?stream=false HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49356 - "GET /api/chat/1774871382270/thinking?stream=false HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49372 - "GET /api/chat/1774871382270/thinking?stream=false HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49376 - "GET /api/chat/1774871382270/thinking?stream=false HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49388 - "GET /api/chat/new_session HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49402 - "GET /api/chat/new_session HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49404 - "GET /api/chat/new_session HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49406 - "DELETE /api/chat/1774871477788 HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:49420 - "DELETE /api/chat/not_exists_for_probe HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:49432 - "GET /api/chat/new_session HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49448 - "DELETE /api/chat/1774871477836 HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:49464 - "GET /api/chat/new_session HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49468 - "DELETE /api/chat/1774871477853 HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:49480 - "GET /api/chat/new_session HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49486 - "DELETE /api/chat/1774871477872 HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:49498 - "GET /api/chat/new_session HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49500 - "DELETE /api/chat/1774871477890 HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:49508 - "GET /api/chat/new_session HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49518 - "DELETE /api/chat/1774871477909 HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:49530 - "POST /api/history/batch_delete HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49534 - "POST /api/history/batch_delete HTTP/1.1" 400 Bad Request
+INFO:     127.0.0.1:49540 - "GET /api/chat/new_session HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49548 - "POST /api/history/batch_delete HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49562 - "GET /api/chat/new_session HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49570 - "POST /api/history/batch_delete HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49584 - "GET /api/chat/new_session HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49598 - "POST /api/history/batch_delete HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49602 - "GET /api/chat/new_session HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49618 - "POST /api/history/batch_delete HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49630 - "GET /api/chat/new_session HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49632 - "POST /api/history/batch_delete HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49646 - "POST /api/chat/feedback HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49650 - "POST /api/chat/feedback HTTP/1.1" 400 Bad Request
+INFO:     127.0.0.1:49660 - "POST /api/chat/feedback HTTP/1.1" 400 Bad Request
+INFO:     127.0.0.1:49676 - "POST /api/chat/feedback HTTP/1.1" 400 Bad Request
+INFO:     127.0.0.1:49678 - "POST /api/chat/feedback HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49682 - "POST /api/chat/feedback HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49684 - "POST /api/chat/feedback HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49696 - "POST /api/chat/feedback HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49700 - "POST /api/chat/feedback HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49716 - "POST /api/chat/feedback HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49720 - "POST /api/feedback/upload_pictures HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49736 - "POST /api/feedback/upload_pictures HTTP/1.1" 400 Bad Request
+INFO:     127.0.0.1:49746 - "POST /api/feedback/upload_pictures HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49762 - "POST /api/feedback/upload_pictures HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49768 - "POST /api/feedback/upload_pictures HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49784 - "GET /api/feedback/list HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49790 - "GET /api/feedback/list?type=dislike HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49806 - "GET /api/feedback/list?start_time=abc HTTP/1.1" 400 Bad Request
+INFO:     127.0.0.1:49822 - "GET /api/feedback/list HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49830 - "GET /api/feedback/list HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49844 - "GET /api/feedback/list HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49846 - "GET /api/feedback/list HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49854 - "GET /api/feedback/list HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49864 - "GET /api/feedback/list HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49874 - "GET /api/feedback/list HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49878 - "GET /api/feedback/list HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49890 - "GET /api/feedback/list HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49892 - "GET /api/feedback/list HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49902 - "GET /api/feedback/fb_1774871382270_0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49918 - "GET /api/feedback/not_exists_for_probe HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:49920 - "GET /api/feedback/fb_1774871382270_0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49936 - "GET /api/feedback/fb_1774871382270_0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49938 - "GET /api/feedback/fb_1774871382270_0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49950 - "GET /api/feedback/fb_1774871382270_0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49964 - "GET /api/feedback/fb_1774871382270_0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49980 - "GET /api/feedback/fb_1774871382270_0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49982 - "GET /api/feedback/fb_1774871382270_0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49996 - "GET /api/feedback/fb_1774871382270_0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50002 - "GET /api/feedback/fb_1774871382270_0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50006 - "GET /api/feedback/fb_1774871382270_0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50018 - "GET /api/feedback/detail/2026-03-30/fb_1774871382270_0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50034 - "GET /api/feedback/detail/2026-03-30/not_exists_for_probe HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:50038 - "GET /api/feedback/detail/2026-03-30/fb_1774871382270_0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50046 - "GET /api/feedback/detail/2026-03-30/fb_1774871382270_0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50050 - "GET /api/feedback/detail/2026-03-30/fb_1774871382270_0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50060 - "GET /api/feedback/detail/2026-03-30/fb_1774871382270_0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50082 - "GET /api/feedback/detail/2026-03-30/fb_1774871382270_0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50076 - "GET /api/feedback/detail/2026-03-30/fb_1774871382270_0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50086 - "GET /api/feedback/detail/2026-03-30/fb_1774871382270_0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50088 - "GET /api/feedback/detail/2026-03-30/fb_1774871382270_0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50096 - "GET /api/feedback/detail/2026-03-30/fb_1774871382270_0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50108 - "GET /api/feedback/detail/2026-03-30/fb_1774871382270_0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50120 - "POST /api/feedback/process HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50134 - "POST /api/feedback/process HTTP/1.1" 400 Bad Request
+INFO:     127.0.0.1:50146 - "POST /api/feedback/process HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50154 - "POST /api/feedback/process HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50168 - "POST /api/feedback/process HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50170 - "POST /api/feedback/process HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50178 - "GET /api/chat/new_session HTTP/1.1" 200 OK
+2026-03-30 19:51:18 [debug    ] No banned substrings found
+2026-03-30 19:51:18 [debug    ] Scanner completed              elapsed_time_seconds=0.000282 is_valid=True scanner=BanSubstrings
+2026-03-30 19:51:18 [debug    ] No invisible characters found
+2026-03-30 19:51:18 [debug    ] Scanner completed              elapsed_time_seconds=0.000165 is_valid=True scanner=InvisibleText
+2026-03-30 19:51:18 [debug    ] No secrets detected in the prompt
+2026-03-30 19:51:18 [debug    ] Scanner completed              elapsed_time_seconds=0.00772 is_valid=True scanner=Secrets
+2026-03-30 19:51:18 [info     ] Scanned prompt                 elapsed_time_seconds=0.008705 scores={'BanSubstrings': -1.0, 'InvisibleText': 0.0, 'Secrets': -1.0}
+INFO:     127.0.0.1:50188 - "POST /api/chat HTTP/1.1" 200 OK
+INFO:     127.0.0.1:44124 - "POST /api/chat/feedback HTTP/1.1" 200 OK
+INFO:     127.0.0.1:44134 - "GET /api/chat/new_session HTTP/1.1" 200 OK
+2026-03-30 19:51:45 [debug    ] No banned substrings found
+2026-03-30 19:51:45 [debug    ] Scanner completed              elapsed_time_seconds=0.000613 is_valid=True scanner=BanSubstrings
+2026-03-30 19:51:45 [debug    ] No invisible characters found
+2026-03-30 19:51:45 [debug    ] Scanner completed              elapsed_time_seconds=0.000192 is_valid=True scanner=InvisibleText
+2026-03-30 19:51:45 [debug    ] No secrets detected in the prompt
+2026-03-30 19:51:45 [debug    ] Scanner completed              elapsed_time_seconds=0.008072 is_valid=True scanner=Secrets
+2026-03-30 19:51:45 [info     ] Scanned prompt                 elapsed_time_seconds=0.009326 scores={'BanSubstrings': -1.0, 'InvisibleText': 0.0, 'Secrets': -1.0}
+INFO:     127.0.0.1:44148 - "POST /api/chat HTTP/1.1" 200 OK
+INFO:     127.0.0.1:38778 - "POST /api/chat/feedback HTTP/1.1" 200 OK
+INFO:     127.0.0.1:38794 - "POST /api/feedback/batch_delete HTTP/1.1" 200 OK
+INFO:     127.0.0.1:38796 - "POST /api/feedback/batch_delete HTTP/1.1" 400 Bad Request
+INFO:     127.0.0.1:38804 - "POST /api/feedback/batch_delete HTTP/1.1" 200 OK
+INFO:     127.0.0.1:38806 - "POST /api/feedback/batch_delete HTTP/1.1" 200 OK
+INFO:     127.0.0.1:38820 - "POST /api/feedback/batch_delete HTTP/1.1" 200 OK
+INFO:     127.0.0.1:38832 - "POST /api/feedback/batch_delete HTTP/1.1" 200 OK
+INFO:     127.0.0.1:38846 - "POST /api/feedback/batch_delete HTTP/1.1" 200 OK
+INFO:     127.0.0.1:38860 - "DELETE /api/feedback/2026-03-30/fb_1774871478640_0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:38866 - "DELETE /api/feedback/2026-03-30/not_exists_for_probe HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:38882 - "DELETE /api/feedback/2026-03-30/not_exists_for_probe HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:38894 - "DELETE /api/feedback/2026-03-30/not_exists_for_probe HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:38898 - "DELETE /api/feedback/2026-03-30/not_exists_for_probe HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:38910 - "DELETE /api/feedback/2026-03-30/not_exists_for_probe HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:38914 - "DELETE /api/feedback/2026-03-30/not_exists_for_probe HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:38930 - "POST /api/kb/create HTTP/1.1" 200 OK
+INFO:     127.0.0.1:38938 - "GET /api/kb/list HTTP/1.1" 200 OK
+INFO:     127.0.0.1:38940 - "GET /api/kb/list HTTP/1.1" 200 OK
+INFO:     127.0.0.1:38946 - "GET /api/kb/list HTTP/1.1" 200 OK
+INFO:     127.0.0.1:38950 - "GET /api/kb/list HTTP/1.1" 200 OK
+INFO:     127.0.0.1:38958 - "GET /api/kb/list HTTP/1.1" 200 OK
+INFO:     127.0.0.1:38964 - "GET /api/kb/list HTTP/1.1" 200 OK
+INFO:     127.0.0.1:38970 - "GET /api/kb/list HTTP/1.1" 200 OK
+INFO:     127.0.0.1:38976 - "GET /api/kb/list HTTP/1.1" 200 OK
+INFO:     127.0.0.1:38990 - "GET /api/kb/list HTTP/1.1" 200 OK
+INFO:     127.0.0.1:38992 - "GET /api/kb/list HTTP/1.1" 200 OK
+INFO:     127.0.0.1:38994 - "GET /api/kb/list HTTP/1.1" 200 OK
+INFO:     127.0.0.1:38996 - "GET /api/kb/list HTTP/1.1" 200 OK
+INFO:     127.0.0.1:39006 - "GET /api/kb/list HTTP/1.1" 200 OK
+INFO:     127.0.0.1:39012 - "GET /api/kb/list HTTP/1.1" 200 OK
+INFO:     127.0.0.1:41736 - "GET /api/kb/list HTTP/1.1" 200 OK
+INFO:     127.0.0.1:41748 - "GET /api/kb/list HTTP/1.1" 200 OK
+INFO:     127.0.0.1:41756 - "POST /api/kb/create HTTP/1.1" 422 Unprocessable Entity
+INFO:     127.0.0.1:41762 - "POST /api/kb/create HTTP/1.1" 200 OK
+INFO:     127.0.0.1:41768 - "POST /api/kb/create HTTP/1.1" 200 OK
+INFO:     127.0.0.1:41780 - "POST /api/kb/create HTTP/1.1" 200 OK
+INFO:     127.0.0.1:41792 - "GET /api/kb/kb_1774871536002 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:41798 - "GET /api/kb/not_exists_for_probe HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:41808 - "GET /api/kb/kb_1774871536002 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:41816 - "GET /api/kb/kb_1774871536002 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:41822 - "GET /api/kb/kb_1774871536002 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:41834 - "GET /api/kb/kb_1774871536002 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:41842 - "GET /api/kb/kb_1774871536002 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:41844 - "GET /api/kb/kb_1774871536002 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:41848 - "GET /api/kb/kb_1774871536002 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:41864 - "GET /api/kb/kb_1774871536002 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:41876 - "GET /api/kb/kb_1774871536002 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:41892 - "GET /api/kb/kb_1774871536002 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:41904 - "POST /api/kb/update HTTP/1.1" 200 OK
+INFO:     127.0.0.1:41906 - "POST /api/kb/update HTTP/1.1" 400 Bad Request
+INFO:     127.0.0.1:41914 - "POST /api/kb/update HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:41920 - "POST /api/kb/update HTTP/1.1" 200 OK
+INFO:     127.0.0.1:41934 - "POST /api/kb/update HTTP/1.1" 200 OK
+INFO:     127.0.0.1:41944 - "POST /api/kb/update HTTP/1.1" 200 OK
+INFO:     127.0.0.1:41952 - "POST /api/kb/update HTTP/1.1" 200 OK
+INFO:     127.0.0.1:41954 - "POST /api/kb/update HTTP/1.1" 200 OK
+Downloading Model from https://www.modelscope.cn to directory: /home/lyq/.cache/modelscope/hub/models/AI-ModelScope/bge-small-zh-v1.5
+2026-03-30 19:52:18,885 - modelscope - INFO - Target directory already exists, skipping creation.
+INFO:     127.0.0.1:41968 - "POST /api/kb/kb_1774871536002/upload HTTP/1.1" 200 OK
+INFO:     127.0.0.1:41972 - "POST /api/kb/not_exists_for_probe/upload HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:41984 - "POST /api/kb/kb_1774871536002/upload HTTP/1.1" 200 OK
+INFO:     127.0.0.1:41994 - "POST /api/kb/kb_1774871536002/upload HTTP/1.1" 200 OK
+INFO:     127.0.0.1:41996 - "POST /api/kb/kb_1774871536002/upload HTTP/1.1" 200 OK
+INFO:     127.0.0.1:42004 - "GET /api/kb/kb_1774871536002/files HTTP/1.1" 200 OK
+INFO:     127.0.0.1:42016 - "GET /api/kb/not_exists_for_probe/files HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:42028 - "GET /api/kb/kb_1774871536002/files HTTP/1.1" 200 OK
+INFO:     127.0.0.1:42036 - "GET /api/kb/kb_1774871536002/files HTTP/1.1" 200 OK
+INFO:     127.0.0.1:42048 - "GET /api/kb/kb_1774871536002/files HTTP/1.1" 200 OK
+INFO:     127.0.0.1:42054 - "GET /api/kb/kb_1774871536002/files HTTP/1.1" 200 OK
+INFO:     127.0.0.1:42064 - "GET /api/kb/kb_1774871536002/files HTTP/1.1" 200 OK
+INFO:     127.0.0.1:42066 - "GET /api/kb/kb_1774871536002/files HTTP/1.1" 200 OK
+INFO:     127.0.0.1:42080 - "GET /api/kb/kb_1774871536002/files HTTP/1.1" 200 OK
+INFO:     127.0.0.1:42086 - "GET /api/kb/kb_1774871536002/files HTTP/1.1" 200 OK
+INFO:     127.0.0.1:42094 - "GET /api/kb/kb_1774871536002/files HTTP/1.1" 200 OK
+INFO:     127.0.0.1:42098 - "GET /api/kb/kb_1774871536002/files HTTP/1.1" 200 OK
+INFO:     127.0.0.1:42114 - "POST /api/kb/kb_1774871536002/delete_files HTTP/1.1" 200 OK
+INFO:     127.0.0.1:42126 - "POST /api/kb/kb_1774871536002/delete_files HTTP/1.1" 400 Bad Request
+INFO:     127.0.0.1:42138 - "POST /api/kb/not_exists_for_probe/delete_files HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:42146 - "POST /api/kb/kb_1774871536002/delete_files HTTP/1.1" 200 OK
+INFO:     127.0.0.1:42142 - "POST /api/kb/kb_1774871536002/delete_files HTTP/1.1" 200 OK
+INFO:     127.0.0.1:42162 - "POST /api/kb/kb_1774871536002/delete_files HTTP/1.1" 200 OK
+INFO:     127.0.0.1:42164 - "POST /api/kb/kb_1774871536002/delete_files HTTP/1.1" 200 OK
+INFO:     127.0.0.1:42176 - "POST /api/kb/kb_1774871536002/delete_files HTTP/1.1" 200 OK
+INFO:     127.0.0.1:42190 - "POST /api/kb/kb_1774871536002/upload HTTP/1.1" 200 OK
+INFO:     127.0.0.1:42194 - "POST /api/kb/kb_1774871536002/delete_file HTTP/1.1" 200 OK
+INFO:     127.0.0.1:42204 - "POST /api/kb/not_exists_for_probe/delete_file HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:42210 - "POST /api/kb/kb_1774871536002/delete_file HTTP/1.1" 200 OK
+INFO:     127.0.0.1:42216 - "POST /api/kb/kb_1774871536002/delete_file HTTP/1.1" 200 OK
+INFO:     127.0.0.1:42226 - "POST /api/kb/kb_1774871536002/delete_file HTTP/1.1" 200 OK
+INFO:     127.0.0.1:42238 - "POST /api/kb/kb_1774871536002/delete_file HTTP/1.1" 200 OK
+INFO:     127.0.0.1:42240 - "POST /api/kb/kb_1774871536002/delete_file HTTP/1.1" 200 OK
+INFO:     127.0.0.1:42252 - "DELETE /api/kb/kb_1774871536002 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:42268 - "DELETE /api/kb/not_exists_for_probe HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:42276 - "DELETE /api/kb/not_exists_for_probe HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:42280 - "DELETE /api/kb/not_exists_for_probe HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:42284 - "DELETE /api/kb/not_exists_for_probe HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:42294 - "DELETE /api/kb/not_exists_for_probe HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:42302 - "DELETE /api/kb/not_exists_for_probe HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:42314 - "GET /api/kb/list HTTP/1.1" 200 OK
+INFO:     127.0.0.1:42320 - "DELETE /api/kb/kb_1774871536565 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:42322 - "DELETE /api/kb/kb_1774871536583 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:42328 - "DELETE /api/kb/kb_1774871536600 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:46744 - "POST /api/kb/create HTTP/1.1" 200 OK
+WARNING: All log messages before absl::InitializeLog() is called are written to STDERR
+I0000 00:00:1774871607.940949 2842101 chttp2_transport.cc:1353] unix:/tmp/tmpzg7ts_su_klclab_milvus.db.sock: Got goaway [11] err=UNAVAILABLE:GOAWAY received; Error code: 11; Debug Text: too_many_pings {http2_error:11, grpc_status:14}
+E0000 00:00:1774871607.941050 2842101 chttp2_transport.cc:1385] unix:/tmp/tmpzg7ts_su_klclab_milvus.db.sock: Received a GOAWAY with error code ENHANCE_YOUR_CALM and debug data equal to "too_many_pings". Current keepalive time (before throttling): 10000ms
+INFO:     127.0.0.1:46744 - "POST /api/kb/kb_1774871607887/upload HTTP/1.1" 200 OK
+INFO:     127.0.0.1:46744 - "GET /api/kb/kb_1774871607887/files HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55756 - "GET /api/kb/list HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55766 - "GET /api/kb/list HTTP/1.1" 200 OK
+INFO:     127.0.0.1:35460 - "GET /api/kb/list HTTP/1.1" 200 OK
+INFO:     127.0.0.1:35474 - "DELETE /api/kb/kb_1774871607887 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49194 - "POST /api/kb/create HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49202 - "POST /api/kb/kb_1774871656643/upload HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49218 - "GET /api/kb/kb_1774871656643/files HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49230 - "GET /api/kb/kb_1774871656643 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:46560 - "POST /api/kb/create HTTP/1.1" 200 OK
+INFO:     127.0.0.1:46572 - "POST /api/kb/kb_1774871676441/upload HTTP/1.1" 200 OK
+INFO:     127.0.0.1:46576 - "GET /api/kb/kb_1774871676441/files HTTP/1.1" 200 OK
+INFO:     127.0.0.1:46592 - "GET /api/kb/kb_1774871676441 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:46604 - "DELETE /api/kb/kb_1774871676441/file/verify.txt HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:46610 - "DELETE /api/kb/kb_1774871676441 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:46620 - "POST /api/kb/create HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59428 - "DELETE /api/kb/kb_1774871685253/file/tmp.txt HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:59440 - "POST /api/kb/kb_1774871685253/upload HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59500 - "POST /api/kb/kb_1774871685253/delete_file HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59514 - "DELETE /api/kb/kb_1774871685253 HTTP/1.1" 200 OK
+I0000 00:00:1774871792.945831 2845697 chttp2_transport.cc:1353] unix:/tmp/tmpzg7ts_su_klclab_milvus.db.sock: Got goaway [11] err=UNAVAILABLE:GOAWAY received; Error code: 11; Debug Text: too_many_pings {http2_error:11, grpc_status:14}
+E0000 00:00:1774871792.945971 2845697 chttp2_transport.cc:1385] unix:/tmp/tmpzg7ts_su_klclab_milvus.db.sock: Received a GOAWAY with error code ENHANCE_YOUR_CALM and debug data equal to "too_many_pings". Current keepalive time (before throttling): 10000ms
+INFO:     127.0.0.1:57982 - "GET /api/chat/new_session HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57994 - "GET /api/chat/new_session HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58008 - "GET /api/kb/list HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58016 - "GET /api/chat/new_session HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58018 - "GET /api/kb/list HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58026 - "GET /api/chat/new_session HTTP/1.1" 200 OK
+2026-03-30 20:00:31 [debug    ] No banned substrings found
+2026-03-30 20:00:31 [debug    ] Scanner completed              elapsed_time_seconds=0.00098 is_valid=True scanner=BanSubstrings
+2026-03-30 20:00:31 [debug    ] No invisible characters found
+2026-03-30 20:00:31 [debug    ] Scanner completed              elapsed_time_seconds=0.000266 is_valid=True scanner=InvisibleText
+2026-03-30 20:00:31 [debug    ] No secrets detected in the prompt
+2026-03-30 20:00:31 [debug    ] Scanner completed              elapsed_time_seconds=0.014415 is_valid=True scanner=Secrets
+2026-03-30 20:00:31 [info     ] Scanned prompt                 elapsed_time_seconds=0.016364 scores={'BanSubstrings': -1.0, 'InvisibleText': 0.0, 'Secrets': -1.0}
+INFO:     127.0.0.1:36454 - "GET /api/kb/list HTTP/1.1" 200 OK
+INFO:     127.0.0.1:36464 - "GET /api/chat/new_session HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58036 - "POST /api/chat HTTP/1.1" 200 OK
+INFO:     127.0.0.1:48980 - "GET /api/chat/1774872031682/title HTTP/1.1" 200 OK
+INFO:     127.0.0.1:48982 - "GET /api/history/1774872031682 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:48984 - "GET /api/chat/1774872031682/thinking?message_index=0&stream=false HTTP/1.1" 200 OK
+INFO:     127.0.0.1:48988 - "POST /api/kb/create HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49002 - "POST /api/kb/kb_1774872057666/upload HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49016 - "GET /api/kb/kb_1774872057666/files HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49026 - "GET /api/kb/kb_1774872057666 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49036 - "POST /api/kb/kb_1774872057666/delete_file HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49048 - "DELETE /api/kb/kb_1774872057666 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49054 - "GET /api/chat/new_session HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49070 - "GET /api/chat/new_session HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49084 - "GET /api/chat/new_session HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49096 - "GET /api/chat/new_session HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49104 - "GET /api/chat/new_session HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49108 - "GET /api/chat/new_session HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49110 - "GET /api/chat/new_session HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49116 - "GET /api/chat/new_session HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49122 - "GET /api/chat/new_session HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49130 - "GET /api/chat/new_session HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49142 - "GET /api/chat/new_session HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49144 - "GET /api/chat/new_session HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49146 - "GET /api/kb/list HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49148 - "GET /api/kb/list HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49156 - "GET /api/kb/list HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49172 - "GET /api/kb/list HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49176 - "GET /api/kb/list HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49180 - "GET /api/kb/list HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49196 - "GET /api/kb/list HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49208 - "GET /api/kb/list HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49216 - "GET /api/chat/new_session HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49220 - "GET /api/chat/new_session HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49224 - "GET /api/chat/new_session HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49230 - "GET /api/chat/new_session HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49240 - "GET /api/chat/new_session HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49254 - "GET /api/chat/new_session HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49256 - "GET /api/chat/new_session HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49272 - "GET /api/chat/new_session HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60322 - "GET /api/kb/list HTTP/1.1" 200 OK
+INFO:     127.0.0.1:48574 - "GET /api/kb/list HTTP/1.1" 200 OK
+INFO:     127.0.0.1:48586 - "DELETE /api/kb/kb_1774871656643 HTTP/1.1" 200 OK
+I0000 00:00:1774872192.945831 2845697 chttp2_transport.cc:1353] unix:/tmp/tmpzg7ts_su_klclab_milvus.db.sock: Got goaway [11] err=UNAVAILABLE:GOAWAY received; Error code: 11; Debug Text: too_many_pings {grpc_status:14, http2_error:11}
+E0000 00:00:1774872192.945939 2845697 chttp2_transport.cc:1385] unix:/tmp/tmpzg7ts_su_klclab_milvus.db.sock: Received a GOAWAY with error code ENHANCE_YOUR_CALM and debug data equal to "too_many_pings". Current keepalive time (before throttling): 20000ms
+bash: line 1: /home/lyq/anaconda3/bin/etc/profile.d: No such file or directory
+bash: line 1: /home/lyq/anaconda3/bin/etc/profile.d: No such file or directory
+env: ‘/home/lyq/anaconda3/etc/envs/xtyAgent/bin/python’: No such file or directory
+env: ‘/home/lyq/anaconda3/etc/envs/xtyAgent/bin/python’: No such file or directory
+INFO:     Started server process [2855227]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
+INFO:     127.0.0.1:46256 - "GET /api/chat/new_session HTTP/1.1" 200 OK
+INFO:     127.0.0.1:46262 - "GET /api/chat/new_session HTTP/1.1" 200 OK
+INFO:     Started server process [2855915]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
+INFO:     127.0.0.1:37068 - "GET /api/history/list?search=&_t=1774873012352 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:37080 - "GET /api/history/1774872031682?_t=1774873012399 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:37086 - "GET /api/history/list?search=&_t=1774873012785 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:37090 - "GET /api/feedback/list?name=&enterprise=&type=like&_t=1774873013316 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:37106 - "GET /api/feedback/list?name=&enterprise=&type=dislike&_t=1774873013715 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:37120 - "GET /api/feedback/list?name=&enterprise=&type=dislike&_t=1774873015098 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:37132 - "GET /api/feedback/list?name=&enterprise=&type=like&_t=1774873015625 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:37146 - "GET /api/history/list?search=&_t=1774873016158 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58614 - "GET /api/history/list?search=&_t=1774873016622 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58616 - "GET /api/history/1774872031682?_t=1774873016671 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58626 - "GET /api/history/list?search=&_t=1774873017616 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58634 - "GET /api/history/1774872031682?_t=1774873017671 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58642 - "GET /api/chat/new_session?_t=1774873018839 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58648 - "GET /api/chat/new_session?_t=1774873019560 HTTP/1.1" 200 OK
+2026-03-30 20:17:12 [debug    ] No banned substrings found
+2026-03-30 20:17:12 [debug    ] Scanner completed              elapsed_time_seconds=0.00063 is_valid=True scanner=BanSubstrings
+2026-03-30 20:17:12 [debug    ] No invisible characters found
+2026-03-30 20:17:12 [debug    ] Scanner completed              elapsed_time_seconds=0.000254 is_valid=True scanner=InvisibleText
+2026-03-30 20:17:12 [debug    ] No secrets detected in the prompt
+2026-03-30 20:17:12 [debug    ] Scanner completed              elapsed_time_seconds=0.154342 is_valid=True scanner=Secrets
+2026-03-30 20:17:12 [info     ] Scanned prompt                 elapsed_time_seconds=0.1558 scores={'BanSubstrings': -1.0, 'InvisibleText': 0.0, 'Secrets': -1.0}
+INFO:     127.0.0.1:49274 - "POST /api/chat HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54320 - "GET /api/kb/list?_t=1774873069527 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54328 - "POST /api/kb/update HTTP/1.1" 200 OK
+INFO:     127.0.0.1:33372 - "GET /api/kb/kb_1774419816622/files?_t=1774873081855 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50516 - "GET /api/history/list?search=&_t=1774873089478 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50522 - "GET /api/history/1774872031682?_t=1774873089527 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57762 - "GET /api/history/1774871505420?_t=1774873096856 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57774 - "GET /api/history/1774871478640?_t=1774873101439 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57778 - "GET /api/history/1774871382270?_t=1774873101775 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57790 - "GET /api/history/1774845096342?_t=1774873102303 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57804 - "GET /api/history/1774844472598?_t=1774873102583 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57816 - "GET /api/history/1774706759898?_t=1774873103103 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57822 - "GET /api/history/1774705044637?_t=1774873104351 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57834 - "GET /api/history/1774705014739?_t=1774873104831 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57848 - "GET /api/history/1774694374305?_t=1774873105208 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52146 - "GET /api/history/1774694349792?_t=1774873106759 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52150 - "GET /api/history/1774694317960?_t=1774873107089 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52152 - "GET /api/history/1774693958514?_t=1774873107487 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52164 - "GET /api/history/1774693924121?_t=1774873107863 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52170 - "GET /api/history/1774706759906?_t=1774873109007 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52184 - "GET /api/history/1774706792458?_t=1774873109359 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52192 - "GET /api/history/1774844828981?_t=1774873110087 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:37728 - "GET /api/history/1774693564753?_t=1774873119751 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:37740 - "GET /api/history/1774692008288?_t=1774873120375 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:37742 - "GET /api/history/1774691519742?_t=1774873120767 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:37746 - "GET /api/history/1774691446335?_t=1774873121111 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:37758 - "GET /api/history/list?search=&_t=1774873125264 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:37772 - "GET /api/history/1774873019596?_t=1774873125305 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:34336 - "GET /api/history/1774844472598?_t=1774873127375 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52546 - "GET /api/kb/list?_t=1774873156112 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:42282 - "GET /api/history/list?search=&_t=1774873189527 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:42284 - "GET /api/history/1774873019596?_t=1774873189583 HTTP/1.1" 200 OK
+2026-03-30 20:19:52 [debug    ] No banned substrings found
+2026-03-30 20:19:52 [debug    ] Scanner completed              elapsed_time_seconds=0.000684 is_valid=True scanner=BanSubstrings
+2026-03-30 20:19:52 [debug    ] No invisible characters found
+2026-03-30 20:19:52 [debug    ] Scanner completed              elapsed_time_seconds=0.000188 is_valid=True scanner=InvisibleText
+2026-03-30 20:19:52 [debug    ] No secrets detected in the prompt
+2026-03-30 20:19:52 [debug    ] Scanner completed              elapsed_time_seconds=0.008155 is_valid=True scanner=Secrets
+2026-03-30 20:19:52 [info     ] Scanned prompt                 elapsed_time_seconds=0.009759 scores={'BanSubstrings': -1.0, 'InvisibleText': 0.0, 'Secrets': -1.0}
+INFO:     127.0.0.1:42296 - "POST /api/chat HTTP/1.1" 200 OK
+WARNING: All log messages before absl::InitializeLog() is called are written to STDERR
+I0000 00:00:1774873211.787983 2856261 chttp2_transport.cc:1353] unix:/tmp/tmpmf8b0vch_klclab_milvus.db.sock: Got goaway [11] err=UNAVAILABLE:GOAWAY received; Error code: 11; Debug Text: too_many_pings {grpc_status:14, http2_error:11}
+E0000 00:00:1774873211.788332 2856261 chttp2_transport.cc:1385] unix:/tmp/tmpmf8b0vch_klclab_milvus.db.sock: Received a GOAWAY with error code ENHANCE_YOUR_CALM and debug data equal to "too_many_pings". Current keepalive time (before throttling): 10000ms
+INFO:     127.0.0.1:49666 - "GET /api/history/list?search=&_t=1774873222397 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49674 - "GET /api/kb/list?_t=1774873222775 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51192 - "GET /api/kb/6e73d834/files?_t=1774873235622 HTTP/1.1" 200 OK
+Downloading Model from https://www.modelscope.cn to directory: /home/lyq/.cache/modelscope/hub/models/AI-ModelScope/bge-small-zh-v1.5
+2026-03-30 20:20:59,473 - modelscope - INFO - Target directory already exists, skipping creation.
+INFO:     127.0.0.1:55098 - "POST /api/kb/6e73d834/upload HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55102 - "GET /api/kb/6e73d834/files?_t=1774873259889 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55112 - "GET /api/kb/list?_t=1774873259942 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55116 - "POST /api/kb/update HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55132 - "GET /api/kb/list?_t=1774873263465 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49032 - "GET /api/kb/ca2a9642/files?_t=1774873267431 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49040 - "GET /api/kb/6e73d834/files?_t=1774873270119 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53474 - "GET /api/history/list?search=&_t=1774873279238 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53490 - "GET /api/history/1774873019596?_t=1774873279283 HTTP/1.1" 200 OK
+2026-03-30 20:22:11 [debug    ] No banned substrings found
+2026-03-30 20:22:11 [debug    ] Scanner completed              elapsed_time_seconds=0.000396 is_valid=True scanner=BanSubstrings
+2026-03-30 20:22:11 [debug    ] No invisible characters found
+2026-03-30 20:22:11 [debug    ] Scanner completed              elapsed_time_seconds=0.000134 is_valid=True scanner=InvisibleText
+2026-03-30 20:22:11 [debug    ] No secrets detected in the prompt
+2026-03-30 20:22:11 [debug    ] Scanner completed              elapsed_time_seconds=0.007477 is_valid=True scanner=Secrets
+2026-03-30 20:22:11 [info     ] Scanned prompt                 elapsed_time_seconds=0.008414 scores={'BanSubstrings': -1.0, 'InvisibleText': 0.0, 'Secrets': -1.0}
+INFO:     127.0.0.1:56958 - "POST /api/chat HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50912 - "GET /api/kb/list?_t=1774873371589 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50922 - "GET /api/kb/6e73d834/files?_t=1774873374614 HTTP/1.1" 200 OK
+I0000 00:00:1774873376.787848 2856300 chttp2_transport.cc:1353] unix:/tmp/tmpmf8b0vch_klclab_milvus.db.sock: Got goaway [11] err=UNAVAILABLE:GOAWAY received; Error code: 11; Debug Text: too_many_pings {grpc_status:14, http2_error:11}
+E0000 00:00:1774873376.787997 2856300 chttp2_transport.cc:1385] unix:/tmp/tmpmf8b0vch_klclab_milvus.db.sock: Received a GOAWAY with error code ENHANCE_YOUR_CALM and debug data equal to "too_many_pings". Current keepalive time (before throttling): 20000ms
+INFO:     127.0.0.1:47500 - "GET /api/kb/ca2a9642/files?_t=1774873377918 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:47514 - "GET /api/kb/6e73d834/files?_t=1774873380542 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:47530 - "GET /api/kb/kb_1774419816622/files?_t=1774873382326 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:47542 - "GET /api/kb/kb_1774702385271/files?_t=1774873383910 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:47556 - "GET /api/history/list?search=&_t=1774873386221 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60080 - "GET /api/history/1774873019596?_t=1774873386273 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:32856 - "GET /api/chat/new_session?_t=1774873410702 HTTP/1.1" 200 OK
+2026-03-30 20:23:32 [debug    ] No banned substrings found
+2026-03-30 20:23:32 [debug    ] Scanner completed              elapsed_time_seconds=0.000312 is_valid=True scanner=BanSubstrings
+2026-03-30 20:23:32 [debug    ] No invisible characters found
+2026-03-30 20:23:32 [debug    ] Scanner completed              elapsed_time_seconds=0.000122 is_valid=True scanner=InvisibleText
+2026-03-30 20:23:32 [debug    ] No secrets detected in the prompt
+2026-03-30 20:23:32 [debug    ] Scanner completed              elapsed_time_seconds=0.007313 is_valid=True scanner=Secrets
+2026-03-30 20:23:32 [info     ] Scanned prompt                 elapsed_time_seconds=0.00815 scores={'BanSubstrings': -1.0, 'InvisibleText': 0.0, 'Secrets': -1.0}
+INFO:     127.0.0.1:32872 - "POST /api/chat HTTP/1.1" 200 OK
+Downloading Model from https://www.modelscope.cn to directory: /home/lyq/.cache/modelscope/hub/models/AI-ModelScope/bge-small-zh-v1.5
+2026-03-30 20:23:49,913 - modelscope - INFO - Target directory already exists, skipping creation.
+INFO:     127.0.0.1:60800 - "GET /api/history/1774872031682?_t=1774873489222 HTTP/1.1" 200 OK
+I0000 00:00:1774873568.699876 2856261 chttp2_transport.cc:1353] unix:/tmp/tmpmf8b0vch_klclab_milvus.db.sock: Got goaway [11] err=UNAVAILABLE:GOAWAY received; Error code: 11; Debug Text: too_many_pings {grpc_status:14, http2_error:11}
+E0000 00:00:1774873568.699993 2856261 chttp2_transport.cc:1385] unix:/tmp/tmpmf8b0vch_klclab_milvus.db.sock: Received a GOAWAY with error code ENHANCE_YOUR_CALM and debug data equal to "too_many_pings". Current keepalive time (before throttling): 10000ms
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [2855915]
+INFO:     Started server process [3420713]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
+INFO:     127.0.0.1:50886 - "GET /openapi.json HTTP/1.1" 200 OK
+INFO:     127.0.0.1:41954 - "GET /api/history/list?page=1&size=10 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:41968 - "GET /api/feedback/list?feedback_type=%E7%82%B9%E8%B5%9E&page=1&size=10 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:41984 - "GET /api/kb/list?page=1&size=10 HTTP/1.1" 200 OK
+DB initialized. All-in-Qwen Mode @ http://0.0.0.0:62272/v1 (model='Qwen3-32B')
+Error in select_table: Error code: 400 - {'error': {'message': "This model's maximum context length is 30000 tokens. However, you requested 1024 output tokens and your prompt contains at least 28977 input tokens, for a total of at least 30001 tokens. Please reduce the length of the input prompt or the number of requested output tokens. (parameter=input_tokens, value=28977)", 'type': 'BadRequestError', 'param': 'input_tokens', 'code': 400}}
+INFO:     127.0.0.1:41998 - "GET /api/db/select_options?question=%E6%88%91%E4%BB%AC%E5%85%AC%E5%8F%B8%E7%9A%84%E6%80%BB%E5%91%98%E5%B7%A5%E6%98%AF%E5%A4%9A%E5%B0%91 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:45504 - "POST /api/kb/create HTTP/1.1" 200 OK
+Downloading Model from https://www.modelscope.cn to directory: /home/lyq/.cache/modelscope/hub/models/AI-ModelScope/bge-small-zh-v1.5
+2026-04-01 21:03:49,018 - modelscope - INFO - Target directory already exists, skipping creation.
+INFO:     127.0.0.1:45510 - "POST /api/kb/kb_1775048626974/upload HTTP/1.1" 200 OK
+INFO:     127.0.0.1:45520 - "POST /api/kb/update HTTP/1.1" 200 OK
+INFO:     127.0.0.1:45530 - "GET /api/kb/kb_1775048626974 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:45534 - "POST /api/kb/update HTTP/1.1" 200 OK
+INFO:     127.0.0.1:45536 - "GET /api/kb/kb_1775048626974/files HTTP/1.1" 200 OK
+INFO:     127.0.0.1:45548 - "DELETE /api/kb/kb_1775048626974 HTTP/1.1" 200 OK
+WARNING: All log messages before absl::InitializeLog() is called are written to STDERR
+I0000 00:00:1775048722.623869 3421230 chttp2_transport.cc:1353] unix:/tmp/tmpg6ug5zu5_klclab_milvus.db.sock: Got goaway [11] err=UNAVAILABLE:GOAWAY received; Error code: 11; Debug Text: too_many_pings {grpc_status:14, http2_error:11}
+E0000 00:00:1775048722.624024 3421230 chttp2_transport.cc:1385] unix:/tmp/tmpg6ug5zu5_klclab_milvus.db.sock: Received a GOAWAY with error code ENHANCE_YOUR_CALM and debug data equal to "too_many_pings". Current keepalive time (before throttling): 10000ms
+INFO:     Started server process [3422427]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
+DB initialized. All-in-Qwen Mode @ http://0.0.0.0:62272/v1 (model='Qwen3-32B')
+Error in select_table: Error code: 400 - {'error': {'message': "This model's maximum context length is 30000 tokens. However, you requested 1024 output tokens and your prompt contains at least 28977 input tokens, for a total of at least 30001 tokens. Please reduce the length of the input prompt or the number of requested output tokens. (parameter=input_tokens, value=28977)", 'type': 'BadRequestError', 'param': 'input_tokens', 'code': 400}}
+INFO:     127.0.0.1:42492 - "GET /api/db/select_options?question=%E6%88%91%E4%BB%AC%E5%85%AC%E5%8F%B8%E7%9A%84%E6%80%BB%E5%91%98%E5%B7%A5%E6%98%AF%E5%A4%9A%E5%B0%91 HTTP/1.1" 200 OK
+INFO:     Started server process [3427471]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
+INFO:     127.0.0.1:48008 - "GET /openapi.json HTTP/1.1" 200 OK
+INFO:     127.0.0.1:48010 - "GET /api/history/list?page=1&size=10 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:48024 - "GET /api/feedback/list?feedback_type=%E7%82%B9%E8%B5%9E&page=1&size=10 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:48028 - "GET /api/kb/list?page=1&size=10 HTTP/1.1" 200 OK
+DB initialized. All-in-Qwen Mode @ http://0.0.0.0:62272/v1 (model='Qwen3-32B')
+Error in select_table: Error code: 400 - {'error': {'message': "This model's maximum context length is 30000 tokens. However, you requested 1024 output tokens and your prompt contains at least 28977 input tokens, for a total of at least 30001 tokens. Please reduce the length of the input prompt or the number of requested output tokens. (parameter=input_tokens, value=28977)", 'type': 'BadRequestError', 'param': 'input_tokens', 'code': 400}}
+INFO:     127.0.0.1:48042 - "GET /api/db/select_options?question=%E6%88%91%E4%BB%AC%E5%85%AC%E5%8F%B8%E7%9A%84%E6%80%BB%E5%91%98%E5%B7%A5%E6%98%AF%E5%A4%9A%E5%B0%91 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43048 - "POST /api/kb/create HTTP/1.1" 200 OK
+Downloading Model from https://www.modelscope.cn to directory: /home/lyq/.cache/modelscope/hub/models/AI-ModelScope/bge-small-zh-v1.5
+2026-04-01 21:17:54,289 - modelscope - INFO - Target directory already exists, skipping creation.
+INFO:     127.0.0.1:43060 - "POST /api/kb/kb_1775049472199/upload HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43066 - "POST /api/kb/update HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43074 - "GET /api/kb/kb_1775049472199/files HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43078 - "POST /api/kb/update HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43094 - "GET /api/kb/kb_1775049472199/files HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43102 - "DELETE /api/kb/kb_1775049472199 HTTP/1.1" 200 OK
+WARNING: All log messages before absl::InitializeLog() is called are written to STDERR
+I0000 00:00:1775049567.858896 3429946 chttp2_transport.cc:1353] unix:/tmp/tmpbfq1xueo_klclab_milvus.db.sock: Got goaway [11] err=UNAVAILABLE:GOAWAY received; Error code: 11; Debug Text: too_many_pings {http2_error:11, grpc_status:14}
+E0000 00:00:1775049567.859046 3429946 chttp2_transport.cc:1385] unix:/tmp/tmpbfq1xueo_klclab_milvus.db.sock: Received a GOAWAY with error code ENHANCE_YOUR_CALM and debug data equal to "too_many_pings". Current keepalive time (before throttling): 10000ms
+INFO:     125.80.194.179:0 - "OPTIONS /api/kb/list?page=1&limit=20&_t=1775096415826 HTTP/1.1" 200 OK
+INFO:     125.80.194.179:0 - "GET /api/kb/list?page=1&limit=20&_t=1775096415826 HTTP/1.1" 200 OK
+INFO:     Started server process [3694121]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
+INFO:     127.0.0.1:47534 - "GET /api/feedback/list?name=&enterprise=&type=dislike&feedback_type=%E7%82%B9%E8%B8%A9&page=1&size=10&_t=1775116513387 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:47544 - "GET /api/feedback/list?name=&enterprise=&type=like&feedback_type=%E7%82%B9%E8%B5%9E&page=1&size=10&_t=1775116514132 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:47548 - "GET /api/history/list?search=&page=1&size=10&_t=1775116514654 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:47558 - "GET /api/kb/list?page=1&size=10&_t=1775116515325 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:47562 - "GET /api/history/list?search=&page=1&size=10&_t=1775116515880 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55428 - "GET /api/feedback/list?name=&enterprise=&type=like&feedback_type=%E7%82%B9%E8%B5%9E&page=1&size=10&_t=1775116517763 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55436 - "GET /api/history/list?search=&page=1&size=10&_t=1775116524863 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52356 - "GET /api/history/1774873410750?_t=1775116530131 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54664 - "GET /api/kb/list?page=1&size=10&_t=1775116538551 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54674 - "GET /api/feedback/list?name=&enterprise=&type=like&feedback_type=%E7%82%B9%E8%B5%9E&page=1&size=10&_t=1775116539875 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54678 - "GET /api/feedback/list?name=&enterprise=&type=dislike&feedback_type=%E7%82%B9%E8%B8%A9&page=1&size=10&_t=1775116540570 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54692 - "GET /api/history/list?search=&page=1&size=10&_t=1775116542129 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54698 - "GET /api/kb/list?page=1&size=10&_t=1775116543143 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54712 - "GET /api/history/list?search=&_t=1775116545082 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54726 - "GET /api/history/1774873410750?_t=1775116545132 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:35512 - "GET /api/chat/new_session?_t=1775116546882 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:35516 - "GET /api/chat/new_session?_t=1775116547603 HTTP/1.1" 200 OK
+2026-04-02 15:55:50 [debug    ] No banned substrings found
+2026-04-02 15:55:50 [debug    ] Scanner completed              elapsed_time_seconds=0.000562 is_valid=True scanner=BanSubstrings
+2026-04-02 15:55:50 [debug    ] No invisible characters found
+2026-04-02 15:55:50 [debug    ] Scanner completed              elapsed_time_seconds=0.000194 is_valid=True scanner=InvisibleText
+2026-04-02 15:55:50 [debug    ] No secrets detected in the prompt
+2026-04-02 15:55:50 [debug    ] Scanner completed              elapsed_time_seconds=0.075755 is_valid=True scanner=Secrets
+2026-04-02 15:55:50 [info     ] Scanned prompt                 elapsed_time_seconds=0.077092 scores={'BanSubstrings': -1.0, 'InvisibleText': 0.0, 'Secrets': -1.0}
+INFO:     127.0.0.1:35528 - "POST /api/chat HTTP/1.1" 200 OK
+INFO:     127.0.0.1:48770 - "GET /api/history/1775116546886?_t=1775116592083 HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:48784 - "GET /api/history/1774873019596?_t=1775116595123 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:48796 - "GET /api/history/1774871505420?_t=1775116595507 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55340 - "GET /api/history/1774871478640?_t=1775116599715 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55342 - "GET /api/history/1774845096342?_t=1775116600074 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55348 - "GET /api/history/1774844828981?_t=1775116600483 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55358 - "GET /api/kb/list?page=1&size=10&_t=1775116601399 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:39504 - "GET /api/history/list?search=&_t=1775116609247 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:39518 - "GET /api/history/1775116547925?_t=1775116609298 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:39534 - "GET /api/kb/list?page=1&size=10&_t=1775116609860 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:39538 - "GET /api/history/list?search=&page=1&size=10&_t=1775116610436 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:39540 - "GET /api/feedback/list?name=&enterprise=&type=like&feedback_type=%E7%82%B9%E8%B5%9E&page=1&size=10&_t=1775116611442 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:39550 - "GET /api/feedback/list?name=&enterprise=&type=dislike&feedback_type=%E7%82%B9%E8%B8%A9&page=1&size=10&_t=1775116611950 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:39564 - "GET /api/feedback/list?name=&enterprise=&type=dislike&feedback_type=%E7%82%B9%E8%B8%A9&page=1&size=10&_t=1775116613974 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:47930 - "GET /api/feedback/list?name=&enterprise=&type=like&feedback_type=%E7%82%B9%E8%B5%9E&page=1&size=10&_t=1775116616569 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:47940 - "GET /api/history/list?search=&page=1&size=10&_t=1775116617143 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:47942 - "GET /api/feedback/list?name=&enterprise=&type=like&feedback_type=%E7%82%B9%E8%B5%9E&page=1&size=10&_t=1775116617897 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:47944 - "GET /api/kb/list?page=1&size=10&_t=1775116619077 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:47956 - "GET /api/kb/ca2a9642/files?_t=1775116621058 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:47970 - "GET /api/kb/6e73d834/files?_t=1775116625324 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:38064 - "GET /api/kb/6e73d834/files?_t=1775116647693 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:38070 - "POST /api/kb/update HTTP/1.1" 200 OK
+Downloading Model from https://www.modelscope.cn to directory: /home/lyq/.cache/modelscope/hub/models/AI-ModelScope/bge-small-zh-v1.5
+2026-04-02 15:57:36,945 - modelscope - INFO - Target directory already exists, skipping creation.
+INFO:     127.0.0.1:38082 - "POST /api/kb/update HTTP/1.1" 200 OK
+INFO:     127.0.0.1:32918 - "GET /api/kb/list?page=1&size=10&_t=1775116657180 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:32932 - "GET /api/kb/6e73d834/files?_t=1775116658117 HTTP/1.1" 200 OK
+INFO:     141.11.146.78:0 - "GET / HTTP/1.1" 404 Not Found
+INFO:     141.11.146.78:0 - "GET /openapi.json HTTP/1.1" 200 OK
+INFO:     39.98.85.182:0 - "GET /api/history/list?search=&start_time=&end_time=&page&size HTTP/1.1" 422 Unprocessable Entity
+WARNING: All log messages before absl::InitializeLog() is called are written to STDERR
+I0000 00:00:1775116750.457844 3697467 chttp2_transport.cc:1353] unix:/tmp/tmpvzo06bjk_klclab_milvus.db.sock: Got goaway [11] err=UNAVAILABLE:GOAWAY received; Error code: 11; Debug Text: too_many_pings {http2_error:11, grpc_status:14}
+E0000 00:00:1775116750.457955 3697467 chttp2_transport.cc:1385] unix:/tmp/tmpvzo06bjk_klclab_milvus.db.sock: Received a GOAWAY with error code ENHANCE_YOUR_CALM and debug data equal to "too_many_pings". Current keepalive time (before throttling): 10000ms
+INFO:     39.98.85.182:0 - "GET /api/history/%3Aconversation_id HTTP/1.1" 404 Not Found
+INFO:     39.98.85.182:0 - "GET /api/history/list?search=&start_time=&end_time=&page&size HTTP/1.1" 422 Unprocessable Entity
+INFO:     39.98.85.182:0 - "GET /api/history/list?search=&start_time=&end_time=&page=1&size HTTP/1.1" 422 Unprocessable Entity
+DB initialized. All-in-Qwen Mode @ http://0.0.0.0:62272/v1 (model='Qwen3-32B')
+INFO:     39.98.89.227:0 - "GET /api/db/select_options?question= HTTP/1.1" 200 OK
+INFO:     127.0.0.1:38326 - "GET /api/history/list?search=&_t=1775116848972 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:38340 - "GET /api/history/1775116547925?_t=1775116849346 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:38348 - "GET /api/history/list?search=&_t=1775116852184 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:38350 - "GET /api/history/1775116547925?_t=1775116852264 HTTP/1.1" 200 OK
+INFO:     39.98.85.182:0 - "GET /api/history/list?search=&start_time=&end_time=&page=1&size=10 HTTP/1.1" 200 OK
+INFO:     39.98.85.182:0 - "GET /api/history/list?search=&start_time=&end_time=&page=2&size=10 HTTP/1.1" 200 OK
+INFO:     39.98.85.182:0 - "GET /api/history/list?search=&start_time=&end_time=&page&size HTTP/1.1" 422 Unprocessable Entity
+INFO:     39.98.35.98:0 - "GET /api/history/%3Aconversation_id HTTP/1.1" 404 Not Found
+INFO:     39.98.35.98:0 - "GET /api/history/list?search=&start_time=&end_time=&page&size HTTP/1.1" 422 Unprocessable Entity
+INFO:     39.98.35.98:0 - "GET /api/history/list?search=&start_time=&end_time=&page&size HTTP/1.1" 422 Unprocessable Entity
+INFO:     39.98.35.98:0 - "GET /api/chat/new_session HTTP/1.1" 200 OK
+INFO:     39.98.35.98:0 - "GET /api/history/list?search=&start_time=&end_time=&page&size HTTP/1.1" 422 Unprocessable Entity
+INFO:     39.98.35.98:0 - "GET /api/history/%3Aconversation_id HTTP/1.1" 404 Not Found
+INFO:     39.98.35.98:0 - "GET /api/history/list?search=&start_time=&end_time= HTTP/1.1" 200 OK
+INFO:     39.98.85.182:0 - "GET /api/feedback/list?name=&enterprise=&type=&feedback_type=%E5%85%A8%E9%83%A8&start_time=&end_time=&page&size HTTP/1.1" 422 Unprocessable Entity
+INFO:     39.98.85.182:0 - "GET /api/history/list?search=&start_time=&end_time=&page&size HTTP/1.1" 422 Unprocessable Entity
+INFO:     Started server process [3896626]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
+INFO:     Started server process [117821]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
+INFO:     141.11.146.78:0 - "GET / HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:49644 - "GET /api/history/list?search=&_t=1775194092028 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49660 - "GET /api/history/1775116547925?_t=1775194092092 HTTP/1.1" 200 OK
+2026-04-03 13:28:14 [debug    ] No banned substrings found
+2026-04-03 13:28:14 [debug    ] Scanner completed              elapsed_time_seconds=0.000547 is_valid=True scanner=BanSubstrings
+2026-04-03 13:28:14 [debug    ] No invisible characters found
+2026-04-03 13:28:14 [debug    ] Scanner completed              elapsed_time_seconds=0.000204 is_valid=True scanner=InvisibleText
+2026-04-03 13:28:14 [debug    ] No secrets detected in the prompt
+2026-04-03 13:28:14 [debug    ] Scanner completed              elapsed_time_seconds=0.092693 is_valid=True scanner=Secrets
+2026-04-03 13:28:14 [info     ] Scanned prompt                 elapsed_time_seconds=0.094014 scores={'BanSubstrings': -1.0, 'InvisibleText': 0.0, 'Secrets': -1.0}
+INFO:     127.0.0.1:49666 - "POST /api/chat HTTP/1.1" 200 OK
+INFO:     127.0.0.1:44032 - "GET /api/history/list?search=&_t=1775194128910 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:44038 - "GET /api/history/1775116547925?_t=1775194128967 HTTP/1.1" 200 OK
+2026-04-03 13:28:53 [debug    ] No banned substrings found
+2026-04-03 13:28:53 [debug    ] Scanner completed              elapsed_time_seconds=0.000574 is_valid=True scanner=BanSubstrings
+2026-04-03 13:28:53 [debug    ] No invisible characters found
+2026-04-03 13:28:53 [debug    ] Scanner completed              elapsed_time_seconds=0.000208 is_valid=True scanner=InvisibleText
+2026-04-03 13:28:53 [debug    ] No secrets detected in the prompt
+2026-04-03 13:28:53 [debug    ] Scanner completed              elapsed_time_seconds=0.008961 is_valid=True scanner=Secrets
+2026-04-03 13:28:53 [info     ] Scanned prompt                 elapsed_time_seconds=0.010504 scores={'BanSubstrings': -1.0, 'InvisibleText': 0.0, 'Secrets': -1.0}
+INFO:     127.0.0.1:44040 - "POST /api/chat HTTP/1.1" 200 OK
+INFO:     127.0.0.1:44032 - "GET /api/history/list?search=&_t=1775195016526 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:44042 - "GET /api/history/1775116547925?_t=1775195016623 HTTP/1.1" 200 OK
+2026-04-03 13:43:40 [debug    ] No banned substrings found
+2026-04-03 13:43:40 [debug    ] Scanner completed              elapsed_time_seconds=0.000853 is_valid=True scanner=BanSubstrings
+2026-04-03 13:43:40 [debug    ] No invisible characters found
+2026-04-03 13:43:40 [debug    ] Scanner completed              elapsed_time_seconds=0.000246 is_valid=True scanner=InvisibleText
+2026-04-03 13:43:40 [debug    ] No secrets detected in the prompt
+2026-04-03 13:43:40 [debug    ] Scanner completed              elapsed_time_seconds=0.008207 is_valid=True scanner=Secrets
+2026-04-03 13:43:40 [info     ] Scanned prompt                 elapsed_time_seconds=0.010114 scores={'BanSubstrings': -1.0, 'InvisibleText': 0.0, 'Secrets': -1.0}
+INFO:     127.0.0.1:44048 - "POST /api/chat HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49460 - "GET /api/chat/new_session?_t=1775195311278 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49462 - "GET /api/chat/new_session?_t=1775195312478 HTTP/1.1" 200 OK
+2026-04-03 13:48:37 [debug    ] No banned substrings found
+2026-04-03 13:48:37 [debug    ] Scanner completed              elapsed_time_seconds=0.000515 is_valid=True scanner=BanSubstrings
+2026-04-03 13:48:37 [debug    ] No invisible characters found
+2026-04-03 13:48:37 [debug    ] Scanner completed              elapsed_time_seconds=0.000245 is_valid=True scanner=InvisibleText
+2026-04-03 13:48:37 [debug    ] No secrets detected in the prompt
+2026-04-03 13:48:37 [debug    ] Scanner completed              elapsed_time_seconds=0.008519 is_valid=True scanner=Secrets
+2026-04-03 13:48:37 [info     ] Scanned prompt                 elapsed_time_seconds=0.010275 scores={'BanSubstrings': -1.0, 'InvisibleText': 0.0, 'Secrets': -1.0}
+INFO:     127.0.0.1:35258 - "POST /api/chat HTTP/1.1" 200 OK
+INFO:     127.0.0.1:45608 - "GET /api/history/1775195311635?_t=1775195357318 HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:45616 - "GET /api/history/1774873019596?_t=1775195359294 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:45618 - "GET /api/history/1774871382270?_t=1775195360159 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:45632 - "GET /api/history/list?search=&_t=1775195365781 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:47666 - "POST /api/history/batch_delete HTTP/1.1" 200 OK
+INFO:     127.0.0.1:47672 - "GET /api/history/list?search=&_t=1775195373825 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:47684 - "GET /api/kb/list?page=1&size=10&_t=1775195375774 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:45046 - "GET /api/history/list?search=&page=1&size=10&_t=1775195376433 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:45048 - "GET /api/feedback/list?name=&enterprise=&type=like&feedback_type=%E7%82%B9%E8%B5%9E&page=1&size=10&_t=1775195377096 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:45054 - "GET /api/history/list?search=&page=1&size=10&_t=1775195377508 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:45056 - "GET /api/history/1774873410750?_t=1775195379262 HTTP/1.1" 200 OK
+INFO:     125.80.194.179:0 - "OPTIONS /api/chat/new_session?_t=1775199395071 HTTP/1.1" 200 OK
+INFO:     125.80.194.179:0 - "GET /api/chat/new_session?_t=1775199395071 HTTP/1.1" 200 OK
+INFO:     39.98.168.103:0 - "POST /api/chat HTTP/1.1" 422 Unprocessable Entity
+INFO:     39.98.168.103:0 - "POST /api/chat HTTP/1.1" 422 Unprocessable Entity

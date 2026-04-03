@@ -17,7 +17,7 @@
   "code": 0,
   "msg": "新建对话成功",
   "data": {
-    "conversation_id": "1774367354966"
+    "conversation_id": "1775048848185"
   }
 }
 ```

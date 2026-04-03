@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-03-25T00:23:38.475738",
+  "generated_at": "2026-03-30T19:49:42.261816",
   "base_url": "http://127.0.0.1:8000",
   "endpoints": {
     "/api/chat/new_session": {
@@ -7,15 +7,15 @@
       "success_case": {
         "ok": true,
         "status": 200,
-        "elapsed_ms": 9.77,
+        "elapsed_ms": 10.78,
         "json": {
           "code": 0,
           "msg": "新建对话成功",
           "data": {
-            "conversation_id": "1774369418483"
+            "conversation_id": "1774871382270"
           }
         },
-        "text": "{\"code\":0,\"msg\":\"新建对话成功\",\"data\":{\"conversation_id\":\"1774369418483\"}}",
+        "text": "{\"code\":0,\"msg\":\"新建对话成功\",\"data\":{\"conversation_id\":\"1774871382270\"}}",
         "stderr": ""
       },
       "stress": {
@@ -25,24 +25,24 @@
         "ok": 20,
         "failed": 0,
         "latency_ms": {
-          "min": 6.99,
-          "p50": 9.73,
-          "max": 11.74
+          "min": 6.41,
+          "p50": 7.82,
+          "max": 13.84
         },
         "samples": [
           {
             "status": 200,
-            "elapsed_ms": 8.61,
+            "elapsed_ms": 9.18,
             "stderr": ""
           },
           {
             "status": 200,
-            "elapsed_ms": 9.73,
+            "elapsed_ms": 10.16,
             "stderr": ""
           },
           {
             "status": 200,
-            "elapsed_ms": 11.74,
+            "elapsed_ms": 10.25,
             "stderr": ""
           }
         ]
@@ -53,7 +53,7 @@
       "success_case": {
         "ok": true,
         "status": 200,
-        "elapsed_ms": 11194.71,
+        "elapsed_ms": 18171.02,
         "json": {
           "code": 0,
           "msg": "发送对话成功",
@@ -65,10 +65,11 @@
             ],
             "uploaded_files": [
               {
-                "file_id": "file_1774369418587_0",
+                "file_id": "file_1774871382469_0",
                 "filename": "probe.txt",
-                "url": "/api/static/chat_uploads/2026-03-25/1774369418483/0/probe.txt",
-                "relative_path": "2026-03-25/1774369418483/0/probe.txt"
+                "url": "http://127.0.0.1:9000/xintuoyin-data/chat/2026-03-30/1774871382270/0/probe.txt?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=minioadmin%2F20260330%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20260330T114942Z&X-Amz-Expires=604800&X-Amz-SignedHeaders=host&X-Amz-Signature=812330494ce54bd812c27e9ffea001f61a97eff688b2e122df051d63ec5d5207",
+                "relative_path": "chat/2026-03-30/1774871382270/0/probe.txt",
+                "object_name": "chat/2026-03-30/1774871382270/0/probe.txt"
               }
             ],
             "file_contexts": [
@@ -79,30 +80,26 @@
             ],
             "web_search": false,
             "db_version": null,
-            "answer": "根据文件`probe.txt`的内容，项目代号是“北极星”，交付日期是“2026-04-15”。",
+            "answer": "<think>\n好的，我需要回答用户的问题，用户问的是项目代号和交付日期。根据用户提供的上传文件内容，文件1是probe.txt，里面提到了项目代号：北极星，交付日期：2026-04-15。系统已经成功读取了文件，所以不需要说无法读取。我应该直接引用文件中的信息，并明确提到文件名。不需要调用其他工具，因为信息已经在上传的文件中给出。检查是否有其他要求，比如必须结合历史对话，但这里没有历史对话的内容，所以主要依据当前问题和上传文件。确认信息无误后，直接回答即可。\n</think>\n\n根据本轮上传的【probe.txt】文件记载，项目代号为\"北极星\"，交付日期为\"2026-04-15\"。该信息直接来源于您当前上传文件的正文内容。",
             "resource": [],
-            "recommend_answer": [
-              "项目的具体内容是什么？",
-              "项目的负责人是谁？",
-              "项目的预算是多少？"
-            ],
+            "recommend_answer": [],
             "feedback": null,
             "thinking_text": "这次回答没有额外调用工具，我直接根据已有上下文完成了回复。",
             "thinking_steps": [],
-            "created_at": "1774369429718",
-            "updated_at": "1774369429718",
-            "createdAt": "2026/03/25 00:23:49",
-            "updatedAt": "2026/03/25 00:23:49"
+            "created_at": "1774871400478",
+            "updated_at": "1774871400478",
+            "createdAt": "2026/03/30 19:50:00",
+            "updatedAt": "2026/03/30 19:50:00"
           }
         },
-        "text": "{\"code\":0,\"msg\":\"发送对话成功\",\"data\":{\"message_index\":0,\"question\":\"请根据附件告诉我项目代号和交付日期\",\"files\":[\"probe.txt\"],\"uploaded_files\":[{\"file_id\":\"file_1774369418587_0\",\"filename\":\"probe.txt\",\"url\":\"/api/static/chat_uploads/2026-03-25/1774369418483/0/probe.txt\",\"relative_path\":\"2026-03-25/1774369418483/0/probe.txt\"}],\"file_contexts\":[{\"filename\":\"probe.txt\",\"text\":\"项目代号：北极星 交付日期：2026-04-15 负责人：测试机器人\"}],\"web_search\":false,\"db_version\":null,\"answer\":\"根据文件`probe.txt`的内容，项目代号是“北极星”，交付日期是“2026-04-15”。\",\"resource\":[],\"recommend_answer\":[\"项目的具体内容是什么？\",\"项目的负责人是谁？\",\"项目的预算是多少？\"],\"feedback\":null,\"thinking_text\":\"这次回答没有额外调用工具，我直接根据已有上下文完成了回复。\",\"thinking_steps\":[],\"created_at\":\"1774369429718\",\"updated_at\":\"1774369429718\",\"createdAt\":\"2026/03/25 00:23:49\",\"updatedAt\":\"2026/03/25 00:23:49\"}}",
+        "text": "{\"code\":0,\"msg\":\"发送对话成功\",\"data\":{\"message_index\":0,\"question\":\"请根据附件告诉我项目代号和交付日期\",\"files\":[\"probe.txt\"],\"uploaded_files\":[{\"file_id\":\"file_1774871382469_0\",\"filename\":\"probe.txt\",\"url\":\"http://127.0.0.1:9000/xintuoyin-data/chat/2026-03-30/1774871382270/0/probe.txt?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=minioadmin%2F20260330%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20260330T114942Z&X-Amz-Expires=604800&X-Amz-SignedHeaders=host&X-Amz-Signature=812330494ce54bd812c27e9ffea001f61a97eff688b2e122df051d63ec5d5207\",\"relative_path\":\"chat/2026-03-30/1774871382270/0/probe.txt\",\"object_name\":\"chat/2026-03-30/1774871382270/0/probe.txt\"}],\"file_contexts\":[{\"filename\":\"probe.txt\",\"text\":\"项目代号：北极星 交付日期：2026-04-15 负责人：测试机器人\"}],\"web_search\":false,\"db_version\":null,\"answer\":\"<think>\\n好的，我需要回答用户的问题，用户问的是项目代号和交付日期。根据用户提供的上传文件内容，文件1是probe.txt，里面提到了项目代号：北极星，交付日期：2026-04-15。系统已经成功读取了文件，所以不需要说无法读取。我应该直接引用文件中的信息，并明确提到文件名。不需要调用其他工具，因为信息已经在上传的文件中给出。检查是否有其他要求，比如必须结合历史对话，但这里没有历史对话的内容，所以主要依据当前问题和上传文件。确认信息无误后，直接回答即可。\\n</think>\\n\\n根据本轮上传的【probe.txt】文件记载，项目代号为\\\"北极星\\\"，交付日期为\\\"2026-04-15\\\"。该信息直接来源于您当前上传文件的正文内容。\",\"resource\":[],\"recommend_answer\":[],\"feedback\":null,\"thinking_text\":\"这次回答没有额外调用工具，我直接根据已有上下文完成了回复。\",\"thinking_steps\":[],\"created_at\":\"1774871400478\",\"updated_at\":\"1774871400478\",\"createdAt\":\"2026/03/30 19:50:00\",\"updatedAt\":\"2026/03/30 19:50:00\"}}",
         "stderr": ""
       },
       "edge_cases": {
         "missing_message": {
           "ok": false,
           "status": 422,
-          "elapsed_ms": 13.76,
+          "elapsed_ms": 12.89,
           "json": {
             "detail": [
               {
@@ -122,7 +119,7 @@
         "unsafe_message": {
           "ok": false,
           "status": 400,
-          "elapsed_ms": 66.38,
+          "elapsed_ms": 15.52,
           "json": {
             "code": 1,
             "msg": "发送对话失败",
@@ -141,28 +138,28 @@
         "ok": 2,
         "failed": 0,
         "latency_ms": {
-          "min": 6085.52,
-          "p50": 7748.6,
-          "max": 7748.6
+          "min": 28548.62,
+          "p50": 29108.21,
+          "max": 29108.21
         },
         "samples": [
           {
             "status": 200,
-            "elapsed_ms": 7748.6,
+            "elapsed_ms": 29108.21,
             "stderr": ""
           },
           {
             "status": 200,
-            "elapsed_ms": 6085.52,
+            "elapsed_ms": 28548.62,
             "stderr": ""
           }
         ]
       },
       "stream_case": {
         "status": 200,
-        "elapsed_ms": 8864.23,
+        "elapsed_ms": 19131.17,
         "contains_done_event": true,
-        "sample": "data: {\"type\": \"answer_delta\", \"delta\": \"根据文件`probe.txt`的内容，项目代号是“北极星”，交付日期是“2026-04-15”，负责人是“测试机器人”。\"}\n\ndata: {\"type\": \"done\", \"data\": {\"message_index\": 3, \"question\": \"继续一句话总结上面的文件内容\", \"files\": [], \"uploaded_files\": [], \"file_contexts\": [], \"web_search\": false, \"db_version\": null, \"answer\": \"根据文件`probe.txt`的内容，项目代号是“北极星”，交付日期是“2026-04-15”，负责人是“测试机器人”。\", \"resource\": [], \"recommend_answer\": [\"项目的具体内容是什么？\", \"交付日期能否提前？\", \"测试机器人是谁？\"], \"feedback\": null, \"thinking_text\": \"这次回答没有额外调用工具，我直接根据已有上下文完成了回复。\", \"thinking_steps\": [], \"created_at\": \"1774369452498\", \"updated_at\": \"1774369452498\", \"createdAt\": \"2026/03/25 00:24:12\", \"updatedAt\": \"2026/03/25 00:24:12\"}}"
+        "sample": "data: {\"type\": \"answer_delta\", \"delta\": \"<think>\\n好的，我需要总结用户提供的文件内容。根据历史对话，用户上传了《probe.txt》，其中包含项目代号“北极星”和交付日期“2026-04-15”。当前用户要求一句话总结该文件内容。由于文件已成功读取，我应直接引用信息并提及文件名，同时结合本轮问题。需要确保不调用工具，因为信息已在文件中给出。检查所有要求后，确认回复符合规范。\\n</think>\\n\\n根据《probe.txt》文件记载，项目代号为\\\"北极星\\\"，计划于2026年4月15日交付。\"}\n\ndata: {\"type\": \"done\", \"data\": {\"message_index\": 3, \"question\": \"继续一句话总结上面的文件内容\", \"files\": [], \"uploaded_files\": [], \"file_contexts\": [], \"web_search\": false, \"db_version\": null, \"answer\": \"<think>\\n好的，我需要总结用户提供的文件内容。根据历史对话，用户上传了《probe.txt》，其中包含项目代号“北极星”和交付日期“2026-04-15”。当前用户要求一句话总结该文件内容。由于文件已成功读取，我应直接引用信息并提及文件名，同时结合本轮问题。需要确保不调用工具，因为信息已在文件中给出。检查所有要求后，确认回复符合规范。\\n</think>\\n\\n根据《probe.txt》文件记载，项目代号为\\\"北极星\\\"，计划于2026年4月15日交付。\", \"resource\": [], \"recommend_answer\": [], \"feedback\": null, \"thinking_text\": \"这次回答没有额外调用工具，我直接根据已有上下文完成了回复。\", \"thinking_steps\": [], \"created_at\": \"1774871477295\", \"updated_at\": \"1774871477295\", \"createdAt\": \"2026/03/30 19:51:17\", \"updatedAt\": \"2026/03/30 19:51:17\"}}"
       }
     },
     "/api/chat/{conversation_id}/title": {
@@ -170,24 +167,24 @@
       "success_case": {
         "ok": true,
         "status": 200,
-        "elapsed_ms": 14.3,
+        "elapsed_ms": 16.96,
         "json": {
           "code": 0,
           "msg": "获取标题成功",
           "data": {
-            "conversation_id": "1774369418483",
+            "conversation_id": "1774871382270",
             "title": "请根据附件告诉我项目代号和交付日期",
             "question": "请根据附件告诉我项目代号和交付日期"
           }
         },
-        "text": "{\"code\":0,\"msg\":\"获取标题成功\",\"data\":{\"conversation_id\":\"1774369418483\",\"title\":\"请根据附件告诉我项目代号和交付日期\",\"question\":\"请根据附件告诉我项目代号和交付日期\"}}",
+        "text": "{\"code\":0,\"msg\":\"获取标题成功\",\"data\":{\"conversation_id\":\"1774871382270\",\"title\":\"请根据附件告诉我项目代号和交付日期\",\"question\":\"请根据附件告诉我项目代号和交付日期\"}}",
         "stderr": ""
       },
       "edge_cases": {
         "not_found": {
           "ok": false,
           "status": 404,
-          "elapsed_ms": 11.39,
+          "elapsed_ms": 11.98,
           "json": {
             "code": 1,
             "msg": "获取标题失败",
@@ -206,24 +203,24 @@
         "ok": 15,
         "failed": 0,
         "latency_ms": {
-          "min": 7.28,
-          "p50": 9.36,
-          "max": 17.25
+          "min": 6.35,
+          "p50": 8.41,
+          "max": 13.0
         },
         "samples": [
           {
             "status": 200,
-            "elapsed_ms": 11.5,
+            "elapsed_ms": 10.33,
             "stderr": ""
           },
           {
             "status": 200,
-            "elapsed_ms": 13.68,
+            "elapsed_ms": 11.26,
             "stderr": ""
           },
           {
             "status": 200,
-            "elapsed_ms": 15.88,
+            "elapsed_ms": 10.88,
             "stderr": ""
           }
         ]
@@ -234,31 +231,32 @@
       "success_case": {
         "ok": true,
         "status": 200,
-        "elapsed_ms": 14.22,
+        "elapsed_ms": 32.54,
         "json": {
           "code": 0,
           "msg": "上传文件成功",
           "data": {
-            "conversation_id": "1774369418483",
+            "conversation_id": "1774871382270",
             "message_index": 0,
             "files": [
               {
-                "file_id": "file_1774369452579_0",
+                "file_id": "file_1774871477388_0",
                 "filename": "probe_1.txt",
-                "url": "/api/static/chat_uploads/2026-03-25/1774369418483/0/probe_1.txt",
-                "relative_path": "2026-03-25/1774369418483/0/probe_1.txt"
+                "url": "http://127.0.0.1:9000/xintuoyin-data/chat/2026-03-30/1774871382270/0/probe_1.txt?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=minioadmin%2F20260330%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20260330T115117Z&X-Amz-Expires=604800&X-Amz-SignedHeaders=host&X-Amz-Signature=bea6e900fb837823bfde50b78972419ae468c3798381a0d261094740b66056f7",
+                "relative_path": "chat/2026-03-30/1774871382270/0/probe_1.txt",
+                "object_name": "chat/2026-03-30/1774871382270/0/probe_1.txt"
               }
             ]
           }
         },
-        "text": "{\"code\":0,\"msg\":\"上传文件成功\",\"data\":{\"conversation_id\":\"1774369418483\",\"message_index\":0,\"files\":[{\"file_id\":\"file_1774369452579_0\",\"filename\":\"probe_1.txt\",\"url\":\"/api/static/chat_uploads/2026-03-25/1774369418483/0/probe_1.txt\",\"relative_path\":\"2026-03-25/1774369418483/0/probe_1.txt\"}]}}",
+        "text": "{\"code\":0,\"msg\":\"上传文件成功\",\"data\":{\"conversation_id\":\"1774871382270\",\"message_index\":0,\"files\":[{\"file_id\":\"file_1774871477388_0\",\"filename\":\"probe_1.txt\",\"url\":\"http://127.0.0.1:9000/xintuoyin-data/chat/2026-03-30/1774871382270/0/probe_1.txt?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=minioadmin%2F20260330%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20260330T115117Z&X-Amz-Expires=604800&X-Amz-SignedHeaders=host&X-Amz-Signature=bea6e900fb837823bfde50b78972419ae468c3798381a0d261094740b66056f7\",\"relative_path\":\"chat/2026-03-30/1774871382270/0/probe_1.txt\",\"object_name\":\"chat/2026-03-30/1774871382270/0/probe_1.txt\"}]}}",
         "stderr": ""
       },
       "edge_cases": {
         "negative_message_index": {
           "ok": false,
           "status": 400,
-          "elapsed_ms": 11.65,
+          "elapsed_ms": 13.38,
           "json": {
             "code": 1,
             "msg": "上传文件失败",
@@ -277,24 +275,24 @@
         "ok": 5,
         "failed": 0,
         "latency_ms": {
-          "min": 10.73,
-          "p50": 12.02,
-          "max": 15.21
+          "min": 27.66,
+          "p50": 35.76,
+          "max": 45.0
         },
         "samples": [
           {
             "status": 200,
-            "elapsed_ms": 10.73,
+            "elapsed_ms": 27.66,
             "stderr": ""
           },
           {
             "status": 200,
-            "elapsed_ms": 12.73,
+            "elapsed_ms": 45.0,
             "stderr": ""
           },
           {
             "status": 200,
-            "elapsed_ms": 12.02,
+            "elapsed_ms": 36.2,
             "stderr": ""
           }
         ]
@@ -305,233 +303,17 @@
       "success_case": {
         "ok": true,
         "status": 200,
-        "elapsed_ms": 21.18,
+        "elapsed_ms": 17.44,
         "json": {
           "code": 0,
           "msg": "获取历史记录成功",
           "data": {
             "list": [
               {
-                "conversation_id": "1774348216964",
-                "title": "帮我上网查询疯狂动物城2的剧情",
-                "updated_at": "1774369452644",
-                "updatedAt": "2026/03/25 00:24:12",
-                "message_count": 1,
-                "user": {
-                  "name": "王颖奇",
-                  "phone": "15323720032",
-                  "categoryName": "图湃（北京）医疗科技"
-                }
-              },
-              {
-                "conversation_id": "testlive8000b",
-                "title": "你好",
-                "updated_at": "1774369452643",
-                "updatedAt": "2026/03/25 00:24:12",
-                "message_count": 1,
-                "user": {
-                  "name": "王颖奇",
-                  "phone": "15323720032",
-                  "categoryName": "图湃（北京）医疗科技"
-                }
-              },
-              {
-                "conversation_id": "1774359047179",
-                "title": "你好",
-                "updated_at": "1774369452643",
-                "updatedAt": "2026/03/25 00:24:12",
-                "message_count": 2,
-                "user": {
-                  "name": "王颖奇",
-                  "phone": "15323720032",
-                  "categoryName": "图湃（北京）医疗科技"
-                }
-              },
-              {
-                "conversation_id": "septhink1",
-                "title": "请使用计算器计算 12*(3+4)",
-                "updated_at": "1774369452643",
-                "updatedAt": "2026/03/25 00:24:12",
-                "message_count": 1,
-                "user": {
-                  "name": "王颖奇",
-                  "phone": "15323720032",
-                  "categoryName": "图湃（北京）医疗科技"
-                }
-              },
-              {
-                "conversation_id": "1773386517615",
-                "title": "hello",
-                "updated_at": "1774369452643",
-                "updatedAt": "2026/03/25 00:24:12",
-                "message_count": 6,
-                "user": {
-                  "name": "王颖奇",
-                  "phone": "15323720032",
-                  "categoryName": "图湃（北京）医疗科技"
-                }
-              },
-              {
-                "conversation_id": "testthinkreq3",
-                "title": "请使用计算器计算 99+1",
-                "updated_at": "1774369452642",
-                "updatedAt": "2026/03/25 00:24:12",
-                "message_count": 1,
-                "user": {
-                  "name": "王颖奇",
-                  "phone": "15323720032",
-                  "categoryName": "图湃（北京）医疗科技"
-                }
-              },
-              {
-                "conversation_id": "tooltracefe1",
-                "title": "请使用计算器计算 12*(3+4)",
-                "updated_at": "1774369452642",
-                "updatedAt": "2026/03/25 00:24:12",
-                "message_count": 1,
-                "user": {
-                  "name": "王颖奇",
-                  "phone": "15323720032",
-                  "categoryName": "图湃（北京）医疗科技"
-                }
-              },
-              {
-                "conversation_id": "1774348395499",
-                "title": "213123 + 312324234是多少",
-                "updated_at": "1774369452642",
-                "updatedAt": "2026/03/25 00:24:12",
-                "message_count": 4,
-                "user": {
-                  "name": "王颖奇",
-                  "phone": "15323720032",
-                  "categoryName": "图湃（北京）医疗科技"
-                }
-              },
-              {
-                "conversation_id": "1774342058782",
-                "title": "你好",
-                "updated_at": "1774369452642",
-                "updatedAt": "2026/03/25 00:24:12",
-                "message_count": 2,
-                "user": {
-                  "name": "王颖奇",
-                  "phone": "15323720032",
-                  "categoryName": "图湃（北京）医疗科技"
-                }
-              },
-              {
-                "conversation_id": "1774359730787",
-                "title": "帮我计算3123 + 9389124  ,使用计算器",
-                "updated_at": "1774369452641",
-                "updatedAt": "2026/03/25 00:24:12",
-                "message_count": 3,
-                "user": {
-                  "name": "王颖奇",
-                  "phone": "15323720032",
-                  "categoryName": "图湃（北京）医疗科技"
-                }
-              },
-              {
-                "conversation_id": "1774360603189",
-                "title": "帮我计算213123+3123，用计算器",
-                "updated_at": "1774369452641",
-                "updatedAt": "2026/03/25 00:24:12",
-                "message_count": 2,
-                "user": {
-                  "name": "王颖奇",
-                  "phone": "15323720032",
-                  "categoryName": "图湃（北京）医疗科技"
-                }
-              },
-              {
-                "conversation_id": "tooltrace1",
-                "title": "请使用计算器计算 123*456，并告诉我结果",
-                "updated_at": "1774369452640",
-                "updatedAt": "2026/03/25 00:24:12",
-                "message_count": 1,
-                "user": {
-                  "name": "王颖奇",
-                  "phone": "15323720032",
-                  "categoryName": "图湃（北京）医疗科技"
-                }
-              },
-              {
-                "conversation_id": "testthinkreq4",
-                "title": "请使用计算器计算 77+23",
-                "updated_at": "1774369452640",
-                "updatedAt": "2026/03/25 00:24:12",
-                "message_count": 2,
-                "user": {
-                  "name": "王颖奇",
-                  "phone": "15323720032",
-                  "categoryName": "图湃（北京）医疗科技"
-                }
-              },
-              {
-                "conversation_id": "testthinkreq1",
-                "title": "请使用计算器计算 12*(3+4)",
-                "updated_at": "1774369452639",
-                "updatedAt": "2026/03/25 00:24:12",
-                "message_count": 1,
-                "user": {
-                  "name": "王颖奇",
-                  "phone": "15323720032",
-                  "categoryName": "图湃（北京）医疗科技"
-                }
-              },
-              {
-                "conversation_id": "verifystream1",
-                "title": "你好",
-                "updated_at": "1774369452639",
-                "updatedAt": "2026/03/25 00:24:12",
-                "message_count": 1,
-                "user": {
-                  "name": "王颖奇",
-                  "phone": "15323720032",
-                  "categoryName": "图湃（北京）医疗科技"
-                }
-              },
-              {
-                "conversation_id": "1773980024694",
-                "title": "你好",
-                "updated_at": "1774369452639",
-                "updatedAt": "2026/03/25 00:24:12",
-                "message_count": 5,
-                "user": {
-                  "name": "王颖奇",
-                  "phone": "15323720032",
-                  "categoryName": "图湃（北京）医疗科技"
-                }
-              },
-              {
-                "conversation_id": "testthinkreq5",
-                "title": "请使用计算器计算 88+12",
-                "updated_at": "1774369452638",
-                "updatedAt": "2026/03/25 00:24:12",
-                "message_count": 3,
-                "user": {
-                  "name": "王颖奇",
-                  "phone": "15323720032",
-                  "categoryName": "图湃（北京）医疗科技"
-                }
-              },
-              {
-                "conversation_id": "testlive8000",
-                "title": "你好",
-                "updated_at": "1774369452638",
-                "updatedAt": "2026/03/25 00:24:12",
-                "message_count": 1,
-                "user": {
-                  "name": "王颖奇",
-                  "phone": "15323720032",
-                  "categoryName": "图湃（北京）医疗科技"
-                }
-              },
-              {
-                "conversation_id": "1774369418483",
+                "conversation_id": "1774871382270",
                 "title": "请根据附件告诉我项目代号和交付日期",
-                "updated_at": "1774369452579",
-                "updatedAt": "2026/03/25 00:24:12",
+                "updated_at": "1774871477390",
+                "updatedAt": "2026/03/30 19:51:17",
                 "message_count": 4,
                 "user": {
                   "name": "王颖奇",
@@ -540,10 +322,22 @@
                 }
               },
               {
-                "conversation_id": "1774368740100",
-                "title": "帮我使用计算器计算1+3123，并且帮我上数据库查询最近年度的发票总额度",
-                "updated_at": "1774368834146",
-                "updatedAt": "2026/03/25 00:13:54",
+                "conversation_id": "1774845096342",
+                "title": "帮我计算根号下1873123是多少",
+                "updated_at": "1774861080206",
+                "updatedAt": "2026/03/30 16:58:00",
+                "message_count": 3,
+                "user": {
+                  "name": "王颖奇",
+                  "phone": "15323720032",
+                  "categoryName": "图湃（北京）医疗科技"
+                }
+              },
+              {
+                "conversation_id": "1774844828981",
+                "title": "帮我上网搜索张雪峰怎么了？",
+                "updated_at": "1774844916414",
+                "updatedAt": "2026/03/30 12:28:36",
                 "message_count": 1,
                 "user": {
                   "name": "王颖奇",
@@ -552,10 +346,154 @@
                 }
               },
               {
-                "conversation_id": "1774367993235",
-                "title": "帮我使用数据库工具来查询目前公司的特殊收入是多少？",
-                "updated_at": "1774368093846",
-                "updatedAt": "2026/03/25 00:01:33",
+                "conversation_id": "1774844472598",
+                "title": "你是什么模型",
+                "updated_at": "1774844770942",
+                "updatedAt": "2026/03/30 12:26:10",
+                "message_count": 3,
+                "user": {
+                  "name": "王颖奇",
+                  "phone": "15323720032",
+                  "categoryName": "图湃（北京）医疗科技"
+                }
+              },
+              {
+                "conversation_id": "1774706792458",
+                "title": "请根据知识库回答：RAG二次验收库中的验收令牌、项目负责人、上线日期分别是什么？如果未命中知识库请明确说明。",
+                "updated_at": "1774706800148",
+                "updatedAt": "2026/03/28 22:06:40",
+                "message_count": 1,
+                "user": {
+                  "name": "王颖奇",
+                  "phone": "15323720032",
+                  "categoryName": "图湃（北京）医疗科技"
+                }
+              },
+              {
+                "conversation_id": "1774706759906",
+                "title": "不要使用数据库工具，也不要编造。请调用知识库检索工具rag_tool，回答验收令牌、项目负责人、上线日期。",
+                "updated_at": "1774706776068",
+                "updatedAt": "2026/03/28 22:06:16",
+                "message_count": 1,
+                "user": {
+                  "name": "王颖奇",
+                  "phone": "15323720032",
+                  "categoryName": "图湃（北京）医疗科技"
+                }
+              },
+              {
+                "conversation_id": "1774706759898",
+                "title": "请根据知识库回答：验收令牌、项目负责人、上线日期分别是什么？如果未命中知识库请明确说明。",
+                "updated_at": "1774706774323",
+                "updatedAt": "2026/03/28 22:06:14",
+                "message_count": 1,
+                "user": {
+                  "name": "王颖奇",
+                  "phone": "15323720032",
+                  "categoryName": "图湃（北京）医疗科技"
+                }
+              },
+              {
+                "conversation_id": "1774705044637",
+                "title": "不要使用数据库工具，也不要编造。请调用知识库检索工具rag_tool，回答知识库测试口令、项目负责人、上线日期。",
+                "updated_at": "1774705062257",
+                "updatedAt": "2026/03/28 21:37:42",
+                "message_count": 1,
+                "user": {
+                  "name": "王颖奇",
+                  "phone": "15323720032",
+                  "categoryName": "图湃（北京）医疗科技"
+                }
+              },
+              {
+                "conversation_id": "1774705014739",
+                "title": "请严格使用知识库回答：RAG接口验收库中的知识库测试口令、项目负责人、上线日期分别是什么？如果没有命中知识库就明确说未找到。",
+                "updated_at": "1774705027912",
+                "updatedAt": "2026/03/28 21:37:07",
+                "message_count": 1,
+                "user": {
+                  "name": "王颖奇",
+                  "phone": "15323720032",
+                  "categoryName": "图湃（北京）医疗科技"
+                }
+              },
+              {
+                "conversation_id": "1774694374305",
+                "title": "你好",
+                "updated_at": "1774700752426",
+                "updatedAt": "2026/03/28 20:25:52",
+                "message_count": 8,
+                "user": {
+                  "name": "王颖奇",
+                  "phone": "15323720032",
+                  "categoryName": "图湃（北京）医疗科技"
+                }
+              },
+              {
+                "conversation_id": "1774694349792",
+                "title": "帮我去数据库查询最近的发票总额度是多少,然后回答我的问题",
+                "updated_at": "1774694361981",
+                "updatedAt": "2026/03/28 18:39:21",
+                "message_count": 1,
+                "user": {
+                  "name": "王颖奇",
+                  "phone": "15323720032",
+                  "categoryName": "图湃（北京）医疗科技"
+                }
+              },
+              {
+                "conversation_id": "1774694317960",
+                "title": "帮我去数据库查询最近的发票总额度是多少",
+                "updated_at": "1774694322215",
+                "updatedAt": "2026/03/28 18:38:42",
+                "message_count": 1,
+                "user": {
+                  "name": "王颖奇",
+                  "phone": "15323720032",
+                  "categoryName": "图湃（北京）医疗科技"
+                }
+              },
+              {
+                "conversation_id": "1774693958514",
+                "title": "帮我去数据库查询最近的发票总额度是多少",
+                "updated_at": "1774693967319",
+                "updatedAt": "2026/03/28 18:32:47",
+                "message_count": 1,
+                "user": {
+                  "name": "王颖奇",
+                  "phone": "15323720032",
+                  "categoryName": "图湃（北京）医疗科技"
+                }
+              },
+              {
+                "conversation_id": "1774693924121",
+                "title": "帮我去数据库查询最近的发票总额度",
+                "updated_at": "1774693929559",
+                "updatedAt": "2026/03/28 18:32:09",
+                "message_count": 1,
+                "user": {
+                  "name": "王颖奇",
+                  "phone": "15323720032",
+                  "categoryName": "图湃（北京）医疗科技"
+                }
+              },
+              {
+                "conversation_id": "1774693564753",
+                "title": "你好",
+                "updated_at": "1774693797467",
+                "updatedAt": "2026/03/28 18:29:57",
+                "message_count": 3,
+                "user": {
+                  "name": "王颖奇",
+                  "phone": "15323720032",
+                  "categoryName": "图湃（北京）医疗科技"
+                }
+              },
+              {
+                "conversation_id": "1774692008288",
+                "title": "你好",
+                "updated_at": "1774692240294",
+                "updatedAt": "2026/03/28 18:04:00",
                 "message_count": 2,
                 "user": {
                   "name": "王颖奇",
@@ -564,10 +502,10 @@
                 }
               },
               {
-                "conversation_id": "1774367921765",
-                "title": "请使用数据库查询我们公司的总员工是多少，只返回最终人数",
-                "updated_at": "1774367968987",
-                "updatedAt": "2026/03/24 23:59:28",
+                "conversation_id": "1774691519742",
+                "title": "你好",
+                "updated_at": "1774691614794",
+                "updatedAt": "2026/03/28 17:53:34",
                 "message_count": 1,
                 "user": {
                   "name": "王颖奇",
@@ -576,22 +514,10 @@
                 }
               },
               {
-                "conversation_id": "1774367872019",
-                "title": "我们公司的总员工是多少",
-                "updated_at": "1774367915953",
-                "updatedAt": "2026/03/24 23:58:35",
-                "message_count": 1,
-                "user": {
-                  "name": "王颖奇",
-                  "phone": "15323720032",
-                  "categoryName": "图湃（北京）医疗科技"
-                }
-              },
-              {
-                "conversation_id": "1774367503928",
-                "title": "阅读这个文件",
-                "updated_at": "1774367530078",
-                "updatedAt": "2026/03/24 23:52:10",
+                "conversation_id": "1774691446335",
+                "title": "你好",
+                "updated_at": "1774691609131",
+                "updatedAt": "2026/03/28 17:53:29",
                 "message_count": 1,
                 "user": {
                   "name": "王颖奇",
@@ -600,17 +526,17 @@
                 }
               }
             ],
-            "total": 24
+            "total": 18
           }
         },
-        "text": "{\"code\":0,\"msg\":\"获取历史记录成功\",\"data\":{\"list\":[{\"conversation_id\":\"1774348216964\",\"title\":\"帮我上网查询疯狂动物城2的剧情\",\"updated_at\":\"1774369452644\",\"updatedAt\":\"2026/03/25 00:24:12\",\"message_count\":1,\"user\":{\"name\":\"王颖奇\",\"phone\":\"15323720032\",\"categoryName\":\"图湃（北京）医疗科技\"}},{\"conversation_id\":\"testlive8000b\",\"title\":\"你好\",\"updated_at\":\"1774369452643\",\"updatedAt\":\"2026/03/25 00:24:12\",\"message_count\":1,\"user\":{\"name\":\"王颖奇\",\"phone\":\"15323720032\",\"categoryName\":\"图湃（北京）医疗科技\"}},{\"conversation_id\":\"1774359047179\",\"title\":\"你好\",\"updated_at\":\"1774369452643\",\"updatedAt\":\"2026/03/25 00:24:12\",\"message_count\":2,\"user\":{\"name\":\"王颖奇\",\"phone\":\"15323720032\",\"categoryName\":\"图湃（北京）医疗科技\"}},{\"conversation_id\":\"septhink1\",\"title\":\"请使用计算器计算 12*(3+4)\",\"updated_at\":\"1774369452643\",\"updatedAt\":\"2026/03/25 00:24:12\",\"message_count\":1,\"user\":{\"name\":\"王颖奇\",\"phone\":\"15323720032\",\"categoryName\":\"图湃（北京）医疗科技\"}},{\"conversation_id\":\"1773386517615\",\"title\":\"hello\",\"updated_at\":\"1774369452643\",\"updatedAt\":\"2026/03/25 00:24:12\",\"message_count\":6,\"user\":{\"name\":\"王颖奇\",\"phone\":\"15323720032\",\"categoryName\":\"图湃（北京）医疗科技\"}},{\"conversation_id\":\"testthinkreq3\",\"title\":\"请使用计算器计算 99+1\",\"updated_at\":\"1774369452642\",\"updatedAt\":\"2026/03/25 00:24:12\",\"message_count\":1,\"user\":{\"name\":\"王颖奇\",\"phone\":\"15323720032\",\"categoryName\":\"图湃（北京）医疗科技\"}},{\"conversation_id\":\"tooltracefe1\",\"title\":\"请使用计算器计算 12*(3+4)\",\"updated_at\":\"1774369452642\",\"updatedAt\":\"2026/03/25 00:24:12\",\"message_count\":1,\"user\":{\"name\":\"王颖奇\",\"phone\":\"15323720032\",\"categoryName\":\"图湃（北京）医疗科技\"}},{\"conversation_id\":\"1774348395499\",\"title\":\"213123 + 312324234是多少\",\"updated_at\":\"1774369452642\",\"updatedAt\":\"2026/03/25 00:24:12\",\"message_count\":4,\"user\":{\"name\":\"王颖奇\",\"phone\":\"15323720032\",\"categoryName\":\"图湃（北京）医疗科技\"}},{\"conversation_id\":\"1774342058782\",\"title\":\"你好\",\"updated_at\":\"1774369452642\",\"updatedAt\":\"2026/03/25 00:24:12\",\"message_count\":2,\"user\":{\"name\":\"王颖奇\",\"phone\":\"15323720032\",\"categoryName\":\"图湃（北京）医疗科技\"}},{\"conversation_id\":\"1774359730787\",\"title\":\"帮我计算3123 + 9389124  ,使用计算器\",\"updated_at\":\"1774369452641\",\"updatedAt\":\"2026/03/25 00:24:12\",\"message_count\":3,\"user\":{\"name\":\"王颖奇\",\"phone\":\"15323720032\",\"categoryName\":\"图湃（北京）医疗科技\"}},{\"conversation_id\":\"1774360603189\",\"title\":\"帮我计算213123+3123，用计算器\",\"updated_at\":\"1774369452641\",\"updatedAt\":\"2026/03/25 00:24:12\",\"message_count\":2,\"user\":{\"name\":\"王颖奇\",\"phone\":\"15323720032\",\"categoryName\":\"图湃（北京）医疗科技\"}},{\"conversation_id\":\"tooltrace1\",\"title\":\"请使用计算器计算 123*456，并告诉我结果\",\"updated_at\":\"1774369452640\",\"updatedAt\":\"2026/03/25 00:24:12\",\"message_count\":1,\"user\":{\"name\":\"王颖奇\",\"phone\":\"15323720032\",\"categoryName\":\"图湃（北京）医疗科技\"}},{\"conversation_id\":\"testthinkreq4\",\"title\":\"请使用计算器计算 77+23\",\"updated_at\":\"1774369452640\",\"updatedAt\":\"2026/03/25 00:24:12\",\"message_count\":2,\"user\":{\"name\":\"王颖奇\",\"phone\":\"15323720032\",\"categoryName\":\"图湃（北京）医疗科技\"}},{\"conversation_id\":\"testthinkreq1\",\"title\":\"请使用计算器计算 12*(3+4)\",\"updated_at\":\"1774369452639\",\"updatedAt\":\"2026/03/25 00:24:12\",\"message_count\":1,\"user\":{\"name\":\"王颖奇\",\"phone\":\"15323720032\",\"categoryName\":\"图湃（北京）医疗科技\"}},{\"conversation_id\":\"verifystream1\",\"title\":\"你好\",\"updated_at\":\"1774369452639\",\"updatedAt\":\"2026/03/25 00:24:12\",\"message_count\":1,\"user\":{\"name\":\"王颖奇\",\"phone\":\"15323720032\",\"categoryName\":\"图湃（北京）医疗科技\"}},{\"conversation_id\":\"1773980024694\",\"title\":\"你好\",\"updated_at\":\"1774369452639\",\"updatedAt\":\"2026/03/25 00:24:12\",\"message_count\":5,\"user\":{\"name\":\"王颖奇\",\"phone\":\"15323720032\",\"categoryName\":\"图湃（北京）医疗科技\"}},{\"conversation_id\":\"testthinkreq5\",\"title\":\"请使用计算器计算 88+12\",\"updated_at\":\"1774369452638\",\"updatedAt\":\"2026/03/25 00:24:12\",\"message_count\":3,\"user\":{\"name\":\"王颖奇\",\"phone\":\"15323720032\",\"categoryName\":\"图湃（北京）医疗科技\"}},{\"conversation_id\":\"testlive8000\",\"title\":\"你好\",\"updated_at\":\"1774369452638\",\"updatedAt\":\"2026/03/25 00:24:12\",\"message_count\":1,\"user\":{\"name\":\"王颖奇\",\"phone\":\"15323720032\",\"categoryName\":\"图湃（北京）医疗科技\"}},{\"conversation_id\":\"1774369418483\",\"title\":\"请根据附件告诉我项目代号和交付日期\",\"updated_at\":\"1774369452579\",\"updatedAt\":\"2026/03/25 00:24:12\",\"message_count\":4,\"user\":{\"name\":\"王颖奇\",\"phone\":\"15323720032\",\"categoryName\":\"图湃（北京）医疗科技\"}},{\"conversation_id\":\"1774368740100\",\"title\":\"帮我使用计算器计算1+3123，并且帮我上数据库查询最近年度的发票总额度\",\"updated_at\":\"1774368834146\",\"updatedAt\":\"2026/03/25 00:13:54\",\"message_count\":1,\"user\":{\"name\":\"王颖奇\",\"phone\":\"15323720032\",\"categoryName\":\"图湃（北京）医疗科技\"}},{\"conversation_id\":\"1774367993235\",\"title\":\"帮我使用数据库工具来查询目前公司的特殊收入是多少？\",\"updated_at\":\"1774368093846\",\"updatedAt\":\"2026/03/25 00:01:33\",\"message_count\":2,\"user\":{\"name\":\"王颖奇\",\"phone\":\"15323720032\",\"categoryName\":\"图湃（北京）医疗科技\"}},{\"conversation_id\":\"1774367921765\",\"title\":\"请使用数据库查询我们公司的总员工是多少，只返回最终人数\",\"updated_at\":\"1774367968987\",\"updatedAt\":\"2026/03/24 23:59:28\",\"message_count\":1,\"user\":{\"name\":\"王颖奇\",\"phone\":\"15323720032\",\"categoryName\":\"图湃（北京）医疗科技\"}},{\"conversation_id\":\"1774367872019\",\"title\":\"我们公司的总员工是多少\",\"updated_at\":\"1774367915953\",\"updatedAt\":\"2026/03/24 23:58:35\",\"message_count\":1,\"user\":{\"name\":\"王颖奇\",\"phone\":\"15323720032\",\"categoryName\":\"图湃（北京）医疗科技\"}},{\"conversation_id\":\"1774367503928\",\"title\":\"阅读这个文件\",\"updated_at\":\"1774367530078\",\"updatedAt\":\"2026/03/24 23:52:10\",\"message_count\":1,\"user\":{\"name\":\"王颖奇\",\"phone\":\"15323720032\",\"categoryName\":\"图湃（北京）医疗科技\"}}],\"total\":24}}",
+        "text": "{\"code\":0,\"msg\":\"获取历史记录成功\",\"data\":{\"list\":[{\"conversation_id\":\"1774871382270\",\"title\":\"请根据附件告诉我项目代号和交付日期\",\"updated_at\":\"1774871477390\",\"updatedAt\":\"2026/03/30 19:51:17\",\"message_count\":4,\"user\":{\"name\":\"王颖奇\",\"phone\":\"15323720032\",\"categoryName\":\"图湃（北京）医疗科技\"}},{\"conversation_id\":\"1774845096342\",\"title\":\"帮我计算根号下1873123是多少\",\"updated_at\":\"1774861080206\",\"updatedAt\":\"2026/03/30 16:58:00\",\"message_count\":3,\"user\":{\"name\":\"王颖奇\",\"phone\":\"15323720032\",\"categoryName\":\"图湃（北京）医疗科技\"}},{\"conversation_id\":\"1774844828981\",\"title\":\"帮我上网搜索张雪峰怎么了？\",\"updated_at\":\"1774844916414\",\"updatedAt\":\"2026/03/30 12:28:36\",\"message_count\":1,\"user\":{\"name\":\"王颖奇\",\"phone\":\"15323720032\",\"categoryName\":\"图湃（北京）医疗科技\"}},{\"conversation_id\":\"1774844472598\",\"title\":\"你是什么模型\",\"updated_at\":\"1774844770942\",\"updatedAt\":\"2026/03/30 12:26:10\",\"message_count\":3,\"user\":{\"name\":\"王颖奇\",\"phone\":\"15323720032\",\"categoryName\":\"图湃（北京）医疗科技\"}},{\"conversation_id\":\"1774706792458\",\"title\":\"请根据知识库回答：RAG二次验收库中的验收令牌、项目负责人、上线日期分别是什么？如果未命中知识库请明确说明。\",\"updated_at\":\"1774706800148\",\"updatedAt\":\"2026/03/28 22:06:40\",\"message_count\":1,\"user\":{\"name\":\"王颖奇\",\"phone\":\"15323720032\",\"categoryName\":\"图湃（北京）医疗科技\"}},{\"conversation_id\":\"1774706759906\",\"title\":\"不要使用数据库工具，也不要编造。请调用知识库检索工具rag_tool，回答验收令牌、项目负责人、上线日期。\",\"updated_at\":\"1774706776068\",\"updatedAt\":\"2026/03/28 22:06:16\",\"message_count\":1,\"user\":{\"name\":\"王颖奇\",\"phone\":\"15323720032\",\"categoryName\":\"图湃（北京）医疗科技\"}},{\"conversation_id\":\"1774706759898\",\"title\":\"请根据知识库回答：验收令牌、项目负责人、上线日期分别是什么？如果未命中知识库请明确说明。\",\"updated_at\":\"1774706774323\",\"updatedAt\":\"2026/03/28 22:06:14\",\"message_count\":1,\"user\":{\"name\":\"王颖奇\",\"phone\":\"15323720032\",\"categoryName\":\"图湃（北京）医疗科技\"}},{\"conversation_id\":\"1774705044637\",\"title\":\"不要使用数据库工具，也不要编造。请调用知识库检索工具rag_tool，回答知识库测试口令、项目负责人、上线日期。\",\"updated_at\":\"1774705062257\",\"updatedAt\":\"2026/03/28 21:37:42\",\"message_count\":1,\"user\":{\"name\":\"王颖奇\",\"phone\":\"15323720032\",\"categoryName\":\"图湃（北京）医疗科技\"}},{\"conversation_id\":\"1774705014739\",\"title\":\"请严格使用知识库回答：RAG接口验收库中的知识库测试口令、项目负责人、上线日期分别是什么？如果没有命中知识库就明确说未找到。\",\"updated_at\":\"1774705027912\",\"updatedAt\":\"2026/03/28 21:37:07\",\"message_count\":1,\"user\":{\"name\":\"王颖奇\",\"phone\":\"15323720032\",\"categoryName\":\"图湃（北京）医疗科技\"}},{\"conversation_id\":\"1774694374305\",\"title\":\"你好\",\"updated_at\":\"1774700752426\",\"updatedAt\":\"2026/03/28 20:25:52\",\"message_count\":8,\"user\":{\"name\":\"王颖奇\",\"phone\":\"15323720032\",\"categoryName\":\"图湃（北京）医疗科技\"}},{\"conversation_id\":\"1774694349792\",\"title\":\"帮我去数据库查询最近的发票总额度是多少,然后回答我的问题\",\"updated_at\":\"1774694361981\",\"updatedAt\":\"2026/03/28 18:39:21\",\"message_count\":1,\"user\":{\"name\":\"王颖奇\",\"phone\":\"15323720032\",\"categoryName\":\"图湃（北京）医疗科技\"}},{\"conversation_id\":\"1774694317960\",\"title\":\"帮我去数据库查询最近的发票总额度是多少\",\"updated_at\":\"1774694322215\",\"updatedAt\":\"2026/03/28 18:38:42\",\"message_count\":1,\"user\":{\"name\":\"王颖奇\",\"phone\":\"15323720032\",\"categoryName\":\"图湃（北京）医疗科技\"}},{\"conversation_id\":\"1774693958514\",\"title\":\"帮我去数据库查询最近的发票总额度是多少\",\"updated_at\":\"1774693967319\",\"updatedAt\":\"2026/03/28 18:32:47\",\"message_count\":1,\"user\":{\"name\":\"王颖奇\",\"phone\":\"15323720032\",\"categoryName\":\"图湃（北京）医疗科技\"}},{\"conversation_id\":\"1774693924121\",\"title\":\"帮我去数据库查询最近的发票总额度\",\"updated_at\":\"1774693929559\",\"updatedAt\":\"2026/03/28 18:32:09\",\"message_count\":1,\"user\":{\"name\":\"王颖奇\",\"phone\":\"15323720032\",\"categoryName\":\"图湃（北京）医疗科技\"}},{\"conversation_id\":\"1774693564753\",\"title\":\"你好\",\"updated_at\":\"1774693797467\",\"updatedAt\":\"2026/03/28 18:29:57\",\"message_count\":3,\"user\":{\"name\":\"王颖奇\",\"phone\":\"15323720032\",\"categoryName\":\"图湃（北京）医疗科技\"}},{\"conversation_id\":\"1774692008288\",\"title\":\"你好\",\"updated_at\":\"1774692240294\",\"updatedAt\":\"2026/03/28 18:04:00\",\"message_count\":2,\"user\":{\"name\":\"王颖奇\",\"phone\":\"15323720032\",\"categoryName\":\"图湃（北京）医疗科技\"}},{\"conversation_id\":\"1774691519742\",\"title\":\"你好\",\"updated_at\":\"1774691614794\",\"updatedAt\":\"2026/03/28 17:53:34\",\"message_count\":1,\"user\":{\"name\":\"王颖奇\",\"phone\":\"15323720032\",\"categoryName\":\"图湃（北京）医疗科技\"}},{\"conversation_id\":\"1774691446335\",\"title\":\"你好\",\"updated_at\":\"1774691609131\",\"updatedAt\":\"2026/03/28 17:53:29\",\"message_count\":1,\"user\":{\"name\":\"王颖奇\",\"phone\":\"15323720032\",\"categoryName\":\"图湃（北京）医疗科技\"}}],\"total\":18}}",
         "stderr": ""
       },
       "edge_cases": {
         "invalid_start_time": {
           "ok": false,
           "status": 400,
-          "elapsed_ms": 9.18,
+          "elapsed_ms": 8.97,
           "json": {
             "code": 1,
             "msg": "获取历史记录失败",
@@ -624,18 +550,30 @@
         "search_hit": {
           "ok": true,
           "status": 200,
-          "elapsed_ms": 19.94,
+          "elapsed_ms": 14.92,
           "json": {
             "code": 0,
             "msg": "获取历史记录成功",
             "data": {
               "list": [
                 {
-                  "conversation_id": "1774369418483",
+                  "conversation_id": "1774871382270",
                   "title": "请根据附件告诉我项目代号和交付日期",
-                  "updated_at": "1774369452579",
-                  "updatedAt": "2026/03/25 00:24:12",
+                  "updated_at": "1774871477390",
+                  "updatedAt": "2026/03/30 19:51:17",
                   "message_count": 4,
+                  "user": {
+                    "name": "王颖奇",
+                    "phone": "15323720032",
+                    "categoryName": "图湃（北京）医疗科技"
+                  }
+                },
+                {
+                  "conversation_id": "1774706759906",
+                  "title": "不要使用数据库工具，也不要编造。请调用知识库检索工具rag_tool，回答验收令牌、项目负责人、上线日期。",
+                  "updated_at": "1774706776068",
+                  "updatedAt": "2026/03/28 22:06:16",
+                  "message_count": 1,
                   "user": {
                     "name": "王颖奇",
                     "phone": "15323720032",
@@ -643,16 +581,16 @@
                   }
                 }
               ],
-              "total": 1
+              "total": 2
             }
           },
-          "text": "{\"code\":0,\"msg\":\"获取历史记录成功\",\"data\":{\"list\":[{\"conversation_id\":\"1774369418483\",\"title\":\"请根据附件告诉我项目代号和交付日期\",\"updated_at\":\"1774369452579\",\"updatedAt\":\"2026/03/25 00:24:12\",\"message_count\":4,\"user\":{\"name\":\"王颖奇\",\"phone\":\"15323720032\",\"categoryName\":\"图湃（北京）医疗科技\"}}],\"total\":1}}",
+          "text": "{\"code\":0,\"msg\":\"获取历史记录成功\",\"data\":{\"list\":[{\"conversation_id\":\"1774871382270\",\"title\":\"请根据附件告诉我项目代号和交付日期\",\"updated_at\":\"1774871477390\",\"updatedAt\":\"2026/03/30 19:51:17\",\"message_count\":4,\"user\":{\"name\":\"王颖奇\",\"phone\":\"15323720032\",\"categoryName\":\"图湃（北京）医疗科技\"}},{\"conversation_id\":\"1774706759906\",\"title\":\"不要使用数据库工具，也不要编造。请调用知识库检索工具rag_tool，回答验收令牌、项目负责人、上线日期。\",\"updated_at\":\"1774706776068\",\"updatedAt\":\"2026/03/28 22:06:16\",\"message_count\":1,\"user\":{\"name\":\"王颖奇\",\"phone\":\"15323720032\",\"categoryName\":\"图湃（北京）医疗科技\"}}],\"total\":2}}",
           "stderr": ""
         },
         "search_miss": {
           "ok": true,
           "status": 200,
-          "elapsed_ms": 18.31,
+          "elapsed_ms": 15.94,
           "json": {
             "code": 0,
             "msg": "获取历史记录成功",
@@ -672,24 +610,24 @@
         "ok": 20,
         "failed": 0,
         "latency_ms": {
-          "min": 22.83,
-          "p50": 32.76,
-          "max": 54.37
+          "min": 13.15,
+          "p50": 22.07,
+          "max": 30.02
         },
         "samples": [
           {
             "status": 200,
-            "elapsed_ms": 22.83,
+            "elapsed_ms": 13.15,
             "stderr": ""
           },
           {
             "status": 200,
-            "elapsed_ms": 32.47,
+            "elapsed_ms": 18.12,
             "stderr": ""
           },
           {
             "status": 200,
-            "elapsed_ms": 41.18,
+            "elapsed_ms": 22.15,
             "stderr": ""
           }
         ]
@@ -700,17 +638,17 @@
       "success_case": {
         "ok": true,
         "status": 200,
-        "elapsed_ms": 11.45,
+        "elapsed_ms": 11.68,
         "json": {
           "code": 0,
           "msg": "获取历史详情成功",
           "data": {
-            "conversation_id": "1774369418483",
+            "conversation_id": "1774871382270",
             "title": "请根据附件告诉我项目代号和交付日期",
-            "created_at": "1774369418587",
-            "updated_at": "1774369452579",
-            "createdAt": "2026/03/25 00:23:38",
-            "updatedAt": "2026/03/25 00:24:12",
+            "created_at": "1774871382453",
+            "updated_at": "1774871477390",
+            "createdAt": "2026/03/30 19:49:42",
+            "updatedAt": "2026/03/30 19:51:17",
             "message_count": 4,
             "user": {
               "name": "王颖奇",
@@ -727,16 +665,18 @@
                 ],
                 "uploaded_files": [
                   {
-                    "file_id": "file_1774369418587_0",
+                    "file_id": "file_1774871382469_0",
                     "filename": "probe.txt",
-                    "url": "/api/static/chat_uploads/2026-03-25/1774369418483/0/probe.txt",
-                    "relative_path": "2026-03-25/1774369418483/0/probe.txt"
+                    "url": "http://127.0.0.1:9000/xintuoyin-data/chat/2026-03-30/1774871382270/0/probe.txt?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=minioadmin%2F20260330%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20260330T114942Z&X-Amz-Expires=604800&X-Amz-SignedHeaders=host&X-Amz-Signature=812330494ce54bd812c27e9ffea001f61a97eff688b2e122df051d63ec5d5207",
+                    "relative_path": "chat/2026-03-30/1774871382270/0/probe.txt",
+                    "object_name": "chat/2026-03-30/1774871382270/0/probe.txt"
                   },
                   {
-                    "file_id": "file_1774369452579_0",
+                    "file_id": "file_1774871477388_0",
                     "filename": "probe_1.txt",
-                    "url": "/api/static/chat_uploads/2026-03-25/1774369418483/0/probe_1.txt",
-                    "relative_path": "2026-03-25/1774369418483/0/probe_1.txt"
+                    "url": "http://127.0.0.1:9000/xintuoyin-data/chat/2026-03-30/1774871382270/0/probe_1.txt?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=minioadmin%2F20260330%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20260330T115117Z&X-Amz-Expires=604800&X-Amz-SignedHeaders=host&X-Amz-Signature=bea6e900fb837823bfde50b78972419ae468c3798381a0d261094740b66056f7",
+                    "relative_path": "chat/2026-03-30/1774871382270/0/probe_1.txt",
+                    "object_name": "chat/2026-03-30/1774871382270/0/probe_1.txt"
                   }
                 ],
                 "file_contexts": [
@@ -747,20 +687,16 @@
                 ],
                 "web_search": false,
                 "db_version": null,
-                "answer": "根据文件`probe.txt`的内容，项目代号是“北极星”，交付日期是“2026-04-15”。",
+                "answer": "<think>\n好的，我需要回答用户的问题，用户问的是项目代号和交付日期。根据用户提供的上传文件内容，文件1是probe.txt，里面提到了项目代号：北极星，交付日期：2026-04-15。系统已经成功读取了文件，所以不需要说无法读取。我应该直接引用文件中的信息，并明确提到文件名。不需要调用其他工具，因为信息已经在上传的文件中给出。检查是否有其他要求，比如必须结合历史对话，但这里没有历史对话的内容，所以主要依据当前问题和上传文件。确认信息无误后，直接回答即可。\n</think>\n\n根据本轮上传的【probe.txt】文件记载，项目代号为\"北极星\"，交付日期为\"2026-04-15\"。该信息直接来源于您当前上传文件的正文内容。",
                 "resource": [],
-                "recommend_answer": [
-                  "项目的具体内容是什么？",
-                  "项目的负责人是谁？",
-                  "项目的预算是多少？"
-                ],
+                "recommend_answer": [],
                 "feedback": null,
                 "thinking_text": "这次回答没有额外调用工具，我直接根据已有上下文完成了回复。",
                 "thinking_steps": [],
-                "created_at": "1774369429718",
-                "updated_at": "1774369429718",
-                "createdAt": "2026/03/25 00:23:49",
-                "updatedAt": "2026/03/25 00:23:49"
+                "created_at": "1774871400478",
+                "updated_at": "1774871400478",
+                "createdAt": "2026/03/30 19:50:00",
+                "updatedAt": "2026/03/30 19:50:00"
               },
               {
                 "message_index": 1,
@@ -770,20 +706,16 @@
                 "file_contexts": [],
                 "web_search": false,
                 "db_version": null,
-                "answer": "OK",
+                "answer": "<think>\n好的，用户现在的问题是让我简短回复“ok”，同时需要结合历史对话、本轮问题和上传文件内容来回答。首先，回顾一下之前的对话，用户上传了probe.txt文件，里面包含了项目代号和交付日期的信息。助手已经正确解析了文件内容并提供了相关信息。现在用户的新请求是简短回复“ok”，但根据回答要求，必须结合历史对话、本轮问题和上传文件内容。\n\n首先，我需要确认用户的需求。用户可能是在确认之前的回答是否正确，或者希望得到一个简短的确认回复。根据回答要求，必须提到文件名，并且不能忽略本轮输入的问题。用户本轮输入的问题确实是“请简短回复ok”，所以需要在回复中包含“ok”同时引用文件信息。\n\n接下来，检查是否有必要调用工具。由于用户已经上传了文件，并且之前已经正确解析，现在不需要调用rag_tool或其他工具。回答要求中提到如果文件已解析成功，就直接使用文件内容，不需要再调用工具。因此，直接引用probe.txt中的信息即可。\n\n然后，确保回复符合所有要求：必须结合历史对话、本轮问题和上传文件内容，明确提到文件名，不忽略用户的问题。用户要求简短回复“ok”，但根据规则，必须包含文件信息，所以需要将“ok”与文件内容结合起来。例如，可以说“已确认文件内容，回复：ok”，但根据用户的要求可能需要更简短。不过根据示例，可能需要更直接的回复，但必须包含文件名和关键信息。\n\n最后，确保不违反任何行为准则，比如不进行过度总结，保留关键数据，并注明来源。因此，正确的回复应该是简短确认，同时提到文件名和项目信息，然后回复“ok”。\n</think>\n\nok，已确认《probe.txt》文件内容：项目代号\"北极星\"，交付日期\"2026-04-15\"。",
                 "resource": [],
-                "recommend_answer": [
-                  "你能做些什么？",
-                  "你是谁开发的？",
-                  "你能帮我做什么？"
-                ],
+                "recommend_answer": [],
                 "feedback": null,
                 "thinking_text": "这次回答没有额外调用工具，我直接根据已有上下文完成了回复。",
                 "thinking_steps": [],
-                "created_at": "1774369437546",
-                "updated_at": "1774369437546",
-                "createdAt": "2026/03/25 00:23:57",
-                "updatedAt": "2026/03/25 00:23:57"
+                "created_at": "1774871429613",
+                "updated_at": "1774871429613",
+                "createdAt": "2026/03/30 19:50:29",
+                "updatedAt": "2026/03/30 19:50:29"
               },
               {
                 "message_index": 2,
@@ -793,20 +725,16 @@
                 "file_contexts": [],
                 "web_search": false,
                 "db_version": null,
-                "answer": "OK",
+                "answer": "<think>\n好的，用户现在让我简短回复“ok”，但需要结合历史对话、本轮问题和上传文件内容。首先，回顾之前的对话，用户上传了probe.txt文件，里面包含项目代号和交付日期。助手已经正确解析了文件内容并给出了回答。现在用户的新请求是简短回复“ok”，但根据规则，必须结合历史对话和文件内容。\n\n我需要确保回复中提到文件名，并确认文件中的信息。用户可能希望得到一个简洁的确认，所以直接回复“ok”并附上文件中的关键信息。例如：“ok，《probe.txt》文件显示项目代号为北极星，交付日期2026-04-15。” 这样既符合简短的要求，又包含了必要的信息和文件名。同时，没有忽略用户的问题，也没有调用任何工具，因为文件已经解析成功。检查所有要求，确保没有遗漏，然后给出最终回复。\n</think>\n\nok，《probe.txt》文件显示项目代号为\"北极星\"，交付日期\"2026-04-15\"。",
                 "resource": [],
-                "recommend_answer": [
-                  "有什么需要帮助的吗？",
-                  "接下来有什么计划？",
-                  "有什么新消息吗？"
-                ],
+                "recommend_answer": [],
                 "feedback": null,
                 "thinking_text": "这次回答没有额外调用工具，我直接根据已有上下文完成了回复。",
                 "thinking_steps": [],
-                "created_at": "1774369443633",
-                "updated_at": "1774369443633",
-                "createdAt": "2026/03/25 00:24:03",
-                "updatedAt": "2026/03/25 00:24:03"
+                "created_at": "1774871458160",
+                "updated_at": "1774871458160",
+                "createdAt": "2026/03/30 19:50:58",
+                "updatedAt": "2026/03/30 19:50:58"
               },
               {
                 "message_index": 3,
@@ -816,32 +744,28 @@
                 "file_contexts": [],
                 "web_search": false,
                 "db_version": null,
-                "answer": "根据文件`probe.txt`的内容，项目代号是“北极星”，交付日期是“2026-04-15”，负责人是“测试机器人”。",
+                "answer": "<think>\n好的，我需要总结用户提供的文件内容。根据历史对话，用户上传了《probe.txt》，其中包含项目代号“北极星”和交付日期“2026-04-15”。当前用户要求一句话总结该文件内容。由于文件已成功读取，我应直接引用信息并提及文件名，同时结合本轮问题。需要确保不调用工具，因为信息已在文件中给出。检查所有要求后，确认回复符合规范。\n</think>\n\n根据《probe.txt》文件记载，项目代号为\"北极星\"，计划于2026年4月15日交付。",
                 "resource": [],
-                "recommend_answer": [
-                  "项目的具体内容是什么？",
-                  "交付日期能否提前？",
-                  "测试机器人是谁？"
-                ],
+                "recommend_answer": [],
                 "feedback": null,
                 "thinking_text": "这次回答没有额外调用工具，我直接根据已有上下文完成了回复。",
                 "thinking_steps": [],
-                "created_at": "1774369452498",
-                "updated_at": "1774369452498",
-                "createdAt": "2026/03/25 00:24:12",
-                "updatedAt": "2026/03/25 00:24:12"
+                "created_at": "1774871477295",
+                "updated_at": "1774871477295",
+                "createdAt": "2026/03/30 19:51:17",
+                "updatedAt": "2026/03/30 19:51:17"
               }
             ]
           }
         },
-        "text": "{\"code\":0,\"msg\":\"获取历史详情成功\",\"data\":{\"conversation_id\":\"1774369418483\",\"title\":\"请根据附件告诉我项目代号和交付日期\",\"created_at\":\"1774369418587\",\"updated_at\":\"1774369452579\",\"createdAt\":\"2026/03/25 00:23:38\",\"updatedAt\":\"2026/03/25 00:24:12\",\"message_count\":4,\"user\":{\"name\":\"王颖奇\",\"phone\":\"15323720032\",\"categoryName\":\"图湃（北京）医疗科技\"},\"messages\":[{\"message_index\":0,\"question\":\"请根据附件告诉我项目代号和交付日期\",\"files\":[\"probe.txt\",\"probe_1.txt\"],\"uploaded_files\":[{\"file_id\":\"file_1774369418587_0\",\"filename\":\"probe.txt\",\"url\":\"/api/static/chat_uploads/2026-03-25/1774369418483/0/probe.txt\",\"relative_path\":\"2026-03-25/1774369418483/0/probe.txt\"},{\"file_id\":\"file_1774369452579_0\",\"filename\":\"probe_1.txt\",\"url\":\"/api/static/chat_uploads/2026-03-25/1774369418483/0/probe_1.txt\",\"relative_path\":\"2026-03-25/1774369418483/0/probe_1.txt\"}],\"file_contexts\":[{\"filename\":\"probe.txt\",\"text\":\"项目代号：北极星 交付日期：2026-04-15 负责人：测试机器人\"}],\"web_search\":false,\"db_version\":null,\"answer\":\"根据文件`probe.txt`的内容，项目代号是“北极星”，交付日期是“2026-04-15”。\",\"resource\":[],\"recommend_answer\":[\"项目的具体内容是什么？\",\"项目的负责人是谁？\",\"项目的预算是多少？\"],\"feedback\":null,\"thinking_text\":\"这次回答没有额外调用工具，我直接根据已有上下文完成了回复。\",\"thinking_steps\":[],\"created_at\":\"1774369429718\",\"updated_at\":\"1774369429718\",\"createdAt\":\"2026/03/25 00:23:49\",\"updatedAt\":\"2026/03/25 00:23:49\"},{\"message_index\":1,\"question\":\"请简短回复ok\",\"files\":[],\"uploaded_files\":[],\"file_contexts\":[],\"web_search\":false,\"db_version\":null,\"answer\":\"OK\",\"resource\":[],\"recommend_answer\":[\"你能做些什么？\",\"你是谁开发的？\",\"你能帮我做什么？\"],\"feedback\":null,\"thinking_text\":\"这次回答没有额外调用工具，我直接根据已有上下文完成了回复。\",\"thinking_steps\":[],\"created_at\":\"1774369437546\",\"updated_at\":\"1774369437546\",\"createdAt\":\"2026/03/25 00:23:57\",\"updatedAt\":\"2026/03/25 00:23:57\"},{\"message_index\":2,\"question\":\"请简短回复ok\",\"files\":[],\"uploaded_files\":[],\"file_contexts\":[],\"web_search\":false,\"db_version\":null,\"answer\":\"OK\",\"resource\":[],\"recommend_answer\":[\"有什么需要帮助的吗？\",\"接下来有什么计划？\",\"有什么新消息吗？\"],\"feedback\":null,\"thinking_text\":\"这次回答没有额外调用工具，我直接根据已有上下文完成了回复。\",\"thinking_steps\":[],\"created_at\":\"1774369443633\",\"updated_at\":\"1774369443633\",\"createdAt\":\"2026/03/25 00:24:03\",\"updatedAt\":\"2026/03/25 00:24:03\"},{\"message_index\":3,\"question\":\"继续一句话总结上面的文件内容\",\"files\":[],\"uploaded_files\":[],\"file_contexts\":[],\"web_search\":false,\"db_version\":null,\"answer\":\"根据文件`probe.txt`的内容，项目代号是“北极星”，交付日期是“2026-04-15”，负责人是“测试机器人”。\",\"resource\":[],\"recommend_answer\":[\"项目的具体内容是什么？\",\"交付日期能否提前？\",\"测试机器人是谁？\"],\"feedback\":null,\"thinking_text\":\"这次回答没有额外调用工具，我直接根据已有上下文完成了回复。\",\"thinking_steps\":[],\"created_at\":\"1774369452498\",\"updated_at\":\"1774369452498\",\"createdAt\":\"2026/03/25 00:24:12\",\"updatedAt\":\"2026/03/25 00:24:12\"}]}}",
+        "text": "{\"code\":0,\"msg\":\"获取历史详情成功\",\"data\":{\"conversation_id\":\"1774871382270\",\"title\":\"请根据附件告诉我项目代号和交付日期\",\"created_at\":\"1774871382453\",\"updated_at\":\"1774871477390\",\"createdAt\":\"2026/03/30 19:49:42\",\"updatedAt\":\"2026/03/30 19:51:17\",\"message_count\":4,\"user\":{\"name\":\"王颖奇\",\"phone\":\"15323720032\",\"categoryName\":\"图湃（北京）医疗科技\"},\"messages\":[{\"message_index\":0,\"question\":\"请根据附件告诉我项目代号和交付日期\",\"files\":[\"probe.txt\",\"probe_1.txt\"],\"uploaded_files\":[{\"file_id\":\"file_1774871382469_0\",\"filename\":\"probe.txt\",\"url\":\"http://127.0.0.1:9000/xintuoyin-data/chat/2026-03-30/1774871382270/0/probe.txt?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=minioadmin%2F20260330%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20260330T114942Z&X-Amz-Expires=604800&X-Amz-SignedHeaders=host&X-Amz-Signature=812330494ce54bd812c27e9ffea001f61a97eff688b2e122df051d63ec5d5207\",\"relative_path\":\"chat/2026-03-30/1774871382270/0/probe.txt\",\"object_name\":\"chat/2026-03-30/1774871382270/0/probe.txt\"},{\"file_id\":\"file_1774871477388_0\",\"filename\":\"probe_1.txt\",\"url\":\"http://127.0.0.1:9000/xintuoyin-data/chat/2026-03-30/1774871382270/0/probe_1.txt?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=minioadmin%2F20260330%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20260330T115117Z&X-Amz-Expires=604800&X-Amz-SignedHeaders=host&X-Amz-Signature=bea6e900fb837823bfde50b78972419ae468c3798381a0d261094740b66056f7\",\"relative_path\":\"chat/2026-03-30/1774871382270/0/probe_1.txt\",\"object_name\":\"chat/2026-03-30/1774871382270/0/probe_1.txt\"}],\"file_contexts\":[{\"filename\":\"probe.txt\",\"text\":\"项目代号：北极星 交付日期：2026-04-15 负责人：测试机器人\"}],\"web_search\":false,\"db_version\":null,\"answer\":\"<think>\\n好的，我需要回答用户的问题，用户问的是项目代号和交付日期。根据用户提供的上传文件内容，文件1是probe.txt，里面提到了项目代号：北极星，交付日期：2026-04-15。系统已经成功读取了文件，所以不需要说无法读取。我应该直接引用文件中的信息，并明确提到文件名。不需要调用其他工具，因为信息已经在上传的文件中给出。检查是否有其他要求，比如必须结合历史对话，但这里没有历史对话的内容，所以主要依据当前问题和上传文件。确认信息无误后，直接回答即可。\\n</think>\\n\\n根据本轮上传的【probe.txt】文件记载，项目代号为\\\"北极星\\\"，交付日期为\\\"2026-04-15\\\"。该信息直接来源于您当前上传文件的正文内容。\",\"resource\":[],\"recommend_answer\":[],\"feedback\":null,\"thinking_text\":\"这次回答没有额外调用工具，我直接根据已有上下文完成了回复。\",\"thinking_steps\":[],\"created_at\":\"1774871400478\",\"updated_at\":\"1774871400478\",\"createdAt\":\"2026/03/30 19:50:00\",\"updatedAt\":\"2026/03/30 19:50:00\"},{\"message_index\":1,\"question\":\"请简短回复ok\",\"files\":[],\"uploaded_files\":[],\"file_contexts\":[],\"web_search\":false,\"db_version\":null,\"answer\":\"<think>\\n好的，用户现在的问题是让我简短回复“ok”，同时需要结合历史对话、本轮问题和上传文件内容来回答。首先，回顾一下之前的对话，用户上传了probe.txt文件，里面包含了项目代号和交付日期的信息。助手已经正确解析了文件内容并提供了相关信息。现在用户的新请求是简短回复“ok”，但根据回答要求，必须结合历史对话、本轮问题和上传文件内容。\\n\\n首先，我需要确认用户的需求。用户可能是在确认之前的回答是否正确，或者希望得到一个简短的确认回复。根据回答要求，必须提到文件名，并且不能忽略本轮输入的问题。用户本轮输入的问题确实是“请简短回复ok”，所以需要在回复中包含“ok”同时引用文件信息。\\n\\n接下来，检查是否有必要调用工具。由于用户已经上传了文件，并且之前已经正确解析，现在不需要调用rag_tool或其他工具。回答要求中提到如果文件已解析成功，就直接使用文件内容，不需要再调用工具。因此，直接引用probe.txt中的信息即可。\\n\\n然后，确保回复符合所有要求：必须结合历史对话、本轮问题和上传文件内容，明确提到文件名，不忽略用户的问题。用户要求简短回复“ok”，但根据规则，必须包含文件信息，所以需要将“ok”与文件内容结合起来。例如，可以说“已确认文件内容，回复：ok”，但根据用户的要求可能需要更简短。不过根据示例，可能需要更直接的回复，但必须包含文件名和关键信息。\\n\\n最后，确保不违反任何行为准则，比如不进行过度总结，保留关键数据，并注明来源。因此，正确的回复应该是简短确认，同时提到文件名和项目信息，然后回复“ok”。\\n</think>\\n\\nok，已确认《probe.txt》文件内容：项目代号\\\"北极星\\\"，交付日期\\\"2026-04-15\\\"。\",\"resource\":[],\"recommend_answer\":[],\"feedback\":null,\"thinking_text\":\"这次回答没有额外调用工具，我直接根据已有上下文完成了回复。\",\"thinking_steps\":[],\"created_at\":\"1774871429613\",\"updated_at\":\"1774871429613\",\"createdAt\":\"2026/03/30 19:50:29\",\"updatedAt\":\"2026/03/30 19:50:29\"},{\"message_index\":2,\"question\":\"请简短回复ok\",\"files\":[],\"uploaded_files\":[],\"file_contexts\":[],\"web_search\":false,\"db_version\":null,\"answer\":\"<think>\\n好的，用户现在让我简短回复“ok”，但需要结合历史对话、本轮问题和上传文件内容。首先，回顾之前的对话，用户上传了probe.txt文件，里面包含项目代号和交付日期。助手已经正确解析了文件内容并给出了回答。现在用户的新请求是简短回复“ok”，但根据规则，必须结合历史对话和文件内容。\\n\\n我需要确保回复中提到文件名，并确认文件中的信息。用户可能希望得到一个简洁的确认，所以直接回复“ok”并附上文件中的关键信息。例如：“ok，《probe.txt》文件显示项目代号为北极星，交付日期2026-04-15。” 这样既符合简短的要求，又包含了必要的信息和文件名。同时，没有忽略用户的问题，也没有调用任何工具，因为文件已经解析成功。检查所有要求，确保没有遗漏，然后给出最终回复。\\n</think>\\n\\nok，《probe.txt》文件显示项目代号为\\\"北极星\\\"，交付日期\\\"2026-04-15\\\"。\",\"resource\":[],\"recommend_answer\":[],\"feedback\":null,\"thinking_text\":\"这次回答没有额外调用工具，我直接根据已有上下文完成了回复。\",\"thinking_steps\":[],\"created_at\":\"1774871458160\",\"updated_at\":\"1774871458160\",\"createdAt\":\"2026/03/30 19:50:58\",\"updatedAt\":\"2026/03/30 19:50:58\"},{\"message_index\":3,\"question\":\"继续一句话总结上面的文件内容\",\"files\":[],\"uploaded_files\":[],\"file_contexts\":[],\"web_search\":false,\"db_version\":null,\"answer\":\"<think>\\n好的，我需要总结用户提供的文件内容。根据历史对话，用户上传了《probe.txt》，其中包含项目代号“北极星”和交付日期“2026-04-15”。当前用户要求一句话总结该文件内容。由于文件已成功读取，我应直接引用信息并提及文件名，同时结合本轮问题。需要确保不调用工具，因为信息已在文件中给出。检查所有要求后，确认回复符合规范。\\n</think>\\n\\n根据《probe.txt》文件记载，项目代号为\\\"北极星\\\"，计划于2026年4月15日交付。\",\"resource\":[],\"recommend_answer\":[],\"feedback\":null,\"thinking_text\":\"这次回答没有额外调用工具，我直接根据已有上下文完成了回复。\",\"thinking_steps\":[],\"created_at\":\"1774871477295\",\"updated_at\":\"1774871477295\",\"createdAt\":\"2026/03/30 19:51:17\",\"updatedAt\":\"2026/03/30 19:51:17\"}]}}",
         "stderr": ""
       },
       "edge_cases": {
         "not_found": {
           "ok": false,
           "status": 404,
-          "elapsed_ms": 10.07,
+          "elapsed_ms": 8.96,
           "json": {
             "code": 1,
             "msg": "获取历史详情失败",
@@ -860,24 +784,24 @@
         "ok": 15,
         "failed": 0,
         "latency_ms": {
-          "min": 8.97,
-          "p50": 9.45,
-          "max": 16.02
+          "min": 6.95,
+          "p50": 9.29,
+          "max": 16.32
         },
         "samples": [
           {
             "status": 200,
-            "elapsed_ms": 10.93,
+            "elapsed_ms": 9.6,
             "stderr": ""
           },
           {
             "status": 200,
-            "elapsed_ms": 12.44,
+            "elapsed_ms": 12.87,
             "stderr": ""
           },
           {
             "status": 200,
-            "elapsed_ms": 12.54,
+            "elapsed_ms": 14.67,
             "stderr": ""
           }
         ]
@@ -888,7 +812,7 @@
       "success_case": {
         "ok": true,
         "status": 200,
-        "elapsed_ms": 10.14,
+        "elapsed_ms": 8.42,
         "json": null,
         "text": "这次回答没有额外调用工具，我直接根据已有上下文完成了回复。",
         "stderr": ""
@@ -897,22 +821,22 @@
         "not_found_message": {
           "ok": false,
           "status": 404,
-          "elapsed_ms": 9.39,
+          "elapsed_ms": 8.46,
           "json": {
             "code": 1,
             "msg": "获取思考过程失败",
             "data": {
-              "conversation_id": "1774369418483",
+              "conversation_id": "1774871382270",
               "message_index": 9999
             }
           },
-          "text": "{\"code\":1,\"msg\":\"获取思考过程失败\",\"data\":{\"conversation_id\":\"1774369418483\",\"message_index\":9999}}",
+          "text": "{\"code\":1,\"msg\":\"获取思考过程失败\",\"data\":{\"conversation_id\":\"1774871382270\",\"message_index\":9999}}",
           "stderr": ""
         },
         "not_found_conversation": {
           "ok": false,
           "status": 404,
-          "elapsed_ms": 9.11,
+          "elapsed_ms": 8.56,
           "json": {
             "code": 1,
             "msg": "获取思考过程失败",
@@ -931,24 +855,24 @@
         "ok": 10,
         "failed": 0,
         "latency_ms": {
-          "min": 9.03,
-          "p50": 10.13,
-          "max": 13.78
+          "min": 7.59,
+          "p50": 9.0,
+          "max": 11.6
         },
         "samples": [
           {
             "status": 200,
-            "elapsed_ms": 10.56,
+            "elapsed_ms": 9.0,
             "stderr": ""
           },
           {
             "status": 200,
-            "elapsed_ms": 12.73,
+            "elapsed_ms": 10.07,
             "stderr": ""
           },
           {
             "status": 200,
-            "elapsed_ms": 13.78,
+            "elapsed_ms": 11.6,
             "stderr": ""
           }
         ]
@@ -959,22 +883,22 @@
       "success_case": {
         "ok": false,
         "status": 404,
-        "elapsed_ms": 10.77,
+        "elapsed_ms": 9.82,
         "json": {
           "code": 1,
           "msg": "删除历史对话失败",
           "data": {
-            "conversation_id": "1774369452996"
+            "conversation_id": "1774871477788"
           }
         },
-        "text": "{\"code\":1,\"msg\":\"删除历史对话失败\",\"data\":{\"conversation_id\":\"1774369452996\"}}",
+        "text": "{\"code\":1,\"msg\":\"删除历史对话失败\",\"data\":{\"conversation_id\":\"1774871477788\"}}",
         "stderr": ""
       },
       "edge_cases": {
         "not_found": {
           "ok": false,
           "status": 404,
-          "elapsed_ms": 11.01,
+          "elapsed_ms": 9.73,
           "json": {
             "code": 1,
             "msg": "删除历史对话失败",
@@ -993,24 +917,24 @@
         "ok": 0,
         "failed": 5,
         "latency_ms": {
-          "min": 9.32,
-          "p50": 10.39,
-          "max": 11.89
+          "min": 8.62,
+          "p50": 9.17,
+          "max": 9.81
         },
         "samples": [
           {
             "status": 404,
-            "elapsed_ms": 11.89,
+            "elapsed_ms": 8.62,
             "stderr": ""
           },
           {
             "status": 404,
-            "elapsed_ms": 10.39,
+            "elapsed_ms": 8.74,
             "stderr": ""
           },
           {
             "status": 404,
-            "elapsed_ms": 9.33,
+            "elapsed_ms": 9.72,
             "stderr": ""
           }
         ]
@@ -1021,7 +945,7 @@
       "success_case": {
         "ok": true,
         "status": 200,
-        "elapsed_ms": 10.92,
+        "elapsed_ms": 12.01,
         "json": {
           "code": 0,
           "msg": "批量删除历史对话成功",
@@ -1036,7 +960,7 @@
         "ids_not_list": {
           "ok": false,
           "status": 400,
-          "elapsed_ms": 10.8,
+          "elapsed_ms": 9.93,
           "json": {
             "code": 1,
             "msg": "批量删除历史对话失败",
@@ -1055,24 +979,24 @@
         "ok": 5,
         "failed": 0,
         "latency_ms": {
-          "min": 10.15,
-          "p50": 10.81,
-          "max": 11.64
+          "min": 8.91,
+          "p50": 9.93,
+          "max": 10.4
         },
         "samples": [
           {
             "status": 200,
-            "elapsed_ms": 11.6,
+            "elapsed_ms": 9.93,
             "stderr": ""
           },
           {
             "status": 200,
-            "elapsed_ms": 10.15,
+            "elapsed_ms": 8.91,
             "stderr": ""
           },
           {
             "status": 200,
-            "elapsed_ms": 11.64,
+            "elapsed_ms": 9.86,
             "stderr": ""
           }
         ]
@@ -1083,13 +1007,13 @@
       "success_case": {
         "ok": true,
         "status": 200,
-        "elapsed_ms": 23.02,
+        "elapsed_ms": 25.05,
         "json": {
           "code": 0,
           "msg": "提交反馈成功",
           "data": {
-            "id": "fb_1774369418483_0",
-            "conversation_id": "1774369418483",
+            "id": "fb_1774871382270_0",
+            "conversation_id": "1774871382270",
             "message_index": 0,
             "type": "like",
             "state": "like",
@@ -1099,21 +1023,21 @@
             "name": "王颖奇",
             "enterprise": "图湃（北京）医疗科技",
             "phone": "15323720032",
-            "time": "1774369453285",
-            "update_time": "1774369453285",
-            "createdAt": "2026/03/25 00:24:13",
-            "updatedAt": "2026/03/25 00:24:13",
+            "time": "1774871478068",
+            "update_time": "1774871478068",
+            "createdAt": "2026/03/30 19:51:18",
+            "updatedAt": "2026/03/30 19:51:18",
             "process_status": "未处理"
           }
         },
-        "text": "{\"code\":0,\"msg\":\"提交反馈成功\",\"data\":{\"id\":\"fb_1774369418483_0\",\"conversation_id\":\"1774369418483\",\"message_index\":0,\"type\":\"like\",\"state\":\"like\",\"reasons\":[],\"comment\":\"\",\"pictures\":[],\"name\":\"王颖奇\",\"enterprise\":\"图湃（北京）医疗科技\",\"phone\":\"15323720032\",\"time\":\"1774369453285\",\"update_time\":\"1774369453285\",\"createdAt\":\"2026/03/25 00:24:13\",\"updatedAt\":\"2026/03/25 00:24:13\",\"process_status\":\"未处理\"}}",
+        "text": "{\"code\":0,\"msg\":\"提交反馈成功\",\"data\":{\"id\":\"fb_1774871382270_0\",\"conversation_id\":\"1774871382270\",\"message_index\":0,\"type\":\"like\",\"state\":\"like\",\"reasons\":[],\"comment\":\"\",\"pictures\":[],\"name\":\"王颖奇\",\"enterprise\":\"图湃（北京）医疗科技\",\"phone\":\"15323720032\",\"time\":\"1774871478068\",\"update_time\":\"1774871478068\",\"createdAt\":\"2026/03/30 19:51:18\",\"updatedAt\":\"2026/03/30 19:51:18\",\"process_status\":\"未处理\"}}",
         "stderr": ""
       },
       "edge_cases": {
         "invalid_type": {
           "ok": false,
           "status": 400,
-          "elapsed_ms": 12.17,
+          "elapsed_ms": 11.58,
           "json": {
             "code": 1,
             "msg": "提交反馈失败",
@@ -1127,7 +1051,7 @@
         "negative_message_index": {
           "ok": false,
           "status": 400,
-          "elapsed_ms": 12.7,
+          "elapsed_ms": 13.3,
           "json": {
             "code": 1,
             "msg": "提交反馈失败",
@@ -1141,7 +1065,7 @@
         "dislike_without_detail": {
           "ok": false,
           "status": 400,
-          "elapsed_ms": 13.0,
+          "elapsed_ms": 14.69,
           "json": {
             "code": 1,
             "msg": "提交反馈失败",
@@ -1155,13 +1079,13 @@
         "toggle_like_off": {
           "ok": true,
           "status": 200,
-          "elapsed_ms": 16.46,
+          "elapsed_ms": 16.07,
           "json": {
             "code": 0,
             "msg": "提交反馈成功",
             "data": {
-              "id": "fb_1774369418483_0",
-              "conversation_id": "1774369418483",
+              "id": "fb_1774871382270_0",
+              "conversation_id": "1774871382270",
               "message_index": 0,
               "type": "like",
               "state": null,
@@ -1171,14 +1095,14 @@
               "name": "王颖奇",
               "enterprise": "图湃（北京）医疗科技",
               "phone": "15323720032",
-              "time": "1774369453285",
-              "update_time": "1774369453339",
-              "createdAt": "2026/03/25 00:24:13",
-              "updatedAt": "2026/03/25 00:24:13",
+              "time": "1774871478068",
+              "update_time": "1774871478124",
+              "createdAt": "2026/03/30 19:51:18",
+              "updatedAt": "2026/03/30 19:51:18",
               "process_status": "未处理"
             }
           },
-          "text": "{\"code\":0,\"msg\":\"提交反馈成功\",\"data\":{\"id\":\"fb_1774369418483_0\",\"conversation_id\":\"1774369418483\",\"message_index\":0,\"type\":\"like\",\"state\":null,\"reasons\":[],\"comment\":\"\",\"pictures\":[],\"name\":\"王颖奇\",\"enterprise\":\"图湃（北京）医疗科技\",\"phone\":\"15323720032\",\"time\":\"1774369453285\",\"update_time\":\"1774369453339\",\"createdAt\":\"2026/03/25 00:24:13\",\"updatedAt\":\"2026/03/25 00:24:13\",\"process_status\":\"未处理\"}}",
+          "text": "{\"code\":0,\"msg\":\"提交反馈成功\",\"data\":{\"id\":\"fb_1774871382270_0\",\"conversation_id\":\"1774871382270\",\"message_index\":0,\"type\":\"like\",\"state\":null,\"reasons\":[],\"comment\":\"\",\"pictures\":[],\"name\":\"王颖奇\",\"enterprise\":\"图湃（北京）医疗科技\",\"phone\":\"15323720032\",\"time\":\"1774871478068\",\"update_time\":\"1774871478124\",\"createdAt\":\"2026/03/30 19:51:18\",\"updatedAt\":\"2026/03/30 19:51:18\",\"process_status\":\"未处理\"}}",
           "stderr": ""
         }
       },
@@ -1189,24 +1113,24 @@
         "ok": 4,
         "failed": 0,
         "latency_ms": {
-          "min": 15.11,
-          "p50": 15.52,
-          "max": 16.81
+          "min": 14.06,
+          "p50": 17.08,
+          "max": 17.23
         },
         "samples": [
           {
             "status": 200,
-            "elapsed_ms": 15.11,
+            "elapsed_ms": 15.83,
             "stderr": ""
           },
           {
             "status": 200,
-            "elapsed_ms": 16.81,
+            "elapsed_ms": 14.06,
             "stderr": ""
           },
           {
             "status": 200,
-            "elapsed_ms": 15.15,
+            "elapsed_ms": 17.23,
             "stderr": ""
           }
         ]
@@ -1214,13 +1138,13 @@
       "dislike_case": {
         "ok": true,
         "status": 200,
-        "elapsed_ms": 18.77,
+        "elapsed_ms": 31.98,
         "json": {
           "code": 0,
           "msg": "提交反馈成功",
           "data": {
-            "id": "fb_1774369418483_0",
-            "conversation_id": "1774369418483",
+            "id": "fb_1774871382270_0",
+            "conversation_id": "1774871382270",
             "message_index": 0,
             "type": "dislike",
             "state": "dislike",
@@ -1232,14 +1156,14 @@
             "name": "王颖奇",
             "enterprise": "图湃（北京）医疗科技",
             "phone": "15323720032",
-            "time": "1774369453285",
-            "update_time": "1774369453420",
-            "createdAt": "2026/03/25 00:24:13",
-            "updatedAt": "2026/03/25 00:24:13",
+            "time": "1774871478068",
+            "update_time": "1774871478221",
+            "createdAt": "2026/03/30 19:51:18",
+            "updatedAt": "2026/03/30 19:51:18",
             "process_status": "未处理"
           }
         },
-        "text": "{\"code\":0,\"msg\":\"提交反馈成功\",\"data\":{\"id\":\"fb_1774369418483_0\",\"conversation_id\":\"1774369418483\",\"message_index\":0,\"type\":\"dislike\",\"state\":\"dislike\",\"reasons\":[],\"comment\":\"答案不够完整\",\"pictures\":[\"probe.png\"],\"name\":\"王颖奇\",\"enterprise\":\"图湃（北京）医疗科技\",\"phone\":\"15323720032\",\"time\":\"1774369453285\",\"update_time\":\"1774369453420\",\"createdAt\":\"2026/03/25 00:24:13\",\"updatedAt\":\"2026/03/25 00:24:13\",\"process_status\":\"未处理\"}}",
+        "text": "{\"code\":0,\"msg\":\"提交反馈成功\",\"data\":{\"id\":\"fb_1774871382270_0\",\"conversation_id\":\"1774871382270\",\"message_index\":0,\"type\":\"dislike\",\"state\":\"dislike\",\"reasons\":[],\"comment\":\"答案不够完整\",\"pictures\":[\"probe.png\"],\"name\":\"王颖奇\",\"enterprise\":\"图湃（北京）医疗科技\",\"phone\":\"15323720032\",\"time\":\"1774871478068\",\"update_time\":\"1774871478221\",\"createdAt\":\"2026/03/30 19:51:18\",\"updatedAt\":\"2026/03/30 19:51:18\",\"process_status\":\"未处理\"}}",
         "stderr": ""
       }
     },
@@ -1248,30 +1172,31 @@
       "success_case": {
         "ok": true,
         "status": 200,
-        "elapsed_ms": 18.26,
+        "elapsed_ms": 30.61,
         "json": {
           "code": 0,
           "msg": "上传图片成功",
           "data": {
-            "conversation_id": "1774369418483",
+            "conversation_id": "1774871382270",
             "message_index": 0,
             "pictures": [
               {
-                "file_id": "pic_1774369453440_0",
+                "file_id": "pic_1774871478249_0",
                 "filename": "probe_1.png",
-                "url": "/api/static/feedbacks/2026-03-25/fb_1774369418483_0/probe_1.png"
+                "object_name": "feedback/2026-03-30/fb_1774871382270_0/probe_1.png",
+                "url": "http://127.0.0.1:9000/xintuoyin-data/feedback/2026-03-30/fb_1774871382270_0/probe_1.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=minioadmin%2F20260330%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20260330T115118Z&X-Amz-Expires=604800&X-Amz-SignedHeaders=host&X-Amz-Signature=d8a2bc8f53af54669bf21d2c56caac5b0c1cf9aeba810047717110ae7fa3821c"
               }
             ]
           }
         },
-        "text": "{\"code\":0,\"msg\":\"上传图片成功\",\"data\":{\"conversation_id\":\"1774369418483\",\"message_index\":0,\"pictures\":[{\"file_id\":\"pic_1774369453440_0\",\"filename\":\"probe_1.png\",\"url\":\"/api/static/feedbacks/2026-03-25/fb_1774369418483_0/probe_1.png\"}]}}",
+        "text": "{\"code\":0,\"msg\":\"上传图片成功\",\"data\":{\"conversation_id\":\"1774871382270\",\"message_index\":0,\"pictures\":[{\"file_id\":\"pic_1774871478249_0\",\"filename\":\"probe_1.png\",\"object_name\":\"feedback/2026-03-30/fb_1774871382270_0/probe_1.png\",\"url\":\"http://127.0.0.1:9000/xintuoyin-data/feedback/2026-03-30/fb_1774871382270_0/probe_1.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=minioadmin%2F20260330%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20260330T115118Z&X-Amz-Expires=604800&X-Amz-SignedHeaders=host&X-Amz-Signature=d8a2bc8f53af54669bf21d2c56caac5b0c1cf9aeba810047717110ae7fa3821c\"}]}}",
         "stderr": ""
       },
       "edge_cases": {
         "negative_message_index": {
           "ok": false,
           "status": 400,
-          "elapsed_ms": 11.45,
+          "elapsed_ms": 12.64,
           "json": {
             "code": 1,
             "msg": "上传图片失败",
@@ -1290,24 +1215,24 @@
         "ok": 3,
         "failed": 0,
         "latency_ms": {
-          "min": 15.4,
-          "p50": 15.54,
-          "max": 17.41
+          "min": 22.29,
+          "p50": 26.7,
+          "max": 31.94
         },
         "samples": [
           {
             "status": 200,
-            "elapsed_ms": 15.4,
+            "elapsed_ms": 22.29,
             "stderr": ""
           },
           {
             "status": 200,
-            "elapsed_ms": 17.41,
+            "elapsed_ms": 26.7,
             "stderr": ""
           },
           {
             "status": 200,
-            "elapsed_ms": 15.54,
+            "elapsed_ms": 31.94,
             "stderr": ""
           }
         ]
@@ -1318,12 +1243,162 @@
       "success_case": {
         "ok": true,
         "status": 200,
-        "elapsed_ms": 20.15,
+        "elapsed_ms": 20.19,
         "json": {
           "code": 0,
           "msg": "获取反馈列表成功",
           "data": {
             "list": [
+              {
+                "id": "fb_1774871382270_0",
+                "conversation_id": "1774871382270",
+                "message_index": 0,
+                "type": "dislike",
+                "state": "dislike",
+                "reasons": [],
+                "comment": "答案不够完整",
+                "pictures": [
+                  "probe.png",
+                  "probe_1.png",
+                  "probe_2.png",
+                  "probe_3.png",
+                  "probe_4.png"
+                ],
+                "name": "王颖奇",
+                "enterprise": "图湃（北京）医疗科技",
+                "phone": "15323720032",
+                "time": "1774871478068",
+                "update_time": "1774871478345",
+                "createdAt": "2026/03/30 19:51:18",
+                "updatedAt": "2026/03/30 19:51:18",
+                "process_status": "未处理"
+              },
+              {
+                "id": "fb_1774845096342_2",
+                "conversation_id": "1774845096342",
+                "message_index": 2,
+                "type": "like",
+                "state": "like",
+                "reasons": [],
+                "comment": "",
+                "pictures": [],
+                "name": "王颖奇",
+                "enterprise": "图湃（北京）医疗科技",
+                "phone": "15323720032",
+                "time": "1774861080207",
+                "update_time": "1774861080207",
+                "createdAt": "2026/03/30 16:58:00",
+                "updatedAt": "2026/03/30 16:58:00",
+                "process_status": "未处理"
+              },
+              {
+                "id": "fb_1774694374305_6",
+                "conversation_id": "1774694374305",
+                "message_index": 6,
+                "type": "like",
+                "state": null,
+                "reasons": [],
+                "comment": "",
+                "pictures": [],
+                "name": "王颖奇",
+                "enterprise": "图湃（北京）医疗科技",
+                "phone": "15323720032",
+                "time": "1774700718141",
+                "update_time": "1774700719271",
+                "createdAt": "2026/03/28 20:25:18",
+                "updatedAt": "2026/03/28 20:25:19",
+                "process_status": "未处理"
+              },
+              {
+                "id": "fb_1774401162606_0",
+                "conversation_id": "1774401162606",
+                "message_index": 0,
+                "type": "like",
+                "state": "like",
+                "reasons": [],
+                "comment": "",
+                "pictures": [],
+                "name": "王颖奇",
+                "enterprise": "图湃（北京）医疗科技",
+                "phone": "15323720032",
+                "time": "1774420805008",
+                "update_time": "1774420805008",
+                "createdAt": "2026/03/25 14:40:05",
+                "updatedAt": "2026/03/25 14:40:05",
+                "process_status": "未处理"
+              },
+              {
+                "id": "fb_1774348216964_0",
+                "conversation_id": "1774348216964",
+                "message_index": 0,
+                "type": "like",
+                "state": "like",
+                "reasons": [],
+                "comment": "",
+                "pictures": [],
+                "name": "王颖奇",
+                "enterprise": "图湃（北京）医疗科技",
+                "phone": "15323720032",
+                "time": "1774407186522",
+                "update_time": "1774420790097",
+                "createdAt": "2026/03/25 10:53:06",
+                "updatedAt": "2026/03/25 14:39:50",
+                "process_status": "未处理"
+              },
+              {
+                "id": "fb_testthinkreq3_0",
+                "conversation_id": "testthinkreq3",
+                "message_index": 0,
+                "type": "like",
+                "state": "like",
+                "reasons": [],
+                "comment": "",
+                "pictures": [],
+                "name": "王颖奇",
+                "enterprise": "图湃（北京）医疗科技",
+                "phone": "15323720032",
+                "time": "1774420420779",
+                "update_time": "1774420420779",
+                "createdAt": "2026/03/25 14:33:40",
+                "updatedAt": "2026/03/25 14:33:40",
+                "process_status": "未处理"
+              },
+              {
+                "id": "fb_1774369476776_0",
+                "conversation_id": "1774369476776",
+                "message_index": 0,
+                "type": "like",
+                "state": null,
+                "reasons": [],
+                "comment": "",
+                "pictures": [],
+                "name": "王颖奇",
+                "enterprise": "图湃（北京）医疗科技",
+                "phone": "15323720032",
+                "time": "1774419716141",
+                "update_time": "1774419721593",
+                "createdAt": "2026/03/25 14:21:56",
+                "updatedAt": "2026/03/25 14:22:01",
+                "process_status": "未处理"
+              },
+              {
+                "id": "fb_septhink1_0",
+                "conversation_id": "septhink1",
+                "message_index": 0,
+                "type": "like",
+                "state": null,
+                "reasons": [],
+                "comment": "",
+                "pictures": [],
+                "name": "王颖奇",
+                "enterprise": "图湃（北京）医疗科技",
+                "phone": "15323720032",
+                "time": "1774407245695",
+                "update_time": "1774407248955",
+                "createdAt": "2026/03/25 10:54:05",
+                "updatedAt": "2026/03/25 10:54:08",
+                "process_status": "未处理"
+              },
               {
                 "id": "fb_1774369418483_0",
                 "conversation_id": "1774369418483",
@@ -1346,7 +1421,7 @@
                 "update_time": "1774369453501",
                 "createdAt": "2026/03/25 00:24:13",
                 "updatedAt": "2026/03/25 00:24:13",
-                "process_status": "未处理"
+                "process_status": "已处理"
               },
               {
                 "id": "fb_diagchat3_0",
@@ -1402,7 +1477,7 @@
                 "update_time": "",
                 "createdAt": "2026-03-19 21:59:15",
                 "updatedAt": "2026-03-19 22:04:57",
-                "process_status": "未处理"
+                "process_status": "已处理"
               },
               {
                 "id": "fb_1773386517615_11",
@@ -1459,22 +1534,46 @@
                 "process_status": "已处理"
               }
             ],
-            "total": 7
+            "total": 15
           }
         },
-        "text": "{\"code\":0,\"msg\":\"获取反馈列表成功\",\"data\":{\"list\":[{\"id\":\"fb_1774369418483_0\",\"conversation_id\":\"1774369418483\",\"message_index\":0,\"type\":\"dislike\",\"state\":\"dislike\",\"reasons\":[],\"comment\":\"答案不够完整\",\"pictures\":[\"probe.png\",\"probe_1.png\",\"probe_2.png\",\"probe_3.png\",\"probe_4.png\"],\"name\":\"王颖奇\",\"enterprise\":\"图湃（北京）医疗科技\",\"phone\":\"15323720032\",\"time\":\"1774369453285\",\"update_time\":\"1774369453501\",\"createdAt\":\"2026/03/25 00:24:13\",\"updatedAt\":\"2026/03/25 00:24:13\",\"process_status\":\"未处理\"},{\"id\":\"fb_diagchat3_0\",\"conversation_id\":\"diagchat3\",\"message_index\":0,\"type\":\"like\",\"state\":\"like\",\"reasons\":[],\"comment\":\"\",\"pictures\":[],\"name\":\"王颖奇\",\"enterprise\":\"图湃（北京）医疗科技\",\"phone\":\"15323720032\",\"time\":\"1774365400525\",\"update_time\":\"1774365400525\",\"createdAt\":\"2026/03/24 23:16:40\",\"updatedAt\":\"2026/03/24 23:16:40\",\"process_status\":\"未处理\"},{\"id\":\"fb_1774361879439_0\",\"conversation_id\":\"1774361879439\",\"message_index\":0,\"type\":null,\"state\":null,\"reasons\":[],\"comment\":\"\",\"pictures\":[\"a.png\"],\"name\":\"\",\"enterprise\":\"\",\"phone\":\"\",\"time\":\"1774361879462\",\"update_time\":\"1774361879462\",\"createdAt\":\"2026/03/24 22:17:59\",\"updatedAt\":\"2026/03/24 22:17:59\",\"process_status\":\"未处理\"},{\"id\":\"fb_1773928544577_1\",\"conversation_id\":\"1773928544577\",\"message_index\":1,\"type\":\"dislike\",\"state\":null,\"reasons\":[],\"comment\":\"\",\"pictures\":[],\"name\":\"\",\"enterprise\":\"图湃（北京）医疗科技\",\"phone\":\"\",\"time\":\"\",\"update_time\":\"\",\"createdAt\":\"2026-03-19 21:59:15\",\"updatedAt\":\"2026-03-19 22:04:57\",\"process_status\":\"未处理\"},{\"id\":\"fb_1773386517615_11\",\"conversation_id\":\"1773386517615\",\"message_index\":11,\"type\":\"like\",\"state\":null,\"reasons\":[],\"comment\":\"\",\"pictures\":[],\"name\":\"\",\"enterprise\":\"图湃（北京）医疗科技\",\"phone\":\"\",\"time\":\"\",\"update_time\":\"\",\"createdAt\":\"2026-03-19 21:06:35\",\"updatedAt\":\"2026-03-19 23:36:31\",\"process_status\":\"未处理\"},{\"id\":\"fb_1774360151552_5\",\"conversation_id\":\"1774360151552\",\"message_index\":5,\"type\":\"like\",\"state\":null,\"reasons\":[],\"comment\":\"\",\"pictures\":[],\"name\":\"\",\"enterprise\":\"图湃（北京）医疗科技\",\"phone\":\"\",\"time\":\"\",\"update_time\":\"\",\"createdAt\":\"2026-03-24 21:52:37\",\"updatedAt\":\"2026-03-24 21:52:37\",\"process_status\":\"未处理\"},{\"id\":\"fb_1774327348285_1\",\"conversation_id\":\"1774327348285\",\"message_index\":1,\"type\":\"like\",\"state\":null,\"reasons\":[],\"comment\":\"\",\"pictures\":[],\"name\":\"\",\"enterprise\":\"图湃（北京）医疗科技\",\"phone\":\"\",\"time\":\"\",\"update_time\":\"\",\"createdAt\":\"2026-03-24 18:17:52\",\"updatedAt\":\"2026-03-24 18:17:52\",\"process_status\":\"已处理\"}],\"total\":7}}",
+        "text": "{\"code\":0,\"msg\":\"获取反馈列表成功\",\"data\":{\"list\":[{\"id\":\"fb_1774871382270_0\",\"conversation_id\":\"1774871382270\",\"message_index\":0,\"type\":\"dislike\",\"state\":\"dislike\",\"reasons\":[],\"comment\":\"答案不够完整\",\"pictures\":[\"probe.png\",\"probe_1.png\",\"probe_2.png\",\"probe_3.png\",\"probe_4.png\"],\"name\":\"王颖奇\",\"enterprise\":\"图湃（北京）医疗科技\",\"phone\":\"15323720032\",\"time\":\"1774871478068\",\"update_time\":\"1774871478345\",\"createdAt\":\"2026/03/30 19:51:18\",\"updatedAt\":\"2026/03/30 19:51:18\",\"process_status\":\"未处理\"},{\"id\":\"fb_1774845096342_2\",\"conversation_id\":\"1774845096342\",\"message_index\":2,\"type\":\"like\",\"state\":\"like\",\"reasons\":[],\"comment\":\"\",\"pictures\":[],\"name\":\"王颖奇\",\"enterprise\":\"图湃（北京）医疗科技\",\"phone\":\"15323720032\",\"time\":\"1774861080207\",\"update_time\":\"1774861080207\",\"createdAt\":\"2026/03/30 16:58:00\",\"updatedAt\":\"2026/03/30 16:58:00\",\"process_status\":\"未处理\"},{\"id\":\"fb_1774694374305_6\",\"conversation_id\":\"1774694374305\",\"message_index\":6,\"type\":\"like\",\"state\":null,\"reasons\":[],\"comment\":\"\",\"pictures\":[],\"name\":\"王颖奇\",\"enterprise\":\"图湃（北京）医疗科技\",\"phone\":\"15323720032\",\"time\":\"1774700718141\",\"update_time\":\"1774700719271\",\"createdAt\":\"2026/03/28 20:25:18\",\"updatedAt\":\"2026/03/28 20:25:19\",\"process_status\":\"未处理\"},{\"id\":\"fb_1774401162606_0\",\"conversation_id\":\"1774401162606\",\"message_index\":0,\"type\":\"like\",\"state\":\"like\",\"reasons\":[],\"comment\":\"\",\"pictures\":[],\"name\":\"王颖奇\",\"enterprise\":\"图湃（北京）医疗科技\",\"phone\":\"15323720032\",\"time\":\"1774420805008\",\"update_time\":\"1774420805008\",\"createdAt\":\"2026/03/25 14:40:05\",\"updatedAt\":\"2026/03/25 14:40:05\",\"process_status\":\"未处理\"},{\"id\":\"fb_1774348216964_0\",\"conversation_id\":\"1774348216964\",\"message_index\":0,\"type\":\"like\",\"state\":\"like\",\"reasons\":[],\"comment\":\"\",\"pictures\":[],\"name\":\"王颖奇\",\"enterprise\":\"图湃（北京）医疗科技\",\"phone\":\"15323720032\",\"time\":\"1774407186522\",\"update_time\":\"1774420790097\",\"createdAt\":\"2026/03/25 10:53:06\",\"updatedAt\":\"2026/03/25 14:39:50\",\"process_status\":\"未处理\"},{\"id\":\"fb_testthinkreq3_0\",\"conversation_id\":\"testthinkreq3\",\"message_index\":0,\"type\":\"like\",\"state\":\"like\",\"reasons\":[],\"comment\":\"\",\"pictures\":[],\"name\":\"王颖奇\",\"enterprise\":\"图湃（北京）医疗科技\",\"phone\":\"15323720032\",\"time\":\"1774420420779\",\"update_time\":\"1774420420779\",\"createdAt\":\"2026/03/25 14:33:40\",\"updatedAt\":\"2026/03/25 14:33:40\",\"process_status\":\"未处理\"},{\"id\":\"fb_1774369476776_0\",\"conversation_id\":\"1774369476776\",\"message_index\":0,\"type\":\"like\",\"state\":null,\"reasons\":[],\"comment\":\"\",\"pictures\":[],\"name\":\"王颖奇\",\"enterprise\":\"图湃（北京）医疗科技\",\"phone\":\"15323720032\",\"time\":\"1774419716141\",\"update_time\":\"1774419721593\",\"createdAt\":\"2026/03/25 14:21:56\",\"updatedAt\":\"2026/03/25 14:22:01\",\"process_status\":\"未处理\"},{\"id\":\"fb_septhink1_0\",\"conversation_id\":\"septhink1\",\"message_index\":0,\"type\":\"like\",\"state\":null,\"reasons\":[],\"comment\":\"\",\"pictures\":[],\"name\":\"王颖奇\",\"enterprise\":\"图湃（北京）医疗科技\",\"phone\":\"15323720032\",\"time\":\"1774407245695\",\"update_time\":\"1774407248955\",\"createdAt\":\"2026/03/25 10:54:05\",\"updatedAt\":\"2026/03/25 10:54:08\",\"process_status\":\"未处理\"},{\"id\":\"fb_1774369418483_0\",\"conversation_id\":\"1774369418483\",\"message_index\":0,\"type\":\"dislike\",\"state\":\"dislike\",\"reasons\":[],\"comment\":\"答案不够完整\",\"pictures\":[\"probe.png\",\"probe_1.png\",\"probe_2.png\",\"probe_3.png\",\"probe_4.png\"],\"name\":\"王颖奇\",\"enterprise\":\"图湃（北京）医疗科技\",\"phone\":\"15323720032\",\"time\":\"1774369453285\",\"update_time\":\"1774369453501\",\"createdAt\":\"2026/03/25 00:24:13\",\"updatedAt\":\"2026/03/25 00:24:13\",\"process_status\":\"已处理\"},{\"id\":\"fb_diagchat3_0\",\"conversation_id\":\"diagchat3\",\"message_index\":0,\"type\":\"like\",\"state\":\"like\",\"reasons\":[],\"comment\":\"\",\"pictures\":[],\"name\":\"王颖奇\",\"enterprise\":\"图湃（北京）医疗科技\",\"phone\":\"15323720032\",\"time\":\"1774365400525\",\"update_time\":\"1774365400525\",\"createdAt\":\"2026/03/24 23:16:40\",\"updatedAt\":\"2026/03/24 23:16:40\",\"process_status\":\"未处理\"},{\"id\":\"fb_1774361879439_0\",\"conversation_id\":\"1774361879439\",\"message_index\":0,\"type\":null,\"state\":null,\"reasons\":[],\"comment\":\"\",\"pictures\":[\"a.png\"],\"name\":\"\",\"enterprise\":\"\",\"phone\":\"\",\"time\":\"1774361879462\",\"update_time\":\"1774361879462\",\"createdAt\":\"2026/03/24 22:17:59\",\"updatedAt\":\"2026/03/24 22:17:59\",\"process_status\":\"未处理\"},{\"id\":\"fb_1773928544577_1\",\"conversation_id\":\"1773928544577\",\"message_index\":1,\"type\":\"dislike\",\"state\":null,\"reasons\":[],\"comment\":\"\",\"pictures\":[],\"name\":\"\",\"enterprise\":\"图湃（北京）医疗科技\",\"phone\":\"\",\"time\":\"\",\"update_time\":\"\",\"createdAt\":\"2026-03-19 21:59:15\",\"updatedAt\":\"2026-03-19 22:04:57\",\"process_status\":\"已处理\"},{\"id\":\"fb_1773386517615_11\",\"conversation_id\":\"1773386517615\",\"message_index\":11,\"type\":\"like\",\"state\":null,\"reasons\":[],\"comment\":\"\",\"pictures\":[],\"name\":\"\",\"enterprise\":\"图湃（北京）医疗科技\",\"phone\":\"\",\"time\":\"\",\"update_time\":\"\",\"createdAt\":\"2026-03-19 21:06:35\",\"updatedAt\":\"2026-03-19 23:36:31\",\"process_status\":\"未处理\"},{\"id\":\"fb_1774360151552_5\",\"conversation_id\":\"1774360151552\",\"message_index\":5,\"type\":\"like\",\"state\":null,\"reasons\":[],\"comment\":\"\",\"pictures\":[],\"name\":\"\",\"enterprise\":\"图湃（北京）医疗科技\",\"phone\":\"\",\"time\":\"\",\"update_time\":\"\",\"createdAt\":\"2026-03-24 21:52:37\",\"updatedAt\":\"2026-03-24 21:52:37\",\"process_status\":\"未处理\"},{\"id\":\"fb_1774327348285_1\",\"conversation_id\":\"1774327348285\",\"message_index\":1,\"type\":\"like\",\"state\":null,\"reasons\":[],\"comment\":\"\",\"pictures\":[],\"name\":\"\",\"enterprise\":\"图湃（北京）医疗科技\",\"phone\":\"\",\"time\":\"\",\"update_time\":\"\",\"createdAt\":\"2026-03-24 18:17:52\",\"updatedAt\":\"2026-03-24 18:17:52\",\"process_status\":\"已处理\"}],\"total\":15}}",
         "stderr": ""
       },
       "edge_cases": {
         "type_filter": {
           "ok": true,
           "status": 200,
-          "elapsed_ms": 13.77,
+          "elapsed_ms": 15.95,
           "json": {
             "code": 0,
             "msg": "获取反馈列表成功",
             "data": {
               "list": [
+                {
+                  "id": "fb_1774871382270_0",
+                  "conversation_id": "1774871382270",
+                  "message_index": 0,
+                  "type": "dislike",
+                  "state": "dislike",
+                  "reasons": [],
+                  "comment": "答案不够完整",
+                  "pictures": [
+                    "probe.png",
+                    "probe_1.png",
+                    "probe_2.png",
+                    "probe_3.png",
+                    "probe_4.png"
+                  ],
+                  "name": "王颖奇",
+                  "enterprise": "图湃（北京）医疗科技",
+                  "phone": "15323720032",
+                  "time": "1774871478068",
+                  "update_time": "1774871478345",
+                  "createdAt": "2026/03/30 19:51:18",
+                  "updatedAt": "2026/03/30 19:51:18",
+                  "process_status": "未处理"
+                },
                 {
                   "id": "fb_1774369418483_0",
                   "conversation_id": "1774369418483",
@@ -1497,7 +1596,7 @@
                   "update_time": "1774369453501",
                   "createdAt": "2026/03/25 00:24:13",
                   "updatedAt": "2026/03/25 00:24:13",
-                  "process_status": "未处理"
+                  "process_status": "已处理"
                 },
                 {
                   "id": "fb_1773928544577_1",
@@ -1515,19 +1614,19 @@
                   "update_time": "",
                   "createdAt": "2026-03-19 21:59:15",
                   "updatedAt": "2026-03-19 22:04:57",
-                  "process_status": "未处理"
+                  "process_status": "已处理"
                 }
               ],
-              "total": 2
+              "total": 3
             }
           },
-          "text": "{\"code\":0,\"msg\":\"获取反馈列表成功\",\"data\":{\"list\":[{\"id\":\"fb_1774369418483_0\",\"conversation_id\":\"1774369418483\",\"message_index\":0,\"type\":\"dislike\",\"state\":\"dislike\",\"reasons\":[],\"comment\":\"答案不够完整\",\"pictures\":[\"probe.png\",\"probe_1.png\",\"probe_2.png\",\"probe_3.png\",\"probe_4.png\"],\"name\":\"王颖奇\",\"enterprise\":\"图湃（北京）医疗科技\",\"phone\":\"15323720032\",\"time\":\"1774369453285\",\"update_time\":\"1774369453501\",\"createdAt\":\"2026/03/25 00:24:13\",\"updatedAt\":\"2026/03/25 00:24:13\",\"process_status\":\"未处理\"},{\"id\":\"fb_1773928544577_1\",\"conversation_id\":\"1773928544577\",\"message_index\":1,\"type\":\"dislike\",\"state\":null,\"reasons\":[],\"comment\":\"\",\"pictures\":[],\"name\":\"\",\"enterprise\":\"图湃（北京）医疗科技\",\"phone\":\"\",\"time\":\"\",\"update_time\":\"\",\"createdAt\":\"2026-03-19 21:59:15\",\"updatedAt\":\"2026-03-19 22:04:57\",\"process_status\":\"未处理\"}],\"total\":2}}",
+          "text": "{\"code\":0,\"msg\":\"获取反馈列表成功\",\"data\":{\"list\":[{\"id\":\"fb_1774871382270_0\",\"conversation_id\":\"1774871382270\",\"message_index\":0,\"type\":\"dislike\",\"state\":\"dislike\",\"reasons\":[],\"comment\":\"答案不够完整\",\"pictures\":[\"probe.png\",\"probe_1.png\",\"probe_2.png\",\"probe_3.png\",\"probe_4.png\"],\"name\":\"王颖奇\",\"enterprise\":\"图湃（北京）医疗科技\",\"phone\":\"15323720032\",\"time\":\"1774871478068\",\"update_time\":\"1774871478345\",\"createdAt\":\"2026/03/30 19:51:18\",\"updatedAt\":\"2026/03/30 19:51:18\",\"process_status\":\"未处理\"},{\"id\":\"fb_1774369418483_0\",\"conversation_id\":\"1774369418483\",\"message_index\":0,\"type\":\"dislike\",\"state\":\"dislike\",\"reasons\":[],\"comment\":\"答案不够完整\",\"pictures\":[\"probe.png\",\"probe_1.png\",\"probe_2.png\",\"probe_3.png\",\"probe_4.png\"],\"name\":\"王颖奇\",\"enterprise\":\"图湃（北京）医疗科技\",\"phone\":\"15323720032\",\"time\":\"1774369453285\",\"update_time\":\"1774369453501\",\"createdAt\":\"2026/03/25 00:24:13\",\"updatedAt\":\"2026/03/25 00:24:13\",\"process_status\":\"已处理\"},{\"id\":\"fb_1773928544577_1\",\"conversation_id\":\"1773928544577\",\"message_index\":1,\"type\":\"dislike\",\"state\":null,\"reasons\":[],\"comment\":\"\",\"pictures\":[],\"name\":\"\",\"enterprise\":\"图湃（北京）医疗科技\",\"phone\":\"\",\"time\":\"\",\"update_time\":\"\",\"createdAt\":\"2026-03-19 21:59:15\",\"updatedAt\":\"2026-03-19 22:04:57\",\"process_status\":\"已处理\"}],\"total\":3}}",
           "stderr": ""
         },
         "invalid_start_time": {
           "ok": false,
           "status": 400,
-          "elapsed_ms": 9.56,
+          "elapsed_ms": 9.63,
           "json": {
             "code": 1,
             "msg": "获取历史记录失败",
@@ -1546,24 +1645,24 @@
         "ok": 10,
         "failed": 0,
         "latency_ms": {
-          "min": 12.53,
-          "p50": 16.37,
-          "max": 22.62
+          "min": 11.0,
+          "p50": 17.78,
+          "max": 29.17
         },
         "samples": [
           {
             "status": 200,
-            "elapsed_ms": 13.52,
+            "elapsed_ms": 14.67,
             "stderr": ""
           },
           {
             "status": 200,
-            "elapsed_ms": 18.24,
+            "elapsed_ms": 23.6,
             "stderr": ""
           },
           {
             "status": 200,
-            "elapsed_ms": 22.62,
+            "elapsed_ms": 29.17,
             "stderr": ""
           }
         ]
@@ -1574,20 +1673,20 @@
       "success_case": {
         "ok": true,
         "status": 200,
-        "elapsed_ms": 10.1,
+        "elapsed_ms": 9.44,
         "json": {
           "code": 0,
           "msg": "获取反馈详情成功",
           "data": {
-            "id": "fb_1774369418483_0",
-            "conversation_id": "1774369418483",
+            "id": "fb_1774871382270_0",
+            "conversation_id": "1774871382270",
             "message_index": 0,
             "type": "dislike",
             "state": "dislike",
-            "time": "1774369453285",
-            "update_time": "1774369453501",
-            "createdAt": "2026/03/25 00:24:13",
-            "updatedAt": "2026/03/25 00:24:13",
+            "time": "1774871478068",
+            "update_time": "1774871478345",
+            "createdAt": "2026/03/30 19:51:18",
+            "updatedAt": "2026/03/30 19:51:18",
             "reasons": [],
             "comment": "答案不够完整",
             "pictures": [
@@ -1597,22 +1696,53 @@
               "probe_3.png",
               "probe_4.png"
             ],
+            "pictures_list": [
+              {
+                "filename": "probe.png",
+                "object_name": "feedback/2026-03-30/fb_1774871382270_0/probe.png",
+                "url": "http://127.0.0.1:9000/xintuoyin-data/feedback/2026-03-30/fb_1774871382270_0/probe.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=minioadmin%2F20260330%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20260330T115118Z&X-Amz-Expires=604800&X-Amz-SignedHeaders=host&X-Amz-Signature=c44bbc626a13f4538a98b9c47d4ff02b798af13184f78d086ed8b8d40ece9b80"
+              },
+              {
+                "file_id": "pic_1774871478249_0",
+                "filename": "probe_1.png",
+                "object_name": "feedback/2026-03-30/fb_1774871382270_0/probe_1.png",
+                "url": "http://127.0.0.1:9000/xintuoyin-data/feedback/2026-03-30/fb_1774871382270_0/probe_1.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=minioadmin%2F20260330%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20260330T115118Z&X-Amz-Expires=604800&X-Amz-SignedHeaders=host&X-Amz-Signature=d8a2bc8f53af54669bf21d2c56caac5b0c1cf9aeba810047717110ae7fa3821c"
+              },
+              {
+                "file_id": "pic_1774871478284_0",
+                "filename": "probe_2.png",
+                "object_name": "feedback/2026-03-30/fb_1774871382270_0/probe_2.png",
+                "url": "http://127.0.0.1:9000/xintuoyin-data/feedback/2026-03-30/fb_1774871382270_0/probe_2.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=minioadmin%2F20260330%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20260330T115118Z&X-Amz-Expires=604800&X-Amz-SignedHeaders=host&X-Amz-Signature=7fd3570220787524fbcd71d6ee571f4252ce9714444d0267fcb2bef34de94283"
+              },
+              {
+                "file_id": "pic_1774871478310_0",
+                "filename": "probe_3.png",
+                "object_name": "feedback/2026-03-30/fb_1774871382270_0/probe_3.png",
+                "url": "http://127.0.0.1:9000/xintuoyin-data/feedback/2026-03-30/fb_1774871382270_0/probe_3.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=minioadmin%2F20260330%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20260330T115118Z&X-Amz-Expires=604800&X-Amz-SignedHeaders=host&X-Amz-Signature=2aacf9607194cef4534f794c1cc82dff42dd27e1c1812ec56b17de703f16c916"
+              },
+              {
+                "file_id": "pic_1774871478341_0",
+                "filename": "probe_4.png",
+                "object_name": "feedback/2026-03-30/fb_1774871382270_0/probe_4.png",
+                "url": "http://127.0.0.1:9000/xintuoyin-data/feedback/2026-03-30/fb_1774871382270_0/probe_4.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=minioadmin%2F20260330%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20260330T115118Z&X-Amz-Expires=604800&X-Amz-SignedHeaders=host&X-Amz-Signature=6b10b5c3fc41562c5de82f2f6a7952fd59da6aa94b86bbcc7f14f8293a321f8c"
+              }
+            ],
             "name": "王颖奇",
             "enterprise": "图湃（北京）医疗科技",
             "phone": "15323720032",
             "question": "请根据附件告诉我项目代号和交付日期",
-            "answer": "根据文件`probe.txt`的内容，项目代号是“北极星”，交付日期是“2026-04-15”。",
+            "answer": "<think>\n好的，我需要回答用户的问题，用户问的是项目代号和交付日期。根据用户提供的上传文件内容，文件1是probe.txt，里面提到了项目代号：北极星，交付日期：2026-04-15。系统已经成功读取了文件，所以不需要说无法读取。我应该直接引用文件中的信息，并明确提到文件名。不需要调用其他工具，因为信息已经在上传的文件中给出。检查是否有其他要求，比如必须结合历史对话，但这里没有历史对话的内容，所以主要依据当前问题和上传文件。确认信息无误后，直接回答即可。\n</think>\n\n根据本轮上传的【probe.txt】文件记载，项目代号为\"北极星\"，交付日期为\"2026-04-15\"。该信息直接来源于您当前上传文件的正文内容。",
             "process_status": "未处理"
           }
         },
-        "text": "{\"code\":0,\"msg\":\"获取反馈详情成功\",\"data\":{\"id\":\"fb_1774369418483_0\",\"conversation_id\":\"1774369418483\",\"message_index\":0,\"type\":\"dislike\",\"state\":\"dislike\",\"time\":\"1774369453285\",\"update_time\":\"1774369453501\",\"createdAt\":\"2026/03/25 00:24:13\",\"updatedAt\":\"2026/03/25 00:24:13\",\"reasons\":[],\"comment\":\"答案不够完整\",\"pictures\":[\"probe.png\",\"probe_1.png\",\"probe_2.png\",\"probe_3.png\",\"probe_4.png\"],\"name\":\"王颖奇\",\"enterprise\":\"图湃（北京）医疗科技\",\"phone\":\"15323720032\",\"question\":\"请根据附件告诉我项目代号和交付日期\",\"answer\":\"根据文件`probe.txt`的内容，项目代号是“北极星”，交付日期是“2026-04-15”。\",\"process_status\":\"未处理\"}}",
+        "text": "{\"code\":0,\"msg\":\"获取反馈详情成功\",\"data\":{\"id\":\"fb_1774871382270_0\",\"conversation_id\":\"1774871382270\",\"message_index\":0,\"type\":\"dislike\",\"state\":\"dislike\",\"time\":\"1774871478068\",\"update_time\":\"1774871478345\",\"createdAt\":\"2026/03/30 19:51:18\",\"updatedAt\":\"2026/03/30 19:51:18\",\"reasons\":[],\"comment\":\"答案不够完整\",\"pictures\":[\"probe.png\",\"probe_1.png\",\"probe_2.png\",\"probe_3.png\",\"probe_4.png\"],\"pictures_list\":[{\"filename\":\"probe.png\",\"object_name\":\"feedback/2026-03-30/fb_1774871382270_0/probe.png\",\"url\":\"http://127.0.0.1:9000/xintuoyin-data/feedback/2026-03-30/fb_1774871382270_0/probe.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=minioadmin%2F20260330%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20260330T115118Z&X-Amz-Expires=604800&X-Amz-SignedHeaders=host&X-Amz-Signature=c44bbc626a13f4538a98b9c47d4ff02b798af13184f78d086ed8b8d40ece9b80\"},{\"file_id\":\"pic_1774871478249_0\",\"filename\":\"probe_1.png\",\"object_name\":\"feedback/2026-03-30/fb_1774871382270_0/probe_1.png\",\"url\":\"http://127.0.0.1:9000/xintuoyin-data/feedback/2026-03-30/fb_1774871382270_0/probe_1.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=minioadmin%2F20260330%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20260330T115118Z&X-Amz-Expires=604800&X-Amz-SignedHeaders=host&X-Amz-Signature=d8a2bc8f53af54669bf21d2c56caac5b0c1cf9aeba810047717110ae7fa3821c\"},{\"file_id\":\"pic_1774871478284_0\",\"filename\":\"probe_2.png\",\"object_name\":\"feedback/2026-03-30/fb_1774871382270_0/probe_2.png\",\"url\":\"http://127.0.0.1:9000/xintuoyin-data/feedback/2026-03-30/fb_1774871382270_0/probe_2.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=minioadmin%2F20260330%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20260330T115118Z&X-Amz-Expires=604800&X-Amz-SignedHeaders=host&X-Amz-Signature=7fd3570220787524fbcd71d6ee571f4252ce9714444d0267fcb2bef34de94283\"},{\"file_id\":\"pic_1774871478310_0\",\"filename\":\"probe_3.png\",\"object_name\":\"feedback/2026-03-30/fb_1774871382270_0/probe_3.png\",\"url\":\"http://127.0.0.1:9000/xintuoyin-data/feedback/2026-03-30/fb_1774871382270_0/probe_3.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=minioadmin%2F20260330%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20260330T115118Z&X-Amz-Expires=604800&X-Amz-SignedHeaders=host&X-Amz-Signature=2aacf9607194cef4534f794c1cc82dff42dd27e1c1812ec56b17de703f16c916\"},{\"file_id\":\"pic_1774871478341_0\",\"filename\":\"probe_4.png\",\"object_name\":\"feedback/2026-03-30/fb_1774871382270_0/probe_4.png\",\"url\":\"http://127.0.0.1:9000/xintuoyin-data/feedback/2026-03-30/fb_1774871382270_0/probe_4.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=minioadmin%2F20260330%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20260330T115118Z&X-Amz-Expires=604800&X-Amz-SignedHeaders=host&X-Amz-Signature=6b10b5c3fc41562c5de82f2f6a7952fd59da6aa94b86bbcc7f14f8293a321f8c\"}],\"name\":\"王颖奇\",\"enterprise\":\"图湃（北京）医疗科技\",\"phone\":\"15323720032\",\"question\":\"请根据附件告诉我项目代号和交付日期\",\"answer\":\"<think>\\n好的，我需要回答用户的问题，用户问的是项目代号和交付日期。根据用户提供的上传文件内容，文件1是probe.txt，里面提到了项目代号：北极星，交付日期：2026-04-15。系统已经成功读取了文件，所以不需要说无法读取。我应该直接引用文件中的信息，并明确提到文件名。不需要调用其他工具，因为信息已经在上传的文件中给出。检查是否有其他要求，比如必须结合历史对话，但这里没有历史对话的内容，所以主要依据当前问题和上传文件。确认信息无误后，直接回答即可。\\n</think>\\n\\n根据本轮上传的【probe.txt】文件记载，项目代号为\\\"北极星\\\"，交付日期为\\\"2026-04-15\\\"。该信息直接来源于您当前上传文件的正文内容。\",\"process_status\":\"未处理\"}}",
         "stderr": ""
       },
       "edge_cases": {
         "not_found": {
           "ok": false,
           "status": 404,
-          "elapsed_ms": 7.8,
+          "elapsed_ms": 7.68,
           "json": {
             "code": 1,
             "msg": "获取反馈详情失败",
@@ -1631,24 +1761,24 @@
         "ok": 10,
         "failed": 0,
         "latency_ms": {
-          "min": 7.88,
-          "p50": 9.04,
-          "max": 11.06
+          "min": 8.35,
+          "p50": 8.91,
+          "max": 12.21
         },
         "samples": [
           {
             "status": 200,
-            "elapsed_ms": 8.85,
+            "elapsed_ms": 9.15,
             "stderr": ""
           },
           {
             "status": 200,
-            "elapsed_ms": 9.71,
+            "elapsed_ms": 10.49,
             "stderr": ""
           },
           {
             "status": 200,
-            "elapsed_ms": 9.04,
+            "elapsed_ms": 12.21,
             "stderr": ""
           }
         ]
@@ -1659,20 +1789,20 @@
       "success_case": {
         "ok": true,
         "status": 200,
-        "elapsed_ms": 11.04,
+        "elapsed_ms": 11.6,
         "json": {
           "code": 0,
           "msg": "获取反馈详情成功",
           "data": {
-            "id": "fb_1774369418483_0",
-            "conversation_id": "1774369418483",
+            "id": "fb_1774871382270_0",
+            "conversation_id": "1774871382270",
             "message_index": 0,
             "type": "dislike",
             "state": "dislike",
-            "time": "1774369453285",
-            "update_time": "1774369453501",
-            "createdAt": "2026/03/25 00:24:13",
-            "updatedAt": "2026/03/25 00:24:13",
+            "time": "1774871478068",
+            "update_time": "1774871478345",
+            "createdAt": "2026/03/30 19:51:18",
+            "updatedAt": "2026/03/30 19:51:18",
             "reasons": [],
             "comment": "答案不够完整",
             "pictures": [
@@ -1682,22 +1812,53 @@
               "probe_3.png",
               "probe_4.png"
             ],
+            "pictures_list": [
+              {
+                "filename": "probe.png",
+                "object_name": "feedback/2026-03-30/fb_1774871382270_0/probe.png",
+                "url": "http://127.0.0.1:9000/xintuoyin-data/feedback/2026-03-30/fb_1774871382270_0/probe.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=minioadmin%2F20260330%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20260330T115118Z&X-Amz-Expires=604800&X-Amz-SignedHeaders=host&X-Amz-Signature=c44bbc626a13f4538a98b9c47d4ff02b798af13184f78d086ed8b8d40ece9b80"
+              },
+              {
+                "file_id": "pic_1774871478249_0",
+                "filename": "probe_1.png",
+                "object_name": "feedback/2026-03-30/fb_1774871382270_0/probe_1.png",
+                "url": "http://127.0.0.1:9000/xintuoyin-data/feedback/2026-03-30/fb_1774871382270_0/probe_1.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=minioadmin%2F20260330%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20260330T115118Z&X-Amz-Expires=604800&X-Amz-SignedHeaders=host&X-Amz-Signature=d8a2bc8f53af54669bf21d2c56caac5b0c1cf9aeba810047717110ae7fa3821c"
+              },
+              {
+                "file_id": "pic_1774871478284_0",
+                "filename": "probe_2.png",
+                "object_name": "feedback/2026-03-30/fb_1774871382270_0/probe_2.png",
+                "url": "http://127.0.0.1:9000/xintuoyin-data/feedback/2026-03-30/fb_1774871382270_0/probe_2.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=minioadmin%2F20260330%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20260330T115118Z&X-Amz-Expires=604800&X-Amz-SignedHeaders=host&X-Amz-Signature=7fd3570220787524fbcd71d6ee571f4252ce9714444d0267fcb2bef34de94283"
+              },
+              {
+                "file_id": "pic_1774871478310_0",
+                "filename": "probe_3.png",
+                "object_name": "feedback/2026-03-30/fb_1774871382270_0/probe_3.png",
+                "url": "http://127.0.0.1:9000/xintuoyin-data/feedback/2026-03-30/fb_1774871382270_0/probe_3.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=minioadmin%2F20260330%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20260330T115118Z&X-Amz-Expires=604800&X-Amz-SignedHeaders=host&X-Amz-Signature=2aacf9607194cef4534f794c1cc82dff42dd27e1c1812ec56b17de703f16c916"
+              },
+              {
+                "file_id": "pic_1774871478341_0",
+                "filename": "probe_4.png",
+                "object_name": "feedback/2026-03-30/fb_1774871382270_0/probe_4.png",
+                "url": "http://127.0.0.1:9000/xintuoyin-data/feedback/2026-03-30/fb_1774871382270_0/probe_4.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=minioadmin%2F20260330%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20260330T115118Z&X-Amz-Expires=604800&X-Amz-SignedHeaders=host&X-Amz-Signature=6b10b5c3fc41562c5de82f2f6a7952fd59da6aa94b86bbcc7f14f8293a321f8c"
+              }
+            ],
             "name": "王颖奇",
             "enterprise": "图湃（北京）医疗科技",
             "phone": "15323720032",
             "question": "请根据附件告诉我项目代号和交付日期",
-            "answer": "根据文件`probe.txt`的内容，项目代号是“北极星”，交付日期是“2026-04-15”。",
+            "answer": "<think>\n好的，我需要回答用户的问题，用户问的是项目代号和交付日期。根据用户提供的上传文件内容，文件1是probe.txt，里面提到了项目代号：北极星，交付日期：2026-04-15。系统已经成功读取了文件，所以不需要说无法读取。我应该直接引用文件中的信息，并明确提到文件名。不需要调用其他工具，因为信息已经在上传的文件中给出。检查是否有其他要求，比如必须结合历史对话，但这里没有历史对话的内容，所以主要依据当前问题和上传文件。确认信息无误后，直接回答即可。\n</think>\n\n根据本轮上传的【probe.txt】文件记载，项目代号为\"北极星\"，交付日期为\"2026-04-15\"。该信息直接来源于您当前上传文件的正文内容。",
             "process_status": "未处理"
           }
         },
-        "text": "{\"code\":0,\"msg\":\"获取反馈详情成功\",\"data\":{\"id\":\"fb_1774369418483_0\",\"conversation_id\":\"1774369418483\",\"message_index\":0,\"type\":\"dislike\",\"state\":\"dislike\",\"time\":\"1774369453285\",\"update_time\":\"1774369453501\",\"createdAt\":\"2026/03/25 00:24:13\",\"updatedAt\":\"2026/03/25 00:24:13\",\"reasons\":[],\"comment\":\"答案不够完整\",\"pictures\":[\"probe.png\",\"probe_1.png\",\"probe_2.png\",\"probe_3.png\",\"probe_4.png\"],\"name\":\"王颖奇\",\"enterprise\":\"图湃（北京）医疗科技\",\"phone\":\"15323720032\",\"question\":\"请根据附件告诉我项目代号和交付日期\",\"answer\":\"根据文件`probe.txt`的内容，项目代号是“北极星”，交付日期是“2026-04-15”。\",\"process_status\":\"未处理\"}}",
+        "text": "{\"code\":0,\"msg\":\"获取反馈详情成功\",\"data\":{\"id\":\"fb_1774871382270_0\",\"conversation_id\":\"1774871382270\",\"message_index\":0,\"type\":\"dislike\",\"state\":\"dislike\",\"time\":\"1774871478068\",\"update_time\":\"1774871478345\",\"createdAt\":\"2026/03/30 19:51:18\",\"updatedAt\":\"2026/03/30 19:51:18\",\"reasons\":[],\"comment\":\"答案不够完整\",\"pictures\":[\"probe.png\",\"probe_1.png\",\"probe_2.png\",\"probe_3.png\",\"probe_4.png\"],\"pictures_list\":[{\"filename\":\"probe.png\",\"object_name\":\"feedback/2026-03-30/fb_1774871382270_0/probe.png\",\"url\":\"http://127.0.0.1:9000/xintuoyin-data/feedback/2026-03-30/fb_1774871382270_0/probe.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=minioadmin%2F20260330%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20260330T115118Z&X-Amz-Expires=604800&X-Amz-SignedHeaders=host&X-Amz-Signature=c44bbc626a13f4538a98b9c47d4ff02b798af13184f78d086ed8b8d40ece9b80\"},{\"file_id\":\"pic_1774871478249_0\",\"filename\":\"probe_1.png\",\"object_name\":\"feedback/2026-03-30/fb_1774871382270_0/probe_1.png\",\"url\":\"http://127.0.0.1:9000/xintuoyin-data/feedback/2026-03-30/fb_1774871382270_0/probe_1.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=minioadmin%2F20260330%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20260330T115118Z&X-Amz-Expires=604800&X-Amz-SignedHeaders=host&X-Amz-Signature=d8a2bc8f53af54669bf21d2c56caac5b0c1cf9aeba810047717110ae7fa3821c\"},{\"file_id\":\"pic_1774871478284_0\",\"filename\":\"probe_2.png\",\"object_name\":\"feedback/2026-03-30/fb_1774871382270_0/probe_2.png\",\"url\":\"http://127.0.0.1:9000/xintuoyin-data/feedback/2026-03-30/fb_1774871382270_0/probe_2.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=minioadmin%2F20260330%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20260330T115118Z&X-Amz-Expires=604800&X-Amz-SignedHeaders=host&X-Amz-Signature=7fd3570220787524fbcd71d6ee571f4252ce9714444d0267fcb2bef34de94283\"},{\"file_id\":\"pic_1774871478310_0\",\"filename\":\"probe_3.png\",\"object_name\":\"feedback/2026-03-30/fb_1774871382270_0/probe_3.png\",\"url\":\"http://127.0.0.1:9000/xintuoyin-data/feedback/2026-03-30/fb_1774871382270_0/probe_3.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=minioadmin%2F20260330%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20260330T115118Z&X-Amz-Expires=604800&X-Amz-SignedHeaders=host&X-Amz-Signature=2aacf9607194cef4534f794c1cc82dff42dd27e1c1812ec56b17de703f16c916\"},{\"file_id\":\"pic_1774871478341_0\",\"filename\":\"probe_4.png\",\"object_name\":\"feedback/2026-03-30/fb_1774871382270_0/probe_4.png\",\"url\":\"http://127.0.0.1:9000/xintuoyin-data/feedback/2026-03-30/fb_1774871382270_0/probe_4.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=minioadmin%2F20260330%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20260330T115118Z&X-Amz-Expires=604800&X-Amz-SignedHeaders=host&X-Amz-Signature=6b10b5c3fc41562c5de82f2f6a7952fd59da6aa94b86bbcc7f14f8293a321f8c\"}],\"name\":\"王颖奇\",\"enterprise\":\"图湃（北京）医疗科技\",\"phone\":\"15323720032\",\"question\":\"请根据附件告诉我项目代号和交付日期\",\"answer\":\"<think>\\n好的，我需要回答用户的问题，用户问的是项目代号和交付日期。根据用户提供的上传文件内容，文件1是probe.txt，里面提到了项目代号：北极星，交付日期：2026-04-15。系统已经成功读取了文件，所以不需要说无法读取。我应该直接引用文件中的信息，并明确提到文件名。不需要调用其他工具，因为信息已经在上传的文件中给出。检查是否有其他要求，比如必须结合历史对话，但这里没有历史对话的内容，所以主要依据当前问题和上传文件。确认信息无误后，直接回答即可。\\n</think>\\n\\n根据本轮上传的【probe.txt】文件记载，项目代号为\\\"北极星\\\"，交付日期为\\\"2026-04-15\\\"。该信息直接来源于您当前上传文件的正文内容。\",\"process_status\":\"未处理\"}}",
         "stderr": ""
       },
       "edge_cases": {
         "not_found": {
           "ok": false,
           "status": 404,
-          "elapsed_ms": 10.42,
+          "elapsed_ms": 7.75,
           "json": {
             "code": 1,
             "msg": "获取反馈详情失败",
@@ -1716,24 +1877,24 @@
         "ok": 10,
         "failed": 0,
         "latency_ms": {
-          "min": 8.46,
-          "p50": 10.23,
-          "max": 14.55
+          "min": 7.18,
+          "p50": 9.88,
+          "max": 11.39
         },
         "samples": [
           {
             "status": 200,
-            "elapsed_ms": 10.1,
+            "elapsed_ms": 8.46,
             "stderr": ""
           },
           {
             "status": 200,
-            "elapsed_ms": 11.33,
+            "elapsed_ms": 10.51,
             "stderr": ""
           },
           {
             "status": 200,
-            "elapsed_ms": 14.55,
+            "elapsed_ms": 11.39,
             "stderr": ""
           }
         ]
@@ -1744,20 +1905,20 @@
       "success_case": {
         "ok": true,
         "status": 200,
-        "elapsed_ms": 14.49,
+        "elapsed_ms": 12.91,
         "json": {
           "code": 0,
           "msg": "处理反馈成功",
           "data": {
-            "id": "fb_1774369418483_0",
-            "conversation_id": "1774369418483",
+            "id": "fb_1774871382270_0",
+            "conversation_id": "1774871382270",
             "message_index": 0,
             "type": "dislike",
             "state": "dislike",
-            "time": "1774369453285",
-            "update_time": "1774369453501",
-            "createdAt": "2026/03/25 00:24:13",
-            "updatedAt": "2026/03/25 00:24:13",
+            "time": "1774871478068",
+            "update_time": "1774871478345",
+            "createdAt": "2026/03/30 19:51:18",
+            "updatedAt": "2026/03/30 19:51:18",
             "reasons": [],
             "comment": "答案不够完整",
             "pictures": [
@@ -1767,26 +1928,57 @@
               "probe_3.png",
               "probe_4.png"
             ],
+            "pictures_list": [
+              {
+                "filename": "probe.png",
+                "object_name": "feedback/2026-03-30/fb_1774871382270_0/probe.png",
+                "url": "http://127.0.0.1:9000/xintuoyin-data/feedback/2026-03-30/fb_1774871382270_0/probe.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=minioadmin%2F20260330%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20260330T115118Z&X-Amz-Expires=604800&X-Amz-SignedHeaders=host&X-Amz-Signature=c44bbc626a13f4538a98b9c47d4ff02b798af13184f78d086ed8b8d40ece9b80"
+              },
+              {
+                "file_id": "pic_1774871478249_0",
+                "filename": "probe_1.png",
+                "object_name": "feedback/2026-03-30/fb_1774871382270_0/probe_1.png",
+                "url": "http://127.0.0.1:9000/xintuoyin-data/feedback/2026-03-30/fb_1774871382270_0/probe_1.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=minioadmin%2F20260330%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20260330T115118Z&X-Amz-Expires=604800&X-Amz-SignedHeaders=host&X-Amz-Signature=d8a2bc8f53af54669bf21d2c56caac5b0c1cf9aeba810047717110ae7fa3821c"
+              },
+              {
+                "file_id": "pic_1774871478284_0",
+                "filename": "probe_2.png",
+                "object_name": "feedback/2026-03-30/fb_1774871382270_0/probe_2.png",
+                "url": "http://127.0.0.1:9000/xintuoyin-data/feedback/2026-03-30/fb_1774871382270_0/probe_2.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=minioadmin%2F20260330%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20260330T115118Z&X-Amz-Expires=604800&X-Amz-SignedHeaders=host&X-Amz-Signature=7fd3570220787524fbcd71d6ee571f4252ce9714444d0267fcb2bef34de94283"
+              },
+              {
+                "file_id": "pic_1774871478310_0",
+                "filename": "probe_3.png",
+                "object_name": "feedback/2026-03-30/fb_1774871382270_0/probe_3.png",
+                "url": "http://127.0.0.1:9000/xintuoyin-data/feedback/2026-03-30/fb_1774871382270_0/probe_3.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=minioadmin%2F20260330%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20260330T115118Z&X-Amz-Expires=604800&X-Amz-SignedHeaders=host&X-Amz-Signature=2aacf9607194cef4534f794c1cc82dff42dd27e1c1812ec56b17de703f16c916"
+              },
+              {
+                "file_id": "pic_1774871478341_0",
+                "filename": "probe_4.png",
+                "object_name": "feedback/2026-03-30/fb_1774871382270_0/probe_4.png",
+                "url": "http://127.0.0.1:9000/xintuoyin-data/feedback/2026-03-30/fb_1774871382270_0/probe_4.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=minioadmin%2F20260330%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20260330T115118Z&X-Amz-Expires=604800&X-Amz-SignedHeaders=host&X-Amz-Signature=6b10b5c3fc41562c5de82f2f6a7952fd59da6aa94b86bbcc7f14f8293a321f8c"
+              }
+            ],
             "name": "王颖奇",
             "enterprise": "图湃（北京）医疗科技",
             "phone": "15323720032",
             "question": "请根据附件告诉我项目代号和交付日期",
-            "answer": "根据文件`probe.txt`的内容，项目代号是“北极星”，交付日期是“2026-04-15”。",
+            "answer": "<think>\n好的，我需要回答用户的问题，用户问的是项目代号和交付日期。根据用户提供的上传文件内容，文件1是probe.txt，里面提到了项目代号：北极星，交付日期：2026-04-15。系统已经成功读取了文件，所以不需要说无法读取。我应该直接引用文件中的信息，并明确提到文件名。不需要调用其他工具，因为信息已经在上传的文件中给出。检查是否有其他要求，比如必须结合历史对话，但这里没有历史对话的内容，所以主要依据当前问题和上传文件。确认信息无误后，直接回答即可。\n</think>\n\n根据本轮上传的【probe.txt】文件记载，项目代号为\"北极星\"，交付日期为\"2026-04-15\"。该信息直接来源于您当前上传文件的正文内容。",
             "process_status": "已处理",
             "processor": "api_probe",
-            "processed_at": "1774369453737",
-            "processedAt": "2026/03/25 00:24:13",
+            "processed_at": "1774871478580",
+            "processedAt": "2026/03/30 19:51:18",
             "process_result": "已处理(未收录)"
           }
         },
-        "text": "{\"code\":0,\"msg\":\"处理反馈成功\",\"data\":{\"id\":\"fb_1774369418483_0\",\"conversation_id\":\"1774369418483\",\"message_index\":0,\"type\":\"dislike\",\"state\":\"dislike\",\"time\":\"1774369453285\",\"update_time\":\"1774369453501\",\"createdAt\":\"2026/03/25 00:24:13\",\"updatedAt\":\"2026/03/25 00:24:13\",\"reasons\":[],\"comment\":\"答案不够完整\",\"pictures\":[\"probe.png\",\"probe_1.png\",\"probe_2.png\",\"probe_3.png\",\"probe_4.png\"],\"name\":\"王颖奇\",\"enterprise\":\"图湃（北京）医疗科技\",\"phone\":\"15323720032\",\"question\":\"请根据附件告诉我项目代号和交付日期\",\"answer\":\"根据文件`probe.txt`的内容，项目代号是“北极星”，交付日期是“2026-04-15”。\",\"process_status\":\"已处理\",\"processor\":\"api_probe\",\"processed_at\":\"1774369453737\",\"processedAt\":\"2026/03/25 00:24:13\",\"process_result\":\"已处理(未收录)\"}}",
+        "text": "{\"code\":0,\"msg\":\"处理反馈成功\",\"data\":{\"id\":\"fb_1774871382270_0\",\"conversation_id\":\"1774871382270\",\"message_index\":0,\"type\":\"dislike\",\"state\":\"dislike\",\"time\":\"1774871478068\",\"update_time\":\"1774871478345\",\"createdAt\":\"2026/03/30 19:51:18\",\"updatedAt\":\"2026/03/30 19:51:18\",\"reasons\":[],\"comment\":\"答案不够完整\",\"pictures\":[\"probe.png\",\"probe_1.png\",\"probe_2.png\",\"probe_3.png\",\"probe_4.png\"],\"pictures_list\":[{\"filename\":\"probe.png\",\"object_name\":\"feedback/2026-03-30/fb_1774871382270_0/probe.png\",\"url\":\"http://127.0.0.1:9000/xintuoyin-data/feedback/2026-03-30/fb_1774871382270_0/probe.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=minioadmin%2F20260330%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20260330T115118Z&X-Amz-Expires=604800&X-Amz-SignedHeaders=host&X-Amz-Signature=c44bbc626a13f4538a98b9c47d4ff02b798af13184f78d086ed8b8d40ece9b80\"},{\"file_id\":\"pic_1774871478249_0\",\"filename\":\"probe_1.png\",\"object_name\":\"feedback/2026-03-30/fb_1774871382270_0/probe_1.png\",\"url\":\"http://127.0.0.1:9000/xintuoyin-data/feedback/2026-03-30/fb_1774871382270_0/probe_1.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=minioadmin%2F20260330%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20260330T115118Z&X-Amz-Expires=604800&X-Amz-SignedHeaders=host&X-Amz-Signature=d8a2bc8f53af54669bf21d2c56caac5b0c1cf9aeba810047717110ae7fa3821c\"},{\"file_id\":\"pic_1774871478284_0\",\"filename\":\"probe_2.png\",\"object_name\":\"feedback/2026-03-30/fb_1774871382270_0/probe_2.png\",\"url\":\"http://127.0.0.1:9000/xintuoyin-data/feedback/2026-03-30/fb_1774871382270_0/probe_2.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=minioadmin%2F20260330%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20260330T115118Z&X-Amz-Expires=604800&X-Amz-SignedHeaders=host&X-Amz-Signature=7fd3570220787524fbcd71d6ee571f4252ce9714444d0267fcb2bef34de94283\"},{\"file_id\":\"pic_1774871478310_0\",\"filename\":\"probe_3.png\",\"object_name\":\"feedback/2026-03-30/fb_1774871382270_0/probe_3.png\",\"url\":\"http://127.0.0.1:9000/xintuoyin-data/feedback/2026-03-30/fb_1774871382270_0/probe_3.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=minioadmin%2F20260330%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20260330T115118Z&X-Amz-Expires=604800&X-Amz-SignedHeaders=host&X-Amz-Signature=2aacf9607194cef4534f794c1cc82dff42dd27e1c1812ec56b17de703f16c916\"},{\"file_id\":\"pic_1774871478341_0\",\"filename\":\"probe_4.png\",\"object_name\":\"feedback/2026-03-30/fb_1774871382270_0/probe_4.png\",\"url\":\"http://127.0.0.1:9000/xintuoyin-data/feedback/2026-03-30/fb_1774871382270_0/probe_4.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=minioadmin%2F20260330%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20260330T115118Z&X-Amz-Expires=604800&X-Amz-SignedHeaders=host&X-Amz-Signature=6b10b5c3fc41562c5de82f2f6a7952fd59da6aa94b86bbcc7f14f8293a321f8c\"}],\"name\":\"王颖奇\",\"enterprise\":\"图湃（北京）医疗科技\",\"phone\":\"15323720032\",\"question\":\"请根据附件告诉我项目代号和交付日期\",\"answer\":\"<think>\\n好的，我需要回答用户的问题，用户问的是项目代号和交付日期。根据用户提供的上传文件内容，文件1是probe.txt，里面提到了项目代号：北极星，交付日期：2026-04-15。系统已经成功读取了文件，所以不需要说无法读取。我应该直接引用文件中的信息，并明确提到文件名。不需要调用其他工具，因为信息已经在上传的文件中给出。检查是否有其他要求，比如必须结合历史对话，但这里没有历史对话的内容，所以主要依据当前问题和上传文件。确认信息无误后，直接回答即可。\\n</think>\\n\\n根据本轮上传的【probe.txt】文件记载，项目代号为\\\"北极星\\\"，交付日期为\\\"2026-04-15\\\"。该信息直接来源于您当前上传文件的正文内容。\",\"process_status\":\"已处理\",\"processor\":\"api_probe\",\"processed_at\":\"1774871478580\",\"processedAt\":\"2026/03/30 19:51:18\",\"process_result\":\"已处理(未收录)\"}}",
         "stderr": ""
       },
       "edge_cases": {
         "missing_id": {
           "ok": false,
           "status": 400,
-          "elapsed_ms": 8.58,
+          "elapsed_ms": 8.85,
           "json": {
             "code": 1,
             "msg": "处理反馈失败",
@@ -1800,20 +1992,20 @@
         "collect_true": {
           "ok": true,
           "status": 200,
-          "elapsed_ms": 9.01,
+          "elapsed_ms": 10.52,
           "json": {
             "code": 0,
             "msg": "处理反馈成功",
             "data": {
-              "id": "fb_1774369418483_0",
-              "conversation_id": "1774369418483",
+              "id": "fb_1774871382270_0",
+              "conversation_id": "1774871382270",
               "message_index": 0,
               "type": "dislike",
               "state": "dislike",
-              "time": "1774369453285",
-              "update_time": "1774369453501",
-              "createdAt": "2026/03/25 00:24:13",
-              "updatedAt": "2026/03/25 00:24:13",
+              "time": "1774871478068",
+              "update_time": "1774871478345",
+              "createdAt": "2026/03/30 19:51:18",
+              "updatedAt": "2026/03/30 19:51:18",
               "reasons": [],
               "comment": "答案不够完整",
               "pictures": [
@@ -1823,19 +2015,50 @@
                 "probe_3.png",
                 "probe_4.png"
               ],
+              "pictures_list": [
+                {
+                  "filename": "probe.png",
+                  "object_name": "feedback/2026-03-30/fb_1774871382270_0/probe.png",
+                  "url": "http://127.0.0.1:9000/xintuoyin-data/feedback/2026-03-30/fb_1774871382270_0/probe.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=minioadmin%2F20260330%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20260330T115118Z&X-Amz-Expires=604800&X-Amz-SignedHeaders=host&X-Amz-Signature=c44bbc626a13f4538a98b9c47d4ff02b798af13184f78d086ed8b8d40ece9b80"
+                },
+                {
+                  "file_id": "pic_1774871478249_0",
+                  "filename": "probe_1.png",
+                  "object_name": "feedback/2026-03-30/fb_1774871382270_0/probe_1.png",
+                  "url": "http://127.0.0.1:9000/xintuoyin-data/feedback/2026-03-30/fb_1774871382270_0/probe_1.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=minioadmin%2F20260330%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20260330T115118Z&X-Amz-Expires=604800&X-Amz-SignedHeaders=host&X-Amz-Signature=d8a2bc8f53af54669bf21d2c56caac5b0c1cf9aeba810047717110ae7fa3821c"
+                },
+                {
+                  "file_id": "pic_1774871478284_0",
+                  "filename": "probe_2.png",
+                  "object_name": "feedback/2026-03-30/fb_1774871382270_0/probe_2.png",
+                  "url": "http://127.0.0.1:9000/xintuoyin-data/feedback/2026-03-30/fb_1774871382270_0/probe_2.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=minioadmin%2F20260330%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20260330T115118Z&X-Amz-Expires=604800&X-Amz-SignedHeaders=host&X-Amz-Signature=7fd3570220787524fbcd71d6ee571f4252ce9714444d0267fcb2bef34de94283"
+                },
+                {
+                  "file_id": "pic_1774871478310_0",
+                  "filename": "probe_3.png",
+                  "object_name": "feedback/2026-03-30/fb_1774871382270_0/probe_3.png",
+                  "url": "http://127.0.0.1:9000/xintuoyin-data/feedback/2026-03-30/fb_1774871382270_0/probe_3.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=minioadmin%2F20260330%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20260330T115118Z&X-Amz-Expires=604800&X-Amz-SignedHeaders=host&X-Amz-Signature=2aacf9607194cef4534f794c1cc82dff42dd27e1c1812ec56b17de703f16c916"
+                },
+                {
+                  "file_id": "pic_1774871478341_0",
+                  "filename": "probe_4.png",
+                  "object_name": "feedback/2026-03-30/fb_1774871382270_0/probe_4.png",
+                  "url": "http://127.0.0.1:9000/xintuoyin-data/feedback/2026-03-30/fb_1774871382270_0/probe_4.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=minioadmin%2F20260330%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20260330T115118Z&X-Amz-Expires=604800&X-Amz-SignedHeaders=host&X-Amz-Signature=6b10b5c3fc41562c5de82f2f6a7952fd59da6aa94b86bbcc7f14f8293a321f8c"
+                }
+              ],
               "name": "王颖奇",
               "enterprise": "图湃（北京）医疗科技",
               "phone": "15323720032",
               "question": "请根据附件告诉我项目代号和交付日期",
-              "answer": "根据文件`probe.txt`的内容，项目代号是“北极星”，交付日期是“2026-04-15”。",
+              "answer": "<think>\n好的，我需要回答用户的问题，用户问的是项目代号和交付日期。根据用户提供的上传文件内容，文件1是probe.txt，里面提到了项目代号：北极星，交付日期：2026-04-15。系统已经成功读取了文件，所以不需要说无法读取。我应该直接引用文件中的信息，并明确提到文件名。不需要调用其他工具，因为信息已经在上传的文件中给出。检查是否有其他要求，比如必须结合历史对话，但这里没有历史对话的内容，所以主要依据当前问题和上传文件。确认信息无误后，直接回答即可。\n</think>\n\n根据本轮上传的【probe.txt】文件记载，项目代号为\"北极星\"，交付日期为\"2026-04-15\"。该信息直接来源于您当前上传文件的正文内容。",
               "process_status": "已处理",
               "processor": "api_probe",
-              "processed_at": "1774369453755",
-              "processedAt": "2026/03/25 00:24:13",
+              "processed_at": "1774871478599",
+              "processedAt": "2026/03/30 19:51:18",
               "process_result": "已收录"
             }
           },
-          "text": "{\"code\":0,\"msg\":\"处理反馈成功\",\"data\":{\"id\":\"fb_1774369418483_0\",\"conversation_id\":\"1774369418483\",\"message_index\":0,\"type\":\"dislike\",\"state\":\"dislike\",\"time\":\"1774369453285\",\"update_time\":\"1774369453501\",\"createdAt\":\"2026/03/25 00:24:13\",\"updatedAt\":\"2026/03/25 00:24:13\",\"reasons\":[],\"comment\":\"答案不够完整\",\"pictures\":[\"probe.png\",\"probe_1.png\",\"probe_2.png\",\"probe_3.png\",\"probe_4.png\"],\"name\":\"王颖奇\",\"enterprise\":\"图湃（北京）医疗科技\",\"phone\":\"15323720032\",\"question\":\"请根据附件告诉我项目代号和交付日期\",\"answer\":\"根据文件`probe.txt`的内容，项目代号是“北极星”，交付日期是“2026-04-15”。\",\"process_status\":\"已处理\",\"processor\":\"api_probe\",\"processed_at\":\"1774369453755\",\"processedAt\":\"2026/03/25 00:24:13\",\"process_result\":\"已收录\"}}",
+          "text": "{\"code\":0,\"msg\":\"处理反馈成功\",\"data\":{\"id\":\"fb_1774871382270_0\",\"conversation_id\":\"1774871382270\",\"message_index\":0,\"type\":\"dislike\",\"state\":\"dislike\",\"time\":\"1774871478068\",\"update_time\":\"1774871478345\",\"createdAt\":\"2026/03/30 19:51:18\",\"updatedAt\":\"2026/03/30 19:51:18\",\"reasons\":[],\"comment\":\"答案不够完整\",\"pictures\":[\"probe.png\",\"probe_1.png\",\"probe_2.png\",\"probe_3.png\",\"probe_4.png\"],\"pictures_list\":[{\"filename\":\"probe.png\",\"object_name\":\"feedback/2026-03-30/fb_1774871382270_0/probe.png\",\"url\":\"http://127.0.0.1:9000/xintuoyin-data/feedback/2026-03-30/fb_1774871382270_0/probe.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=minioadmin%2F20260330%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20260330T115118Z&X-Amz-Expires=604800&X-Amz-SignedHeaders=host&X-Amz-Signature=c44bbc626a13f4538a98b9c47d4ff02b798af13184f78d086ed8b8d40ece9b80\"},{\"file_id\":\"pic_1774871478249_0\",\"filename\":\"probe_1.png\",\"object_name\":\"feedback/2026-03-30/fb_1774871382270_0/probe_1.png\",\"url\":\"http://127.0.0.1:9000/xintuoyin-data/feedback/2026-03-30/fb_1774871382270_0/probe_1.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=minioadmin%2F20260330%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20260330T115118Z&X-Amz-Expires=604800&X-Amz-SignedHeaders=host&X-Amz-Signature=d8a2bc8f53af54669bf21d2c56caac5b0c1cf9aeba810047717110ae7fa3821c\"},{\"file_id\":\"pic_1774871478284_0\",\"filename\":\"probe_2.png\",\"object_name\":\"feedback/2026-03-30/fb_1774871382270_0/probe_2.png\",\"url\":\"http://127.0.0.1:9000/xintuoyin-data/feedback/2026-03-30/fb_1774871382270_0/probe_2.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=minioadmin%2F20260330%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20260330T115118Z&X-Amz-Expires=604800&X-Amz-SignedHeaders=host&X-Amz-Signature=7fd3570220787524fbcd71d6ee571f4252ce9714444d0267fcb2bef34de94283\"},{\"file_id\":\"pic_1774871478310_0\",\"filename\":\"probe_3.png\",\"object_name\":\"feedback/2026-03-30/fb_1774871382270_0/probe_3.png\",\"url\":\"http://127.0.0.1:9000/xintuoyin-data/feedback/2026-03-30/fb_1774871382270_0/probe_3.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=minioadmin%2F20260330%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20260330T115118Z&X-Amz-Expires=604800&X-Amz-SignedHeaders=host&X-Amz-Signature=2aacf9607194cef4534f794c1cc82dff42dd27e1c1812ec56b17de703f16c916\"},{\"file_id\":\"pic_1774871478341_0\",\"filename\":\"probe_4.png\",\"object_name\":\"feedback/2026-03-30/fb_1774871382270_0/probe_4.png\",\"url\":\"http://127.0.0.1:9000/xintuoyin-data/feedback/2026-03-30/fb_1774871382270_0/probe_4.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=minioadmin%2F20260330%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20260330T115118Z&X-Amz-Expires=604800&X-Amz-SignedHeaders=host&X-Amz-Signature=6b10b5c3fc41562c5de82f2f6a7952fd59da6aa94b86bbcc7f14f8293a321f8c\"}],\"name\":\"王颖奇\",\"enterprise\":\"图湃（北京）医疗科技\",\"phone\":\"15323720032\",\"question\":\"请根据附件告诉我项目代号和交付日期\",\"answer\":\"<think>\\n好的，我需要回答用户的问题，用户问的是项目代号和交付日期。根据用户提供的上传文件内容，文件1是probe.txt，里面提到了项目代号：北极星，交付日期：2026-04-15。系统已经成功读取了文件，所以不需要说无法读取。我应该直接引用文件中的信息，并明确提到文件名。不需要调用其他工具，因为信息已经在上传的文件中给出。检查是否有其他要求，比如必须结合历史对话，但这里没有历史对话的内容，所以主要依据当前问题和上传文件。确认信息无误后，直接回答即可。\\n</think>\\n\\n根据本轮上传的【probe.txt】文件记载，项目代号为\\\"北极星\\\"，交付日期为\\\"2026-04-15\\\"。该信息直接来源于您当前上传文件的正文内容。\",\"process_status\":\"已处理\",\"processor\":\"api_probe\",\"processed_at\":\"1774871478599\",\"processedAt\":\"2026/03/30 19:51:18\",\"process_result\":\"已收录\"}}",
           "stderr": ""
         }
       },
@@ -1846,24 +2069,24 @@
         "ok": 3,
         "failed": 0,
         "latency_ms": {
-          "min": 9.26,
-          "p50": 10.69,
-          "max": 13.69
+          "min": 8.83,
+          "p50": 9.31,
+          "max": 10.27
         },
         "samples": [
           {
             "status": 200,
-            "elapsed_ms": 9.26,
+            "elapsed_ms": 10.27,
             "stderr": ""
           },
           {
             "status": 200,
-            "elapsed_ms": 13.69,
+            "elapsed_ms": 9.31,
             "stderr": ""
           },
           {
             "status": 200,
-            "elapsed_ms": 10.69,
+            "elapsed_ms": 8.83,
             "stderr": ""
           }
         ]
@@ -1874,24 +2097,24 @@
       "success_case": {
         "ok": true,
         "status": 200,
-        "elapsed_ms": 14.63,
+        "elapsed_ms": 16.3,
         "json": {
           "code": 0,
           "msg": "批量删除反馈成功",
           "data": {
             "deleted_ids": [
-              "fb_1774369476776_0"
+              "fb_1774871505420_0"
             ]
           }
         },
-        "text": "{\"code\":0,\"msg\":\"批量删除反馈成功\",\"data\":{\"deleted_ids\":[\"fb_1774369476776_0\"]}}",
+        "text": "{\"code\":0,\"msg\":\"批量删除反馈成功\",\"data\":{\"deleted_ids\":[\"fb_1774871505420_0\"]}}",
         "stderr": ""
       },
       "edge_cases": {
         "ids_not_list": {
           "ok": false,
           "status": 400,
-          "elapsed_ms": 11.24,
+          "elapsed_ms": 10.3,
           "json": {
             "code": 1,
             "msg": "批量删除反馈失败",
@@ -1910,24 +2133,24 @@
         "ok": 5,
         "failed": 0,
         "latency_ms": {
-          "min": 10.01,
-          "p50": 11.05,
-          "max": 12.85
+          "min": 8.65,
+          "p50": 9.69,
+          "max": 12.15
         },
         "samples": [
           {
             "status": 200,
-            "elapsed_ms": 10.34,
+            "elapsed_ms": 8.65,
             "stderr": ""
           },
           {
             "status": 200,
-            "elapsed_ms": 12.28,
+            "elapsed_ms": 12.15,
             "stderr": ""
           },
           {
             "status": 200,
-            "elapsed_ms": 11.05,
+            "elapsed_ms": 9.69,
             "stderr": ""
           }
         ]
@@ -1938,22 +2161,22 @@
       "success_case": {
         "ok": true,
         "status": 200,
-        "elapsed_ms": 11.94,
+        "elapsed_ms": 10.08,
         "json": {
           "code": 0,
           "msg": "删除反馈成功",
           "data": {
-            "id": "fb_1774369453799_0"
+            "id": "fb_1774871478640_0"
           }
         },
-        "text": "{\"code\":0,\"msg\":\"删除反馈成功\",\"data\":{\"id\":\"fb_1774369453799_0\"}}",
+        "text": "{\"code\":0,\"msg\":\"删除反馈成功\",\"data\":{\"id\":\"fb_1774871478640_0\"}}",
         "stderr": ""
       },
       "edge_cases": {
         "not_found": {
           "ok": false,
           "status": 404,
-          "elapsed_ms": 9.73,
+          "elapsed_ms": 9.69,
           "json": {
             "code": 1,
             "msg": "删除反馈失败",
@@ -1972,24 +2195,24 @@
         "ok": 0,
         "failed": 5,
         "latency_ms": {
-          "min": 9.45,
-          "p50": 10.12,
-          "max": 11.56
+          "min": 9.1,
+          "p50": 9.54,
+          "max": 10.72
         },
         "samples": [
           {
             "status": 404,
-            "elapsed_ms": 10.43,
+            "elapsed_ms": 9.42,
             "stderr": ""
           },
           {
             "status": 404,
-            "elapsed_ms": 11.56,
+            "elapsed_ms": 10.72,
             "stderr": ""
           },
           {
             "status": 404,
-            "elapsed_ms": 9.45,
+            "elapsed_ms": 9.1,
             "stderr": ""
           }
         ]
@@ -2000,7 +2223,7 @@
       "success_case": {
         "ok": true,
         "status": 200,
-        "elapsed_ms": 14.19,
+        "elapsed_ms": 58.07,
         "json": {
           "code": 0,
           "msg": "获取知识库列表成功",
@@ -2053,7 +2276,53 @@
                 "updatedAt": "2026/03/24 18:05:38"
               },
               {
-                "id": "kb_1774369484814",
+                "id": "kb_1774419816622",
+                "name": "b1",
+                "category": "企业知识库",
+                "model": "openai",
+                "remark": "",
+                "enabled": true,
+                "users": [
+                  {
+                    "name": "王颖奇",
+                    "phone": "",
+                    "categoryName": ""
+                  }
+                ],
+                "fileCount": 2,
+                "url": "企业知识库/图湃（北京）医疗科技/b1",
+                "physical_path": "企业知识库/图湃（北京）医疗科技/b1",
+                "owner_info": "图湃（北京）医疗科技/技术部",
+                "created_at": "1774419816622",
+                "updated_at": "1774419896672",
+                "createdAt": "2026/03/25 14:23:36",
+                "updatedAt": "2026/03/25 14:24:56"
+              },
+              {
+                "id": "kb_1774702385271",
+                "name": "Milvus联调测试库",
+                "category": "个人知识库",
+                "model": "openai",
+                "remark": "",
+                "enabled": true,
+                "users": [
+                  {
+                    "name": "王颖奇",
+                    "phone": "15323720032",
+                    "categoryName": "图湃（北京）医疗科技"
+                  }
+                ],
+                "fileCount": 0,
+                "url": "个人知识库/王颖奇/Milvus联调测试库",
+                "physical_path": "个人知识库/王颖奇/Milvus联调测试库",
+                "owner_info": "图湃（北京）医疗科技/技术部",
+                "created_at": "1774702385271",
+                "updated_at": "1774702451398",
+                "createdAt": "2026/03/28 20:53:05",
+                "updatedAt": "2026/03/28 20:54:11"
+              },
+              {
+                "id": "kb_1774871536002",
                 "name": "API探针知识库",
                 "category": "个人知识库",
                 "model": "openai",
@@ -2067,19 +2336,19 @@
                   }
                 ],
                 "fileCount": 0,
-                "url": "个人知识库/王颖奇/API探针知识库",
-                "physical_path": "个人知识库/王颖奇/API探针知识库",
+                "url": "用户知识库/王颖奇/API探针知识库",
+                "physical_path": "用户知识库/王颖奇/API探针知识库",
                 "owner_info": "图湃（北京）医疗科技/技术部",
-                "created_at": "1774369484815",
-                "updated_at": "1774369484815",
-                "createdAt": "2026/03/25 00:24:44",
-                "updatedAt": "2026/03/25 00:24:44"
+                "created_at": "1774871536002",
+                "updated_at": "1774871536002",
+                "createdAt": "2026/03/30 19:52:16",
+                "updatedAt": "2026/03/30 19:52:16"
               }
             ],
-            "total": 3
+            "total": 5
           }
         },
-        "text": "{\"code\":0,\"msg\":\"获取知识库列表成功\",\"data\":{\"list\":[{\"id\":\"ca2a9642\",\"name\":\"测试\",\"category\":\"企业知识库\",\"model\":\"openai\",\"remark\":\"\",\"enabled\":false,\"users\":[{\"name\":\"王颖奇\",\"phone\":\"\",\"categoryName\":\"\"}],\"fileCount\":0,\"url\":\"企业知识库/图湃（北京）医疗科技/测试\",\"physical_path\":\"企业知识库/图湃（北京）医疗科技/测试\",\"owner_info\":\"图湃（北京）医疗科技/技术部\",\"created_at\":\"\",\"updated_at\":\"\",\"createdAt\":\"2026/03/11 18:08:15\",\"updatedAt\":\"2026/03/11 18:08:15\"},{\"id\":\"6e73d834\",\"name\":\"aa\",\"category\":\"企业知识库\",\"model\":\"openai\",\"remark\":\"\",\"enabled\":true,\"users\":[{\"name\":\"王颖奇\",\"phone\":\"\",\"categoryName\":\"\"}],\"fileCount\":1,\"url\":\"企业知识库/图湃（北京）医疗科技/aa\",\"physical_path\":\"企业知识库/图湃（北京）医疗科技/aa\",\"owner_info\":\"图湃（北京）医疗科技/技术部\",\"created_at\":\"\",\"updated_at\":\"\",\"createdAt\":\"2026/03/24 18:05:38\",\"updatedAt\":\"2026/03/24 18:05:38\"},{\"id\":\"kb_1774369484814\",\"name\":\"API探针知识库\",\"category\":\"个人知识库\",\"model\":\"openai\",\"remark\":\"\",\"enabled\":true,\"users\":[{\"name\":\"王颖奇\",\"phone\":\"15323720032\",\"categoryName\":\"图湃（北京）医疗科技\"}],\"fileCount\":0,\"url\":\"个人知识库/王颖奇/API探针知识库\",\"physical_path\":\"个人知识库/王颖奇/API探针知识库\",\"owner_info\":\"图湃（北京）医疗科技/技术部\",\"created_at\":\"1774369484815\",\"updated_at\":\"1774369484815\",\"createdAt\":\"2026/03/25 00:24:44\",\"updatedAt\":\"2026/03/25 00:24:44\"}],\"total\":3}}",
+        "text": "{\"code\":0,\"msg\":\"获取知识库列表成功\",\"data\":{\"list\":[{\"id\":\"ca2a9642\",\"name\":\"测试\",\"category\":\"企业知识库\",\"model\":\"openai\",\"remark\":\"\",\"enabled\":false,\"users\":[{\"name\":\"王颖奇\",\"phone\":\"\",\"categoryName\":\"\"}],\"fileCount\":0,\"url\":\"企业知识库/图湃（北京）医疗科技/测试\",\"physical_path\":\"企业知识库/图湃（北京）医疗科技/测试\",\"owner_info\":\"图湃（北京）医疗科技/技术部\",\"created_at\":\"\",\"updated_at\":\"\",\"createdAt\":\"2026/03/11 18:08:15\",\"updatedAt\":\"2026/03/11 18:08:15\"},{\"id\":\"6e73d834\",\"name\":\"aa\",\"category\":\"企业知识库\",\"model\":\"openai\",\"remark\":\"\",\"enabled\":true,\"users\":[{\"name\":\"王颖奇\",\"phone\":\"\",\"categoryName\":\"\"}],\"fileCount\":1,\"url\":\"企业知识库/图湃（北京）医疗科技/aa\",\"physical_path\":\"企业知识库/图湃（北京）医疗科技/aa\",\"owner_info\":\"图湃（北京）医疗科技/技术部\",\"created_at\":\"\",\"updated_at\":\"\",\"createdAt\":\"2026/03/24 18:05:38\",\"updatedAt\":\"2026/03/24 18:05:38\"},{\"id\":\"kb_1774419816622\",\"name\":\"b1\",\"category\":\"企业知识库\",\"model\":\"openai\",\"remark\":\"\",\"enabled\":true,\"users\":[{\"name\":\"王颖奇\",\"phone\":\"\",\"categoryName\":\"\"}],\"fileCount\":2,\"url\":\"企业知识库/图湃（北京）医疗科技/b1\",\"physical_path\":\"企业知识库/图湃（北京）医疗科技/b1\",\"owner_info\":\"图湃（北京）医疗科技/技术部\",\"created_at\":\"1774419816622\",\"updated_at\":\"1774419896672\",\"createdAt\":\"2026/03/25 14:23:36\",\"updatedAt\":\"2026/03/25 14:24:56\"},{\"id\":\"kb_1774702385271\",\"name\":\"Milvus联调测试库\",\"category\":\"个人知识库\",\"model\":\"openai\",\"remark\":\"\",\"enabled\":true,\"users\":[{\"name\":\"王颖奇\",\"phone\":\"15323720032\",\"categoryName\":\"图湃（北京）医疗科技\"}],\"fileCount\":0,\"url\":\"个人知识库/王颖奇/Milvus联调测试库\",\"physical_path\":\"个人知识库/王颖奇/Milvus联调测试库\",\"owner_info\":\"图湃（北京）医疗科技/技术部\",\"created_at\":\"1774702385271\",\"updated_at\":\"1774702451398\",\"createdAt\":\"2026/03/28 20:53:05\",\"updatedAt\":\"2026/03/28 20:54:11\"},{\"id\":\"kb_1774871536002\",\"name\":\"API探针知识库\",\"category\":\"个人知识库\",\"model\":\"openai\",\"remark\":\"\",\"enabled\":true,\"users\":[{\"name\":\"王颖奇\",\"phone\":\"15323720032\",\"categoryName\":\"图湃（北京）医疗科技\"}],\"fileCount\":0,\"url\":\"用户知识库/王颖奇/API探针知识库\",\"physical_path\":\"用户知识库/王颖奇/API探针知识库\",\"owner_info\":\"图湃（北京）医疗科技/技术部\",\"created_at\":\"1774871536002\",\"updated_at\":\"1774871536002\",\"createdAt\":\"2026/03/30 19:52:16\",\"updatedAt\":\"2026/03/30 19:52:16\"}],\"total\":5}}",
         "stderr": ""
       },
       "stress": {
@@ -2089,24 +2358,24 @@
         "ok": 15,
         "failed": 0,
         "latency_ms": {
-          "min": 10.14,
-          "p50": 14.07,
-          "max": 23.31
+          "min": 48.43,
+          "p50": 143.18,
+          "max": 163.73
         },
         "samples": [
           {
             "status": 200,
-            "elapsed_ms": 14.89,
+            "elapsed_ms": 48.43,
             "stderr": ""
           },
           {
             "status": 200,
-            "elapsed_ms": 17.63,
+            "elapsed_ms": 81.9,
             "stderr": ""
           },
           {
             "status": 200,
-            "elapsed_ms": 20.43,
+            "elapsed_ms": 113.48,
             "stderr": ""
           }
         ]
@@ -2117,12 +2386,12 @@
       "success_case": {
         "ok": true,
         "status": 200,
-        "elapsed_ms": 12.48,
+        "elapsed_ms": 27.84,
         "json": {
           "code": 0,
           "msg": "创建知识库成功",
           "data": {
-            "id": "kb_1774369484814",
+            "id": "kb_1774871536002",
             "name": "API探针知识库",
             "category": "个人知识库",
             "model": "openai",
@@ -2136,23 +2405,23 @@
               }
             ],
             "fileCount": 0,
-            "url": "个人知识库/王颖奇/API探针知识库",
-            "physical_path": "个人知识库/王颖奇/API探针知识库",
+            "url": "用户知识库/王颖奇/API探针知识库",
+            "physical_path": "用户知识库/王颖奇/API探针知识库",
             "owner_info": "图湃（北京）医疗科技/技术部",
-            "created_at": "1774369484815",
-            "updated_at": "1774369484815",
-            "createdAt": "2026/03/25 00:24:44",
-            "updatedAt": "2026/03/25 00:24:44"
+            "created_at": "1774871536002",
+            "updated_at": "1774871536002",
+            "createdAt": "2026/03/30 19:52:16",
+            "updatedAt": "2026/03/30 19:52:16"
           }
         },
-        "text": "{\"code\":0,\"msg\":\"创建知识库成功\",\"data\":{\"id\":\"kb_1774369484814\",\"name\":\"API探针知识库\",\"category\":\"个人知识库\",\"model\":\"openai\",\"remark\":\"\",\"enabled\":true,\"users\":[{\"name\":\"王颖奇\",\"phone\":\"15323720032\",\"categoryName\":\"图湃（北京）医疗科技\"}],\"fileCount\":0,\"url\":\"个人知识库/王颖奇/API探针知识库\",\"physical_path\":\"个人知识库/王颖奇/API探针知识库\",\"owner_info\":\"图湃（北京）医疗科技/技术部\",\"created_at\":\"1774369484815\",\"updated_at\":\"1774369484815\",\"createdAt\":\"2026/03/25 00:24:44\",\"updatedAt\":\"2026/03/25 00:24:44\"}}",
+        "text": "{\"code\":0,\"msg\":\"创建知识库成功\",\"data\":{\"id\":\"kb_1774871536002\",\"name\":\"API探针知识库\",\"category\":\"个人知识库\",\"model\":\"openai\",\"remark\":\"\",\"enabled\":true,\"users\":[{\"name\":\"王颖奇\",\"phone\":\"15323720032\",\"categoryName\":\"图湃（北京）医疗科技\"}],\"fileCount\":0,\"url\":\"用户知识库/王颖奇/API探针知识库\",\"physical_path\":\"用户知识库/王颖奇/API探针知识库\",\"owner_info\":\"图湃（北京）医疗科技/技术部\",\"created_at\":\"1774871536002\",\"updated_at\":\"1774871536002\",\"createdAt\":\"2026/03/30 19:52:16\",\"updatedAt\":\"2026/03/30 19:52:16\"}}",
         "stderr": ""
       },
       "edge_cases": {
         "missing_name": {
           "ok": false,
           "status": 422,
-          "elapsed_ms": 10.2,
+          "elapsed_ms": 11.65,
           "json": {
             "detail": [
               {
@@ -2177,24 +2446,24 @@
         "ok": 3,
         "failed": 0,
         "latency_ms": {
-          "min": 11.07,
-          "p50": 11.63,
-          "max": 11.96
+          "min": 15.81,
+          "p50": 18.44,
+          "max": 19.29
         },
         "samples": [
           {
             "status": 200,
-            "elapsed_ms": 11.07,
+            "elapsed_ms": 19.29,
             "stderr": ""
           },
           {
             "status": 200,
-            "elapsed_ms": 11.63,
+            "elapsed_ms": 15.81,
             "stderr": ""
           },
           {
             "status": 200,
-            "elapsed_ms": 11.96,
+            "elapsed_ms": 18.44,
             "stderr": ""
           }
         ]
@@ -2205,12 +2474,12 @@
       "success_case": {
         "ok": true,
         "status": 200,
-        "elapsed_ms": 10.13,
+        "elapsed_ms": 20.69,
         "json": {
           "code": 0,
           "msg": "获取知识库详情成功",
           "data": {
-            "id": "kb_1774369484814",
+            "id": "kb_1774871536002",
             "name": "API探针知识库",
             "category": "个人知识库",
             "model": "openai",
@@ -2224,24 +2493,24 @@
               }
             ],
             "fileCount": 0,
-            "url": "个人知识库/王颖奇/API探针知识库",
-            "physical_path": "个人知识库/王颖奇/API探针知识库",
+            "url": "用户知识库/王颖奇/API探针知识库",
+            "physical_path": "用户知识库/王颖奇/API探针知识库",
             "owner_info": "图湃（北京）医疗科技/技术部",
-            "created_at": "1774369484815",
-            "updated_at": "1774369484815",
-            "createdAt": "2026/03/25 00:24:44",
-            "updatedAt": "2026/03/25 00:24:44",
+            "created_at": "1774871536002",
+            "updated_at": "1774871536002",
+            "createdAt": "2026/03/30 19:52:16",
+            "updatedAt": "2026/03/30 19:52:16",
             "files": []
           }
         },
-        "text": "{\"code\":0,\"msg\":\"获取知识库详情成功\",\"data\":{\"id\":\"kb_1774369484814\",\"name\":\"API探针知识库\",\"category\":\"个人知识库\",\"model\":\"openai\",\"remark\":\"\",\"enabled\":true,\"users\":[{\"name\":\"王颖奇\",\"phone\":\"15323720032\",\"categoryName\":\"图湃（北京）医疗科技\"}],\"fileCount\":0,\"url\":\"个人知识库/王颖奇/API探针知识库\",\"physical_path\":\"个人知识库/王颖奇/API探针知识库\",\"owner_info\":\"图湃（北京）医疗科技/技术部\",\"created_at\":\"1774369484815\",\"updated_at\":\"1774369484815\",\"createdAt\":\"2026/03/25 00:24:44\",\"updatedAt\":\"2026/03/25 00:24:44\",\"files\":[]}}",
+        "text": "{\"code\":0,\"msg\":\"获取知识库详情成功\",\"data\":{\"id\":\"kb_1774871536002\",\"name\":\"API探针知识库\",\"category\":\"个人知识库\",\"model\":\"openai\",\"remark\":\"\",\"enabled\":true,\"users\":[{\"name\":\"王颖奇\",\"phone\":\"15323720032\",\"categoryName\":\"图湃（北京）医疗科技\"}],\"fileCount\":0,\"url\":\"用户知识库/王颖奇/API探针知识库\",\"physical_path\":\"用户知识库/王颖奇/API探针知识库\",\"owner_info\":\"图湃（北京）医疗科技/技术部\",\"created_at\":\"1774871536002\",\"updated_at\":\"1774871536002\",\"createdAt\":\"2026/03/30 19:52:16\",\"updatedAt\":\"2026/03/30 19:52:16\",\"files\":[]}}",
         "stderr": ""
       },
       "edge_cases": {
         "not_found": {
           "ok": false,
           "status": 404,
-          "elapsed_ms": 10.92,
+          "elapsed_ms": 11.82,
           "json": {
             "code": 1,
             "msg": "获取知识库详情失败",
@@ -2260,24 +2529,24 @@
         "ok": 10,
         "failed": 0,
         "latency_ms": {
-          "min": 8.09,
-          "p50": 10.38,
-          "max": 17.47
+          "min": 28.87,
+          "p50": 51.62,
+          "max": 68.63
         },
         "samples": [
           {
             "status": 200,
-            "elapsed_ms": 14.91,
+            "elapsed_ms": 28.87,
             "stderr": ""
           },
           {
             "status": 200,
-            "elapsed_ms": 15.93,
+            "elapsed_ms": 50.9,
             "stderr": ""
           },
           {
             "status": 200,
-            "elapsed_ms": 17.47,
+            "elapsed_ms": 68.63,
             "stderr": ""
           }
         ]
@@ -2288,12 +2557,12 @@
       "success_case": {
         "ok": true,
         "status": 200,
-        "elapsed_ms": 14.06,
+        "elapsed_ms": 671.93,
         "json": {
           "code": 0,
           "msg": "更新知识库成功",
           "data": {
-            "id": "kb_1774369484814",
+            "id": "kb_1774871536002",
             "name": "API探针知识库",
             "category": "个人知识库",
             "model": "openai",
@@ -2307,23 +2576,23 @@
               }
             ],
             "fileCount": 0,
-            "url": "个人知识库/王颖奇/API探针知识库",
-            "physical_path": "个人知识库/王颖奇/API探针知识库",
+            "url": "用户知识库/王颖奇/API探针知识库",
+            "physical_path": "用户知识库/王颖奇/API探针知识库",
             "owner_info": "图湃（北京）医疗科技/技术部",
-            "created_at": "1774369484815",
-            "updated_at": "1774369485008",
-            "createdAt": "2026/03/25 00:24:44",
-            "updatedAt": "2026/03/25 00:24:45"
+            "created_at": "1774871536002",
+            "updated_at": "1774871536844",
+            "createdAt": "2026/03/30 19:52:16",
+            "updatedAt": "2026/03/30 19:52:16"
           }
         },
-        "text": "{\"code\":0,\"msg\":\"更新知识库成功\",\"data\":{\"id\":\"kb_1774369484814\",\"name\":\"API探针知识库\",\"category\":\"个人知识库\",\"model\":\"openai\",\"remark\":\"API探针更新\",\"enabled\":true,\"users\":[{\"name\":\"tester\",\"phone\":\"123\",\"categoryName\":\"demo\"}],\"fileCount\":0,\"url\":\"个人知识库/王颖奇/API探针知识库\",\"physical_path\":\"个人知识库/王颖奇/API探针知识库\",\"owner_info\":\"图湃（北京）医疗科技/技术部\",\"created_at\":\"1774369484815\",\"updated_at\":\"1774369485008\",\"createdAt\":\"2026/03/25 00:24:44\",\"updatedAt\":\"2026/03/25 00:24:45\"}}",
+        "text": "{\"code\":0,\"msg\":\"更新知识库成功\",\"data\":{\"id\":\"kb_1774871536002\",\"name\":\"API探针知识库\",\"category\":\"个人知识库\",\"model\":\"openai\",\"remark\":\"API探针更新\",\"enabled\":true,\"users\":[{\"name\":\"tester\",\"phone\":\"123\",\"categoryName\":\"demo\"}],\"fileCount\":0,\"url\":\"用户知识库/王颖奇/API探针知识库\",\"physical_path\":\"用户知识库/王颖奇/API探针知识库\",\"owner_info\":\"图湃（北京）医疗科技/技术部\",\"created_at\":\"1774871536002\",\"updated_at\":\"1774871536844\",\"createdAt\":\"2026/03/30 19:52:16\",\"updatedAt\":\"2026/03/30 19:52:16\"}}",
         "stderr": ""
       },
       "edge_cases": {
         "invalid_users_json": {
           "ok": false,
           "status": 400,
-          "elapsed_ms": 10.81,
+          "elapsed_ms": 12.9,
           "json": {
             "code": 1,
             "msg": "更新知识库失败",
@@ -2337,7 +2606,7 @@
         "not_found": {
           "ok": false,
           "status": 404,
-          "elapsed_ms": 10.45,
+          "elapsed_ms": 14.4,
           "json": {
             "code": 1,
             "msg": "更新知识库失败",
@@ -2356,24 +2625,24 @@
         "ok": 5,
         "failed": 0,
         "latency_ms": {
-          "min": 11.76,
-          "p50": 12.03,
-          "max": 16.33
+          "min": 21.26,
+          "p50": 23.11,
+          "max": 23.35
         },
         "samples": [
           {
             "status": 200,
-            "elapsed_ms": 12.08,
+            "elapsed_ms": 23.11,
             "stderr": ""
           },
           {
             "status": 200,
-            "elapsed_ms": 11.83,
+            "elapsed_ms": 22.11,
             "stderr": ""
           },
           {
             "status": 200,
-            "elapsed_ms": 12.03,
+            "elapsed_ms": 23.14,
             "stderr": ""
           }
         ]
@@ -2384,32 +2653,32 @@
       "success_case": {
         "ok": true,
         "status": 200,
-        "elapsed_ms": 17.49,
+        "elapsed_ms": 1558.13,
         "json": {
           "code": 0,
           "msg": "上传知识库文档成功",
           "data": {
-            "id": "kb_1774369484814",
+            "id": "kb_1774871536002",
             "files": [
               {
-                "file_id": "kb_1774369484814:probe.txt",
+                "file_id": "kb_1774871536002:probe.txt",
                 "name": "probe.txt",
-                "url": "个人知识库/王颖奇/API探针知识库/probe.txt",
+                "url": "http://127.0.0.1:9000/xintuoyin-data/documents/%E7%94%A8%E6%88%B7%E7%9F%A5%E8%AF%86%E5%BA%93/%E7%8E%8B%E9%A2%96%E5%A5%87/API%E6%8E%A2%E9%92%88%E7%9F%A5%E8%AF%86%E5%BA%93/probe.txt?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=minioadmin%2F20260330%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20260330T115219Z&X-Amz-Expires=604800&X-Amz-SignedHeaders=host&X-Amz-Signature=ea0ff690c33f98830da44c5771280c99a0164e251b88073ae487e8c757d2fac9",
                 "size": 79,
-                "uploaded_at": "1774369485110",
-                "uploadedAt": "2026/03/25 00:24:45"
+                "uploaded_at": "1774871537670",
+                "uploadedAt": "2026/03/30 11:52:17"
               }
             ]
           }
         },
-        "text": "{\"code\":0,\"msg\":\"上传知识库文档成功\",\"data\":{\"id\":\"kb_1774369484814\",\"files\":[{\"file_id\":\"kb_1774369484814:probe.txt\",\"name\":\"probe.txt\",\"url\":\"个人知识库/王颖奇/API探针知识库/probe.txt\",\"size\":79,\"uploaded_at\":\"1774369485110\",\"uploadedAt\":\"2026/03/25 00:24:45\"}]}}",
+        "text": "{\"code\":0,\"msg\":\"上传知识库文档成功\",\"data\":{\"id\":\"kb_1774871536002\",\"files\":[{\"file_id\":\"kb_1774871536002:probe.txt\",\"name\":\"probe.txt\",\"url\":\"http://127.0.0.1:9000/xintuoyin-data/documents/%E7%94%A8%E6%88%B7%E7%9F%A5%E8%AF%86%E5%BA%93/%E7%8E%8B%E9%A2%96%E5%A5%87/API%E6%8E%A2%E9%92%88%E7%9F%A5%E8%AF%86%E5%BA%93/probe.txt?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=minioadmin%2F20260330%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20260330T115219Z&X-Amz-Expires=604800&X-Amz-SignedHeaders=host&X-Amz-Signature=ea0ff690c33f98830da44c5771280c99a0164e251b88073ae487e8c757d2fac9\",\"size\":79,\"uploaded_at\":\"1774871537670\",\"uploadedAt\":\"2026/03/30 11:52:17\"}]}}",
         "stderr": ""
       },
       "edge_cases": {
         "not_found": {
           "ok": false,
           "status": 404,
-          "elapsed_ms": 12.43,
+          "elapsed_ms": 13.91,
           "json": {
             "code": 1,
             "msg": "上传知识库文档失败",
@@ -2428,24 +2697,24 @@
         "ok": 3,
         "failed": 0,
         "latency_ms": {
-          "min": 14.86,
-          "p50": 15.38,
-          "max": 17.93
+          "min": 70.43,
+          "p50": 82.23,
+          "max": 85.08
         },
         "samples": [
           {
             "status": 200,
-            "elapsed_ms": 15.38,
+            "elapsed_ms": 70.43,
             "stderr": ""
           },
           {
             "status": 200,
-            "elapsed_ms": 17.93,
+            "elapsed_ms": 82.23,
             "stderr": ""
           },
           {
             "status": 200,
-            "elapsed_ms": 14.86,
+            "elapsed_ms": 85.08,
             "stderr": ""
           }
         ]
@@ -2456,57 +2725,57 @@
       "success_case": {
         "ok": true,
         "status": 200,
-        "elapsed_ms": 14.63,
+        "elapsed_ms": 36.34,
         "json": {
           "code": 0,
           "msg": "获取知识库文件成功",
           "data": {
-            "id": "kb_1774369484814",
-            "url": "个人知识库/王颖奇/API探针知识库",
+            "id": "kb_1774871536002",
+            "url": "用户知识库/王颖奇/API探针知识库",
             "files": [
               {
-                "file_id": "kb_1774369484814:probe_3.txt",
+                "file_id": "kb_1774871536002:probe_3.txt",
                 "name": "probe_3.txt",
-                "url": "个人知识库/王颖奇/API探针知识库/probe_3.txt",
+                "url": "http://127.0.0.1:9000/xintuoyin-data/documents/%E7%94%A8%E6%88%B7%E7%9F%A5%E8%AF%86%E5%BA%93/%E7%8E%8B%E9%A2%96%E5%A5%87/API%E6%8E%A2%E9%92%88%E7%9F%A5%E8%AF%86%E5%BA%93/probe_3.txt?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=minioadmin%2F20260330%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20260330T115219Z&X-Amz-Expires=604800&X-Amz-SignedHeaders=host&X-Amz-Signature=f6fc14b130b880fff9f2bc4e133506a4c919f512190c00e7d89e85faad5819fe",
                 "size": 79,
-                "uploaded_at": "1774369485171",
-                "uploadedAt": "2026/03/25 00:24:45"
+                "uploaded_at": "1774871539390",
+                "uploadedAt": "2026/03/30 11:52:19"
               },
               {
-                "file_id": "kb_1774369484814:probe_2.txt",
+                "file_id": "kb_1774871536002:probe_2.txt",
                 "name": "probe_2.txt",
-                "url": "个人知识库/王颖奇/API探针知识库/probe_2.txt",
+                "url": "http://127.0.0.1:9000/xintuoyin-data/documents/%E7%94%A8%E6%88%B7%E7%9F%A5%E8%AF%86%E5%BA%93/%E7%8E%8B%E9%A2%96%E5%A5%87/API%E6%8E%A2%E9%92%88%E7%9F%A5%E8%AF%86%E5%BA%93/probe_2.txt?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=minioadmin%2F20260330%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20260330T115219Z&X-Amz-Expires=604800&X-Amz-SignedHeaders=host&X-Amz-Signature=a1ff9472b4ae28c3613abba62fa8d224d7aecb2843716215793e038fed46acb7",
                 "size": 79,
-                "uploaded_at": "1774369485154",
-                "uploadedAt": "2026/03/25 00:24:45"
+                "uploaded_at": "1774871539308",
+                "uploadedAt": "2026/03/30 11:52:19"
               },
               {
-                "file_id": "kb_1774369484814:probe_1.txt",
+                "file_id": "kb_1774871536002:probe_1.txt",
                 "name": "probe_1.txt",
-                "url": "个人知识库/王颖奇/API探针知识库/probe_1.txt",
+                "url": "http://127.0.0.1:9000/xintuoyin-data/documents/%E7%94%A8%E6%88%B7%E7%9F%A5%E8%AF%86%E5%BA%93/%E7%8E%8B%E9%A2%96%E5%A5%87/API%E6%8E%A2%E9%92%88%E7%9F%A5%E8%AF%86%E5%BA%93/probe_1.txt?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=minioadmin%2F20260330%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20260330T115219Z&X-Amz-Expires=604800&X-Amz-SignedHeaders=host&X-Amz-Signature=1a5bb76f104c03d185387bca6e34fe64cb88fdb60843e6fb1c42458610df4d7f",
                 "size": 79,
-                "uploaded_at": "1774369485138",
-                "uploadedAt": "2026/03/25 00:24:45"
+                "uploaded_at": "1774871539233",
+                "uploadedAt": "2026/03/30 11:52:19"
               },
               {
-                "file_id": "kb_1774369484814:probe.txt",
+                "file_id": "kb_1774871536002:probe.txt",
                 "name": "probe.txt",
-                "url": "个人知识库/王颖奇/API探针知识库/probe.txt",
+                "url": "http://127.0.0.1:9000/xintuoyin-data/documents/%E7%94%A8%E6%88%B7%E7%9F%A5%E8%AF%86%E5%BA%93/%E7%8E%8B%E9%A2%96%E5%A5%87/API%E6%8E%A2%E9%92%88%E7%9F%A5%E8%AF%86%E5%BA%93/probe.txt?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=minioadmin%2F20260330%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20260330T115219Z&X-Amz-Expires=604800&X-Amz-SignedHeaders=host&X-Amz-Signature=ea0ff690c33f98830da44c5771280c99a0164e251b88073ae487e8c757d2fac9",
                 "size": 79,
-                "uploaded_at": "1774369485110",
-                "uploadedAt": "2026/03/25 00:24:45"
+                "uploaded_at": "1774871537670",
+                "uploadedAt": "2026/03/30 11:52:17"
               }
             ]
           }
         },
-        "text": "{\"code\":0,\"msg\":\"获取知识库文件成功\",\"data\":{\"id\":\"kb_1774369484814\",\"url\":\"个人知识库/王颖奇/API探针知识库\",\"files\":[{\"file_id\":\"kb_1774369484814:probe_3.txt\",\"name\":\"probe_3.txt\",\"url\":\"个人知识库/王颖奇/API探针知识库/probe_3.txt\",\"size\":79,\"uploaded_at\":\"1774369485171\",\"uploadedAt\":\"2026/03/25 00:24:45\"},{\"file_id\":\"kb_1774369484814:probe_2.txt\",\"name\":\"probe_2.txt\",\"url\":\"个人知识库/王颖奇/API探针知识库/probe_2.txt\",\"size\":79,\"uploaded_at\":\"1774369485154\",\"uploadedAt\":\"2026/03/25 00:24:45\"},{\"file_id\":\"kb_1774369484814:probe_1.txt\",\"name\":\"probe_1.txt\",\"url\":\"个人知识库/王颖奇/API探针知识库/probe_1.txt\",\"size\":79,\"uploaded_at\":\"1774369485138\",\"uploadedAt\":\"2026/03/25 00:24:45\"},{\"file_id\":\"kb_1774369484814:probe.txt\",\"name\":\"probe.txt\",\"url\":\"个人知识库/王颖奇/API探针知识库/probe.txt\",\"size\":79,\"uploaded_at\":\"1774369485110\",\"uploadedAt\":\"2026/03/25 00:24:45\"}]}}",
+        "text": "{\"code\":0,\"msg\":\"获取知识库文件成功\",\"data\":{\"id\":\"kb_1774871536002\",\"url\":\"用户知识库/王颖奇/API探针知识库\",\"files\":[{\"file_id\":\"kb_1774871536002:probe_3.txt\",\"name\":\"probe_3.txt\",\"url\":\"http://127.0.0.1:9000/xintuoyin-data/documents/%E7%94%A8%E6%88%B7%E7%9F%A5%E8%AF%86%E5%BA%93/%E7%8E%8B%E9%A2%96%E5%A5%87/API%E6%8E%A2%E9%92%88%E7%9F%A5%E8%AF%86%E5%BA%93/probe_3.txt?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=minioadmin%2F20260330%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20260330T115219Z&X-Amz-Expires=604800&X-Amz-SignedHeaders=host&X-Amz-Signature=f6fc14b130b880fff9f2bc4e133506a4c919f512190c00e7d89e85faad5819fe\",\"size\":79,\"uploaded_at\":\"1774871539390\",\"uploadedAt\":\"2026/03/30 11:52:19\"},{\"file_id\":\"kb_1774871536002:probe_2.txt\",\"name\":\"probe_2.txt\",\"url\":\"http://127.0.0.1:9000/xintuoyin-data/documents/%E7%94%A8%E6%88%B7%E7%9F%A5%E8%AF%86%E5%BA%93/%E7%8E%8B%E9%A2%96%E5%A5%87/API%E6%8E%A2%E9%92%88%E7%9F%A5%E8%AF%86%E5%BA%93/probe_2.txt?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=minioadmin%2F20260330%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20260330T115219Z&X-Amz-Expires=604800&X-Amz-SignedHeaders=host&X-Amz-Signature=a1ff9472b4ae28c3613abba62fa8d224d7aecb2843716215793e038fed46acb7\",\"size\":79,\"uploaded_at\":\"1774871539308\",\"uploadedAt\":\"2026/03/30 11:52:19\"},{\"file_id\":\"kb_1774871536002:probe_1.txt\",\"name\":\"probe_1.txt\",\"url\":\"http://127.0.0.1:9000/xintuoyin-data/documents/%E7%94%A8%E6%88%B7%E7%9F%A5%E8%AF%86%E5%BA%93/%E7%8E%8B%E9%A2%96%E5%A5%87/API%E6%8E%A2%E9%92%88%E7%9F%A5%E8%AF%86%E5%BA%93/probe_1.txt?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=minioadmin%2F20260330%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20260330T115219Z&X-Amz-Expires=604800&X-Amz-SignedHeaders=host&X-Amz-Signature=1a5bb76f104c03d185387bca6e34fe64cb88fdb60843e6fb1c42458610df4d7f\",\"size\":79,\"uploaded_at\":\"1774871539233\",\"uploadedAt\":\"2026/03/30 11:52:19\"},{\"file_id\":\"kb_1774871536002:probe.txt\",\"name\":\"probe.txt\",\"url\":\"http://127.0.0.1:9000/xintuoyin-data/documents/%E7%94%A8%E6%88%B7%E7%9F%A5%E8%AF%86%E5%BA%93/%E7%8E%8B%E9%A2%96%E5%A5%87/API%E6%8E%A2%E9%92%88%E7%9F%A5%E8%AF%86%E5%BA%93/probe.txt?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=minioadmin%2F20260330%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20260330T115219Z&X-Amz-Expires=604800&X-Amz-SignedHeaders=host&X-Amz-Signature=ea0ff690c33f98830da44c5771280c99a0164e251b88073ae487e8c757d2fac9\",\"size\":79,\"uploaded_at\":\"1774871537670\",\"uploadedAt\":\"2026/03/30 11:52:17\"}]}}",
         "stderr": ""
       },
       "edge_cases": {
         "not_found": {
           "ok": false,
           "status": 404,
-          "elapsed_ms": 9.67,
+          "elapsed_ms": 9.81,
           "json": {
             "code": 1,
             "msg": "获取知识库文件失败",
@@ -2525,24 +2794,24 @@
         "ok": 10,
         "failed": 0,
         "latency_ms": {
-          "min": 10.59,
-          "p50": 13.0,
-          "max": 17.03
+          "min": 34.63,
+          "p50": 74.53,
+          "max": 87.16
         },
         "samples": [
           {
             "status": 200,
-            "elapsed_ms": 11.32,
+            "elapsed_ms": 34.63,
             "stderr": ""
           },
           {
             "status": 200,
-            "elapsed_ms": 13.32,
+            "elapsed_ms": 60.71,
             "stderr": ""
           },
           {
             "status": 200,
-            "elapsed_ms": 13.0,
+            "elapsed_ms": 87.16,
             "stderr": ""
           }
         ]
@@ -2553,25 +2822,25 @@
       "success_case": {
         "ok": true,
         "status": 200,
-        "elapsed_ms": 11.26,
+        "elapsed_ms": 35.51,
         "json": {
           "code": 0,
           "msg": "删除知识库文档成功",
           "data": {
-            "id": "kb_1774369484814",
+            "id": "kb_1774871536002",
             "deleted_files": [
               "probe.txt"
             ]
           }
         },
-        "text": "{\"code\":0,\"msg\":\"删除知识库文档成功\",\"data\":{\"id\":\"kb_1774369484814\",\"deleted_files\":[\"probe.txt\"]}}",
+        "text": "{\"code\":0,\"msg\":\"删除知识库文档成功\",\"data\":{\"id\":\"kb_1774871536002\",\"deleted_files\":[\"probe.txt\"]}}",
         "stderr": ""
       },
       "edge_cases": {
         "filenames_not_list": {
           "ok": false,
           "status": 400,
-          "elapsed_ms": 10.4,
+          "elapsed_ms": 9.73,
           "json": {
             "code": 1,
             "msg": "删除知识库文档失败",
@@ -2585,7 +2854,7 @@
         "not_found": {
           "ok": false,
           "status": 404,
-          "elapsed_ms": 9.27,
+          "elapsed_ms": 10.63,
           "json": {
             "code": 1,
             "msg": "删除知识库文档失败",
@@ -2604,24 +2873,24 @@
         "ok": 5,
         "failed": 0,
         "latency_ms": {
-          "min": 9.37,
-          "p50": 10.13,
-          "max": 12.27
+          "min": 10.31,
+          "p50": 14.35,
+          "max": 15.72
         },
         "samples": [
           {
             "status": 200,
-            "elapsed_ms": 9.37,
+            "elapsed_ms": 14.35,
             "stderr": ""
           },
           {
             "status": 200,
-            "elapsed_ms": 12.27,
+            "elapsed_ms": 15.72,
             "stderr": ""
           },
           {
             "status": 200,
-            "elapsed_ms": 10.13,
+            "elapsed_ms": 11.91,
             "stderr": ""
           }
         ]
@@ -2632,25 +2901,25 @@
       "success_case": {
         "ok": true,
         "status": 200,
-        "elapsed_ms": 11.52,
+        "elapsed_ms": 50.21,
         "json": {
           "code": 0,
           "msg": "删除知识库文档成功",
           "data": {
-            "id": "kb_1774369484814",
+            "id": "kb_1774871536002",
             "deleted_files": [
               "probe.txt"
             ]
           }
         },
-        "text": "{\"code\":0,\"msg\":\"删除知识库文档成功\",\"data\":{\"id\":\"kb_1774369484814\",\"deleted_files\":[\"probe.txt\"]}}",
+        "text": "{\"code\":0,\"msg\":\"删除知识库文档成功\",\"data\":{\"id\":\"kb_1774871536002\",\"deleted_files\":[\"probe.txt\"]}}",
         "stderr": ""
       },
       "edge_cases": {
         "not_found_kb": {
           "ok": false,
           "status": 404,
-          "elapsed_ms": 9.62,
+          "elapsed_ms": 11.29,
           "json": {
             "code": 1,
             "msg": "删除知识库文档失败",
@@ -2669,24 +2938,24 @@
         "ok": 5,
         "failed": 0,
         "latency_ms": {
-          "min": 10.55,
-          "p50": 11.24,
-          "max": 13.94
+          "min": 42.31,
+          "p50": 86.53,
+          "max": 92.06
         },
         "samples": [
           {
             "status": 200,
-            "elapsed_ms": 11.24,
+            "elapsed_ms": 42.31,
             "stderr": ""
           },
           {
             "status": 200,
-            "elapsed_ms": 13.94,
+            "elapsed_ms": 82.11,
             "stderr": ""
           },
           {
             "status": 200,
-            "elapsed_ms": 11.39,
+            "elapsed_ms": 86.53,
             "stderr": ""
           }
         ]
@@ -2697,12 +2966,12 @@
       "success_case": {
         "ok": true,
         "status": 200,
-        "elapsed_ms": 11.14,
+        "elapsed_ms": 43.4,
         "json": {
           "code": 0,
           "msg": "删除知识库成功",
           "data": {
-            "id": "kb_1774369484814",
+            "id": "kb_1774871536002",
             "name": "API探针知识库",
             "category": "个人知识库",
             "model": "openai",
@@ -2716,23 +2985,23 @@
               }
             ],
             "fileCount": 0,
-            "url": "个人知识库/王颖奇/API探针知识库",
-            "physical_path": "个人知识库/王颖奇/API探针知识库",
+            "url": "用户知识库/王颖奇/API探针知识库",
+            "physical_path": "用户知识库/王颖奇/API探针知识库",
             "owner_info": "图湃（北京）医疗科技/技术部",
-            "created_at": "1774369484815",
-            "updated_at": "1774369485333",
-            "createdAt": "2026/03/25 00:24:44",
-            "updatedAt": "2026/03/25 00:24:45"
+            "created_at": "1774871536002",
+            "updated_at": "1774871540211",
+            "createdAt": "2026/03/30 19:52:16",
+            "updatedAt": "2026/03/30 19:52:20"
           }
         },
-        "text": "{\"code\":0,\"msg\":\"删除知识库成功\",\"data\":{\"id\":\"kb_1774369484814\",\"name\":\"API探针知识库\",\"category\":\"个人知识库\",\"model\":\"openai\",\"remark\":\"pressure\",\"enabled\":true,\"users\":[{\"name\":\"tester\",\"phone\":\"123\",\"categoryName\":\"demo\"}],\"fileCount\":0,\"url\":\"个人知识库/王颖奇/API探针知识库\",\"physical_path\":\"个人知识库/王颖奇/API探针知识库\",\"owner_info\":\"图湃（北京）医疗科技/技术部\",\"created_at\":\"1774369484815\",\"updated_at\":\"1774369485333\",\"createdAt\":\"2026/03/25 00:24:44\",\"updatedAt\":\"2026/03/25 00:24:45\"}}",
+        "text": "{\"code\":0,\"msg\":\"删除知识库成功\",\"data\":{\"id\":\"kb_1774871536002\",\"name\":\"API探针知识库\",\"category\":\"个人知识库\",\"model\":\"openai\",\"remark\":\"pressure\",\"enabled\":true,\"users\":[{\"name\":\"tester\",\"phone\":\"123\",\"categoryName\":\"demo\"}],\"fileCount\":0,\"url\":\"用户知识库/王颖奇/API探针知识库\",\"physical_path\":\"用户知识库/王颖奇/API探针知识库\",\"owner_info\":\"图湃（北京）医疗科技/技术部\",\"created_at\":\"1774871536002\",\"updated_at\":\"1774871540211\",\"createdAt\":\"2026/03/30 19:52:16\",\"updatedAt\":\"2026/03/30 19:52:20\"}}",
         "stderr": ""
       },
       "edge_cases": {
         "not_found": {
           "ok": false,
           "status": 404,
-          "elapsed_ms": 8.91,
+          "elapsed_ms": 12.43,
           "json": {
             "code": 1,
             "msg": "删除知识库失败",
@@ -2751,24 +3020,24 @@
         "ok": 0,
         "failed": 5,
         "latency_ms": {
-          "min": 9.25,
-          "p50": 9.81,
-          "max": 12.95
+          "min": 11.35,
+          "p50": 11.6,
+          "max": 15.8
         },
         "samples": [
           {
             "status": 404,
-            "elapsed_ms": 11.67,
+            "elapsed_ms": 13.01,
             "stderr": ""
           },
           {
             "status": 404,
-            "elapsed_ms": 12.95,
+            "elapsed_ms": 15.8,
             "stderr": ""
           },
           {
             "status": 404,
-            "elapsed_ms": 9.63,
+            "elapsed_ms": 11.52,
             "stderr": ""
           }
         ]
@@ -2776,8 +3045,8 @@
     }
   },
   "artifacts": {
-    "feedback_id": "fb_1774369418483_0",
-    "feedback_date": "2026-03-25",
-    "kb_id": "kb_1774369484814"
+    "feedback_id": "fb_1774871382270_0",
+    "feedback_date": "2026-03-30",
+    "kb_id": "kb_1774871536002"
   }
 }

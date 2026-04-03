@@ -1,0 +1,23 @@
+{
+  "generated_at": "2026-04-03T00:23:22",
+  "env_label": "/home/lyq/anaconda3/envs/vllm",
+  "base_url": "http://127.0.0.1:62274",
+  "endpoint": "/v1/completions",
+  "model_name": "Qwen3-32B",
+  "model_path": "/data1/dlx/projects/vllm_xty/model",
+  "tokenizer_path": "/data1/dlx/projects/vllm_xty/model",
+  "input_len_target": 10000,
+  "output_len_target": 1024,
+  "prompt_tokens_actual": 10001,
+  "timeout_seconds": 180,
+  "concurrencies": [
+    5,
+    10,
+    20,
+    40,
+    80,
+    160,
+    240
+  ],
+  "min_requests": 10
+}

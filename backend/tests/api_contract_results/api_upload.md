@@ -27,10 +27,11 @@
     "message_index": 0,
     "files": [
       {
-        "file_id": "file_1774367355343_0",
-        "filename": "note.txt",
-        "url": "/api/static/chat_uploads/2026-03-24/conv-upload/0/note.txt",
-        "relative_path": "2026-03-24/conv-upload/0/note.txt"
+        "file_id": "file_1775048848716_0",
+        "filename": "note_5.txt",
+        "url": "http://127.0.0.1:9000/xintuoyin-data/chat/2026-04-01/conv-upload/0/note_5.txt?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=minioadmin%2F20260401%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20260401T130728Z&X-Amz-Expires=604800&X-Amz-SignedHeaders=host&X-Amz-Signature=0cec2ef4f54d1a71689f0a1c06468119e28f0ec49d57e580016963996cae5e1e",
+        "relative_path": "chat/2026-04-01/conv-upload/0/note_5.txt",
+        "object_name": "chat/2026-04-01/conv-upload/0/note_5.txt"
       }
     ]
   }
@@ -90,10 +91,11 @@
     "message_index": 99,
     "files": [
       {
-        "file_id": "file_1774367355354_0",
-        "filename": "note.txt",
-        "url": "/api/static/chat_uploads/2026-03-24/conv-upload-gap/99/note.txt",
-        "relative_path": "2026-03-24/conv-upload-gap/99/note.txt"
+        "file_id": "file_1775048848737_0",
+        "filename": "note_3.txt",
+        "url": "http://127.0.0.1:9000/xintuoyin-data/chat/2026-04-01/conv-upload-gap/99/note_3.txt?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=minioadmin%2F20260401%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20260401T130728Z&X-Amz-Expires=604800&X-Amz-SignedHeaders=host&X-Amz-Signature=5c45c74511d4d94588730e9448a4c0ff12010eb2d8dc6c66d408ecb6f6fda788",
+        "relative_path": "chat/2026-04-01/conv-upload-gap/99/note_3.txt",
+        "object_name": "chat/2026-04-01/conv-upload-gap/99/note_3.txt"
       }
     ]
   }

@@ -62,12 +62,12 @@ export MILVUS_CHUNK_OVERLAP=120
 # RAG model settings
 export RAG_LLM_MODEL="Qwen3-32B"
 export RAG_LLM_TEMPERATURE=0.1
-export RAG_EMBED_MODEL="AI-ModelScope/bge-small-zh-v1.5"
+export RAG_EMBED_MODEL="${RAG_EMBED_MODEL:-/data1/public/models/bge-small-zh-v1.5}"
 export RAG_EMBED_DEVICE="cpu"
 
 # SQL tool LLM settings
 # DB_LLM_API_KEY is optional; if unset, code falls back to OPENAI_API_KEY.
-export DB_LLM_BASE_URL="http://0.0.0.0:62272/v1"   #"" 
+export DB_LLM_BASE_URL="http://0.0.0.0:62274/v1"   #"" 
 export DB_LLM_MODEL_NAME="Qwen3-32B"
 export DB_LLM_SELECTOR_TEMPERATURE=0.1
 export DB_LLM_SELECTOR_MAX_TOKENS=1024
@@ -85,7 +85,7 @@ export DB_MYSQL_NAME="r_d_test"
 
 
 export OPENAI_API_KEY="EMPTY" # # lyq 
-export OPENAI_API_BASE="http://0.0.0.0:62272/v1"   #https://api.claudeshop.top/v1
+export OPENAI_API_BASE="http://0.0.0.0:62274/v1"   #https://api.claudeshop.top/v1
 export TAVILY_API_KEY=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
 export SECURITY_ENABLE_GIBBERISH=0
 export SECURITY_ENABLE_NO_REFUSAL=0

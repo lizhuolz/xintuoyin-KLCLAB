@@ -26,6 +26,7 @@ DEFAULT_INPUT_LEN = 2048
 DEFAULT_OUTPUT_LEN = 1024
 DEFAULT_TIMEOUT = 180
 DEFAULT_MIN_REQUESTS = 30
+DEFAULT_ENV_LABEL = "unknown"
 
 
 @dataclass
@@ -56,6 +57,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--min-requests", type=int, default=DEFAULT_MIN_REQUESTS)
     parser.add_argument("--concurrencies", type=int, nargs="+", default=DEFAULT_CONCURRENCIES)
     parser.add_argument("--output-dir", default="vllm_test")
+    parser.add_argument("--env-label", default=DEFAULT_ENV_LABEL)
     parser.add_argument("--trust-remote-code", action="store_true", default=True)
     return parser.parse_args()
 
@@ -402,7 +404,7 @@ def build_markdown_report(
         "# VLLM 吞吐测试报告",
         "",
         f"- 测试时间: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}",
-        f"- Conda 环境: `xtyAgent`",
+        f"- Conda 环境: `{args.env_label}`",
         f"- 基准接口: `{args.base_url}{args.endpoint}`",
         f"- 模型名: `{args.model_name}`",
         f"- 模型路径: `{args.model_path}`",
@@ -477,6 +479,7 @@ async def main() -> None:
     summary_rows: list[dict[str, Any]] = []
     metadata = {
         "generated_at": datetime.now().isoformat(timespec="seconds"),
+        "env_label": args.env_label,
         "base_url": args.base_url,
         "endpoint": args.endpoint,
         "model_name": args.model_name,

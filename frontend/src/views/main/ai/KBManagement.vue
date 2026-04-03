@@ -33,20 +33,21 @@
 
     <div class="footer-actions">
       <div class="pagination-wrapper">
-        <el-pagination layout="total" :total="total" />
+        <el-pagination
+          v-model:current-page="pagination.page"
+          v-model:page-size="pagination.size"
+          layout="total, prev, pager, next, sizes"
+          :page-sizes="[10, 20, 50, 100]"
+          :total="total"
+          @current-change="fetchKBList"
+          @size-change="fetchKBList"
+        />
       </div>
     </div>
 
     <el-dialog v-model="addVisible" title="添加知识库" width="450px" align-center>
       <el-form :model="addForm" label-width="100px">
         <el-form-item label="知识库名称:" required><el-input v-model="addForm.name" /></el-form-item>
-        <el-form-item label="分层类别:">
-          <el-select v-model="addForm.category">
-            <el-option label="企业级" value="企业知识库" />
-            <el-option label="部门级" value="部门知识库" />
-            <el-option label="个人级" value="个人知识库" />
-          </el-select>
-        </el-form-item>
         <el-form-item label="向量模型:">
           <el-select v-model="addForm.model" placeholder="请选择">
             <el-option label="OpenAI - Text Embedding 3" value="openai" />
@@ -92,6 +93,10 @@
           <div class="section-head">
             <span>知识库文件</span>
             <div class="section-actions">
+              <el-tag v-if="hasPendingChanges" type="warning" effect="light">
+                待提交变更: 删除 {{ pendingDeleteFileNames.length }} 个 / 上传 {{ pendingUploadFiles.length }} 个
+              </el-tag>
+              <el-button size="small" :disabled="!hasPendingChanges" @click="resetPendingChanges">撤销暂存</el-button>
               <el-button size="small" type="danger" :disabled="selectedFileNames.length === 0" @click="deleteSelectedFiles">批量删除</el-button>
             </div>
           </div>
@@ -101,16 +106,24 @@
             <div class="el-upload__text">点击或拖拽上传文件</div>
           </el-upload>
 
-          <el-table :data="currentFiles" style="width: 100%; margin-top: 20px" size="small" border header-cell-class-name="sub-table-header" @selection-change="handleFileSelectionChange">
+          <el-table :data="displayFiles" style="width: 100%; margin-top: 20px" size="small" border header-cell-class-name="sub-table-header" @selection-change="handleFileSelectionChange">
             <el-table-column type="selection" width="40" />
-            <el-table-column prop="name" label="文件名" />
+            <el-table-column label="文件名">
+              <template #default="scope">
+                <span :class="{ 'pending-delete-name': isPendingDelete(scope.row.name), 'pending-upload-name': scope.row.__pendingUpload }">{{ scope.row.name }}</span>
+                <el-tag v-if="scope.row.__pendingUpload" size="small" type="success" style="margin-left: 6px">待上传</el-tag>
+                <el-tag v-if="isPendingDelete(scope.row.name)" size="small" type="danger" style="margin-left: 6px">待删除</el-tag>
+              </template>
+            </el-table-column>
             <el-table-column label="文件大小" width="100" align="center">
               <template #default="scope">{{ formatFileSize(scope.row.size) }}</template>
             </el-table-column>
             <el-table-column prop="uploadedAt" label="上传时间" width="180" align="center" />
-            <el-table-column label="操作" width="80" align="center">
+            <el-table-column label="操作" width="90" align="center">
               <template #default="scope">
-                <el-button link type="danger" @click="deleteFile(scope.row.name)">删除</el-button>
+                <el-button v-if="scope.row.__pendingUpload" link type="warning" @click="removePendingUpload(scope.row.name)">撤销</el-button>
+                <el-button v-else-if="isPendingDelete(scope.row.name)" link type="warning" @click="restoreFile(scope.row.name)">恢复</el-button>
+                <el-button v-else link type="danger" @click="deleteFile(scope.row.name)">删除</el-button>
               </template>
             </el-table-column>
           </el-table>
@@ -118,7 +131,7 @@
       </div>
       <template #footer>
         <div class="dialog-footer">
-          <el-button @click="editVisible = false">取消</el-button>
+          <el-button @click="handleCancelEdit">取消</el-button>
           <el-button type="primary" @click="confirmEdit" class="confirm-btn">保存</el-button>
         </div>
       </template>
@@ -127,7 +140,7 @@
 </template>
 
 <script setup>
-import { ref, reactive, onMounted } from 'vue'
+import { ref, reactive, computed, onMounted } from 'vue'
 import { FolderOpened } from '@element-plus/icons-vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { aiApi } from '@/api/ai'
@@ -137,16 +150,37 @@ const total = ref(0)
 const kbList = ref([])
 const currentFiles = ref([])
 const selectedFileNames = ref([])
+const pendingUploadFiles = ref([])
+const pendingDeleteFileNames = ref([])
+const pagination = reactive({ page: 1, size: 10 })
 
 const formatUsers = (users = []) => users.map((item) => item?.name || item).join(', ')
 const formatFileSize = (size) => typeof size === 'number' ? `${(size / 1024).toFixed(1)} KB` : size || '-'
+const hasPendingChanges = computed(() => pendingUploadFiles.value.length > 0 || pendingDeleteFileNames.value.length > 0)
+const displayFiles = computed(() => {
+  const deleteSet = new Set(pendingDeleteFileNames.value)
+  const baseFiles = currentFiles.value.map((item) => ({ ...item, __pendingUpload: false })).filter((item) => !deleteSet.has(item.name))
+  const stagedUploads = pendingUploadFiles.value.map((file) => ({
+    name: file.name,
+    size: file.size,
+    uploadedAt: '待提交',
+    __pendingUpload: true,
+  }))
+  return [...baseFiles, ...stagedUploads]
+})
+
+function isPendingDelete(filename) {
+  return pendingDeleteFileNames.value.includes(filename)
+}
 
 async function fetchKBList() {
   loading.value = true
   try {
-    const data = await aiApi.listKnowledgeBases()
+    const data = await aiApi.listKnowledgeBases({ page: pagination.page, size: pagination.size })
     kbList.value = data.list || []
     total.value = data.total || kbList.value.length
+    pagination.page = data.page || pagination.page
+    pagination.size = data.size || pagination.size
   } catch (error) {
     ElMessage.error(error.message || '获取知识库列表失败')
   } finally {
@@ -157,7 +191,7 @@ async function fetchKBList() {
 onMounted(fetchKBList)
 
 const addVisible = ref(false)
-const addForm = reactive({ name: '', model: 'openai', category: '企业知识库' })
+const addForm = reactive({ name: '', model: 'openai' })
 
 function handleAdd() {
   addVisible.value = true
@@ -170,14 +204,12 @@ async function confirmAdd() {
   }
   const formData = new FormData()
   formData.append('name', addForm.name)
-  formData.append('category', addForm.category)
   formData.append('model', addForm.model)
   try {
     await aiApi.createKnowledgeBase(formData)
     addVisible.value = false
     addForm.name = ''
     addForm.model = 'openai'
-    addForm.category = '企业知识库'
     await fetchKBList()
     ElMessage.success('创建成功')
   } catch (error) {
@@ -208,6 +240,8 @@ async function handleEdit(row) {
   editForm.enabled = row.enabled !== false
   editForm.users = (row.users || []).map((item) => item?.name || item).filter(Boolean)
   selectedFileNames.value = []
+  pendingUploadFiles.value = []
+  pendingDeleteFileNames.value = []
   userDraft.value = ''
   await fetchFiles()
   editVisible.value = true
@@ -232,10 +266,9 @@ function handleFileSelectionChange(selection) {
 
 async function uploadFileRequest({ file, onSuccess, onError }) {
   try {
-    await aiApi.uploadKnowledgeBaseFiles(editingId.value, [file])
-    await fetchFiles()
-    await fetchKBList()
-    ElMessage.success(`${file.name} 上传成功`)
+    pendingUploadFiles.value = [...pendingUploadFiles.value, file]
+    pendingDeleteFileNames.value = pendingDeleteFileNames.value.filter((name) => name !== file.name)
+    ElMessage.success(`${file.name} 已加入待提交列表`)
     onSuccess?.({})
   } catch (error) {
     ElMessage.error(error.message || '上传失败')
@@ -243,39 +276,84 @@ async function uploadFileRequest({ file, onSuccess, onError }) {
   }
 }
 
-async function deleteFile(filename) {
-  try {
-    await aiApi.deleteKnowledgeBaseFile(editingId.value, filename)
-    await fetchFiles()
-    await fetchKBList()
-    ElMessage.success('删除成功')
-  } catch (error) {
-    ElMessage.error(error.message || '删除失败')
+function deleteFile(filename) {
+  if (!pendingDeleteFileNames.value.includes(filename)) {
+    pendingDeleteFileNames.value = [...pendingDeleteFileNames.value, filename]
   }
+  pendingUploadFiles.value = pendingUploadFiles.value.filter((file) => file.name !== filename)
+  selectedFileNames.value = selectedFileNames.value.filter((name) => name !== filename)
+  ElMessage.success('已加入待删除列表')
 }
 
-async function deleteSelectedFiles() {
+function restoreFile(filename) {
+  pendingDeleteFileNames.value = pendingDeleteFileNames.value.filter((name) => name !== filename)
+}
+
+function removePendingUpload(filename) {
+  pendingUploadFiles.value = pendingUploadFiles.value.filter((file) => file.name !== filename)
+}
+
+function deleteSelectedFiles() {
   if (!selectedFileNames.value.length) return
-  try {
-    await aiApi.deleteKnowledgeBaseFiles(editingId.value, selectedFileNames.value)
-    selectedFileNames.value = []
-    await fetchFiles()
-    await fetchKBList()
-    ElMessage.success('批量删除成功')
-  } catch (error) {
-    ElMessage.error(error.message || '删除失败')
-  }
+  const currentNames = new Set(currentFiles.value.map((item) => item.name))
+  selectedFileNames.value.forEach((name) => {
+    if (currentNames.has(name) && !pendingDeleteFileNames.value.includes(name)) {
+      pendingDeleteFileNames.value.push(name)
+    } else {
+      pendingUploadFiles.value = pendingUploadFiles.value.filter((file) => file.name !== name)
+    }
+  })
+  selectedFileNames.value = []
+  ElMessage.success('已加入待删除列表')
 }
 
-async function confirmEdit() {
+function resetPendingChanges() {
+  pendingUploadFiles.value = []
+  pendingDeleteFileNames.value = []
+  selectedFileNames.value = []
+}
+
+function handleCancelEdit() {
+  resetPendingChanges()
+  editVisible.value = false
+}
+
+function buildUpdateFormData(confirmValue) {
   const formData = new FormData()
   formData.append('id', editingId.value)
   formData.append('name', editForm.name)
   formData.append('remark', editForm.remark)
   formData.append('enabled', String(editForm.enabled))
   formData.append('users', JSON.stringify(editForm.users.map((name) => ({ name, phone: '', categoryName: '' }))))
+  formData.append('delete_files', JSON.stringify(pendingDeleteFileNames.value))
+  formData.append('confirm', String(confirmValue))
+  pendingUploadFiles.value.forEach((file) => formData.append('files', file))
+  return formData
+}
+
+async function confirmEdit() {
   try {
-    await aiApi.updateKnowledgeBase(formData)
+    const preview = await aiApi.updateKnowledgeBase(buildUpdateFormData(false))
+    const pending = preview.pending || {}
+    await ElMessageBox.confirm(
+      `将删除 ${pending.delete_files?.length || 0} 个文件，上传 ${pending.upload_files?.length || 0} 个文件，并保存当前基础信息。是否确认提交？`,
+      '确认知识库更新',
+      {
+        confirmButtonText: '确认提交',
+        cancelButtonText: '取消',
+        type: 'warning',
+      },
+    )
+  } catch (error) {
+    if (error !== 'cancel') {
+      ElMessage.error(error.message || '预览更新失败')
+    }
+    return
+  }
+
+  try {
+    await aiApi.updateKnowledgeBase(buildUpdateFormData(true))
+    resetPendingChanges()
     editVisible.value = false
     await fetchKBList()
     ElMessage.success('保存成功')
@@ -327,8 +405,11 @@ async function handleDelete(row) {
 .label { font-size: 13px; color: #667085; }
 .user-editor, .file-section { margin-top: 20px; }
 .section-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; font-weight: 600; color: #344054; }
+.section-actions { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
 .user-tags { display: flex; flex-wrap: wrap; gap: 10px; padding: 14px; border: 1px solid #e5e7eb; border-radius: 12px; background: #fafbfc; }
 .user-input { width: 220px; }
+.pending-delete-name { text-decoration: line-through; color: #d14343; }
+.pending-upload-name { color: #1f8f53; }
 
 .kb-uploader-box {
   :deep(.el-upload-dragger) {

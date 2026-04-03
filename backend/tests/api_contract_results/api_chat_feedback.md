@@ -56,19 +56,53 @@
     "message_index": 0,
     "type": "dislike",
     "state": "dislike",
+    "feedback_type": {
+      "primary": "点踩",
+      "scene": "针对回答效果",
+      "labels": [
+        "点踩",
+        "针对回答效果"
+      ],
+      "options": [
+        "全部",
+        "针对问题",
+        "针对回答效果",
+        "举报",
+        "点赞",
+        "点踩"
+      ]
+    },
     "reasons": [
       "答案不完整"
     ],
     "comment": "需要更具体",
     "pictures": [],
-    "name": "王颖奇",
-    "enterprise": "图湃（北京）医疗科技",
-    "phone": "15323720032",
-    "time": "1774367354900",
-    "update_time": "1774367354900",
-    "createdAt": "2026/03/24 23:49:14",
-    "updatedAt": "2026/03/24 23:49:14",
-    "process_status": "未处理"
+    "pictures_list": [],
+    "user": {
+      "name": "王颖奇",
+      "enterprise": "图湃（北京）医疗科技",
+      "phone": "15323720032",
+      "record_id": "UID_20250001",
+      "ip_address": "183.230.12.156"
+    },
+    "time": "1775048848091",
+    "update_time": "1775048848091",
+    "processed_at": "",
+    "createdAt": "2026/04/01 21:07:28",
+    "updatedAt": "2026/04/01 21:07:28",
+    "processedAt": "",
+    "times": {
+      "submit_time": "1775048848091",
+      "update_time": "1775048848091",
+      "processed_at": "",
+      "createdAt": "2026/04/01 21:07:28",
+      "updatedAt": "2026/04/01 21:07:28",
+      "processedAt": ""
+    },
+    "question": "有效点踩",
+    "answer": "模拟回答: 【当前用户问题】\n有效点踩\n\n【回答要求】\n1. 必须同时结合历史对话、本轮问题和上传文件内容进行回答。\n2. 如果上面已经给出了上传文件正文或摘要，说明系统已经成功读取文件；此时不要再说“无法读取附件”或类似表述。\n3. 如果上传文件中有可用信息，优先基于文件内容回答，并明确提到文件名。\n4. 如果文件未解析成功或内容不足，请明确说明，不要假装已经读到。\n5. 不要忽略用户本轮输入的文字问题。",
+    "process_status": "未处理",
+    "process_result": ""
   }
 }
 ```
@@ -125,17 +159,51 @@
     "message_index": 0,
     "type": "like",
     "state": "like",
+    "feedback_type": {
+      "primary": "点赞",
+      "scene": "针对回答效果",
+      "labels": [
+        "点赞",
+        "针对回答效果"
+      ],
+      "options": [
+        "全部",
+        "针对问题",
+        "针对回答效果",
+        "举报",
+        "点赞",
+        "点踩"
+      ]
+    },
     "reasons": [],
     "comment": "",
     "pictures": [],
-    "name": "王颖奇",
-    "enterprise": "图湃（北京）医疗科技",
-    "phone": "15323720032",
-    "time": "1774367354917",
-    "update_time": "1774367354917",
-    "createdAt": "2026/03/24 23:49:14",
-    "updatedAt": "2026/03/24 23:49:14",
-    "process_status": "未处理"
+    "pictures_list": [],
+    "user": {
+      "name": "王颖奇",
+      "enterprise": "图湃（北京）医疗科技",
+      "phone": "15323720032",
+      "record_id": "UID_20250001",
+      "ip_address": "183.230.12.156"
+    },
+    "time": "1775048848109",
+    "update_time": "1775048848109",
+    "processed_at": "",
+    "createdAt": "2026/04/01 21:07:28",
+    "updatedAt": "2026/04/01 21:07:28",
+    "processedAt": "",
+    "times": {
+      "submit_time": "1775048848109",
+      "update_time": "1775048848109",
+      "processed_at": "",
+      "createdAt": "2026/04/01 21:07:28",
+      "updatedAt": "2026/04/01 21:07:28",
+      "processedAt": ""
+    },
+    "question": "点赞测试",
+    "answer": "模拟回答: 【当前用户问题】\n点赞测试\n\n【回答要求】\n1. 必须同时结合历史对话、本轮问题和上传文件内容进行回答。\n2. 如果上面已经给出了上传文件正文或摘要，说明系统已经成功读取文件；此时不要再说“无法读取附件”或类似表述。\n3. 如果上传文件中有可用信息，优先基于文件内容回答，并明确提到文件名。\n4. 如果文件未解析成功或内容不足，请明确说明，不要假装已经读到。\n5. 不要忽略用户本轮输入的文字问题。",
+    "process_status": "未处理",
+    "process_result": ""
   }
 }
 ```
@@ -220,17 +288,51 @@
     "message_index": 0,
     "type": "like",
     "state": null,
+    "feedback_type": {
+      "primary": "点赞",
+      "scene": "针对回答效果",
+      "labels": [
+        "点赞",
+        "针对回答效果"
+      ],
+      "options": [
+        "全部",
+        "针对问题",
+        "针对回答效果",
+        "举报",
+        "点赞",
+        "点踩"
+      ]
+    },
     "reasons": [],
     "comment": "",
     "pictures": [],
-    "name": "王颖奇",
-    "enterprise": "图湃（北京）医疗科技",
-    "phone": "15323720032",
-    "time": "1774367354940",
-    "update_time": "1774367354945",
-    "createdAt": "2026/03/24 23:49:14",
-    "updatedAt": "2026/03/24 23:49:14",
-    "process_status": "未处理"
+    "pictures_list": [],
+    "user": {
+      "name": "王颖奇",
+      "enterprise": "图湃（北京）医疗科技",
+      "phone": "15323720032",
+      "record_id": "UID_20250001",
+      "ip_address": "183.230.12.156"
+    },
+    "time": "1775048848133",
+    "update_time": "1775048848138",
+    "processed_at": "",
+    "createdAt": "2026/04/01 21:07:28",
+    "updatedAt": "2026/04/01 21:07:28",
+    "processedAt": "",
+    "times": {
+      "submit_time": "1775048848133",
+      "update_time": "1775048848138",
+      "processed_at": "",
+      "createdAt": "2026/04/01 21:07:28",
+      "updatedAt": "2026/04/01 21:07:28",
+      "processedAt": ""
+    },
+    "question": "重复点赞",
+    "answer": "模拟回答: 【当前用户问题】\n重复点赞\n\n【回答要求】\n1. 必须同时结合历史对话、本轮问题和上传文件内容进行回答。\n2. 如果上面已经给出了上传文件正文或摘要，说明系统已经成功读取文件；此时不要再说“无法读取附件”或类似表述。\n3. 如果上传文件中有可用信息，优先基于文件内容回答，并明确提到文件名。\n4. 如果文件未解析成功或内容不足，请明确说明，不要假装已经读到。\n5. 不要忽略用户本轮输入的文字问题。",
+    "process_status": "未处理",
+    "process_result": ""
   }
 }
 ```

@@ -1,0 +1,61 @@
+{
+  "id": "fb_1774871382270_0",
+  "conversation_id": "1774871382270",
+  "message_index": 0,
+  "type": "dislike",
+  "state": "dislike",
+  "time": "1774871478068",
+  "update_time": "1774871478345",
+  "createdAt": "2026/03/30 19:51:18",
+  "updatedAt": "2026/03/30 19:51:18",
+  "reasons": [],
+  "comment": "答案不够完整",
+  "pictures": [
+    "probe.png",
+    "probe_1.png",
+    "probe_2.png",
+    "probe_3.png",
+    "probe_4.png"
+  ],
+  "pictures_list": [
+    {
+      "filename": "probe.png",
+      "object_name": "feedback/2026-03-30/fb_1774871382270_0/probe.png",
+      "url": "http://127.0.0.1:9000/xintuoyin-data/feedback/2026-03-30/fb_1774871382270_0/probe.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=minioadmin%2F20260330%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20260330T115118Z&X-Amz-Expires=604800&X-Amz-SignedHeaders=host&X-Amz-Signature=c44bbc626a13f4538a98b9c47d4ff02b798af13184f78d086ed8b8d40ece9b80"
+    },
+    {
+      "file_id": "pic_1774871478249_0",
+      "filename": "probe_1.png",
+      "object_name": "feedback/2026-03-30/fb_1774871382270_0/probe_1.png",
+      "url": "http://127.0.0.1:9000/xintuoyin-data/feedback/2026-03-30/fb_1774871382270_0/probe_1.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=minioadmin%2F20260330%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20260330T115118Z&X-Amz-Expires=604800&X-Amz-SignedHeaders=host&X-Amz-Signature=d8a2bc8f53af54669bf21d2c56caac5b0c1cf9aeba810047717110ae7fa3821c"
+    },
+    {
+      "file_id": "pic_1774871478284_0",
+      "filename": "probe_2.png",
+      "object_name": "feedback/2026-03-30/fb_1774871382270_0/probe_2.png",
+      "url": "http://127.0.0.1:9000/xintuoyin-data/feedback/2026-03-30/fb_1774871382270_0/probe_2.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=minioadmin%2F20260330%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20260330T115118Z&X-Amz-Expires=604800&X-Amz-SignedHeaders=host&X-Amz-Signature=7fd3570220787524fbcd71d6ee571f4252ce9714444d0267fcb2bef34de94283"
+    },
+    {
+      "file_id": "pic_1774871478310_0",
+      "filename": "probe_3.png",
+      "object_name": "feedback/2026-03-30/fb_1774871382270_0/probe_3.png",
+      "url": "http://127.0.0.1:9000/xintuoyin-data/feedback/2026-03-30/fb_1774871382270_0/probe_3.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=minioadmin%2F20260330%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20260330T115118Z&X-Amz-Expires=604800&X-Amz-SignedHeaders=host&X-Amz-Signature=2aacf9607194cef4534f794c1cc82dff42dd27e1c1812ec56b17de703f16c916"
+    },
+    {
+      "file_id": "pic_1774871478341_0",
+      "filename": "probe_4.png",
+      "object_name": "feedback/2026-03-30/fb_1774871382270_0/probe_4.png",
+      "url": "http://127.0.0.1:9000/xintuoyin-data/feedback/2026-03-30/fb_1774871382270_0/probe_4.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=minioadmin%2F20260330%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20260330T115118Z&X-Amz-Expires=604800&X-Amz-SignedHeaders=host&X-Amz-Signature=6b10b5c3fc41562c5de82f2f6a7952fd59da6aa94b86bbcc7f14f8293a321f8c"
+    }
+  ],
+  "name": "王颖奇",
+  "enterprise": "图湃（北京）医疗科技",
+  "phone": "15323720032",
+  "question": "请根据附件告诉我项目代号和交付日期",
+  "answer": "<think>\n好的，我需要回答用户的问题，用户问的是项目代号和交付日期。根据用户提供的上传文件内容，文件1是probe.txt，里面提到了项目代号：北极星，交付日期：2026-04-15。系统已经成功读取了文件，所以不需要说无法读取。我应该直接引用文件中的信息，并明确提到文件名。不需要调用其他工具，因为信息已经在上传的文件中给出。检查是否有其他要求，比如必须结合历史对话，但这里没有历史对话的内容，所以主要依据当前问题和上传文件。确认信息无误后，直接回答即可。\n</think>\n\n根据本轮上传的【probe.txt】文件记载，项目代号为\"北极星\"，交付日期为\"2026-04-15\"。该信息直接来源于您当前上传文件的正文内容。",
+  "process_status": "已处理",
+  "processor": "api_probe",
+  "processed_at": "1774871478629",
+  "processedAt": "2026/03/30 19:51:18",
+  "process_result": "已处理(未收录)"
+}

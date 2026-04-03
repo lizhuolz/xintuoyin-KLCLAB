@@ -8,7 +8,7 @@ from pathlib import Path
 
 import requests
 
-ROOT = Path(__file__).resolve().parents[2]
+ROOT = Path("/home/lyq/xintuoyin-KLCLAB")
 ARTIFACT_DIR = ROOT / "backend" / "tests" / "artifacts"
 ARTIFACT_DIR.mkdir(parents=True, exist_ok=True)
 
@@ -139,16 +139,12 @@ def run_probe():
     )
 
     frontend_results = {}
-    available_frontends = []
     for base in FRONTEND_BASES:
-        result = {
+        frontend_results[base] = {
             "root": summarize_case(request("GET", base, expect_json=False)),
             "proxy_new_session": summarize_case(request("GET", f"{base}/api/chat/new_session")),
             "proxy_kb_list": summarize_case(request("GET", f"{base}/api/kb/list")),
         }
-        frontend_results[base] = result
-        if result["root"].get("ok") or result["proxy_new_session"].get("ok"):
-            available_frontends.append(base)
     report["frontend_proxy"] = frontend_results
 
     backend_session = request("GET", f"{BACKEND_BASE}/api/chat/new_session")
@@ -241,10 +237,9 @@ def run_probe():
         total=8,
         workers=4,
     )
-    frontend_stress_base = available_frontends[0] if available_frontends else FRONTEND_BASES[0]
     report["stress"]["frontend_proxy_new_session"] = stress(
         "frontend_proxy_new_session",
-        lambda: request("GET", f"{frontend_stress_base}/api/chat/new_session"),
+        lambda: request("GET", f"{FRONTEND_BASES[0]}/api/chat/new_session"),
         total=8,
         workers=4,
     )
@@ -253,15 +248,7 @@ def run_probe():
     checks.append(report["ports"]["backend_new_session"].get("ok"))
     checks.append(report["ports"]["minio_api_health"].get("ok"))
     checks.append(report["ports"]["minio_console_root"].get("status") == 200)
-    frontend_checks = [
-        item["proxy_new_session"].get("ok")
-        for base, item in frontend_results.items()
-        if base in available_frontends
-    ]
-    if frontend_checks:
-        checks.extend(frontend_checks)
-    else:
-        checks.append(False)
+    checks.extend(item["proxy_new_session"].get("ok") for item in frontend_results.values())
     checks.append(report["backend_api"].get("chat_non_stream", {}).get("ok"))
     checks.append(report["kb_lifecycle"].get("create", {}).get("ok"))
     checks.append(report["kb_lifecycle"].get("upload", {}).get("ok"))
@@ -272,9 +259,8 @@ def run_probe():
         "all_critical_checks_passed": all(bool(item) for item in checks),
         "critical_check_count": len(checks),
         "passed_checks": sum(1 for item in checks if item),
-        "available_frontends": available_frontends,
         "notes": [
-            "前端代理验证默认探测 5173/5174，但只将当前可访问的前端实例纳入关键检查。",
+            "前端代理通过 5173/5174 的 /api 路径直连后端验证。",
             "轻量压测只覆盖无模型或低成本接口，避免重型模型调用导致报告不可复现。",
             "聊天主链路保留 1 次真实非流式调用，验证前后端集成未断。"
         ],

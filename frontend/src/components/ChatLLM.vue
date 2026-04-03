@@ -125,6 +125,8 @@
                   <button class="tool-btn" :class="{ active: !!selectedDB }" @click="showDBMenu = !showDBMenu"><el-icon><Coin /></el-icon></button>
                   <div v-if="showDBMenu" class="pop-menu">
                     <div v-for="version in ['V0', 'V1']" :key="version" @click="toggleDbVersion(version)" :class="{ active: selectedDB === version }">数据库 {{ version }}</div>
+                    <div class="menu-divider"></div>
+                    <div @click="openDbSelector">查看数据库字段</div>
                   </div>
                 </div>
               </div>
@@ -280,6 +282,31 @@
       </template>
     </el-dialog>
 
+    <el-dialog v-model="dbSelectorVisible" title="数据库显式字段选择" width="760px" destroy-on-close>
+      <div class="db-selector-toolbar">
+        <el-input v-model="dbSelectorQuestion" placeholder="输入问题以获取推荐表，例如：我们公司的总员工是多少" clearable />
+        <el-button type="primary" :loading="dbSelectorLoading" @click="fetchDbOptions">分析</el-button>
+      </div>
+      <div class="db-selector-summary">
+        <span>推荐表: {{ dbSelectedTables.length ? dbSelectedTables.join('、') : '暂无' }}</span>
+      </div>
+      <el-table :data="dbOptions" border size="small" v-loading="dbSelectorLoading" style="width: 100%; margin-top: 12px">
+        <el-table-column label="推荐" width="80" align="center">
+          <template #default="scope">
+            <el-tag v-if="scope.row.selected" type="success" size="small">推荐</el-tag>
+            <span v-else>-</span>
+          </template>
+        </el-table-column>
+        <el-table-column prop="table_name" label="表名" min-width="160" />
+        <el-table-column prop="table_comment" label="表说明" min-width="180" show-overflow-tooltip />
+        <el-table-column label="字段说明" min-width="260">
+          <template #default="scope">
+            <div class="db-column-comments">{{ (scope.row.column_comments || []).join('；') || '-' }}</div>
+          </template>
+        </el-table-column>
+      </el-table>
+    </el-dialog>
+
     <svg style="width:0;height:0;position:absolute"><defs><linearGradient id="p1" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#4E86F8"/><stop offset="100%" stop-color="#D6409F"/></linearGradient></defs></svg>
   </div>
 </template>
@@ -323,6 +350,11 @@ const sidebarSources = ref([])
 const scrollRef = ref(null)
 const textareaRef = ref(null)
 const isSidebarCollapsed = ref(false)
+const dbSelectorVisible = ref(false)
+const dbSelectorQuestion = ref('')
+const dbSelectorLoading = ref(false)
+const dbOptions = ref([])
+const dbSelectedTables = ref([])
 
 const currentConv = computed(() => conversations.value.find((item) => String(item.id) === String(currentId.value)))
 const currentMessages = computed(() => currentConv.value?.messages || [])
@@ -650,6 +682,26 @@ function toggleDbVersion(version) {
   showDBMenu.value = false
 }
 
+async function fetchDbOptions() {
+  dbSelectorLoading.value = true
+  try {
+    const data = await aiApi.getDbSelectOptions({ question: dbSelectorQuestion.value.trim() || undefined })
+    dbOptions.value = data.options || []
+    dbSelectedTables.value = data.selected_tables || []
+  } catch (error) {
+    ElMessage.error(error.message || '获取数据库显式字段失败')
+  } finally {
+    dbSelectorLoading.value = false
+  }
+}
+
+async function openDbSelector() {
+  showDBMenu.value = false
+  dbSelectorQuestion.value = inputMessage.value.trim()
+  dbSelectorVisible.value = true
+  await fetchDbOptions()
+}
+
 async function ensureCurrentConversation() {
   if (currentConv.value) return currentConv.value
   if (!conversations.value.length) {
@@ -863,9 +915,13 @@ textarea { width: 100%; min-height: 90px; resize: none; border: none; outline: n
 .pop-menu { position: absolute; bottom: 48px; left: 0; min-width: 120px; background: #fff; border: 1px solid #e5e9f2; border-radius: 12px; box-shadow: 0 18px 32px rgba(22, 39, 77, 0.12); overflow: hidden; }
 .pop-menu > div { padding: 10px 14px; cursor: pointer; font-size: 13px; color: #516179; }
 .pop-menu > div:hover, .pop-menu > div.active { background: #eef4ff; color: #2f6de6; }
+.menu-divider { height: 1px; padding: 0 !important; background: #eef1f6; cursor: default !important; }
 .send-submit-btn { width: 46px; height: 46px; border-radius: 50%; border: none; background: linear-gradient(135deg, #3575f6 0%, #56a4ff 100%); color: #fff; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; box-shadow: 0 10px 18px rgba(53, 117, 246, 0.25); }
 .send-submit-btn:disabled { background: #d8deea; box-shadow: none; cursor: not-allowed; }
 .legal-footer { margin-top: 12px; text-align: center; font-size: 12px; color: #a0abc0; }
+.db-selector-toolbar { display: flex; gap: 12px; }
+.db-selector-summary { margin-top: 12px; color: #516179; font-size: 13px; }
+.db-column-comments { white-space: pre-wrap; line-height: 1.6; color: #516179; }
 .sources-sidebar { width: 340px; border-left: 1px solid #eef1f6; background: #fbfcfe; display: flex; flex-direction: column; }
 .sidebar-sources-header { padding: 18px 20px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #eef1f6; }
 .close-sidebar { border: none; background: transparent; font-size: 24px; color: #93a0b3; cursor: pointer; }

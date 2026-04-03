@@ -291,12 +291,13 @@ RAG 回答温度。
 
 - 适合检索增强场景，既保持稳定又保留少量语言自然度。
 
-### `RAG_EMBED_MODEL="AI-ModelScope/bge-small-zh-v1.5"`
+### `RAG_EMBED_MODEL="/data1/public/models/bge-small-zh-v1.5"`
 
 知识库向量化使用的本地 embedding 模型。
 
-- 当前通过 `modelscope` 下载和解析。
-- 如果本地不存在，运行时会尝试用 `modelscope` 获取。
+- 当前默认直接读取本机目录 `/data1/public/models/bge-small-zh-v1.5`。
+- 这是轻量化中文 embedding 模型，较之前的大模型更适合当前知识库入库和检索场景。
+- 如果该目录不存在，运行时仍会按代码逻辑尝试把 `RAG_EMBED_MODEL` 当作模型标识解析。
 - 更换模型后，需要重新对已有知识库切块做 embedding。
 
 ### `RAG_EMBED_DEVICE="cpu"`

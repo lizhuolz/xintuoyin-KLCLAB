@@ -1,0 +1,181 @@
+[33mcommit 81908b1d6725b4bcde35d6c1b55b3f1fbe2d3bc9[m[33m ([m[1;36mHEAD -> [m[1;32mmerge_all[m[33m)[m
+Author: happystander <2029189802@qq.com>
+Date:   Mon Mar 30 20:28:46 2026 +0800
+
+    Harden startup scripts and MinIO runtime paths
+
+[33mcommit a6e1bb0f24a3b7a034b759d80c9a73d4314a82a7[m
+Author: happystander <2029189802@qq.com>
+Date:   Mon Mar 30 20:01:37 2026 +0800
+
+    Add lightweight system probe report tooling
+
+[33mcommit 663f2c2e931db41b7bf4cdea12e9950fcee87750[m
+Merge: eddfa30 9dc7900
+Author: happystander <2029189802@qq.com>
+Date:   Mon Mar 30 19:56:03 2026 +0800
+
+    Merge dlx_328 and lyq_328 into merge_all
+
+[33mcommit eddfa30aeb5dbb103b5bb9d45a7be85b8f13de8e[m[33m ([m[1;31morigin/lyq_328[m[33m, [m[1;32mlyq_328[m[33m)[m
+Author: happystander <2029189802@qq.com>
+Date:   Mon Mar 30 19:31:19 2026 +0800
+
+    增加vllm吞吐量测试
+
+[33mcommit 9dc79009a0495fa509ea3db4fca97b1dc785f7ed[m[33m ([m[1;31morigin/dlx_328[m[33m)[m
+Author: L1915 <110004616+warswords@users.noreply.github.com>
+Date:   Sun Mar 29 10:22:48 2026 +0800
+
+    minio+milvus+更改知识库逻辑
+
+[33mcommit dc8e8046611109bed32f1d6810a97efde8fa93e7[m
+Author: happystander <2029189802@qq.com>
+Date:   Sat Mar 28 22:08:54 2026 +0800
+
+    rag用向量库测试完毕
+
+[33mcommit 4a1ab35d36fbe913bf8fb9427861b3b0a109a5e7[m
+Author: happystander <2029189802@qq.com>
+Date:   Sat Mar 28 20:14:12 2026 +0800
+
+    v1:多模型url测试完成
+
+[33mcommit 5dfdf24ae9dfa64106f53ded73e70d043ed92975[m[33m ([m[1;31morigin/dly_old[m[33m, [m[1;32mdly_old[m[33m)[m
+Author: happystander <2029189802@qq.com>
+Date:   Thu Mar 26 19:54:35 2026 +0800
+
+    修改跨域
+
+[33mcommit 7e5e4e08bf938f37b1cdd9bb26da3ea013300776[m
+Author: happystander <2029189802@qq.com>
+Date:   Wed Mar 25 01:21:15 2026 +0800
+
+    增加search截断4000
+
+[33mcommit d1c12782e050cbd87296996c38b1e0cb75da94a5[m
+Author: happystander <2029189802@qq.com>
+Date:   Wed Mar 25 00:35:17 2026 +0800
+
+    3.25 lyq Create miracles
+
+[33mcommit b24cbe297adedf4dfa9281759d9e0cb5a1a453d8[m
+Author: happystander <2029189802@qq.com>
+Date:   Tue Mar 24 21:32:23 2026 +0800
+
+    fix dlx (by lyq)
+
+[33mcommit 591cf0b8e58e5b7fdb4e7088552c29195ece683f[m
+Author: L1915 <110004616+warswords@users.noreply.github.com>
+Date:   Tue Mar 24 19:46:26 2026 +0800
+
+    help!
+
+[33mcommit 3b0e8925098fbb4ac5b6bd479132bdf672641be5[m
+Author: L1915 <110004616+warswords@users.noreply.github.com>
+Date:   Tue Mar 24 19:06:43 2026 +0800
+
+    dlx
+
+[33mcommit 75823ca407f43bedf967c1edd52b2f6e06235e45[m
+Author: L1915 <110004616+warswords@users.noreply.github.com>
+Date:   Sat Mar 14 20:15:58 2026 +0800
+
+    dlx
+
+[33mcommit a4370ab9195e24702d67450a3805f0da01bad0d4[m
+Author: L1915 <110004616+warswords@users.noreply.github.com>
+Date:   Wed Mar 11 20:03:14 2026 +0800
+
+    接口文档
+
+[33mcommit e7bbbea3fda957035a46db5598d995b6517e185e[m
+Author: L1915 <110004616+warswords@users.noreply.github.com>
+Date:   Wed Mar 11 19:55:33 2026 +0800
+
+    dlx
+
+[33mcommit cc55fc965c47eb0772b8202abfaad17b242ac58f[m
+Author: L1915 <110004616+warswords@users.noreply.github.com>
+Date:   Tue Mar 10 18:34:43 2026 +0800
+
+    dlx
+
+[33mcommit 1bb07a58ffea7cb305ec417c5f775b2bdf86e073[m
+Author: L1915 <110004616+warswords@users.noreply.github.com>
+Date:   Mon Mar 9 12:46:36 2026 +0800
+
+    更新脚本
+
+[33mcommit e442c1bba7ef1d08b3f413ad8c0a5d3368ba7605[m
+Author: happystander <2029189802@qq.com>
+Date:   Mon Mar 9 12:38:43 2026 +0800
+
+    agent/utils增加推荐问答函数
+
+[33mcommit 656b0801ebb391a0deca847211b9f8f479a50341[m
+Author: happystander <2029189802@qq.com>
+Date:   Mon Mar 9 12:14:48 2026 +0800
+
+    core_agent加入新闻摘要
+
+[33mcommit bc551521572bc63f312ec5af7eafa58ba2208436[m
+Author: happystander <2029189802@qq.com>
+Date:   Mon Mar 9 11:35:31 2026 +0800
+
+    加入hongdian_demo
+
+[33mcommit 12d3bcb280bbbacf185a451c59b9cea133d891ed[m
+Author: L1915 <110004616+warswords@users.noreply.github.com>
+Date:   Wed Feb 4 13:54:29 2026 +0800
+
+    修复文件树
+
+[33mcommit e3ddf4ad24f45dba8ffde45fd29d058ff1fe7207[m
+Author: L1915 <110004616+warswords@users.noreply.github.com>
+Date:   Wed Jan 28 15:12:46 2026 +0800
+
+    算法文档
+
+[33mcommit 19b46dd2621e3ef4faa838f78b374e0c74c87615[m
+Author: L1915 <110004616+warswords@users.noreply.github.com>
+Date:   Mon Jan 26 20:34:41 2026 +0800
+
+    动态知识库+防火墙
+
+[33mcommit 63a5acab835320f8bf6faf336d3148078f010e7b[m
+Merge: 5be65ea 01432c8
+Author: L1915 <110004616+warswords@users.noreply.github.com>
+Date:   Mon Jan 26 20:33:17 2026 +0800
+
+    Merge branch 'main' of github.com:lizhuolz/xintuoyin-KLCLAB
+
+[33mcommit 5be65eac4ece2bebf2446e08b3cedd060e0dcd53[m
+Author: L1915 <110004616+warswords@users.noreply.github.com>
+Date:   Mon Jan 26 20:21:40 2026 +0800
+
+    动态知识库+防火墙
+
+[33mcommit 01432c8da15aa16951f77ad1034acbd097d60137[m
+Author: happystander <2029189802@qq.com>
+Date:   Mon Jan 26 16:31:06 2026 +0800
+
+    添加关键词防火墙和llm guard ，env.sh 添加cuda device限制
+
+[33mcommit b73a392ed69fe67d5b1de9385b790aa84647b5af[m
+Author: L1915 <110004616+warswords@users.noreply.github.com>
+Date:   Mon Jan 26 15:55:02 2026 +0800
+
+    修改对话角色按钮
+
+[33mcommit 7369b9e7f932be135f788508552a6075799265b0[m
+Author: L1915 <110004616+warswords@users.noreply.github.com>
+Date:   Mon Jan 26 15:52:40 2026 +0800
+
+    重构前端+动态知识库
+
+[33mcommit 5a33b2080627bcbdec83db6c4c0732e4377c70a9[m
+Author: L1915 <110004616+warswords@users.noreply.github.com>
+Date:   Mon Jan 26 14:24:07 2026 +0800
+
+    前后端+部署脚本
