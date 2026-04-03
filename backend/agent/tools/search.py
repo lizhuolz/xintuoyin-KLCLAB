@@ -23,6 +23,13 @@ class SearchResultItem(BaseModel):
 base_search = None
 summary_llm = None
 
+
+def _env_bool(name: str, default: bool) -> bool:
+    value = os.getenv(name)
+    if value is None:
+        return default
+    return str(value).strip().lower() in {"1", "true", "yes", "on"}
+
 # 注意这里强制要求模型每次只输出一个 SearchResultItem 结构
 
 
@@ -31,7 +38,10 @@ def get_summary_llm():
     global summary_llm
     if summary_llm is None:
         from langchain_openai import ChatOpenAI
-        summary_llm = ChatOpenAI(model=summary_model, temperature=0).with_structured_output(SearchResultItem)
+        llm_kwargs = {}
+        if not _env_bool("RESEARCH_ENABLE_THINKING", True):
+            llm_kwargs["extra_body"] = {"chat_template_kwargs": {"enable_thinking": False}}
+        summary_llm = ChatOpenAI(model=summary_model, temperature=0, **llm_kwargs).with_structured_output(SearchResultItem)
     return summary_llm
 
 

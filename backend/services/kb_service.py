@@ -399,10 +399,16 @@ class KBService:
         return bool(result is not None)
 
     def delete_files(self, kb_id, filenames):
-        result = self.update_kb(kb_id, {}, new_files=[], delete_filenames=filenames, confirm=True)
+        kb = self.get_kb(kb_id)
+        if kb is None:
+            return None
+        normalized = [Path(name).name for name in filenames or []]
+        existing_names = {item["name"] for item in self.list_files(kb_id)}
+        delete_targets = [name for name in normalized if name in existing_names]
+        result = self.update_kb(kb_id, {}, new_files=[], delete_filenames=delete_targets, confirm=True)
         if result is None:
             return None
-        return [Path(name).name for name in filenames or []]
+        return delete_targets
 
     def delete_file(self, kb_id, filename):
         result = self.delete_files(kb_id, [filename])

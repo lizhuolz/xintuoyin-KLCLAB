@@ -1,15 +1,15 @@
 # API Test Summary
 
 - total_endpoints: 28
-- total_cases: 75
-- passed_cases: 75
+- total_cases: 77
+- passed_cases: 77
 - failed_cases: 0
 
 - api_chat: 6/6 passed (api_chat.md)
 - api_chat_delete: 2/2 passed (api_chat_delete.md)
 - api_chat_feedback: 7/7 passed (api_chat_feedback.md)
 - api_chat_new_session: 1/1 passed (api_chat_new_session.md)
-- api_chat_thinking: 3/3 passed (api_chat_thinking.md)
+- api_chat_thinking: 4/4 passed (api_chat_thinking.md)
 - api_chat_title: 2/2 passed (api_chat_title.md)
 - api_db_select_options: 1/1 passed (api_db_select_options.md)
 - api_feedback_batch_delete: 2/2 passed (api_feedback_batch_delete.md)
@@ -24,7 +24,7 @@
 - api_history_list: 4/4 passed (api_history_list.md)
 - api_kb_create: 1/1 passed (api_kb_create.md)
 - api_kb_delete: 2/2 passed (api_kb_delete.md)
-- api_kb_delete_file: 2/2 passed (api_kb_delete_file.md)
+- api_kb_delete_file: 3/3 passed (api_kb_delete_file.md)
 - api_kb_delete_files: 3/3 passed (api_kb_delete_files.md)
 - api_kb_detail: 2/2 passed (api_kb_detail.md)
 - api_kb_files: 2/2 passed (api_kb_files.md)

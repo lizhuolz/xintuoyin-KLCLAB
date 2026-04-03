@@ -1,4 +1,5 @@
 import json
+import asyncio
 import os
 import re
 import sys
@@ -10,11 +11,12 @@ from datetime import datetime
 from typing import AsyncIterator, List, Optional
 from xml.etree import ElementTree as ET
 
-from fastapi import Body, FastAPI, File, Form, Header, Query, UploadFile
+from fastapi import Body, FastAPI, File, Form, Header, Query, Request, UploadFile
 from fastapi.openapi.utils import get_openapi
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import JSONResponse, PlainTextResponse, StreamingResponse
+from fastapi.responses import JSONResponse, StreamingResponse
 from fastapi.staticfiles import StaticFiles
+from starlette.datastructures import UploadFile as StarletteUploadFile
 
 from langchain_core.messages import AIMessage, AIMessageChunk, HumanMessage, SystemMessage, ToolMessage
 
@@ -97,6 +99,13 @@ def env_float(name: str, default: float) -> float:
         return float(os.getenv(name, default))
     except (TypeError, ValueError):
         return float(default)
+
+
+def env_bool(name: str, default: bool) -> bool:
+    value = os.getenv(name)
+    if value is None:
+        return default
+    return str(value).strip().lower() in {"1", "true", "yes", "on"}
 
 
 def now_ms() -> str:
@@ -834,24 +843,64 @@ def build_feedback_summary(info: dict):
 
 
 async def generate_recommendations(user_msg: str, ai_msg: str) -> List[str]:
+    import re
+
+    def fallback_questions() -> List[str]:
+        generic = [
+            "能展开说说吗？",
+            "有哪些关键点？",
+            "还有什么需要注意？",
+        ]
+        cleaned_user = re.sub(r"\s+", " ", str(user_msg or "")).strip("？?。！!，, ")
+        if cleaned_user:
+            generic = [
+                f"{cleaned_user}的关键点有哪些？",
+                f"{cleaned_user}有没有具体例子？",
+                f"{cleaned_user}还需要注意什么？",
+            ]
+        return generic[:env_int("CHAT_RECOMMENDATION_COUNT", 3)]
+
     try:
-        from llama_index.core import Settings
-        import re
-        llm = Settings.llm
+        from langchain_openai import ChatOpenAI
+
+        llm = ChatOpenAI(
+            model=os.getenv("CHAT_MODEL_NAME", "gpt-4o"),
+            temperature=0,
+            max_tokens=256,
+            timeout=min(env_float("CHAT_MODEL_TIMEOUT", 120), 60),
+            model_kwargs={"extra_body": {"chat_template_kwargs": {"enable_thinking": False}}},
+        )
         prompt = f"""你是一个对话引导助手。
 根据以下对话内容，预测用户接下来最感兴趣、最可能追问的3个问题。
-要求：1. 每个问题不超过20个字。2. 必须以纯JSON字符串数组格式返回。3. 不要包含任何多余解释。
+要求：1. 每个问题不超过20个字。2. 必须以纯JSON字符串数组格式返回。3. 不要包含任何多余解释。4. 必须返回恰好3个问题。
 用户问题: {user_msg}
 AI回答: {ai_msg[:env_int("CHAT_RECOMMENDATION_INPUT_LIMIT", 500)]}"""
-        response = await llm.acomplete(prompt)
-        text = str(response).strip()
+        response = await llm.ainvoke([HumanMessage(content=prompt)])
+        text = str(getattr(response, "content", "") or "").strip()
         match = re.search(r"\[.*\]", text, re.DOTALL)
         if not match:
-            return []
+            return fallback_questions()
         parsed = json.loads(match.group(0))
-        return parsed[:env_int("CHAT_RECOMMENDATION_COUNT", 3)] if isinstance(parsed, list) else []
-    except Exception:
-        return []
+        if not isinstance(parsed, list):
+            return fallback_questions()
+        normalized = [
+            str(item).strip()
+            for item in parsed
+            if str(item).strip()
+        ]
+        if not normalized:
+            return fallback_questions()
+        limit = env_int("CHAT_RECOMMENDATION_COUNT", 3)
+        while len(normalized) < limit:
+            for item in fallback_questions():
+                if item not in normalized:
+                    normalized.append(item)
+                if len(normalized) >= limit:
+                    break
+        return normalized[:limit]
+    except Exception as exc:
+        print(f"[recommendations] failed: {exc}", file=sys.stderr)
+        return fallback_questions()
 
 
 def _compact_preview(value, limit: int = 240) -> str:
@@ -889,9 +938,23 @@ def _tool_trace_event(kind: str, node_name: str, tool_name: str, preview: str, t
     }
 
 
+def _tool_trace_thinking_delta(kind: str, tool_name: str, preview: str) -> str:
+    if kind == "call":
+        text = f"\n[工具调用] {tool_name}"
+        if preview:
+            text += f"\n输入参数：{preview}"
+        text += "\n正在执行，请稍候...\n"
+        return text
+    text = f"\n[工具返回] {tool_name}"
+    if preview:
+        text += f"\n结果摘要：{preview}"
+    text += "\n"
+    return text
+
+
 def _format_thinking_text(events: List[dict]) -> str:
     if not events:
-        return "这次回答没有额外调用工具，我直接根据已有上下文完成了回复。"
+        return ""
 
     lines = ["在正式回答前，我先做了几步准备："]
     call_map = {}
@@ -930,7 +993,261 @@ def _sse_event(payload: dict) -> str:
     return f"data: {json.dumps(payload, ensure_ascii=False)}\n\n"
 
 
+def _sse_comment(text: str) -> str:
+    safe_text = " ".join(str(text or "").splitlines()).strip() or "keepalive"
+    return f": {safe_text}\n\n"
+
+
+def _iter_text_event_chunks(event_type: str, text: str) -> List[dict]:
+    content = str(text or "")
+    if not content:
+        return []
+    chunk_size = max(env_int("CHAT_STREAM_DELTA_CHARS", 1), 1)
+    return [
+        {"type": event_type, "delta": content[index:index + chunk_size]}
+        for index in range(0, len(content), chunk_size)
+    ]
+
+
+async def _yield_text_events(event_type: str, text: str) -> AsyncIterator[str]:
+    delay_ms = max(env_int("CHAT_STREAM_CHAR_DELAY_MS", 15), 0)
+    for chunk_event in _iter_text_event_chunks(event_type, text):
+        yield _sse_event(chunk_event)
+        if delay_ms > 0:
+            await asyncio.sleep(delay_ms / 1000)
+
+
+THINK_OPEN_TAG = "<think>"
+THINK_CLOSE_TAG = "</think>"
+
+
+def _extract_think_content(text: str) -> str:
+    if not text:
+        return ""
+    matches = re.findall(r"<think>(.*?)</think>", text, flags=re.DOTALL | re.IGNORECASE)
+    cleaned = [item.strip() for item in matches if str(item).strip()]
+    if cleaned:
+        return "\n\n".join(cleaned)
+    close_index = text.lower().find(THINK_CLOSE_TAG)
+    if close_index != -1:
+        prefix = text[:close_index]
+        prefix = re.sub(r"^\s*<think>\s*", "", prefix, flags=re.IGNORECASE)
+        return prefix.strip()
+    return ""
+
+
+def _strip_think_blocks(text: str) -> str:
+    if not text:
+        return ""
+    cleaned = re.sub(r"<think>.*?</think>", "", text, flags=re.DOTALL | re.IGNORECASE)
+    if cleaned != text:
+        return cleaned.strip()
+    close_index = text.lower().find(THINK_CLOSE_TAG)
+    if close_index != -1:
+        return text[close_index + len(THINK_CLOSE_TAG):].strip()
+    return cleaned.strip()
+
+
+def _new_chat_stream_state() -> dict:
+    return {
+        "buffer": "",
+        "mode": "visible",
+        "started_visible": False,
+        "visible_buffer": "",
+        "thinking_buffer": "",
+    }
+
+
+def _consume_chat_stream_text(state: dict, chunk: str = "", *, finalize: bool = False) -> tuple[str, str]:
+    state["buffer"] += chunk or ""
+    visible_parts = []
+    thinking_parts = []
+
+    while True:
+        if state["mode"] == "think":
+            close_index = state["buffer"].lower().find(THINK_CLOSE_TAG)
+            if close_index == -1:
+                if finalize:
+                    flush = state["buffer"]
+                    state["buffer"] = ""
+                else:
+                    keep = len(THINK_CLOSE_TAG) - 1
+                    if len(state["buffer"]) <= keep:
+                        break
+                    flush = state["buffer"][:-keep]
+                    state["buffer"] = state["buffer"][-keep:]
+                if flush:
+                    thinking_parts.append(flush)
+                break
+            prefix = state["buffer"][:close_index]
+            if prefix:
+                thinking_parts.append(prefix)
+            state["buffer"] = state["buffer"][close_index + len(THINK_CLOSE_TAG):]
+            state["mode"] = "visible"
+            continue
+
+        lower_buffer = state["buffer"].lower()
+        open_index = lower_buffer.find(THINK_OPEN_TAG)
+        close_index = lower_buffer.find(THINK_CLOSE_TAG)
+        if close_index != -1 and (open_index == -1 or close_index < open_index):
+            prefix = state["buffer"][:close_index]
+            if prefix:
+                thinking_parts.append(prefix)
+            state["buffer"] = state["buffer"][close_index + len(THINK_CLOSE_TAG):]
+            state["mode"] = "visible"
+            continue
+        if open_index == -1:
+            if finalize:
+                flush = state["buffer"]
+                state["buffer"] = ""
+            else:
+                keep = len(THINK_OPEN_TAG) - 1
+                if len(state["buffer"]) <= keep:
+                    break
+                flush = state["buffer"][:-keep]
+                state["buffer"] = state["buffer"][-keep:]
+            if flush:
+                visible_parts.append(flush)
+            break
+
+        prefix = state["buffer"][:open_index]
+        if prefix:
+            visible_parts.append(prefix)
+        state["buffer"] = state["buffer"][open_index + len(THINK_OPEN_TAG):]
+        state["mode"] = "think"
+
+    visible_text = "".join(visible_parts)
+    thinking_text = "".join(thinking_parts)
+    if visible_text and not state["started_visible"]:
+        visible_text = visible_text.lstrip()
+    if visible_text:
+        state["started_visible"] = True
+    if visible_text:
+        state["visible_buffer"] += visible_text
+    if thinking_text:
+        state["thinking_buffer"] += thinking_text
+    return visible_text, thinking_text
+
+
+def _resolve_saved_thinking_text(message_item: dict) -> str:
+    thinking_steps = message_item.get("thinking_steps") or []
+    if thinking_steps:
+        return _format_thinking_text(thinking_steps)
+    if message_item.get("model_think_text"):
+        return str(message_item.get("model_think_text"))
+    raw_answer = message_item.get("raw_answer") or message_item.get("full_answer") or ""
+    if raw_answer:
+        return _extract_think_content(raw_answer)
+    return ""
+
+
+def _build_chat_done_payload(message_item: dict) -> dict:
+    payload = dict(message_item)
+    payload.pop("raw_answer", None)
+    payload.pop("model_think_text", None)
+    payload.pop("thinking_text", None)
+    payload.pop("thinking_steps", None)
+    return payload
+
+
+async def _get_request_payload(request: Request) -> dict:
+    content_type = (request.headers.get("content-type") or "").lower()
+    if "application/json" in content_type:
+        payload = await request.json()
+        if not isinstance(payload, dict):
+            raise ValueError("请求体必须是 JSON 对象")
+        return payload
+    form = await request.form()
+    return dict(form)
+
+
+async def _get_request_payload_and_files(request: Request) -> tuple[dict, list[UploadFile]]:
+    content_type = (request.headers.get("content-type") or "").lower()
+    if "application/json" in content_type:
+        payload = await request.json()
+        if not isinstance(payload, dict):
+            raise ValueError("请求体必须是 JSON 对象")
+        return payload, []
+    form = await request.form()
+    payload = {}
+    upload_files = []
+    for key, value in form.multi_items():
+        if isinstance(value, (UploadFile, StarletteUploadFile)):
+            if key == "files":
+                upload_files.append(value)
+            continue
+        payload[key] = value
+    return payload, upload_files
+
+
+def _looks_like_tool_query(message: str, web_search: bool) -> bool:
+    if web_search:
+        return True
+    lowered = (message or "").lower()
+    keyword_groups = [
+        ("数据库", "sql", "表", "字段", "统计", "发票", "员工", "总数", "总额", "查询"),
+        ("知识库", "rag", "文档", "附件", "文件", "资料", "根据知识库", "根据文档"),
+        ("计算", "calculator", "算一下", "帮我算", "+", "-", "*", "/", "根号"),
+        ("搜索", "联网", "上网", "网页", "官网", "新闻", "参考链接"),
+    ]
+    return any(any(keyword in lowered for keyword in group) for group in keyword_groups)
+
+
+async def iterate_fast_chat_events(message: str, system_prompt: str):
+    from langchain_openai import ChatOpenAI
+
+    llm = ChatOpenAI(
+        model=os.getenv("CHAT_MODEL_NAME", "gpt-4o"),
+        temperature=env_float("CHAT_MODEL_TEMPERATURE", 0.0),
+        streaming=True,
+        max_tokens=env_int("CHAT_MODEL_MAX_TOKENS", 4096),
+        timeout=env_float("CHAT_MODEL_TIMEOUT", 120),
+    )
+    messages = [SystemMessage(content=system_prompt), HumanMessage(content=message)]
+
+    full_ai_response = ""
+    stream_state = _new_chat_stream_state()
+    async for chunk in llm.astream(messages):
+        text = getattr(chunk, "content", "") or ""
+        if not text:
+            continue
+        full_ai_response += text
+        visible_delta, thinking_delta = _consume_chat_stream_text(stream_state, text)
+        if thinking_delta:
+            yield {"type": "thinking_delta", "delta": thinking_delta}
+        if visible_delta:
+            yield {"type": "answer_delta", "delta": visible_delta}
+
+    visible_tail, thinking_tail = _consume_chat_stream_text(stream_state, finalize=True)
+    if thinking_tail:
+        yield {"type": "thinking_delta", "delta": thinking_tail}
+    if visible_tail:
+        yield {"type": "answer_delta", "delta": visible_tail}
+
+    checked_answer = _strip_think_blocks(full_ai_response)
+    is_safe, safety_msg = check_output_safety(message, checked_answer)
+    if not is_safe:
+        checked_answer = f"⚠️ [安全拦截] {safety_msg}"
+        yield {"type": "answer_replace", "content": checked_answer}
+
+    yield {
+        "type": "complete",
+        "result": {
+            "answer": checked_answer,
+            "raw_answer": full_ai_response,
+            "model_think_text": _extract_think_content(full_ai_response),
+            "sources": [],
+            "thinking_steps": [],
+        }
+    }
+
+
 async def iterate_chat_events(message: str, conversation_id: str, system_prompt: str, web_search: bool, user_identity: str):
+    if not _looks_like_tool_query(message, web_search):
+        async for event in iterate_fast_chat_events(message, system_prompt):
+            yield event
+        return
+
     inputs = {
         "messages": [HumanMessage(content=message)],
         "enable_web": web_search,
@@ -940,6 +1257,7 @@ async def iterate_chat_events(message: str, conversation_id: str, system_prompt:
     config = {"configurable": {"thread_id": conversation_id}}
 
     full_ai_response = ""
+    stream_state = _new_chat_stream_state()
     sources = []
     tool_trace_events = []
     emitted_trace_keys = set()
@@ -954,32 +1272,32 @@ async def iterate_chat_events(message: str, conversation_id: str, system_prompt:
                 trace_key = f"call:{tool_call_id}"
                 if trace_key not in emitted_trace_keys:
                     emitted_trace_keys.add(trace_key)
+                    preview = _compact_preview(tool_call.get("args", {}))
                     tool_trace_events.append(_tool_trace_event(
                         "call",
                         node_name,
                         tool_name,
-                        _compact_preview(tool_call.get("args", {})),
+                        preview,
                         tool_call_id,
                     ))
-                    yield {
-                        "type": "thinking",
-                        "thinking_text": _format_thinking_text(tool_trace_events),
-                        "thinking_steps": list(tool_trace_events),
-                    }
-
+                    yield {"type": "thinking_delta", "delta": _tool_trace_thinking_delta("call", tool_name, preview)}
+                    yield {"type": "progress", "message": f"tool_call {tool_name}"}
         if isinstance(msg, ToolMessage):
             tool_name = msg.name or "unknown_tool"
             tool_call_id = getattr(msg, "tool_call_id", None)
             trace_key = f"result:{tool_call_id or node_name}:{tool_name}:{_compact_preview(msg.content, 80)}"
             if trace_key not in emitted_trace_keys:
                 emitted_trace_keys.add(trace_key)
+                preview = _format_tool_result_preview(tool_name, msg.content)
                 tool_trace_events.append(_tool_trace_event(
                     "result",
                     node_name,
                     tool_name,
-                    _format_tool_result_preview(tool_name, msg.content),
+                    preview,
                     tool_call_id,
                 ))
+                yield {"type": "thinking_delta", "delta": _tool_trace_thinking_delta("result", tool_name, preview)}
+                yield {"type": "progress", "message": f"tool_result {tool_name}"}
                 if tool_name == "tavily_search_with_summary":
                     try:
                         results = json.loads(msg.content).get("results", [])
@@ -993,19 +1311,25 @@ async def iterate_chat_events(message: str, conversation_id: str, system_prompt:
                         ]
                     except Exception:
                         pass
-                yield {
-                    "type": "thinking",
-                    "thinking_text": _format_thinking_text(tool_trace_events),
-                    "thinking_steps": list(tool_trace_events),
-                }
-
         if node_name in ["chatbot_web", "chatbot_local", "sql_answer"] and isinstance(msg, (AIMessageChunk, AIMessage)):
+            if isinstance(msg, AIMessage) and getattr(msg, "tool_calls", None):
+                continue
             if msg.content:
                 full_ai_response += msg.content
-                yield {"type": "answer_delta", "delta": msg.content}
+                visible_delta, thinking_delta = _consume_chat_stream_text(stream_state, msg.content)
+                if thinking_delta:
+                    yield {"type": "thinking_delta", "delta": thinking_delta}
+                if visible_delta:
+                    yield {"type": "answer_delta", "delta": visible_delta}
 
-    checked_answer = full_ai_response
-    is_safe, safety_msg = check_output_safety(message, full_ai_response)
+    visible_tail, thinking_tail = _consume_chat_stream_text(stream_state, finalize=True)
+    if thinking_tail:
+        yield {"type": "thinking_delta", "delta": thinking_tail}
+    if visible_tail:
+        yield {"type": "answer_delta", "delta": visible_tail}
+
+    checked_answer = _strip_think_blocks(full_ai_response)
+    is_safe, safety_msg = check_output_safety(message, checked_answer)
     if not is_safe:
         checked_answer = f"⚠️ [安全拦截] {safety_msg}"
         yield {"type": "answer_replace", "content": checked_answer}
@@ -1014,28 +1338,33 @@ async def iterate_chat_events(message: str, conversation_id: str, system_prompt:
         "type": "complete",
         "result": {
             "answer": checked_answer,
+            "raw_answer": full_ai_response,
+            "model_think_text": _extract_think_content(full_ai_response),
             "sources": sources,
             "thinking_steps": list(tool_trace_events),
-            "thinking_text": _format_thinking_text(tool_trace_events),
         }
     }
 
 
 async def run_chat(message: str, conversation_id: str, system_prompt: str, web_search: bool, user_identity: str):
     answer = ""
+    raw_answer = ""
+    model_think_text = ""
     sources = []
     thinking_steps = []
     async for event in iterate_chat_events(message, conversation_id, system_prompt, web_search, user_identity):
         if event.get("type") == "complete":
             result = event.get("result", {})
             answer = result.get("answer", "")
+            raw_answer = result.get("raw_answer", "")
+            model_think_text = result.get("model_think_text", "")
             sources = result.get("sources", [])
             thinking_steps = result.get("thinking_steps", [])
-    return answer, sources, thinking_steps
+    return answer, raw_answer, model_think_text, sources, thinking_steps
 
 
 async def _thinking_text_stream(text: str, chunk_size: Optional[int] = None) -> AsyncIterator[str]:
-    content = text or "这次回答没有额外调用工具，我直接根据已有上下文完成了回复。"
+    content = text or ""
     chunk_size = chunk_size or env_int("CHAT_THINKING_CHUNK_SIZE", 48)
     for index in range(0, len(content), chunk_size):
         yield content[index:index + chunk_size]
@@ -1047,18 +1376,101 @@ async def create_new_session():
     return success_response("新建对话成功", {"conversation_id": conversation_id})
 
 
-@app.post("/api/chat", tags=["对话"], summary="发送对话消息", description="提交用户问题、附件和对话参数，返回模型回复；支持流式和非流式两种模式。")
+@app.post(
+    "/api/chat",
+    tags=["对话"],
+    summary="发送对话消息",
+    description=(
+        "提交用户问题、附件和对话参数，仅以 SSE 流式输出模型可见答案。"
+        "调用约定：无文件上传时使用 application/json；有文件上传时使用 multipart/form-data，并通过 files 字段传递一个或多个附件。"
+    ),
+    response_class=StreamingResponse,
+    openapi_extra={
+        "requestBody": {
+            "description": "支持两种请求方式：1) 无文件上传时使用 application/json；2) 有文件上传时使用 multipart/form-data，并通过 files 字段上传附件。",
+            "required": True,
+            "content": {
+                "application/json": {
+                    "schema": {
+                        "type": "object",
+                        "required": ["message", "conversation_id"],
+                        "properties": {
+                            "message": {"type": "string", "description": "用户输入"},
+                            "conversation_id": {"type": "string", "description": "会话 ID"},
+                            "system_prompt": {"type": "string", "description": "系统提示词"},
+                            "web_search": {"type": "boolean", "description": "是否启用联网搜索"},
+                            "db_version": {"type": "string", "description": "数据库版本标记"},
+                            "user_identity": {"type": "string", "description": "用户身份"},
+                        },
+                    },
+                    "examples": {
+                        "json_without_files": {
+                            "summary": "无附件对话请求",
+                            "value": {
+                                "message": "你好",
+                                "conversation_id": "1775220000000",
+                                "web_search": False,
+                                "user_identity": "guest"
+                            }
+                        }
+                    }
+                },
+                "multipart/form-data": {
+                    "schema": {
+                        "type": "object",
+                        "required": ["message", "conversation_id"],
+                        "properties": {
+                            "message": {"type": "string"},
+                            "conversation_id": {"type": "string"},
+                            "files": {"type": "array", "items": {"type": "string", "format": "binary"}},
+                            "system_prompt": {"type": "string"},
+                            "web_search": {"type": "boolean"},
+                            "db_version": {"type": "string"},
+                            "user_identity": {"type": "string"},
+                        },
+                    },
+                    "encoding": {
+                        "files": {
+                            "style": "form"
+                        }
+                    }
+                },
+            },
+        }
+    },
+    responses={
+        200: {
+            "description": "SSE 流式回答",
+            "content": {
+                "text/event-stream": {
+                    "schema": {"type": "string"}
+                }
+            },
+        }
+    },
+)
 async def chat_endpoint(
-    message: str = Form(...),
-    conversation_id: str = Form(...),
-    files: List[UploadFile] = File(None),
-    system_prompt: str = Form("You are a helpful assistant"),
-    web_search: bool = Form(False),
-    db_version: Optional[str] = Form(None),
-    user_identity: Optional[str] = Form("guest"),
-    stream: bool = Form(True),
+    request: Request,
     accessToken: Optional[str] = Header(None),
 ):
+    try:
+        payload, files = await _get_request_payload_and_files(request)
+    except ValueError as exc:
+        return error_response("发送对话失败", {"reason": str(exc)}, 400)
+
+    message = str(payload.get("message") or "").strip()
+    conversation_id = str(payload.get("conversation_id") or "").strip()
+    system_prompt = str(payload.get("system_prompt") or "You are a helpful assistant")
+    web_search = str(payload.get("web_search", "false")).lower() in {"1", "true", "yes", "on"}
+    db_version = payload.get("db_version")
+    db_version = str(db_version).strip() if db_version not in (None, "") else None
+    user_identity = str(payload.get("user_identity") or "guest")
+
+    if not message:
+        return error_response("发送对话失败", {"reason": "message 不能为空"}, 400)
+    if not conversation_id:
+        return error_response("发送对话失败", {"reason": "conversation_id 不能为空"}, 400)
+
     sanitized_message, is_safe, error_msg = check_input_safety(message)
     if not is_safe:
         return error_response("发送对话失败", {"reason": error_msg}, 400)
@@ -1070,50 +1482,15 @@ async def chat_endpoint(
     file_contexts = build_uploaded_file_contexts(uploaded_files)
     model_message = compose_chat_prompt(sanitized_message, history_record, file_contexts)
 
-    if not stream:
-        try:
-            answer, sources, thinking_steps = await run_chat(
-                model_message,
-                conversation_id,
-                system_prompt,
-                web_search,
-                user_identity or "guest",
-            )
-        except Exception as exc:
-            return error_response("发送对话失败", {"reason": str(exc)}, 500)
-
-        recommend_answer = await generate_recommendations(sanitized_message, answer)
-        message_item = {
-            "message_index": message_index,
-            "question": sanitized_message,
-            "files": [item["filename"] for item in uploaded_files],
-            "uploaded_files": uploaded_files,
-            "file_contexts": file_contexts,
-            "web_search": bool(web_search),
-            "db_version": db_version,
-            "answer": answer,
-            "resource": sources,
-            "recommend_answer": recommend_answer,
-            "feedback": None,
-            "thinking_text": _format_thinking_text(thinking_steps),
-            "thinking_steps": thinking_steps,
-            "created_at": now_ms(),
-            "updated_at": now_ms(),
-            "createdAt": now_display(),
-            "updatedAt": now_display(),
-        }
-        history_record["user"] = build_user_brief(user)
-        history_record.setdefault("messages", []).append(message_item)
-        save_history_record(history_record, history_path)
-        return success_response("发送对话成功", message_item)
-
     async def event_stream():
-        emitted_answer_delta = False
         try:
+            yield _sse_comment("stream-open")
             latest_answer = ""
+            latest_thinking_text = ""
+            latest_raw_answer = ""
+            latest_model_think_text = ""
             latest_sources = []
             latest_thinking_steps = []
-            latest_thinking_text = ""
             async for event in iterate_chat_events(
                 model_message,
                 conversation_id,
@@ -1122,23 +1499,28 @@ async def chat_endpoint(
                 user_identity or "guest",
             ):
                 event_type = event.get("type")
+                if event_type == "progress":
+                    yield _sse_comment(event.get("message") or "progress")
+                    continue
+                if event_type == "thinking_delta":
+                    latest_thinking_text += event.get("delta", "")
+                    async for wire_event in _yield_text_events("thinking_delta", event.get("delta", "")):
+                        yield wire_event
+                    continue
                 if event_type == "answer_delta":
                     latest_answer += event.get("delta", "")
-                    emitted_answer_delta = True
-                    yield _sse_event(event)
+                    async for wire_event in _yield_text_events("answer_delta", event.get("delta", "")):
+                        yield wire_event
                 elif event_type == "answer_replace":
                     latest_answer = event.get("content", "")
-                    yield _sse_event(event)
-                elif event_type == "thinking":
-                    latest_thinking_steps = event.get("thinking_steps", [])
-                    latest_thinking_text = event.get("thinking_text", "")
                     yield _sse_event(event)
                 elif event_type == "complete":
                     result = event.get("result", {})
                     latest_answer = result.get("answer", latest_answer)
+                    latest_raw_answer = result.get("raw_answer", latest_raw_answer)
+                    latest_model_think_text = result.get("model_think_text", latest_model_think_text)
                     latest_sources = result.get("sources", latest_sources)
                     latest_thinking_steps = result.get("thinking_steps", latest_thinking_steps)
-                    latest_thinking_text = result.get("thinking_text", latest_thinking_text)
                     recommend_answer = await generate_recommendations(sanitized_message, latest_answer)
                     message_item = {
                         "message_index": message_index,
@@ -1149,10 +1531,12 @@ async def chat_endpoint(
                         "web_search": bool(web_search),
                         "db_version": db_version,
                         "answer": latest_answer,
+                        "raw_answer": latest_raw_answer,
                         "resource": latest_sources,
                         "recommend_answer": recommend_answer,
                         "feedback": None,
-                        "thinking_text": latest_thinking_text,
+                        "thinking_text": _format_thinking_text(latest_thinking_steps) or latest_thinking_text or latest_model_think_text,
+                        "model_think_text": latest_model_think_text,
                         "thinking_steps": latest_thinking_steps,
                         "created_at": now_ms(),
                         "updated_at": now_ms(),
@@ -1162,47 +1546,10 @@ async def chat_endpoint(
                     history_record["user"] = build_user_brief(user)
                     history_record.setdefault("messages", []).append(message_item)
                     save_history_record(history_record, history_path)
-                    yield _sse_event({"type": "done", "data": message_item})
+                    yield _sse_event({"type": "done", "data": _build_chat_done_payload(message_item)})
                     return
         except Exception as exc:
-            if emitted_answer_delta:
-                yield _sse_event({"type": "error", "message": str(exc)})
-                return
-            try:
-                answer, sources, thinking_steps = await run_chat(
-                    model_message,
-                    conversation_id,
-                    system_prompt,
-                    web_search,
-                    user_identity or "guest",
-                )
-                recommend_answer = await generate_recommendations(sanitized_message, answer)
-                message_item = {
-                    "message_index": message_index,
-                    "question": sanitized_message,
-                    "files": [item["filename"] for item in uploaded_files],
-                    "uploaded_files": uploaded_files,
-                    "file_contexts": file_contexts,
-                    "web_search": bool(web_search),
-                    "db_version": db_version,
-                    "answer": answer,
-                    "resource": sources,
-                    "recommend_answer": recommend_answer,
-                    "feedback": None,
-                    "thinking_text": _format_thinking_text(thinking_steps),
-                    "thinking_steps": thinking_steps,
-                    "created_at": now_ms(),
-                    "updated_at": now_ms(),
-                    "createdAt": now_display(),
-                    "updatedAt": now_display(),
-                }
-                history_record["user"] = build_user_brief(user)
-                history_record.setdefault("messages", []).append(message_item)
-                save_history_record(history_record, history_path)
-                yield _sse_event({"type": "answer_delta", "delta": answer})
-                yield _sse_event({"type": "done", "data": message_item})
-            except Exception as fallback_exc:
-                yield _sse_event({"type": "error", "message": str(fallback_exc)})
+            yield _sse_event({"type": "error", "message": str(exc)})
 
     headers = {"Cache-Control": "no-cache", "X-Accel-Buffering": "no"}
     return StreamingResponse(event_stream(), media_type="text/event-stream", headers=headers)
@@ -1312,11 +1659,26 @@ async def batch_delete_history(data: dict = Body(...)):
     return success_response("批量删除历史对话成功", {"deleted_ids": deleted})
 
 
-@app.get("/api/chat/{conversation_id}/thinking", tags=["对话"], summary="获取思考过程", description="查看指定会话某一轮消息的思考过程，支持流式和非流式返回。")
+@app.get(
+    "/api/chat/{conversation_id}/thinking",
+    tags=["对话"],
+    summary="获取思考过程",
+    description="仅以文本流返回指定会话某一轮消息的工具调用过程；若无工具过程，则回退到模型 <think> 内容。",
+    response_class=StreamingResponse,
+    responses={
+        200: {
+            "description": "文本流式思考过程",
+            "content": {
+                "text/plain": {
+                    "schema": {"type": "string"}
+                }
+            },
+        }
+    },
+)
 async def get_chat_thinking(
     conversation_id: str,
     message_index: Optional[int] = Query(None),
-    stream: bool = Query(True),
 ):
     history_record, _ = load_history_record(conversation_id)
     messages = history_record.get("messages", [])
@@ -1325,24 +1687,43 @@ async def get_chat_thinking(
     target = messages[-1] if message_index is None else next((item for item in messages if item.get("message_index") == message_index), None)
     if not target:
         return error_response("获取思考过程失败", {"conversation_id": conversation_id, "message_index": message_index}, 404)
-    thinking_text = target.get("thinking_text") or "这次回答没有额外调用工具，我直接根据已有上下文完成了回复。"
-    if stream:
-        headers = {"Cache-Control": "no-cache", "X-Accel-Buffering": "no"}
-        return StreamingResponse(_thinking_text_stream(thinking_text), media_type="text/plain; charset=utf-8", headers=headers)
-    return PlainTextResponse(thinking_text)
+    thinking_text = _resolve_saved_thinking_text(target)
+    headers = {"Cache-Control": "no-cache", "X-Accel-Buffering": "no"}
+    return StreamingResponse(_thinking_text_stream(thinking_text), media_type="text/plain; charset=utf-8", headers=headers)
 
 
-@app.post("/api/chat/feedback", tags=["反馈"], summary="提交对话反馈", description="对指定消息提交点赞或点踩反馈，并可附带原因、文字说明和图片。")
+@app.post(
+    "/api/chat/feedback",
+    tags=["反馈"],
+    summary="提交对话反馈",
+    description="对指定消息提交点赞或点踩反馈，并可附带原因、文字说明和图片。",
+    openapi_extra={
+        "requestBody": {
+            "description": "支持 application/json（无图片）和 multipart/form-data（带图片）。",
+            "required": True,
+        }
+    },
+)
 async def save_feedback(
-    conversation_id: str = Form(...),
-    message_index: int = Form(...),
-    type: str = Form(...),
-    reasons: Optional[str] = Form(None),
-    comment: Optional[str] = Form(None),
-    pictures: List[UploadFile] = File(None),
-    files: List[UploadFile] = File(None),
+    request: Request,
     accessToken: Optional[str] = Header(None),
 ):
+    try:
+        payload, upload_files = await _get_request_payload_and_files(request)
+    except ValueError as exc:
+        return error_response("提交反馈失败", {"reason": str(exc)}, 400)
+
+    conversation_id = str(payload.get("conversation_id") or "").strip()
+    type = str(payload.get("type") or "").strip()
+    comment = str(payload.get("comment") or "")
+    reasons = payload.get("reasons")
+    if not conversation_id:
+        return error_response("提交反馈失败", {"reason": "conversation_id 不能为空"}, 400)
+    try:
+        message_index = int(payload.get("message_index"))
+    except Exception:
+        return error_response("提交反馈失败", {"reason": "message_index 必须是整数"}, 400)
+
     try:
         type = validate_feedback_type(type)
     except ValueError as exc:
@@ -1367,7 +1748,7 @@ async def save_feedback(
         state = type
 
     reason_list = parse_reasons(reasons)
-    upload_list = pictures or files or []
+    upload_list = upload_files or []
     if state == "dislike" and not any([reason_list, comment, upload_list]):
         return error_response("提交反馈失败", {"reason": "点踩反馈必须填写原因、描述或上传截图"}, 400)
 
@@ -1637,26 +2018,61 @@ async def get_kb_detail(id: str, url: Optional[str] = Query(None)):
     return success_response("获取知识库详情成功", detail)
 
 
-@app.post("/api/kb/create", tags=["知识库"], summary="创建知识库", description="创建一个新的知识库，仅需名称和模型类型，不再区分企业、部门、个人分类。")
-async def create_kb(
-    name: str = Form(..., description="知识库名称。"),
-    model: str = Form("openai", description="知识库使用的模型标识。"),
-):
+@app.post(
+    "/api/kb/create",
+    tags=["知识库"],
+    summary="创建知识库",
+    description="创建一个新的知识库，仅需名称和模型类型，不再区分企业、部门、个人分类。",
+    openapi_extra={
+        "requestBody": {
+            "description": "JSON 请求体，包含知识库名称和模型标识。",
+            "required": True,
+        }
+    },
+)
+async def create_kb(request: Request):
+    try:
+        payload = await _get_request_payload(request)
+    except ValueError as exc:
+        return error_response("创建知识库失败", {"reason": str(exc)}, 400)
+    name = str(payload.get("name") or "").strip()
+    model = str(payload.get("model") or "openai").strip() or "openai"
+    if not name:
+        return error_response("创建知识库失败", {"reason": "name 不能为空"}, 400)
     created = kb_service.create_kb(name=name, model=model)
     return success_response("创建知识库成功", created)
 
 
-@app.post("/api/kb/update", tags=["知识库"], summary="更新知识库", description="更新知识库名称、备注、启用状态、授权用户，并支持在一次请求中预览或确认文件上传和删除。")
+@app.post(
+    "/api/kb/update",
+    tags=["知识库"],
+    summary="更新知识库",
+    description="更新知识库名称、备注、启用状态、授权用户，并支持在一次请求中预览或确认文件上传和删除。",
+    openapi_extra={
+        "requestBody": {
+            "description": "支持 application/json（无文件）和 multipart/form-data（带文件）的知识库更新请求。",
+            "required": True,
+        }
+    },
+)
 async def update_kb(
-    id: str = Form(..., description="知识库 ID。"),
-    name: Optional[str] = Form(None, description="知识库名称。"),
-    remark: Optional[str] = Form(None, description="知识库备注。"),
-    enabled: Optional[str] = Form(None, description="是否启用，传 true/false。"),
-    users: Optional[str] = Form(None, description="授权用户 JSON 字符串。"),
-    delete_files: Optional[str] = Form(None, description="待删除文件名 JSON 数组。"),
-    confirm: bool = Form(True, description="是否确认提交。false 为仅预览，不落库。"),
-    files: List[UploadFile] = File(None, description="待上传的新文件列表。"),
+    request: Request,
 ):
+    try:
+        payload, files = await _get_request_payload_and_files(request)
+    except ValueError as exc:
+        return error_response("更新知识库失败", {"reason": str(exc)}, 400)
+
+    id = str(payload.get("id") or "").strip()
+    name = payload.get("name")
+    remark = payload.get("remark")
+    enabled = payload.get("enabled")
+    users = payload.get("users")
+    delete_files = payload.get("delete_files")
+    confirm = str(payload.get("confirm", "true")).lower() in {"1", "true", "yes", "on"}
+    if not id:
+        return error_response("更新知识库失败", {"reason": "id 不能为空"}, 400)
+
     update_data = {}
     if name is not None:
         update_data["name"] = name
@@ -1740,8 +2156,26 @@ async def delete_kb_files(id: str, data: dict = Body(...)):
     return success_response("删除知识库文档成功", {"id": id, "deleted_files": deleted})
 
 
-@app.post("/api/kb/{id}/delete_file", tags=["知识库"], summary="删除单个知识库文件", description="从指定知识库中删除单个文件。")
-async def delete_kb_file(id: str, filename: str = Form(...)):
+@app.post(
+    "/api/kb/{id}/delete_file",
+    tags=["知识库"],
+    summary="删除单个知识库文件",
+    description="从指定知识库中删除单个文件。",
+    openapi_extra={
+        "requestBody": {
+            "description": "JSON 请求体，包含 filename。",
+            "required": True,
+        }
+    },
+)
+async def delete_kb_file(id: str, request: Request):
+    try:
+        payload = await _get_request_payload(request)
+    except ValueError as exc:
+        return error_response("删除知识库文档失败", {"reason": str(exc)}, 400)
+    filename = str(payload.get("filename") or "").strip()
+    if not filename:
+        return error_response("删除知识库文档失败", {"reason": "filename 不能为空"}, 400)
     detail = kb_service.get_kb_detail(id)
     if not detail:
         return error_response("删除知识库文档失败", {"id": id}, 404)
@@ -1749,6 +2183,8 @@ async def delete_kb_file(id: str, filename: str = Form(...)):
         deleted = kb_service.delete_files(id, [filename]) or []
     except Exception as exc:
         return error_response("删除知识库文档失败", {"reason": str(exc)}, 500)
+    if not deleted:
+        return error_response("删除知识库文档失败", {"id": id, "filename": filename}, 404)
     return success_response("删除知识库文档成功", {"id": id, "deleted_files": deleted})
 
 

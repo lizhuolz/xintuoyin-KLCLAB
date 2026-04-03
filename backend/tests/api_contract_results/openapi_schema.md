@@ -22,6 +22,6 @@
     "页码，从 1 开始。",
     "每页数量，默认 10。"
   ],
-  "kb_update_request_body_description": "请求体参数"
+  "kb_update_request_body_description": "支持 application/json（无文件）和 multipart/form-data（带文件）的知识库更新请求。"
 }
 ```

@@ -1,0 +1,61 @@
+{
+  "conversation_id": "1775216105596",
+  "title": "请使用数据库查询我们公司的总员工是多少，只返回最终人数。",
+  "created_at": "1775216105634",
+  "updated_at": "1775216126726",
+  "createdAt": "2026/04/03 19:35:05",
+  "updatedAt": "2026/04/03 19:35:26",
+  "message_count": 1,
+  "user": {
+    "name": "王颖奇",
+    "phone": "15323720032",
+    "categoryName": "图湃（北京）医疗科技",
+    "record_id": "UID_20250001",
+    "ip_address": "183.230.12.156"
+  },
+  "messages": [
+    {
+      "message_index": 0,
+      "question": "请使用数据库查询我们公司的总员工是多少，只返回最终人数。",
+      "files": [],
+      "uploaded_files": [],
+      "file_contexts": [],
+      "web_search": false,
+      "db_version": null,
+      "answer": "",
+      "raw_answer": "",
+      "resource": [],
+      "recommend_answer": [],
+      "feedback": null,
+      "thinking_text": "在正式回答前，我先做了几步准备：\n1. 我调用了 unknown_tool，输入大致是：{}。\n对应上面第 1 步，unknown_tool 返回了这样的关键信息：Error: is not a valid tool, try one of [calculator, echo, sql_tool, rag_tool].。\n2. 我调用了 unknown_tool，输入大致是：{}。\n整理完这些信息后，我再把最终答案组织成对你更自然的回复。",
+      "model_think_text": "",
+      "thinking_steps": [
+        {
+          "kind": "call",
+          "node_name": "chatbot_local",
+          "tool_name": "unknown_tool",
+          "preview": "{}",
+          "tool_call_id": "chatcmpl-tool-932eba7ef6fcd24b"
+        },
+        {
+          "kind": "result",
+          "node_name": "tools_local",
+          "tool_name": "unknown_tool",
+          "preview": "Error: is not a valid tool, try one of [calculator, echo, sql_tool, rag_tool].",
+          "tool_call_id": "chatcmpl-tool-932eba7ef6fcd24b"
+        },
+        {
+          "kind": "call",
+          "node_name": "chatbot_local",
+          "tool_name": "unknown_tool",
+          "preview": "{}",
+          "tool_call_id": "chatcmpl-tool-89141b84d46566ff"
+        }
+      ],
+      "created_at": "1775216126725",
+      "updated_at": "1775216126725",
+      "createdAt": "2026/04/03 19:35:26",
+      "updatedAt": "2026/04/03 19:35:26"
+    }
+  ]
+}

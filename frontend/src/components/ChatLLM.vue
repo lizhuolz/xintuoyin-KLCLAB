@@ -608,7 +608,7 @@ async function fetchThinkingText(conversationId, messageIndex, onChunk) {
       })
     } catch (error) {
       if (!/获取思考过程失败|请求失败|not found/i.test(error.message || '') || attempt === 4) {
-        return ''
+        throw error
       }
       await new Promise((resolve) => setTimeout(resolve, 300 * (attempt + 1)))
     }
@@ -765,8 +765,8 @@ async function sendMessage() {
   try {
     const data = await aiApi.sendChatStream(formData, (event) => {
       if (!event || typeof event !== 'object') return
-      if (event.type === 'thinking') {
-        assistantMessage.thinkingText = event.thinking_text || ''
+      if (event.type === 'thinking_delta') {
+        assistantMessage.thinkingText += event.delta || ''
         assistantMessage.thinkingVisible = Boolean(assistantMessage.thinkingText)
         assistantMessage.thinkingLoading = false
         assistantMessage.thinkingError = false
@@ -787,10 +787,6 @@ async function sendMessage() {
     assistantMessage.content = data.answer || assistantMessage.content || ''
     assistantMessage.sources = data.resource || []
     assistantMessage.recommendations = data.recommend_answer || []
-    assistantMessage.thinkingText = data.thinking_text || assistantMessage.thinkingText || ''
-    assistantMessage.thinkingVisible = Boolean(assistantMessage.thinkingText)
-    assistantMessage.thinkingLoading = false
-    assistantMessage.thinkingError = false
     assistantMessage.liked = data.feedback === 'like'
     assistantMessage.disliked = data.feedback === 'dislike'
     assistantMessage.feedback = data.feedback ?? null
@@ -802,21 +798,9 @@ async function sendMessage() {
 
     conversation.updatedAt = data.updatedAt || data.updated_at || Date.now()
     moveConversationToTop(conversation)
-
-    if (!assistantMessage.thinkingText && data.message_index !== undefined && data.message_index !== null) {
-      assistantMessage.thinkingLoading = true
-      const thinkingText = await fetchThinkingText(conversation.id, data.message_index, (fullText) => {
-        assistantMessage.thinkingText = fullText
-        assistantMessage.thinkingVisible = Boolean(fullText)
-        assistantMessage.thinkingLoading = false
-        assistantMessage.thinkingError = false
-        nextTick(scrollToBottom)
-      })
-      assistantMessage.thinkingText = thinkingText
-      assistantMessage.thinkingVisible = Boolean(thinkingText)
-      assistantMessage.thinkingLoading = false
-      assistantMessage.thinkingError = !thinkingText
-    }
+    assistantMessage.thinkingLoading = false
+    assistantMessage.thinkingError = false
+    assistantMessage.thinkingVisible = Boolean(assistantMessage.thinkingText)
   } catch (error) {
     assistantMessage.content = `
 **连接错误**

@@ -1,7 +1,7 @@
 {
   "total_endpoints": 28,
-  "total_cases": 75,
-  "passed_cases": 75,
+  "total_cases": 77,
+  "passed_cases": 77,
   "failed_cases": 0,
   "endpoints": [
     {
@@ -34,8 +34,8 @@
     },
     {
       "endpoint": "api_chat_thinking",
-      "case_count": 3,
-      "passed": 3,
+      "case_count": 4,
+      "passed": 4,
       "failed": 0,
       "file": "api_chat_thinking.md"
     },
@@ -139,8 +139,8 @@
     },
     {
       "endpoint": "api_kb_delete_file",
-      "case_count": 2,
-      "passed": 2,
+      "case_count": 3,
+      "passed": 3,
       "failed": 0,
       "file": "api_kb_delete_file.md"
     },

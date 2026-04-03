@@ -1,6 +1,6 @@
 # 后端 API 手册
 
-> 维护时间：2026-04-01
+> 维护时间：2026-04-03
 >
 > 对齐代码：[app.py](/home/lyq/xintuoyin-KLCLAB/backend/app.py)
 >
@@ -105,7 +105,8 @@ OpenAPI 地址：
 
 请求类型：
 
-- `multipart/form-data`
+- 无附件时推荐 `application/json`
+- 带附件时使用 `multipart/form-data`
 
 主要字段：
 
@@ -118,16 +119,14 @@ OpenAPI 地址：
 | `web_search` | bool | 否 | 是否启用联网搜索 |
 | `db_version` | string | 否 | 数据库版本标记 |
 | `user_identity` | string | 否 | 用户身份，默认 `guest` |
-| `stream` | bool | 否 | 默认 `true`，即默认流式 |
 
 流式返回：
 
 - `Content-Type: text/event-stream`
-- 默认开启
+- 固定为 SSE，不再支持 `stream=false`
 
 事件类型：
 
-- `thinking`
 - `answer_delta`
 - `answer_replace`
 - `done`
@@ -146,12 +145,11 @@ OpenAPI 地址：
 | `resource` | object[] | 工具或联网资源 |
 | `recommend_answer` | string[] | 推荐追问 |
 | `feedback` | string/null | 当前反馈状态 |
-| `thinking_text` | string | 思考过程文本 |
-| `thinking_steps` | object[] | 工具调用轨迹 |
 
 注意：
 
-- 旧调用方如果还需要整包 JSON，需显式传 `stream=false`
+- `answer_delta` 和 `done.data.answer` 都只包含对用户可见的回答，不包含模型 `<think>...</think>` 隐藏内容
+- 如果模型原始输出里含有 `<think>...</think>`，后端会在流式阶段直接剥离，不向前端透出
 - 前端应以 `done` 事件作为本轮真正完成标志
 
 ### 3.3 `GET /api/chat/{conversation_id}/title`
@@ -179,7 +177,14 @@ OpenAPI 地址：
 | 字段 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
 | `message_index` | int | 否 | 不传时默认取最后一轮 |
-| `stream` | bool | 否 | 默认 `true`，按文本流返回 |
+
+返回规则：
+
+- 固定返回 `text/plain; charset=utf-8` 文本流
+- 若该轮消息存在 `thinking_steps`，则返回工具调用过程文本
+- 若没有工具过程，但原始模型回答中存在 `<think>...</think>`，则返回其中的文本
+- 若两者都不存在，则返回空文本流
+- 若会话不存在或 `message_index` 不存在，则返回统一 JSON 错误结构和 `404`
 
 ## 4. 历史记录
 
@@ -264,7 +269,8 @@ OpenAPI 地址：
 
 请求类型：
 
-- `multipart/form-data`
+- 无截图时推荐 `application/json`
+- 带截图时使用 `multipart/form-data`
 
 主要字段：
 
@@ -273,7 +279,7 @@ OpenAPI 地址：
 | `conversation_id` | string | 是 | 会话 ID |
 | `message_index` | int | 是 | 消息索引 |
 | `type` | string | 是 | `like` 或 `dislike` |
-| `reasons` | string | 否 | JSON 数组字符串 |
+| `reasons` | string/array | 否 | JSON 请求可直接传数组；表单请求传 JSON 数组字符串 |
 | `comment` | string | 否 | 补充说明 |
 | `pictures` | file[] | 否 | 截图 |
 
@@ -394,7 +400,7 @@ OpenAPI 地址：
 
 请求类型：
 
-- `multipart/form-data`
+- 推荐 `application/json`
 
 字段：
 
@@ -413,7 +419,8 @@ OpenAPI 地址：
 
 请求类型：
 
-- `multipart/form-data`
+- 无文件变更时推荐 `application/json`
+- 带文件上传时使用 `multipart/form-data`
 
 字段：
 
@@ -470,13 +477,18 @@ OpenAPI 地址：
 
 请求类型：
 
-- `multipart/form-data`
+- 推荐 `application/json`
 
 字段：
 
 | 字段 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
 | `filename` | string | 是 | 文件名 |
+
+边界行为：
+
+- 知识库不存在时返回 `404`
+- 目标文件不存在时返回 `404`
 
 ## 7. 数据库显式选择
 

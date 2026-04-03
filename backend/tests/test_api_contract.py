@@ -140,13 +140,42 @@ class APITestCase(unittest.TestCase):
             shutil.rmtree(cls.report_root)
         cls.report_root.mkdir(parents=True, exist_ok=True)
 
-        async def fake_run_chat(message, conversation_id, system_prompt, web_search, user_identity):
-            answer = f"模拟回答: {message}"
+        async def fake_iterate_chat_events(message, conversation_id, system_prompt, web_search, user_identity):
             sources = []
             if web_search:
                 sources = [{"link": "https://example.com", "title": "示例来源", "content": "示例摘要"}]
-            steps = [{"kind": "call", "node_name": "chatbot_local", "tool_name": "mock_tool", "preview": "{}", "tool_call_id": "tool-1"}]
-            return answer, sources, steps
+
+            if "工具思考" in message:
+                answer = "模拟回答: 工具结果已整理"
+                yield {"type": "answer_delta", "delta": answer}
+                yield {
+                    "type": "complete",
+                    "result": {
+                        "answer": answer,
+                        "raw_answer": answer,
+                        "model_think_text": "",
+                        "sources": sources,
+                        "thinking_steps": [
+                            {"kind": "call", "node_name": "chatbot_local", "tool_name": "mock_tool", "preview": "{\"q\":\"工具思考\"}", "tool_call_id": "tool-1"},
+                            {"kind": "result", "node_name": "chatbot_local", "tool_name": "mock_tool", "preview": "检索到 1 条结果", "tool_call_id": "tool-1"},
+                        ],
+                    },
+                }
+                return
+
+            raw_answer = f"<think>内部思考：先分析“{message}”</think>模拟回答: {message}"
+            yield {"type": "answer_delta", "delta": "模拟回答: "}
+            yield {"type": "answer_delta", "delta": message}
+            yield {
+                "type": "complete",
+                "result": {
+                    "answer": f"模拟回答: {message}",
+                    "raw_answer": raw_answer,
+                    "model_think_text": f"内部思考：先分析“{message}”",
+                    "sources": sources,
+                    "thinking_steps": [],
+                },
+            }
 
         async def fake_recommendations(user_msg, ai_msg):
             return ["追问1", "追问2", "追问3"]
@@ -169,14 +198,14 @@ class APITestCase(unittest.TestCase):
                     return ["employee"]
                 return []
 
-        cls.original_run_chat = app_module.run_chat
+        cls.original_iterate_chat_events = app_module.iterate_chat_events
         cls.original_generate_recommendations = app_module.generate_recommendations
         cls.original_check_input_safety = app_module.check_input_safety
         cls.original_check_output_safety = app_module.check_output_safety
         cls.original_kb_service = app_module.kb_service
         cls.original_database_selector = app_module.DatabaseSelector
 
-        app_module.run_chat = fake_run_chat
+        app_module.iterate_chat_events = fake_iterate_chat_events
         app_module.generate_recommendations = fake_recommendations
         app_module.check_input_safety = lambda message: (message, True, "")
         app_module.check_output_safety = lambda prompt, response: (True, "")
@@ -184,7 +213,7 @@ class APITestCase(unittest.TestCase):
 
     @classmethod
     def tearDownClass(cls):
-        app_module.run_chat = cls.original_run_chat
+        app_module.iterate_chat_events = cls.original_iterate_chat_events
         app_module.generate_recommendations = cls.original_generate_recommendations
         app_module.check_input_safety = cls.original_check_input_safety
         app_module.check_output_safety = cls.original_check_output_safety
@@ -283,19 +312,24 @@ class APITestCase(unittest.TestCase):
         })
 
     def create_chat_round(self, conversation_id="conv1", message="你好", web_search=False):
-        response = self.client.post("/api/chat", data={
+        response = self.client.post("/api/chat", json={
             "conversation_id": conversation_id,
             "message": message,
-            "web_search": str(web_search).lower(),
+            "web_search": web_search,
             "user_identity": "tester",
-            "stream": "false",
         })
         self.assertEqual(response.status_code, 200)
-        return response.json()["data"]
+        payload = self.extract_done_payload(response.text)
+        return payload["data"]
+
+    def extract_done_payload(self, body):
+        done_line = [line for line in body.splitlines() if line.startswith("data: ") and '"type": "done"' in line]
+        self.assertTrue(done_line)
+        return json.loads(done_line[-1][6:])
 
     def create_feedback(self, conversation_id="conv1"):
         chat_data = self.create_chat_round(conversation_id=conversation_id, message="反馈测试")
-        response = self.client.post("/api/chat/feedback", data={
+        response = self.client.post("/api/chat/feedback", json={
             "conversation_id": conversation_id,
             "message_index": chat_data["message_index"],
             "type": "like",
@@ -304,7 +338,7 @@ class APITestCase(unittest.TestCase):
         return response.json()["data"]
 
     def create_kb(self, name="测试库"):
-        response = self.client.post("/api/kb/create", data={"name": name, "model": "openai"})
+        response = self.client.post("/api/kb/create", json={"name": name, "model": "openai"})
         self.assertEqual(response.status_code, 200)
         return response.json()["data"]
 
@@ -316,17 +350,32 @@ class APITestCase(unittest.TestCase):
         self.assertTrue(passed)
 
     def test_api_chat(self):
-        res = self.client.post("/api/chat", data={"conversation_id": "conv1", "message": "你好", "web_search": "true", "user_identity": "tester", "stream": "false"})
-        data = res.json()
-        passed = res.status_code == 200 and data["data"]["answer"].startswith("模拟回答") and len(data["data"]["resource"]) == 1
-        self.record_case("api_chat", "success", "POST", "/api/chat", {"message": "你好", "conversation_id": "conv1", "web_search": True}, data, passed)
+        res = self.client.post("/api/chat", json={"conversation_id": "conv1", "message": "你好", "web_search": True, "user_identity": "tester"})
+        body = res.text
+        done_line = [line for line in body.splitlines() if line.startswith("data: ") and '"type": "done"' in line][-1]
+        done_payload = json.loads(done_line[6:])
+        answer = done_payload["data"]["answer"]
+        passed = (
+            res.status_code == 200
+            and "text/event-stream" in res.headers.get("content-type", "")
+            and answer.startswith("模拟回答")
+            and "<think>" not in body
+            and len(done_payload["data"]["resource"]) == 1
+        )
+        self.record_case("api_chat", "success", "POST", "/api/chat", {"content_type": "application/json", "message": "你好", "conversation_id": "conv1", "web_search": True}, {"content_type": res.headers.get("content-type"), "body": body, "done": done_payload}, passed)
         self.assertTrue(passed)
 
     def test_api_chat_default_stream(self):
-        res = self.client.post("/api/chat", data={"conversation_id": "conv-stream", "message": "默认流式", "user_identity": "tester"})
+        res = self.client.post("/api/chat", json={"conversation_id": "conv-stream", "message": "默认流式", "user_identity": "tester"})
         body = res.text
-        passed = res.status_code == 200 and "text/event-stream" in res.headers.get("content-type", "") and "\"type\": \"done\"" in body and "\"type\": \"answer_delta\"" in body
-        self.record_case("api_chat", "default_stream_success", "POST", "/api/chat", {"conversation_id": "conv-stream", "message": "默认流式"}, {"content_type": res.headers.get("content-type"), "body": body}, passed, notes="不传 stream 时默认返回 SSE 事件流。")
+        passed = (
+            res.status_code == 200
+            and "text/event-stream" in res.headers.get("content-type", "")
+            and "\"type\": \"done\"" in body
+            and "\"type\": \"answer_delta\"" in body
+            and "\"type\": \"thinking\"" not in body
+        )
+        self.record_case("api_chat", "default_stream_success", "POST", "/api/chat", {"content_type": "application/json", "conversation_id": "conv-stream", "message": "默认流式"}, {"content_type": res.headers.get("content-type"), "body": body}, passed, notes="无文件对话默认使用 JSON 请求，接口固定返回 SSE，且不再推送思考过程事件。")
         self.assertTrue(passed)
 
     def test_api_chat_title(self):
@@ -422,22 +471,48 @@ class APITestCase(unittest.TestCase):
 
     def test_api_chat_thinking(self):
         chat_data = self.create_chat_round(conversation_id="conv-think", message="思考测试")
-        res = self.client.get("/api/chat/conv-think/thinking", params={"message_index": chat_data["message_index"], "stream": "false"})
-        passed = res.status_code == 200 and "正式回答前" in res.text
-        self.record_case("api_chat_thinking", "success", "GET", "/api/chat/{conversation_id}/thinking", {"conversation_id": "conv-think", "message_index": chat_data["message_index"]}, {"text": res.text}, passed)
+        res = self.client.get("/api/chat/conv-think/thinking", params={"message_index": chat_data["message_index"]})
+        passed = res.status_code == 200 and "内部思考" in res.text and "mock_tool" not in res.text
+        self.record_case("api_chat_thinking", "success", "GET", "/api/chat/{conversation_id}/thinking", {"conversation_id": "conv-think", "message_index": chat_data["message_index"]}, {"content_type": res.headers.get("content-type"), "text": res.text}, passed)
         self.assertTrue(passed)
 
     def test_api_chat_thinking_default_stream(self):
-        chat_data = self.create_chat_round(conversation_id="conv-think-stream", message="思考流式测试")
+        chat_data = self.create_chat_round(conversation_id="conv-think-stream", message="工具思考测试")
         res = self.client.get("/api/chat/conv-think-stream/thinking", params={"message_index": chat_data["message_index"]})
         body = res.text
-        passed = res.status_code == 200 and res.headers.get("content-type", "").startswith("text/plain") and len(body) > 0
-        self.record_case("api_chat_thinking", "default_stream_success", "GET", "/api/chat/{conversation_id}/thinking", {"conversation_id": "conv-think-stream", "message_index": chat_data["message_index"]}, {"content_type": res.headers.get("content-type"), "text": body}, passed, notes="不传 stream 时默认返回思考过程文本流。")
+        passed = res.status_code == 200 and res.headers.get("content-type", "").startswith("text/plain") and "mock_tool" in body and "内部思考" not in body
+        self.record_case("api_chat_thinking", "default_stream_success", "GET", "/api/chat/{conversation_id}/thinking", {"conversation_id": "conv-think-stream", "message_index": chat_data["message_index"]}, {"content_type": res.headers.get("content-type"), "text": body}, passed, notes="思考过程接口固定返回文本流，优先输出工具调用过程。")
+        self.assertTrue(passed)
+
+    def test_api_chat_thinking_empty_when_no_tool_and_no_think(self):
+        record, path = app_module.load_history_record("conv-think-empty")
+        record["messages"].append({
+            "message_index": 0,
+            "question": "空思考",
+            "files": [],
+            "uploaded_files": [],
+            "answer": "只有答案",
+            "raw_answer": "只有答案",
+            "resource": [],
+            "recommend_answer": [],
+            "feedback": None,
+            "thinking_text": "",
+            "model_think_text": "",
+            "thinking_steps": [],
+            "created_at": "1",
+            "updated_at": "1",
+            "createdAt": "2026/04/03 00:00:00",
+            "updatedAt": "2026/04/03 00:00:00",
+        })
+        app_module.save_history_record(record, path)
+        res = self.client.get("/api/chat/conv-think-empty/thinking", params={"message_index": 0})
+        passed = res.status_code == 200 and res.text == ""
+        self.record_case("api_chat_thinking", "empty_when_no_tool_and_no_think", "GET", "/api/chat/{conversation_id}/thinking", {"conversation_id": "conv-think-empty", "message_index": 0}, {"content_type": res.headers.get("content-type"), "text": res.text}, passed, notes="没有工具过程且模型回答不含 <think> 时，应返回空文本流。")
         self.assertTrue(passed)
 
     def test_api_chat_feedback_like(self):
         chat_data = self.create_chat_round(conversation_id="conv-feedback", message="点赞测试")
-        res = self.client.post("/api/chat/feedback", data={"conversation_id": "conv-feedback", "message_index": chat_data["message_index"], "type": "like"})
+        res = self.client.post("/api/chat/feedback", json={"conversation_id": "conv-feedback", "message_index": chat_data["message_index"], "type": "like"})
         data = res.json()
         passed = res.status_code == 200 and data["data"]["state"] == "like"
         self.record_case("api_chat_feedback", "like_success", "POST", "/api/chat/feedback", {"conversation_id": "conv-feedback", "message_index": chat_data["message_index"], "type": "like"}, data, passed)
@@ -445,7 +520,7 @@ class APITestCase(unittest.TestCase):
 
     def test_api_chat_feedback_invalid_type(self):
         self.create_chat_round(conversation_id="conv-feedback-invalid", message="错误反馈")
-        res = self.client.post("/api/chat/feedback", data={"conversation_id": "conv-feedback-invalid", "message_index": 0, "type": "bad"})
+        res = self.client.post("/api/chat/feedback", json={"conversation_id": "conv-feedback-invalid", "message_index": 0, "type": "bad"})
         data = res.json()
         passed = res.status_code == 400 and data["code"] == 1
         self.record_case("api_chat_feedback", "invalid_type", "POST", "/api/chat/feedback", {"conversation_id": "conv-feedback-invalid", "message_index": 0, "type": "bad"}, data, passed)
@@ -453,7 +528,7 @@ class APITestCase(unittest.TestCase):
 
     def test_api_chat_feedback_dislike_validation(self):
         self.create_chat_round(conversation_id="conv-feedback-dislike", message="点踩测试")
-        res = self.client.post("/api/chat/feedback", data={"conversation_id": "conv-feedback-dislike", "message_index": 0, "type": "dislike"})
+        res = self.client.post("/api/chat/feedback", json={"conversation_id": "conv-feedback-dislike", "message_index": 0, "type": "dislike"})
         data = res.json()
         passed = res.status_code == 400 and data["code"] == 1
         self.record_case("api_chat_feedback", "dislike_validation", "POST", "/api/chat/feedback", {"conversation_id": "conv-feedback-dislike", "message_index": 0, "type": "dislike"}, data, passed)
@@ -628,7 +703,7 @@ class APITestCase(unittest.TestCase):
         self.assertTrue(passed)
 
     def test_api_kb_create(self):
-        res = self.client.post("/api/kb/create", data={"name": "新知识库", "model": "openai"})
+        res = self.client.post("/api/kb/create", json={"name": "新知识库", "model": "openai"})
         data = res.json()
         passed = res.status_code == 200 and data["data"]["name"] == "新知识库"
         self.record_case("api_kb_create", "success", "POST", "/api/kb/create", {"name": "新知识库", "model": "openai"}, data, passed)
@@ -749,20 +824,29 @@ class APITestCase(unittest.TestCase):
     def test_api_kb_delete_file(self):
         kb = self.create_kb("单删文件库")
         self.client.post(f"/api/kb/{kb['id']}/upload", files={"files": ("a.txt", b"a", "text/plain")})
-        res = self.client.post(f"/api/kb/{kb['id']}/delete_file", data={"filename": "a.txt"})
+        res = self.client.post(f"/api/kb/{kb['id']}/delete_file", json={"filename": "a.txt"})
         data = res.json()
         passed = res.status_code == 200 and data["data"]["deleted_files"] == ["a.txt"]
         self.record_case("api_kb_delete_file", "success", "POST", "/api/kb/{id}/delete_file", {"id": kb["id"], "filename": "a.txt"}, data, passed)
+        self.assertTrue(passed)
+
+    def test_api_kb_delete_file_missing_filename(self):
+        kb = self.create_kb("缺失文件库")
+        self.client.post(f"/api/kb/{kb['id']}/upload", files={"files": ("a.txt", b"a", "text/plain")})
+        res = self.client.post(f"/api/kb/{kb['id']}/delete_file", json={"filename": "missing.txt"})
+        data = res.json()
+        passed = res.status_code == 404 and data["code"] == 1 and data["data"]["filename"] == "missing.txt"
+        self.record_case("api_kb_delete_file", "filename_not_found", "POST", "/api/kb/{id}/delete_file", {"id": kb["id"], "filename": "missing.txt"}, data, passed, notes="单文件删除在目标文件不存在时应返回 404，而不是返回空成功。")
         self.assertTrue(passed)
 
 
     def test_api_chat_with_duplicate_filenames(self):
         res = self.client.post(
             "/api/chat",
-            data={"conversation_id": "conv-files", "message": "带附件", "user_identity": "tester", "stream": "false"},
+            data={"conversation_id": "conv-files", "message": "带附件", "user_identity": "tester"},
             files=[("files", ("same.txt", b"a", "text/plain")), ("files", ("same.txt", b"b", "text/plain"))],
         )
-        data = res.json()
+        data = self.extract_done_payload(res.text)
         filenames = [item["filename"] for item in data["data"]["uploaded_files"]]
         passed = (
             res.status_code == 200
@@ -786,10 +870,10 @@ class APITestCase(unittest.TestCase):
     def test_api_chat_file_content_in_context(self):
         res = self.client.post(
             "/api/chat",
-            data={"conversation_id": "conv-file-context", "message": "请根据附件内容回答", "user_identity": "tester", "stream": "false"},
+            data={"conversation_id": "conv-file-context", "message": "请根据附件内容回答", "user_identity": "tester"},
             files={"files": ("context.txt", "附件里写着项目代号是北极星。".encode("utf-8"), "text/plain")},
         )
-        data = res.json()
+        data = self.extract_done_payload(res.text)
         answer = data["data"]["answer"]
         file_contexts = data["data"].get("file_contexts") or []
         passed = (
@@ -815,9 +899,9 @@ class APITestCase(unittest.TestCase):
         self.create_chat_round(conversation_id="conv-history-context", message="第一轮问题")
         res = self.client.post(
             "/api/chat",
-            data={"conversation_id": "conv-history-context", "message": "第二轮继续追问", "user_identity": "tester", "stream": "false"},
+            data={"conversation_id": "conv-history-context", "message": "第二轮继续追问", "user_identity": "tester"},
         )
-        data = res.json()
+        data = self.extract_done_payload(res.text)
         answer = data["data"]["answer"]
         passed = res.status_code == 200 and "第一轮问题" in answer and "第二轮继续追问" in answer
         self.record_case(
@@ -832,29 +916,31 @@ class APITestCase(unittest.TestCase):
         )
         self.assertTrue(passed)
 
-    def test_api_chat_run_chat_failure(self):
+    def test_api_chat_stream_error_event(self):
         async def boom(*args, **kwargs):
-            raise RuntimeError("mock run_chat failed")
+            if False:
+                yield None
+            raise RuntimeError("mock stream failed")
 
-        original = app_module.run_chat
-        app_module.run_chat = boom
+        original = app_module.iterate_chat_events
+        app_module.iterate_chat_events = boom
         try:
-            res = self.client.post("/api/chat", data={"conversation_id": "conv-error", "message": "失败分支", "user_identity": "tester", "stream": "false"})
-            data = res.json()
-            passed = res.status_code == 500 and data["code"] == 1 and data["data"]["reason"] == "mock run_chat failed"
+            res = self.client.post("/api/chat", json={"conversation_id": "conv-error", "message": "失败分支", "user_identity": "tester"})
+            body = res.text
+            passed = res.status_code == 200 and "\"type\": \"error\"" in body and "mock stream failed" in body
             self.record_case(
                 "api_chat",
-                "run_chat_exception",
+                "stream_exception",
                 "POST",
                 "/api/chat",
                 {"conversation_id": "conv-error", "message": "失败分支"},
-                data,
+                {"content_type": res.headers.get("content-type"), "body": body},
                 passed,
-                notes="模拟模型执行异常，确认接口返回统一 500 错误结构。",
+                notes="聊天接口固定为 SSE；执行异常时应返回 error 事件而不是切换到非流式 JSON。",
             )
             self.assertTrue(passed)
         finally:
-            app_module.run_chat = original
+            app_module.iterate_chat_events = original
 
     def test_api_chat_title_not_found(self):
         res = self.client.get("/api/chat/missing-title/title")
@@ -918,8 +1004,8 @@ class APITestCase(unittest.TestCase):
 
     def test_api_chat_feedback_toggle_like(self):
         chat_data = self.create_chat_round(conversation_id="conv-feedback-toggle", message="重复点赞")
-        self.client.post("/api/chat/feedback", data={"conversation_id": "conv-feedback-toggle", "message_index": chat_data["message_index"], "type": "like"})
-        res = self.client.post("/api/chat/feedback", data={"conversation_id": "conv-feedback-toggle", "message_index": chat_data["message_index"], "type": "like"})
+        self.client.post("/api/chat/feedback", json={"conversation_id": "conv-feedback-toggle", "message_index": chat_data["message_index"], "type": "like"})
+        res = self.client.post("/api/chat/feedback", json={"conversation_id": "conv-feedback-toggle", "message_index": chat_data["message_index"], "type": "like"})
         data = res.json()
         passed = res.status_code == 200 and data["data"]["state"] is None
         self.record_case(
@@ -938,11 +1024,11 @@ class APITestCase(unittest.TestCase):
         chat_data = self.create_chat_round(conversation_id="conv-feedback-ok", message="有效点踩")
         res = self.client.post(
             "/api/chat/feedback",
-            data={
+            json={
                 "conversation_id": "conv-feedback-ok",
                 "message_index": chat_data["message_index"],
                 "type": "dislike",
-                "reasons": json.dumps(["答案不完整"], ensure_ascii=False),
+                "reasons": ["答案不完整"],
                 "comment": "需要更具体",
             },
         )
@@ -961,14 +1047,14 @@ class APITestCase(unittest.TestCase):
 
     def test_api_chat_feedback_negative_message_index(self):
         self.create_chat_round(conversation_id="conv-feedback-neg", message="负索引")
-        res = self.client.post("/api/chat/feedback", data={"conversation_id": "conv-feedback-neg", "message_index": -1, "type": "like"})
+        res = self.client.post("/api/chat/feedback", json={"conversation_id": "conv-feedback-neg", "message_index": -1, "type": "like"})
         data = res.json()
         passed = res.status_code == 400 and data["code"] == 1
         self.record_case("api_chat_feedback", "negative_message_index", "POST", "/api/chat/feedback", {"conversation_id": "conv-feedback-neg", "message_index": -1, "type": "like"}, data, passed)
         self.assertTrue(passed)
 
     def test_api_chat_feedback_not_found(self):
-        res = self.client.post("/api/chat/feedback", data={"conversation_id": "missing-feedback", "message_index": 0, "type": "like"})
+        res = self.client.post("/api/chat/feedback", json={"conversation_id": "missing-feedback", "message_index": 0, "type": "like"})
         data = res.json()
         passed = res.status_code == 404 and data["code"] == 1
         self.record_case("api_chat_feedback", "conversation_not_found", "POST", "/api/chat/feedback", {"conversation_id": "missing-feedback", "message_index": 0, "type": "like"}, data, passed)
@@ -1159,7 +1245,7 @@ class APITestCase(unittest.TestCase):
         self.assertTrue(passed)
 
     def test_api_kb_delete_file_not_found(self):
-        res = self.client.post("/api/kb/kb_missing/delete_file", data={"filename": "a.txt"})
+        res = self.client.post("/api/kb/kb_missing/delete_file", json={"filename": "a.txt"})
         data = res.json()
         passed = res.status_code == 404 and data["code"] == 1
         self.record_case("api_kb_delete_file", "kb_not_found", "POST", "/api/kb/{id}/delete_file", {"id": "kb_missing", "filename": "a.txt"}, data, passed)

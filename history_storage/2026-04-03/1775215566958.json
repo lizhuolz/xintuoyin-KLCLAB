@@ -1,0 +1,61 @@
+{
+  "conversation_id": "1775215566958",
+  "title": "请严格使用知识库回答：知识库测试口令、项目负责人、上线日期分别是什么？如果没有命中知识库就明确说未找到。",
+  "created_at": "1775215567109",
+  "updated_at": "1775215588479",
+  "createdAt": "2026/04/03 19:26:07",
+  "updatedAt": "2026/04/03 19:26:28",
+  "message_count": 1,
+  "user": {
+    "name": "王颖奇",
+    "phone": "15323720032",
+    "categoryName": "图湃（北京）医疗科技",
+    "record_id": "UID_20250001",
+    "ip_address": "183.230.12.156"
+  },
+  "messages": [
+    {
+      "message_index": 0,
+      "question": "请严格使用知识库回答：知识库测试口令、项目负责人、上线日期分别是什么？如果没有命中知识库就明确说未找到。",
+      "files": [],
+      "uploaded_files": [],
+      "file_contexts": [],
+      "web_search": false,
+      "db_version": null,
+      "answer": "",
+      "raw_answer": "",
+      "resource": [],
+      "recommend_answer": [],
+      "feedback": null,
+      "thinking_text": "在正式回答前，我先做了几步准备：\n1. 我调用了 unknown_tool，输入大致是：{}。\n对应上面第 1 步，unknown_tool 返回了这样的关键信息：Error: is not a valid tool, try one of [calculator, echo, sql_tool, rag_tool].。\n2. 我调用了 unknown_tool，输入大致是：{}。\n整理完这些信息后，我再把最终答案组织成对你更自然的回复。",
+      "model_think_text": "",
+      "thinking_steps": [
+        {
+          "kind": "call",
+          "node_name": "chatbot_local",
+          "tool_name": "unknown_tool",
+          "preview": "{}",
+          "tool_call_id": "chatcmpl-tool-bce1a8a3f9bc592b"
+        },
+        {
+          "kind": "result",
+          "node_name": "tools_local",
+          "tool_name": "unknown_tool",
+          "preview": "Error: is not a valid tool, try one of [calculator, echo, sql_tool, rag_tool].",
+          "tool_call_id": "chatcmpl-tool-bce1a8a3f9bc592b"
+        },
+        {
+          "kind": "call",
+          "node_name": "chatbot_local",
+          "tool_name": "unknown_tool",
+          "preview": "{}",
+          "tool_call_id": "chatcmpl-tool-8ebf988c687d00c9"
+        }
+      ],
+      "created_at": "1775215588479",
+      "updated_at": "1775215588479",
+      "createdAt": "2026/04/03 19:26:28",
+      "updatedAt": "2026/04/03 19:26:28"
+    }
+  ]
+}

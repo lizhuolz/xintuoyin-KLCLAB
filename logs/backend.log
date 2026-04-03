@@ -1282,3 +1282,1607 @@ INFO:     125.80.194.179:0 - "OPTIONS /api/chat/new_session?_t=1775199395071 HTT
 INFO:     125.80.194.179:0 - "GET /api/chat/new_session?_t=1775199395071 HTTP/1.1" 200 OK
 INFO:     39.98.168.103:0 - "POST /api/chat HTTP/1.1" 422 Unprocessable Entity
 INFO:     39.98.168.103:0 - "POST /api/chat HTTP/1.1" 422 Unprocessable Entity
+INFO:     Started server process [214993]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
+INFO:     127.0.0.1:59756 - "GET /openapi.json HTTP/1.1" 200 OK
+INFO:     127.0.0.1:36576 - "GET /openapi.json HTTP/1.1" 200 OK
+INFO:     127.0.0.1:36590 - "GET /api/history/list?page=1&size=10 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:36592 - "GET /api/feedback/list?feedback_type=%E7%82%B9%E8%B5%9E&page=1&size=10 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:36606 - "GET /api/kb/list?page=1&size=10 HTTP/1.1" 200 OK
+DB initialized. All-in-Qwen Mode @ http://0.0.0.0:62274/v1 (model='Qwen3-32B')
+Error in select_table: Error code: 400 - {'error': {'message': "This model's maximum context length is 12000 tokens. However, you requested 1024 output tokens and your prompt contains at least 10977 input tokens, for a total of at least 12001 tokens. Please reduce the length of the input prompt or the number of requested output tokens. (parameter=input_tokens, value=10977)", 'type': 'BadRequestError', 'param': 'input_tokens', 'code': 400}}
+INFO:     127.0.0.1:36614 - "GET /api/db/select_options?question=%E6%88%91%E4%BB%AC%E5%85%AC%E5%8F%B8%E7%9A%84%E6%80%BB%E5%91%98%E5%B7%A5%E6%98%AF%E5%A4%9A%E5%B0%91 HTTP/1.1" 200 OK
+INFO:     39.98.168.103:0 - "GET /api/chat/%3Aconversation_id/thinking?message_index=&stream HTTP/1.1" 422 Unprocessable Entity
+INFO:     127.0.0.1:36542 - "POST /api/kb/create HTTP/1.1" 200 OK
+INFO:     127.0.0.1:36544 - "POST /api/kb/kb_1775202981759/upload HTTP/1.1" 200 OK
+INFO:     127.0.0.1:36558 - "POST /api/kb/update HTTP/1.1" 200 OK
+INFO:     127.0.0.1:36572 - "GET /api/kb/kb_1775202981759/files HTTP/1.1" 200 OK
+INFO:     127.0.0.1:36586 - "POST /api/kb/update HTTP/1.1" 200 OK
+INFO:     127.0.0.1:36600 - "GET /api/kb/kb_1775202981759/files HTTP/1.1" 200 OK
+INFO:     127.0.0.1:36606 - "DELETE /api/kb/kb_1775202981759 HTTP/1.1" 200 OK
+INFO:     39.98.89.227:0 - "GET /api/chat/%3Aconversation_id/thinking?message_index=&stream HTTP/1.1" 422 Unprocessable Entity
+INFO:     39.98.168.103:0 - "GET /api/chat/%3Aconversation_id/title HTTP/1.1" 404 Not Found
+WARNING: All log messages before absl::InitializeLog() is called are written to STDERR
+I0000 00:00:1775203077.412839  220568 chttp2_transport.cc:1353] unix:/tmp/tmpfxz18d8c_klclab_milvus.db.sock: Got goaway [11] err=UNAVAILABLE:GOAWAY received; Error code: 11; Debug Text: too_many_pings {grpc_status:14, http2_error:11}
+E0000 00:00:1775203077.412949  220568 chttp2_transport.cc:1385] unix:/tmp/tmpfxz18d8c_klclab_milvus.db.sock: Received a GOAWAY with error code ENHANCE_YOUR_CALM and debug data equal to "too_many_pings". Current keepalive time (before throttling): 10000ms
+INFO:     39.98.89.227:0 - "GET /api/chat/%3Aconversation_id/thinking?message_index=&stream HTTP/1.1" 422 Unprocessable Entity
+INFO:     39.98.168.103:0 - "POST /api/chat HTTP/1.1" 422 Unprocessable Entity
+INFO:     39.98.89.227:0 - "GET /api/history/list?search=&start_time=&end_time=&page&size HTTP/1.1" 422 Unprocessable Entity
+INFO:     39.98.89.227:0 - "GET /api/history/list?search=&start_time=&end_time= HTTP/1.1" 200 OK
+INFO:     39.98.89.227:0 - "GET /api/chat/1774873410750/thinking?message_index=0&stream=True HTTP/1.1" 200 OK
+INFO:     39.98.89.227:0 - "GET /api/history/1774873410750 HTTP/1.1" 200 OK
+INFO:     39.98.89.227:0 - "GET /api/history/list?search=&start_time=&end_time= HTTP/1.1" 200 OK
+INFO:     125.80.194.179:0 - "OPTIONS /api/chat/new_session?_t=1775203580351 HTTP/1.1" 200 OK
+INFO:     125.80.194.179:0 - "GET /api/chat/new_session?_t=1775203580351 HTTP/1.1" 200 OK
+INFO:     125.80.194.179:0 - "OPTIONS /api/chat HTTP/1.1" 200 OK
+INFO:     125.80.194.179:0 - "POST /api/chat HTTP/1.1" 422 Unprocessable Entity
+INFO:     39.98.89.227:0 - "POST /api/chat HTTP/1.1" 422 Unprocessable Entity
+2026-04-03 16:09:56 [debug    ] No banned substrings found
+2026-04-03 16:09:56 [debug    ] Scanner completed              elapsed_time_seconds=0.002104 is_valid=True scanner=BanSubstrings
+2026-04-03 16:09:56 [debug    ] Scanner completed              elapsed_time_seconds=0.000122 is_valid=True scanner=InvisibleText
+2026-04-03 16:09:57 [debug    ] No secrets detected in the prompt
+2026-04-03 16:09:57 [debug    ] Scanner completed              elapsed_time_seconds=0.098884 is_valid=True scanner=Secrets
+2026-04-03 16:09:57 [info     ] Scanned prompt                 elapsed_time_seconds=0.101891 scores={'BanSubstrings': -1.0, 'InvisibleText': -1.0, 'Secrets': -1.0}
+INFO:     39.98.89.227:0 - "POST /api/chat HTTP/1.1" 200 OK
+INFO:     125.80.194.179:0 - "OPTIONS /api/chat/new_session?_t=1775204104444 HTTP/1.1" 200 OK
+INFO:     125.80.194.179:0 - "GET /api/chat/new_session?_t=1775204104444 HTTP/1.1" 200 OK
+INFO:     125.80.194.179:0 - "OPTIONS /api/chat/1775204104826/thinking?message=%E5%9B%BA%E5%AE%9A%E8%B5%84%E4%BA%A7&_t=1775204104981 HTTP/1.1" 200 OK
+INFO:     125.80.194.179:0 - "GET /api/chat/1775204104826/thinking?message=%E5%9B%BA%E5%AE%9A%E8%B5%84%E4%BA%A7&_t=1775204104981 HTTP/1.1" 404 Not Found
+INFO:     125.80.194.179:0 - "OPTIONS /api/chat/new_session?_t=1775204203892 HTTP/1.1" 200 OK
+INFO:     125.80.194.179:0 - "GET /api/chat/new_session?_t=1775204203892 HTTP/1.1" 200 OK
+INFO:     125.80.194.179:0 - "OPTIONS /api/chat HTTP/1.1" 200 OK
+INFO:     125.80.194.179:0 - "POST /api/chat HTTP/1.1" 422 Unprocessable Entity
+INFO:     125.80.194.179:0 - "OPTIONS /api/chat/new_session?_t=1775204265606 HTTP/1.1" 200 OK
+INFO:     125.80.194.179:0 - "GET /api/chat/new_session?_t=1775204265606 HTTP/1.1" 200 OK
+INFO:     125.80.194.179:0 - "POST /api/chat HTTP/1.1" 422 Unprocessable Entity
+INFO:     125.80.194.179:0 - "OPTIONS /api/chat/new_session?_t=1775205562461 HTTP/1.1" 200 OK
+INFO:     125.80.194.179:0 - "GET /api/chat/new_session?_t=1775205562461 HTTP/1.1" 200 OK
+INFO:     125.80.194.179:0 - "OPTIONS /api/chat HTTP/1.1" 200 OK
+INFO:     125.80.194.179:0 - "POST /api/chat HTTP/1.1" 422 Unprocessable Entity
+INFO:     39.98.35.98:0 - "GET /api/chat/new_session HTTP/1.1" 200 OK
+2026-04-03 16:42:45 [debug    ] No banned substrings found
+2026-04-03 16:42:45 [debug    ] Scanner completed              elapsed_time_seconds=0.000704 is_valid=True scanner=BanSubstrings
+2026-04-03 16:42:45 [debug    ] Scanner completed              elapsed_time_seconds=3e-05 is_valid=True scanner=InvisibleText
+2026-04-03 16:42:45 [debug    ] No secrets detected in the prompt
+2026-04-03 16:42:45 [debug    ] Scanner completed              elapsed_time_seconds=0.133269 is_valid=True scanner=Secrets
+2026-04-03 16:42:45 [info     ] Scanned prompt                 elapsed_time_seconds=0.134473 scores={'BanSubstrings': -1.0, 'InvisibleText': -1.0, 'Secrets': -1.0}
+INFO:     39.98.35.98:0 - "POST /api/chat HTTP/1.1" 200 OK
+INFO:     125.80.194.179:0 - "OPTIONS /api/chat/new_session?_t=1775205823109 HTTP/1.1" 200 OK
+INFO:     125.80.194.179:0 - "GET /api/chat/new_session?_t=1775205823109 HTTP/1.1" 200 OK
+INFO:     125.80.194.179:0 - "POST /api/chat HTTP/1.1" 422 Unprocessable Entity
+INFO:     127.0.0.1:43240 - "GET /api/history/list?search=&_t=1775206317086 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43246 - "GET /api/history/1775205738622?_t=1775206317134 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43254 - "GET /api/history/list?search=&_t=1775206317304 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43270 - "GET /api/history/1775205738622?_t=1775206317455 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43276 - "GET /api/history/list?search=&_t=1775206317459 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43292 - "GET /api/history/list?search=&_t=1775206317527 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43298 - "GET /api/history/1775205738622?_t=1775206317527 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43310 - "GET /api/history/1775205738622?_t=1775206317558 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43320 - "GET /api/history/list?search=&_t=1775206317753 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43322 - "GET /api/history/1775205738622?_t=1775206317876 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43338 - "GET /api/history/list?search=&_t=1775206317991 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43354 - "GET /api/history/list?search=&_t=1775206318117 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43364 - "GET /api/history/list?search=&_t=1775206318131 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43380 - "GET /api/history/1775205738622?_t=1775206318146 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43394 - "GET /api/history/1775205738622?_t=1775206318181 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43396 - "GET /api/history/1775205738622?_t=1775206318182 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43400 - "GET /api/history/1774873410750?_t=1775206319032 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:38782 - "GET /api/history/1774873019596?_t=1775206486073 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:38792 - "GET /api/history/1774872031682?_t=1775206486576 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:38796 - "GET /api/history/1774871505420?_t=1775206487055 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:38798 - "GET /api/history/1774871478640?_t=1775206488832 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:38810 - "GET /api/history/1774871382270?_t=1775206489343 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:46578 - "GET /api/history/1774845096342?_t=1775206499880 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:46592 - "GET /api/history/1774844828981?_t=1775206500496 HTTP/1.1" 200 OK
+INFO:     125.80.194.179:0 - "OPTIONS /api/chat/new_session?_t=1775206690813 HTTP/1.1" 200 OK
+INFO:     125.80.194.179:0 - "GET /api/chat/new_session?_t=1775206690813 HTTP/1.1" 200 OK
+INFO:     125.80.194.179:0 - "OPTIONS /api/chat HTTP/1.1" 200 OK
+2026-04-03 16:58:11 [debug    ] No banned substrings found
+2026-04-03 16:58:11 [debug    ] Scanner completed              elapsed_time_seconds=0.000804 is_valid=True scanner=BanSubstrings
+2026-04-03 16:58:11 [debug    ] No invisible characters found
+2026-04-03 16:58:11 [debug    ] Scanner completed              elapsed_time_seconds=0.000153 is_valid=True scanner=InvisibleText
+2026-04-03 16:58:11 [debug    ] No secrets detected in the prompt
+2026-04-03 16:58:11 [debug    ] Scanner completed              elapsed_time_seconds=0.007239 is_valid=True scanner=Secrets
+2026-04-03 16:58:11 [info     ] Scanned prompt                 elapsed_time_seconds=0.008652 scores={'BanSubstrings': -1.0, 'InvisibleText': 0.0, 'Secrets': -1.0}
+INFO:     125.80.194.179:0 - "POST /api/chat HTTP/1.1" 200 OK
+INFO:     125.80.194.179:0 - "OPTIONS /api/chat/new_session?_t=1775208848142 HTTP/1.1" 200 OK
+INFO:     125.80.194.179:0 - "GET /api/chat/new_session?_t=1775208848142 HTTP/1.1" 200 OK
+INFO:     125.80.194.179:0 - "OPTIONS /api/chat HTTP/1.1" 200 OK
+2026-04-03 17:34:09 [debug    ] No banned substrings found
+2026-04-03 17:34:09 [debug    ] Scanner completed              elapsed_time_seconds=0.001192 is_valid=True scanner=BanSubstrings
+2026-04-03 17:34:09 [debug    ] No invisible characters found
+2026-04-03 17:34:09 [debug    ] Scanner completed              elapsed_time_seconds=0.000294 is_valid=True scanner=InvisibleText
+2026-04-03 17:34:09 [debug    ] No secrets detected in the prompt
+2026-04-03 17:34:09 [debug    ] Scanner completed              elapsed_time_seconds=0.01119 is_valid=True scanner=Secrets
+2026-04-03 17:34:09 [info     ] Scanned prompt                 elapsed_time_seconds=0.013473 scores={'BanSubstrings': -1.0, 'InvisibleText': 0.0, 'Secrets': -1.0}
+INFO:     125.80.194.179:0 - "POST /api/chat HTTP/1.1" 200 OK
+INFO:     113.249.224.218:0 - "OPTIONS /api/chat/new_session?_t=1775210451145 HTTP/1.1" 200 OK
+INFO:     113.249.224.218:0 - "GET /api/chat/new_session?_t=1775210451145 HTTP/1.1" 200 OK
+INFO:     113.249.224.218:0 - "OPTIONS /api/chat HTTP/1.1" 200 OK
+2026-04-03 18:00:52 [debug    ] No banned substrings found
+2026-04-03 18:00:52 [debug    ] Scanner completed              elapsed_time_seconds=0.000637 is_valid=True scanner=BanSubstrings
+2026-04-03 18:00:52 [debug    ] No invisible characters found
+2026-04-03 18:00:52 [debug    ] Scanner completed              elapsed_time_seconds=0.000183 is_valid=True scanner=InvisibleText
+2026-04-03 18:00:52 [debug    ] No secrets detected in the prompt
+2026-04-03 18:00:52 [debug    ] Scanner completed              elapsed_time_seconds=0.009498 is_valid=True scanner=Secrets
+2026-04-03 18:00:52 [info     ] Scanned prompt                 elapsed_time_seconds=0.011016 scores={'BanSubstrings': -1.0, 'InvisibleText': 0.0, 'Secrets': -1.0}
+INFO:     113.249.224.218:0 - "POST /api/chat HTTP/1.1" 200 OK
+INFO:     39.98.89.227:0 - "GET /api/history/list?search=&start_time=&end_time=&page&size HTTP/1.1" 422 Unprocessable Entity
+INFO:     39.98.89.227:0 - "GET /api/feedback/list?name=&enterprise=&type=&feedback_type=%E5%85%A8%E9%83%A8&start_time=&end_time=&page&size HTTP/1.1" 422 Unprocessable Entity
+INFO:     127.0.0.1:55798 - "GET /api/history/list?search=&_t=1775211637599 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55804 - "GET /api/history/1775210452145?_t=1775211637673 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51432 - "GET /api/history/list?search=&_t=1775211655938 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51448 - "GET /api/history/1775210452145?_t=1775211655961 HTTP/1.1" 200 OK
+INFO:     Started server process [331784]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
+INFO:     127.0.0.1:46214 - "GET /openapi.json HTTP/1.1" 200 OK
+INFO:     127.0.0.1:46220 - "GET /api/chat/new_session HTTP/1.1" 200 OK
+2026-04-03 18:23:42 [debug    ] No banned substrings found
+2026-04-03 18:23:42 [debug    ] Scanner completed              elapsed_time_seconds=0.00049 is_valid=True scanner=BanSubstrings
+2026-04-03 18:23:42 [debug    ] No invisible characters found
+2026-04-03 18:23:42 [debug    ] Scanner completed              elapsed_time_seconds=0.000211 is_valid=True scanner=InvisibleText
+2026-04-03 18:23:42 [debug    ] No secrets detected in the prompt
+2026-04-03 18:23:42 [debug    ] Scanner completed              elapsed_time_seconds=0.151977 is_valid=True scanner=Secrets
+2026-04-03 18:23:42 [info     ] Scanned prompt                 elapsed_time_seconds=0.153273 scores={'BanSubstrings': -1.0, 'InvisibleText': 0.0, 'Secrets': -1.0}
+INFO:     127.0.0.1:53758 - "POST /api/chat HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53772 - "GET /api/chat/not-exists/thinking?message_index=0 HTTP/1.1" 404 Not Found
+INFO:     141.11.146.78:0 - "GET / HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:40586 - "GET /api/chat/1775211814541/thinking?message_index=0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:41268 - "GET /openapi.json HTTP/1.1" 200 OK
+INFO:     Started server process [335676]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
+INFO:     127.0.0.1:58786 - "GET /openapi.json HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52678 - "GET /api/chat/new_session HTTP/1.1" 200 OK
+2026-04-03 18:25:56 [debug    ] No banned substrings found
+2026-04-03 18:25:56 [debug    ] Scanner completed              elapsed_time_seconds=0.000737 is_valid=True scanner=BanSubstrings
+2026-04-03 18:25:56 [debug    ] No invisible characters found
+2026-04-03 18:25:56 [debug    ] Scanner completed              elapsed_time_seconds=0.000283 is_valid=True scanner=InvisibleText
+2026-04-03 18:25:57 [debug    ] No secrets detected in the prompt
+2026-04-03 18:25:57 [debug    ] Scanner completed              elapsed_time_seconds=0.166668 is_valid=True scanner=Secrets
+2026-04-03 18:25:57 [info     ] Scanned prompt                 elapsed_time_seconds=0.168343 scores={'BanSubstrings': -1.0, 'InvisibleText': 0.0, 'Secrets': -1.0}
+INFO:     127.0.0.1:52688 - "POST /api/chat HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60690 - "GET /api/chat/1775211956898/thinking?message_index=0 HTTP/1.1" 200 OK
+INFO:     141.11.146.78:0 - "GET /openapi.json HTTP/1.1" 200 OK
+INFO:     39.98.89.227:0 - "GET /api/chat/new_session HTTP/1.1" 200 OK
+INFO:     39.98.89.227:0 - "POST /api/chat HTTP/1.1" 422 Unprocessable Entity
+2026-04-03 18:28:15 [debug    ] No banned substrings found
+2026-04-03 18:28:15 [debug    ] Scanner completed              elapsed_time_seconds=0.000714 is_valid=True scanner=BanSubstrings
+2026-04-03 18:28:15 [debug    ] No invisible characters found
+2026-04-03 18:28:15 [debug    ] Scanner completed              elapsed_time_seconds=0.000123 is_valid=True scanner=InvisibleText
+2026-04-03 18:28:16 [debug    ] No secrets detected in the prompt
+2026-04-03 18:28:16 [debug    ] Scanner completed              elapsed_time_seconds=0.009357 is_valid=True scanner=Secrets
+2026-04-03 18:28:16 [info     ] Scanned prompt                 elapsed_time_seconds=0.010673 scores={'BanSubstrings': -1.0, 'InvisibleText': 0.0, 'Secrets': -1.0}
+INFO:     39.98.89.227:0 - "POST /api/chat HTTP/1.1" 200 OK
+INFO:     127.0.0.1:36326 - "GET /api/history/list?search=&_t=1775212407409 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:36338 - "GET /api/history/1775212068677?_t=1775212407453 HTTP/1.1" 200 OK
+INFO:     Started server process [343459]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
+INFO:     127.0.0.1:45444 - "GET /openapi.json HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50466 - "GET /api/chat/new_session HTTP/1.1" 200 OK
+2026-04-03 18:37:36 [debug    ] No banned substrings found
+2026-04-03 18:37:36 [debug    ] Scanner completed              elapsed_time_seconds=0.000343 is_valid=True scanner=BanSubstrings
+2026-04-03 18:37:36 [debug    ] No invisible characters found
+2026-04-03 18:37:36 [debug    ] Scanner completed              elapsed_time_seconds=0.000118 is_valid=True scanner=InvisibleText
+2026-04-03 18:37:36 [debug    ] No secrets detected in the prompt
+2026-04-03 18:37:36 [debug    ] Scanner completed              elapsed_time_seconds=0.191106 is_valid=True scanner=Secrets
+2026-04-03 18:37:36 [info     ] Scanned prompt                 elapsed_time_seconds=0.191992 scores={'BanSubstrings': -1.0, 'InvisibleText': 0.0, 'Secrets': -1.0}
+INFO:     127.0.0.1:50476 - "POST /api/chat HTTP/1.1" 200 OK
+INFO:     127.0.0.1:33970 - "GET /api/chat/not-found-json/thinking?message_index=0 HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:33980 - "POST /api/kb/create HTTP/1.1" 200 OK
+INFO:     127.0.0.1:33992 - "POST /api/kb/kb_1775212694985/delete_file HTTP/1.1" 200 OK
+INFO:     127.0.0.1:33998 - "DELETE /api/kb/kb_1775212694985 HTTP/1.1" 200 OK
+WARNING: All log messages before absl::InitializeLog() is called are written to STDERR
+I0000 00:00:1775212790.614833  344904 chttp2_transport.cc:1353] unix:/tmp/tmpt3nadgdy_klclab_milvus.db.sock: Got goaway [11] err=UNAVAILABLE:GOAWAY received; Error code: 11; Debug Text: too_many_pings {grpc_status:14, http2_error:11}
+E0000 00:00:1775212790.614928  344904 chttp2_transport.cc:1385] unix:/tmp/tmpt3nadgdy_klclab_milvus.db.sock: Received a GOAWAY with error code ENHANCE_YOUR_CALM and debug data equal to "too_many_pings". Current keepalive time (before throttling): 10000ms
+INFO:     Started server process [346476]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
+INFO:     127.0.0.1:45372 - "POST /api/kb/create HTTP/1.1" 200 OK
+INFO:     127.0.0.1:45386 - "POST /api/kb/kb_1775212820983/delete_file HTTP/1.1" 200 OK
+INFO:     127.0.0.1:45394 - "DELETE /api/kb/kb_1775212820983 HTTP/1.1" 200 OK
+INFO:     Started server process [349062]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
+INFO:     127.0.0.1:59394 - "POST /api/kb/create HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59402 - "POST /api/kb/kb_1775212871798/delete_file HTTP/1.1" 500 Internal Server Error
+INFO:     127.0.0.1:59412 - "DELETE /api/kb/kb_1775212871798 HTTP/1.1" 200 OK
+INFO:     Started server process [350344]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
+INFO:     127.0.0.1:34790 - "POST /api/kb/create HTTP/1.1" 200 OK
+INFO:     127.0.0.1:34798 - "POST /api/kb/kb_1775212934579/delete_file HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:34810 - "DELETE /api/kb/kb_1775212934579 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:34468 - "GET /api/history/list?search=&page=1&size=10&_t=1775212952031 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:34484 - "GET /api/history/list?search=&page=1&size=10&_t=1775212952243 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:34496 - "GET /api/history/list?search=&page=1&size=10&_t=1775212954100 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:34504 - "GET /api/feedback/list?name=&enterprise=&type=like&feedback_type=%E7%82%B9%E8%B5%9E&page=1&size=10&_t=1775212955309 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:34516 - "GET /api/feedback/list?name=&enterprise=&type=dislike&feedback_type=%E7%82%B9%E8%B8%A9&page=1&size=10&_t=1775212955815 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:34532 - "GET /api/history/list?search=&page=1&size=10&_t=1775212956174 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:46728 - "GET /api/kb/list?page=1&size=10&_t=1775212956487 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:46732 - "GET /api/history/list?search=&_t=1775212957081 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:46738 - "GET /api/history/1775212656531?_t=1775212957144 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:46742 - "GET /api/chat/new_session?_t=1775212960072 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:46756 - "GET /api/chat/new_session?_t=1775212960889 HTTP/1.1" 200 OK
+2026-04-03 18:42:42 [debug    ] No banned substrings found
+2026-04-03 18:42:42 [debug    ] Scanner completed              elapsed_time_seconds=0.000576 is_valid=True scanner=BanSubstrings
+2026-04-03 18:42:42 [debug    ] No invisible characters found
+2026-04-03 18:42:42 [debug    ] Scanner completed              elapsed_time_seconds=0.000216 is_valid=True scanner=InvisibleText
+2026-04-03 18:42:42 [debug    ] No secrets detected in the prompt
+2026-04-03 18:42:42 [debug    ] Scanner completed              elapsed_time_seconds=0.076761 is_valid=True scanner=Secrets
+2026-04-03 18:42:42 [info     ] Scanned prompt                 elapsed_time_seconds=0.078116 scores={'BanSubstrings': -1.0, 'InvisibleText': 0.0, 'Secrets': -1.0}
+INFO:     127.0.0.1:46764 - "POST /api/chat HTTP/1.1" 200 OK
+INFO:     127.0.0.1:40144 - "GET /api/chat/1775212961235/thinking?message_index=0 HTTP/1.1" 200 OK
+2026-04-03 18:43:33 [debug    ] No banned substrings found
+2026-04-03 18:43:33 [debug    ] Scanner completed              elapsed_time_seconds=0.000696 is_valid=True scanner=BanSubstrings
+2026-04-03 18:43:33 [debug    ] No invisible characters found
+2026-04-03 18:43:33 [debug    ] Scanner completed              elapsed_time_seconds=0.000189 is_valid=True scanner=InvisibleText
+2026-04-03 18:43:33 [debug    ] No secrets detected in the prompt
+2026-04-03 18:43:33 [debug    ] Scanner completed              elapsed_time_seconds=0.122337 is_valid=True scanner=Secrets
+2026-04-03 18:43:33 [info     ] Scanned prompt                 elapsed_time_seconds=0.123801 scores={'BanSubstrings': -1.0, 'InvisibleText': 0.0, 'Secrets': -1.0}
+INFO:     127.0.0.1:54606 - "POST /api/chat HTTP/1.1" 200 OK
+WARNING: All log messages before absl::InitializeLog() is called are written to STDERR
+I0000 00:00:1775213070.257820  350870 chttp2_transport.cc:1353] unix:/tmp/tmpwiz_7ev8_klclab_milvus.db.sock: Got goaway [11] err=UNAVAILABLE:GOAWAY received; Error code: 11; Debug Text: too_many_pings {grpc_status:14, http2_error:11}
+E0000 00:00:1775213070.257980  350870 chttp2_transport.cc:1385] unix:/tmp/tmpwiz_7ev8_klclab_milvus.db.sock: Received a GOAWAY with error code ENHANCE_YOUR_CALM and debug data equal to "too_many_pings". Current keepalive time (before throttling): 10000ms
+INFO:     127.0.0.1:56902 - "GET /api/history/list?search=&_t=1775213125292 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56912 - "GET /api/history/1775212961235?_t=1775213125353 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:37640 - "GET /api/history/1775211956898?_t=1775213239792 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:33552 - "GET /api/history/1775211814541?_t=1775213246456 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:33564 - "GET /api/history/1775210452145?_t=1775213247368 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:33576 - "GET /api/history/1775210452145?_t=1775213247751 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:33578 - "GET /api/history/1775205738622?_t=1775213248376 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:33580 - "GET /api/history/1774873410750?_t=1775213249080 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:33588 - "GET /api/history/1774873019596?_t=1775213249568 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:33590 - "GET /api/history/1774872031682?_t=1775213250256 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60484 - "POST /api/kb/create HTTP/1.1" 200 OK
+2026-04-03 18:48:10 [debug    ] No banned substrings found
+2026-04-03 18:48:10 [debug    ] Scanner completed              elapsed_time_seconds=0.003272 is_valid=True scanner=BanSubstrings
+2026-04-03 18:48:10 [debug    ] No invisible characters found
+2026-04-03 18:48:10 [debug    ] Scanner completed              elapsed_time_seconds=0.000359 is_valid=True scanner=InvisibleText
+2026-04-03 18:48:10 [debug    ] No secrets detected in the prompt
+2026-04-03 18:48:10 [debug    ] Scanner completed              elapsed_time_seconds=0.011944 is_valid=True scanner=Secrets
+2026-04-03 18:48:10 [info     ] Scanned prompt                 elapsed_time_seconds=0.016647 scores={'BanSubstrings': -1.0, 'InvisibleText': 0.0, 'Secrets': -1.0}
+INFO:     39.98.168.103:0 - "POST /api/chat HTTP/1.1" 200 OK
+INFO:     39.98.168.103:0 - "GET /api/feedback/list?name=&enterprise=&type=&feedback_type=%E5%85%A8%E9%83%A8&start_time=&end_time=&page&size HTTP/1.1" 422 Unprocessable Entity
+INFO:     127.0.0.1:59526 - "GET /openapi.json HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51610 - "GET /openapi.json HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51624 - "GET /api/history/list?page=1&size=2 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51628 - "GET /api/feedback/list?page=1&size=2 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51642 - "GET /api/kb/list?page=1&size=2 HTTP/1.1" 200 OK
+DB initialized. All-in-Qwen Mode @ http://0.0.0.0:62274/v1 (model='Qwen3-32B')
+INFO:     127.0.0.1:51656 - "GET /api/db/select_options HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51090 - "GET /openapi.json HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51098 - "POST /api/kb/create HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51102 - "POST /api/kb/kb_1775213578931/upload HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51104 - "GET /api/kb/kb_1775213578931/files HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51114 - "GET /api/chat/new_session HTTP/1.1" 200 OK
+2026-04-03 18:52:59 [debug    ] No banned substrings found
+2026-04-03 18:52:59 [debug    ] Scanner completed              elapsed_time_seconds=0.00031 is_valid=True scanner=BanSubstrings
+2026-04-03 18:52:59 [debug    ] No invisible characters found
+2026-04-03 18:52:59 [debug    ] Scanner completed              elapsed_time_seconds=0.00011 is_valid=True scanner=InvisibleText
+2026-04-03 18:52:59 [debug    ] No secrets detected in the prompt
+2026-04-03 18:52:59 [debug    ] Scanner completed              elapsed_time_seconds=0.006813 is_valid=True scanner=Secrets
+2026-04-03 18:52:59 [info     ] Scanned prompt                 elapsed_time_seconds=0.007599 scores={'BanSubstrings': -1.0, 'InvisibleText': 0.0, 'Secrets': -1.0}
+INFO:     127.0.0.1:51130 - "POST /api/chat HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58200 - "GET /api/chat/new_session HTTP/1.1" 200 OK
+2026-04-03 18:53:36 [debug    ] No banned substrings found
+2026-04-03 18:53:36 [debug    ] Scanner completed              elapsed_time_seconds=0.000557 is_valid=True scanner=BanSubstrings
+2026-04-03 18:53:36 [debug    ] No invisible characters found
+2026-04-03 18:53:36 [debug    ] Scanner completed              elapsed_time_seconds=0.000199 is_valid=True scanner=InvisibleText
+2026-04-03 18:53:36 [debug    ] No secrets detected in the prompt
+2026-04-03 18:53:36 [debug    ] Scanner completed              elapsed_time_seconds=0.009088 is_valid=True scanner=Secrets
+2026-04-03 18:53:36 [info     ] Scanned prompt                 elapsed_time_seconds=0.010548 scores={'BanSubstrings': -1.0, 'InvisibleText': 0.0, 'Secrets': -1.0}
+INFO:     127.0.0.1:58216 - "POST /api/chat HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59706 - "GET /api/chat/1775213610688/thinking?message_index=0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59722 - "GET /api/chat/new_session HTTP/1.1" 200 OK
+2026-04-03 18:54:12 [debug    ] No banned substrings found
+2026-04-03 18:54:12 [debug    ] Scanner completed              elapsed_time_seconds=0.00088 is_valid=True scanner=BanSubstrings
+2026-04-03 18:54:12 [debug    ] No invisible characters found
+2026-04-03 18:54:12 [debug    ] Scanner completed              elapsed_time_seconds=0.000232 is_valid=True scanner=InvisibleText
+2026-04-03 18:54:12 [debug    ] No secrets detected in the prompt
+2026-04-03 18:54:12 [debug    ] Scanner completed              elapsed_time_seconds=0.015786 is_valid=True scanner=Secrets
+2026-04-03 18:54:12 [info     ] Scanned prompt                 elapsed_time_seconds=0.017637 scores={'BanSubstrings': -1.0, 'InvisibleText': 0.0, 'Secrets': -1.0}
+INFO:     127.0.0.1:59734 - "POST /api/chat HTTP/1.1" 200 OK
+I0000 00:00:1775213690.257848  351007 chttp2_transport.cc:1353] unix:/tmp/tmpwiz_7ev8_klclab_milvus.db.sock: Got goaway [11] err=UNAVAILABLE:GOAWAY received; Error code: 11; Debug Text: too_many_pings {http2_error:11, grpc_status:14}
+E0000 00:00:1775213690.258009  351007 chttp2_transport.cc:1385] unix:/tmp/tmpwiz_7ev8_klclab_milvus.db.sock: Received a GOAWAY with error code ENHANCE_YOUR_CALM and debug data equal to "too_many_pings". Current keepalive time (before throttling): 20000ms
+INFO:     127.0.0.1:47270 - "GET /api/history/1775213649631 HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:47272 - "GET /api/chat/1775213649631/thinking?message_index=0 HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:55410 - "POST /api/kb/create HTTP/1.1" 200 OK
+INFO:     127.0.0.1:40502 - "POST /api/kb/kb_1775213785117/upload HTTP/1.1" 200 OK
+INFO:     127.0.0.1:40510 - "GET /api/kb/kb_1775213785117/files HTTP/1.1" 200 OK
+INFO:     127.0.0.1:40512 - "GET /api/chat/new_session HTTP/1.1" 200 OK
+2026-04-03 18:56:38 [debug    ] No banned substrings found
+2026-04-03 18:56:38 [debug    ] Scanner completed              elapsed_time_seconds=0.00044 is_valid=True scanner=BanSubstrings
+2026-04-03 18:56:38 [debug    ] No invisible characters found
+2026-04-03 18:56:38 [debug    ] Scanner completed              elapsed_time_seconds=0.000206 is_valid=True scanner=InvisibleText
+2026-04-03 18:56:38 [debug    ] No secrets detected in the prompt
+2026-04-03 18:56:38 [debug    ] Scanner completed              elapsed_time_seconds=0.01339 is_valid=True scanner=Secrets
+2026-04-03 18:56:38 [info     ] Scanned prompt                 elapsed_time_seconds=0.014772 scores={'BanSubstrings': -1.0, 'InvisibleText': 0.0, 'Secrets': -1.0}
+INFO:     127.0.0.1:42982 - "POST /api/chat HTTP/1.1" 200 OK
+I0000 00:00:1775213945.257798  350870 chttp2_transport.cc:1353] unix:/tmp/tmpwiz_7ev8_klclab_milvus.db.sock: Got goaway [11] err=UNAVAILABLE:GOAWAY received; Error code: 11; Debug Text: too_many_pings {http2_error:11, grpc_status:14}
+E0000 00:00:1775213945.257930  350870 chttp2_transport.cc:1385] unix:/tmp/tmpwiz_7ev8_klclab_milvus.db.sock: Received a GOAWAY with error code ENHANCE_YOUR_CALM and debug data equal to "too_many_pings". Current keepalive time (before throttling): 40000ms
+INFO:     Started server process [366507]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
+INFO:     127.0.0.1:34216 - "GET /openapi.json HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52288 - "GET /api/history/list?page=1&size=2 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52300 - "GET /api/feedback/list?page=1&size=2 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52302 - "GET /api/kb/list?page=1&size=2 HTTP/1.1" 200 OK
+DB initialized. All-in-Qwen Mode @ http://0.0.0.0:62274/v1 (model='Qwen3-32B')
+INFO:     127.0.0.1:52316 - "GET /api/db/select_options HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54612 - "GET /openapi.json HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54626 - "GET /api/chat/new_session HTTP/1.1" 200 OK
+2026-04-03 19:03:09 [debug    ] No banned substrings found
+2026-04-03 19:03:09 [debug    ] Scanner completed              elapsed_time_seconds=0.000489 is_valid=True scanner=BanSubstrings
+2026-04-03 19:03:09 [debug    ] No invisible characters found
+2026-04-03 19:03:09 [debug    ] Scanner completed              elapsed_time_seconds=0.000139 is_valid=True scanner=InvisibleText
+2026-04-03 19:03:09 [debug    ] No secrets detected in the prompt
+2026-04-03 19:03:09 [debug    ] Scanner completed              elapsed_time_seconds=0.060422 is_valid=True scanner=Secrets
+2026-04-03 19:03:09 [info     ] Scanned prompt                 elapsed_time_seconds=0.061443 scores={'BanSubstrings': -1.0, 'InvisibleText': 0.0, 'Secrets': -1.0}
+INFO:     127.0.0.1:54640 - "POST /api/chat HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54646 - "GET /api/chat/1775214189481/thinking?message_index=0 HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:54652 - "GET /api/chat/new_session HTTP/1.1" 200 OK
+2026-04-03 19:03:10 [debug    ] No banned substrings found
+2026-04-03 19:03:10 [debug    ] Scanner completed              elapsed_time_seconds=0.000475 is_valid=True scanner=BanSubstrings
+2026-04-03 19:03:10 [debug    ] No invisible characters found
+2026-04-03 19:03:10 [debug    ] Scanner completed              elapsed_time_seconds=0.000207 is_valid=True scanner=InvisibleText
+2026-04-03 19:03:10 [debug    ] No secrets detected in the prompt
+2026-04-03 19:03:10 [debug    ] Scanner completed              elapsed_time_seconds=0.117746 is_valid=True scanner=Secrets
+2026-04-03 19:03:10 [info     ] Scanned prompt                 elapsed_time_seconds=0.119019 scores={'BanSubstrings': -1.0, 'InvisibleText': 0.0, 'Secrets': -1.0}
+INFO:     127.0.0.1:54668 - "POST /api/chat HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54684 - "GET /api/chat/1775214190236/thinking?message_index=0 HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:54694 - "POST /api/kb/create HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54698 - "POST /api/kb/kb_1775214190418/upload HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54706 - "GET /api/chat/new_session HTTP/1.1" 200 OK
+2026-04-03 19:03:11 [debug    ] No banned substrings found
+2026-04-03 19:03:11 [debug    ] Scanner completed              elapsed_time_seconds=0.000496 is_valid=True scanner=BanSubstrings
+2026-04-03 19:03:11 [debug    ] No invisible characters found
+2026-04-03 19:03:11 [debug    ] Scanner completed              elapsed_time_seconds=0.000144 is_valid=True scanner=InvisibleText
+2026-04-03 19:03:11 [debug    ] No secrets detected in the prompt
+2026-04-03 19:03:11 [debug    ] Scanner completed              elapsed_time_seconds=0.005416 is_valid=True scanner=Secrets
+2026-04-03 19:03:11 [info     ] Scanned prompt                 elapsed_time_seconds=0.006484 scores={'BanSubstrings': -1.0, 'InvisibleText': 0.0, 'Secrets': -1.0}
+INFO:     127.0.0.1:54716 - "POST /api/chat HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54730 - "GET /api/chat/1775214191527/thinking?message_index=0 HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:54736 - "DELETE /api/kb/kb_1775214190418 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54750 - "GET /api/chat/new_session HTTP/1.1" 200 OK
+2026-04-03 19:03:11 [debug    ] No banned substrings found
+2026-04-03 19:03:11 [debug    ] Scanner completed              elapsed_time_seconds=0.000342 is_valid=True scanner=BanSubstrings
+2026-04-03 19:03:11 [debug    ] No invisible characters found
+2026-04-03 19:03:11 [debug    ] Scanner completed              elapsed_time_seconds=0.000168 is_valid=True scanner=InvisibleText
+2026-04-03 19:03:11 [debug    ] No secrets detected in the prompt
+2026-04-03 19:03:11 [debug    ] Scanner completed              elapsed_time_seconds=0.007953 is_valid=True scanner=Secrets
+2026-04-03 19:03:11 [info     ] Scanned prompt                 elapsed_time_seconds=0.009021 scores={'BanSubstrings': -1.0, 'InvisibleText': 0.0, 'Secrets': -1.0}
+INFO:     127.0.0.1:54764 - "POST /api/chat HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54778 - "GET /api/chat/1775214191614/thinking?message_index=0 HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:54792 - "GET /api/chat/not-exists/thinking?message_index=0 HTTP/1.1" 404 Not Found
+2026-04-03 19:03:19 [debug    ] No banned substrings found
+2026-04-03 19:03:19 [debug    ] Scanner completed              elapsed_time_seconds=0.000406 is_valid=True scanner=BanSubstrings
+2026-04-03 19:03:19 [debug    ] No invisible characters found
+2026-04-03 19:03:19 [debug    ] Scanner completed              elapsed_time_seconds=0.000187 is_valid=True scanner=InvisibleText
+2026-04-03 19:03:19 [debug    ] No secrets detected in the prompt
+2026-04-03 19:03:19 [debug    ] Scanner completed              elapsed_time_seconds=0.007396 is_valid=True scanner=Secrets
+2026-04-03 19:03:19 [info     ] Scanned prompt                 elapsed_time_seconds=0.008717 scores={'BanSubstrings': -1.0, 'InvisibleText': 0.0, 'Secrets': -1.0}
+INFO:     127.0.0.1:49978 - "POST /api/chat HTTP/1.1" 200 OK
+INFO:     Started server process [373110]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
+2026-04-03 19:04:17 [debug    ] No banned substrings found
+2026-04-03 19:04:17 [debug    ] Scanner completed              elapsed_time_seconds=0.000543 is_valid=True scanner=BanSubstrings
+2026-04-03 19:04:17 [debug    ] No invisible characters found
+2026-04-03 19:04:17 [debug    ] Scanner completed              elapsed_time_seconds=0.000197 is_valid=True scanner=InvisibleText
+2026-04-03 19:04:17 [debug    ] No secrets detected in the prompt
+2026-04-03 19:04:17 [debug    ] Scanner completed              elapsed_time_seconds=0.076593 is_valid=True scanner=Secrets
+2026-04-03 19:04:17 [info     ] Scanned prompt                 elapsed_time_seconds=0.077888 scores={'BanSubstrings': -1.0, 'InvisibleText': 0.0, 'Secrets': -1.0}
+INFO:     127.0.0.1:54898 - "POST /api/chat HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59104 - "GET /api/history/list?page=1&size=2 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59106 - "GET /api/feedback/list?page=1&size=2 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59110 - "GET /api/kb/list?page=1&size=2 HTTP/1.1" 200 OK
+DB initialized. All-in-Qwen Mode @ http://0.0.0.0:62274/v1 (model='Qwen3-32B')
+INFO:     127.0.0.1:59122 - "GET /api/db/select_options HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52406 - "GET /openapi.json HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52408 - "GET /api/chat/new_session HTTP/1.1" 200 OK
+2026-04-03 19:05:21 [debug    ] No banned substrings found
+2026-04-03 19:05:21 [debug    ] Scanner completed              elapsed_time_seconds=0.000503 is_valid=True scanner=BanSubstrings
+2026-04-03 19:05:21 [debug    ] No invisible characters found
+2026-04-03 19:05:21 [debug    ] Scanner completed              elapsed_time_seconds=0.000121 is_valid=True scanner=InvisibleText
+2026-04-03 19:05:21 [debug    ] No secrets detected in the prompt
+2026-04-03 19:05:21 [debug    ] Scanner completed              elapsed_time_seconds=0.004827 is_valid=True scanner=Secrets
+2026-04-03 19:05:21 [info     ] Scanned prompt                 elapsed_time_seconds=0.005888 scores={'BanSubstrings': -1.0, 'InvisibleText': 0.0, 'Secrets': -1.0}
+INFO:     127.0.0.1:52416 - "POST /api/chat HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52432 - "GET /api/chat/1775214321274/thinking?message_index=0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52446 - "GET /api/chat/new_session HTTP/1.1" 200 OK
+2026-04-03 19:05:23 [debug    ] No banned substrings found
+2026-04-03 19:05:23 [debug    ] Scanner completed              elapsed_time_seconds=0.000274 is_valid=True scanner=BanSubstrings
+2026-04-03 19:05:23 [debug    ] No invisible characters found
+2026-04-03 19:05:23 [debug    ] Scanner completed              elapsed_time_seconds=0.000121 is_valid=True scanner=InvisibleText
+2026-04-03 19:05:23 [debug    ] No secrets detected in the prompt
+2026-04-03 19:05:23 [debug    ] Scanner completed              elapsed_time_seconds=0.107333 is_valid=True scanner=Secrets
+2026-04-03 19:05:23 [info     ] Scanned prompt                 elapsed_time_seconds=0.108133 scores={'BanSubstrings': -1.0, 'InvisibleText': 0.0, 'Secrets': -1.0}
+INFO:     127.0.0.1:52458 - "POST /api/chat HTTP/1.1" 200 OK
+INFO:     Started server process [376247]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
+INFO:     127.0.0.1:34664 - "POST /api/kb/create HTTP/1.1" 200 OK
+2026-04-03 19:07:18 [debug    ] No banned substrings found
+2026-04-03 19:07:18 [debug    ] Scanner completed              elapsed_time_seconds=0.000529 is_valid=True scanner=BanSubstrings
+2026-04-03 19:07:18 [debug    ] No invisible characters found
+2026-04-03 19:07:18 [debug    ] Scanner completed              elapsed_time_seconds=0.000235 is_valid=True scanner=InvisibleText
+2026-04-03 19:07:18 [debug    ] No secrets detected in the prompt
+2026-04-03 19:07:18 [debug    ] Scanner completed              elapsed_time_seconds=0.150257 is_valid=True scanner=Secrets
+2026-04-03 19:07:18 [info     ] Scanned prompt                 elapsed_time_seconds=0.151617 scores={'BanSubstrings': -1.0, 'InvisibleText': 0.0, 'Secrets': -1.0}
+INFO:     127.0.0.1:34676 - "POST /api/chat HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51486 - "GET /openapi.json HTTP/1.1" 200 OK
+INFO:     127.0.0.1:39784 - "GET /api/history/diag-sql-1 HTTP/1.1" 404 Not Found
+2026-04-03 19:09:04 [debug    ] No banned substrings found
+2026-04-03 19:09:04 [debug    ] Scanner completed              elapsed_time_seconds=0.000918 is_valid=True scanner=BanSubstrings
+2026-04-03 19:09:04 [debug    ] No invisible characters found
+2026-04-03 19:09:04 [debug    ] Scanner completed              elapsed_time_seconds=0.000246 is_valid=True scanner=InvisibleText
+2026-04-03 19:09:04 [debug    ] No secrets detected in the prompt
+2026-04-03 19:09:04 [debug    ] Scanner completed              elapsed_time_seconds=0.012504 is_valid=True scanner=Secrets
+2026-04-03 19:09:04 [info     ] Scanned prompt                 elapsed_time_seconds=0.01443 scores={'BanSubstrings': -1.0, 'InvisibleText': 0.0, 'Secrets': -1.0}
+INFO:     127.0.0.1:34084 - "POST /api/chat HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53266 - "GET /openapi.json HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53276 - "GET /api/history/list?page=1&size=2 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53292 - "GET /api/feedback/list?page=1&size=2 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53306 - "GET /api/kb/list?page=1&size=2 HTTP/1.1" 200 OK
+DB initialized. All-in-Qwen Mode @ http://0.0.0.0:62274/v1 (model='Qwen3-32B')
+INFO:     127.0.0.1:53322 - "GET /api/db/select_options HTTP/1.1" 200 OK
+INFO:     127.0.0.1:39186 - "GET /api/chat/new_session HTTP/1.1" 200 OK
+2026-04-03 19:10:03 [debug    ] No banned substrings found
+2026-04-03 19:10:03 [debug    ] Scanner completed              elapsed_time_seconds=0.002436 is_valid=True scanner=BanSubstrings
+2026-04-03 19:10:03 [debug    ] No invisible characters found
+2026-04-03 19:10:03 [debug    ] Scanner completed              elapsed_time_seconds=0.000318 is_valid=True scanner=InvisibleText
+2026-04-03 19:10:03 [debug    ] No secrets detected in the prompt
+2026-04-03 19:10:03 [debug    ] Scanner completed              elapsed_time_seconds=0.00927 is_valid=True scanner=Secrets
+2026-04-03 19:10:03 [info     ] Scanned prompt                 elapsed_time_seconds=0.013039 scores={'BanSubstrings': -1.0, 'InvisibleText': 0.0, 'Secrets': -1.0}
+INFO:     127.0.0.1:39192 - "POST /api/chat HTTP/1.1" 200 OK
+INFO:     127.0.0.1:35506 - "GET /api/chat/1775214603931/thinking?message_index=0 HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:35516 - "GET /api/chat/new_session HTTP/1.1" 200 OK
+2026-04-03 19:10:20 [debug    ] No banned substrings found
+2026-04-03 19:10:20 [debug    ] Scanner completed              elapsed_time_seconds=0.000659 is_valid=True scanner=BanSubstrings
+2026-04-03 19:10:20 [debug    ] No invisible characters found
+2026-04-03 19:10:20 [debug    ] Scanner completed              elapsed_time_seconds=0.00027 is_valid=True scanner=InvisibleText
+2026-04-03 19:10:20 [debug    ] No secrets detected in the prompt
+2026-04-03 19:10:20 [debug    ] Scanner completed              elapsed_time_seconds=0.012957 is_valid=True scanner=Secrets
+2026-04-03 19:10:20 [info     ] Scanned prompt                 elapsed_time_seconds=0.014617 scores={'BanSubstrings': -1.0, 'InvisibleText': 0.0, 'Secrets': -1.0}
+INFO:     127.0.0.1:35520 - "POST /api/chat HTTP/1.1" 200 OK
+INFO:     Started server process [381142]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
+2026-04-03 19:11:46 [debug    ] No banned substrings found
+2026-04-03 19:11:46 [debug    ] Scanner completed              elapsed_time_seconds=0.000489 is_valid=True scanner=BanSubstrings
+2026-04-03 19:11:46 [debug    ] No invisible characters found
+2026-04-03 19:11:46 [debug    ] Scanner completed              elapsed_time_seconds=0.000227 is_valid=True scanner=InvisibleText
+2026-04-03 19:11:47 [debug    ] No secrets detected in the prompt
+2026-04-03 19:11:47 [debug    ] Scanner completed              elapsed_time_seconds=0.155629 is_valid=True scanner=Secrets
+2026-04-03 19:11:47 [info     ] Scanned prompt                 elapsed_time_seconds=0.156964 scores={'BanSubstrings': -1.0, 'InvisibleText': 0.0, 'Secrets': -1.0}
+INFO:     127.0.0.1:58196 - "POST /api/chat HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58806 - "GET /api/chat/new_session HTTP/1.1" 200 OK
+2026-04-03 19:12:05 [debug    ] No banned substrings found
+2026-04-03 19:12:05 [debug    ] Scanner completed              elapsed_time_seconds=0.000236 is_valid=True scanner=BanSubstrings
+2026-04-03 19:12:05 [debug    ] No invisible characters found
+2026-04-03 19:12:05 [debug    ] Scanner completed              elapsed_time_seconds=8.3e-05 is_valid=True scanner=InvisibleText
+2026-04-03 19:12:05 [debug    ] No secrets detected in the prompt
+2026-04-03 19:12:05 [debug    ] Scanner completed              elapsed_time_seconds=0.004237 is_valid=True scanner=Secrets
+2026-04-03 19:12:05 [info     ] Scanned prompt                 elapsed_time_seconds=0.004875 scores={'BanSubstrings': -1.0, 'InvisibleText': 0.0, 'Secrets': -1.0}
+INFO:     127.0.0.1:58814 - "POST /api/chat HTTP/1.1" 200 OK
+INFO:     127.0.0.1:44474 - "GET /api/history/diag-calculator-2 HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:52722 - "GET /api/chat/1775214725646/thinking?message_index=0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58816 - "GET /api/chat/new_session HTTP/1.1" 200 OK
+2026-04-03 19:12:32 [debug    ] No banned substrings found
+2026-04-03 19:12:32 [debug    ] Scanner completed              elapsed_time_seconds=0.000415 is_valid=True scanner=BanSubstrings
+2026-04-03 19:12:32 [debug    ] No invisible characters found
+2026-04-03 19:12:32 [debug    ] Scanner completed              elapsed_time_seconds=0.000238 is_valid=True scanner=InvisibleText
+2026-04-03 19:12:32 [debug    ] No secrets detected in the prompt
+2026-04-03 19:12:32 [debug    ] Scanner completed              elapsed_time_seconds=0.011669 is_valid=True scanner=Secrets
+2026-04-03 19:12:32 [info     ] Scanned prompt                 elapsed_time_seconds=0.013045 scores={'BanSubstrings': -1.0, 'InvisibleText': 0.0, 'Secrets': -1.0}
+INFO:     127.0.0.1:58832 - "POST /api/chat HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52202 - "GET /api/chat/new_session HTTP/1.1" 200 OK
+2026-04-03 19:14:15 [debug    ] No banned substrings found
+2026-04-03 19:14:15 [debug    ] Scanner completed              elapsed_time_seconds=0.00029 is_valid=True scanner=BanSubstrings
+2026-04-03 19:14:15 [debug    ] No invisible characters found
+2026-04-03 19:14:15 [debug    ] Scanner completed              elapsed_time_seconds=9.1e-05 is_valid=True scanner=InvisibleText
+2026-04-03 19:14:15 [debug    ] No secrets detected in the prompt
+2026-04-03 19:14:15 [debug    ] Scanner completed              elapsed_time_seconds=0.005345 is_valid=True scanner=Secrets
+2026-04-03 19:14:15 [info     ] Scanned prompt                 elapsed_time_seconds=0.006075 scores={'BanSubstrings': -1.0, 'InvisibleText': 0.0, 'Secrets': -1.0}
+INFO:     127.0.0.1:52218 - "POST /api/chat HTTP/1.1" 200 OK
+INFO:     Started server process [385885]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
+INFO:     Started server process [386339]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
+INFO:     127.0.0.1:50222 - "GET /openapi.json HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52628 - "GET /api/chat/new_session HTTP/1.1" 200 OK
+2026-04-03 19:16:17 [debug    ] No banned substrings found
+2026-04-03 19:16:17 [debug    ] Scanner completed              elapsed_time_seconds=0.000294 is_valid=True scanner=BanSubstrings
+2026-04-03 19:16:17 [debug    ] No invisible characters found
+2026-04-03 19:16:17 [debug    ] Scanner completed              elapsed_time_seconds=9.1e-05 is_valid=True scanner=InvisibleText
+2026-04-03 19:16:17 [debug    ] No secrets detected in the prompt
+2026-04-03 19:16:17 [debug    ] Scanner completed              elapsed_time_seconds=0.04809 is_valid=True scanner=Secrets
+2026-04-03 19:16:17 [info     ] Scanned prompt                 elapsed_time_seconds=0.048798 scores={'BanSubstrings': -1.0, 'InvisibleText': 0.0, 'Secrets': -1.0}
+INFO:     127.0.0.1:52640 - "POST /api/chat HTTP/1.1" 200 OK
+2026-04-03 19:16:22 [debug    ] No banned substrings found
+2026-04-03 19:16:22 [debug    ] Scanner completed              elapsed_time_seconds=0.00044 is_valid=True scanner=BanSubstrings
+2026-04-03 19:16:22 [debug    ] No invisible characters found
+2026-04-03 19:16:22 [debug    ] Scanner completed              elapsed_time_seconds=0.000197 is_valid=True scanner=InvisibleText
+2026-04-03 19:16:22 [debug    ] No secrets detected in the prompt
+2026-04-03 19:16:22 [debug    ] Scanner completed              elapsed_time_seconds=0.007904 is_valid=True scanner=Secrets
+2026-04-03 19:16:22 [info     ] Scanned prompt                 elapsed_time_seconds=0.009264 scores={'BanSubstrings': -1.0, 'InvisibleText': 0.0, 'Secrets': -1.0}
+INFO:     127.0.0.1:52650 - "POST /api/chat HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49728 - "GET /api/chat/1775214977640/thinking?message_index=0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59652 - "GET /api/chat/new_session HTTP/1.1" 200 OK
+2026-04-03 19:16:38 [debug    ] No banned substrings found
+2026-04-03 19:16:38 [debug    ] Scanner completed              elapsed_time_seconds=0.000561 is_valid=True scanner=BanSubstrings
+2026-04-03 19:16:38 [debug    ] No invisible characters found
+2026-04-03 19:16:38 [debug    ] Scanner completed              elapsed_time_seconds=0.000269 is_valid=True scanner=InvisibleText
+2026-04-03 19:16:38 [debug    ] No secrets detected in the prompt
+2026-04-03 19:16:38 [debug    ] Scanner completed              elapsed_time_seconds=0.124184 is_valid=True scanner=Secrets
+2026-04-03 19:16:38 [info     ] Scanned prompt                 elapsed_time_seconds=0.125605 scores={'BanSubstrings': -1.0, 'InvisibleText': 0.0, 'Secrets': -1.0}
+INFO:     127.0.0.1:59654 - "POST /api/chat HTTP/1.1" 200 OK
+2026-04-03 19:16:51 [debug    ] No banned substrings found
+2026-04-03 19:16:51 [debug    ] Scanner completed              elapsed_time_seconds=0.001908 is_valid=True scanner=BanSubstrings
+2026-04-03 19:16:51 [debug    ] No invisible characters found
+2026-04-03 19:16:51 [debug    ] Scanner completed              elapsed_time_seconds=0.000314 is_valid=True scanner=InvisibleText
+2026-04-03 19:16:51 [debug    ] No secrets detected in the prompt
+2026-04-03 19:16:51 [debug    ] Scanner completed              elapsed_time_seconds=0.017509 is_valid=True scanner=Secrets
+2026-04-03 19:16:51 [info     ] Scanned prompt                 elapsed_time_seconds=0.020726 scores={'BanSubstrings': -1.0, 'InvisibleText': 0.0, 'Secrets': -1.0}
+INFO:     127.0.0.1:44268 - "POST /api/chat HTTP/1.1" 200 OK
+INFO:     127.0.0.1:36060 - "GET /api/chat/new_session HTTP/1.1" 200 OK
+2026-04-03 19:18:16 [debug    ] No banned substrings found
+2026-04-03 19:18:16 [debug    ] Scanner completed              elapsed_time_seconds=0.000367 is_valid=True scanner=BanSubstrings
+2026-04-03 19:18:16 [debug    ] No invisible characters found
+2026-04-03 19:18:16 [debug    ] Scanner completed              elapsed_time_seconds=0.000167 is_valid=True scanner=InvisibleText
+2026-04-03 19:18:16 [debug    ] No secrets detected in the prompt
+2026-04-03 19:18:16 [debug    ] Scanner completed              elapsed_time_seconds=0.009782 is_valid=True scanner=Secrets
+2026-04-03 19:18:16 [info     ] Scanned prompt                 elapsed_time_seconds=0.010748 scores={'BanSubstrings': -1.0, 'InvisibleText': 0.0, 'Secrets': -1.0}
+INFO:     127.0.0.1:36076 - "POST /api/chat HTTP/1.1" 200 OK
+INFO:     Started server process [390638]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
+2026-04-03 19:19:03 [debug    ] No banned substrings found
+2026-04-03 19:19:03 [debug    ] Scanner completed              elapsed_time_seconds=0.000531 is_valid=True scanner=BanSubstrings
+2026-04-03 19:19:03 [debug    ] No invisible characters found
+2026-04-03 19:19:03 [debug    ] Scanner completed              elapsed_time_seconds=0.000284 is_valid=True scanner=InvisibleText
+2026-04-03 19:19:03 [debug    ] No secrets detected in the prompt
+2026-04-03 19:19:03 [debug    ] Scanner completed              elapsed_time_seconds=0.075623 is_valid=True scanner=Secrets
+2026-04-03 19:19:03 [info     ] Scanned prompt                 elapsed_time_seconds=0.077281 scores={'BanSubstrings': -1.0, 'InvisibleText': 0.0, 'Secrets': -1.0}
+INFO:     127.0.0.1:56872 - "POST /api/chat HTTP/1.1" 200 OK
+2026-04-03 19:19:13 [debug    ] No banned substrings found
+2026-04-03 19:19:13 [debug    ] Scanner completed              elapsed_time_seconds=0.000288 is_valid=True scanner=BanSubstrings
+2026-04-03 19:19:13 [debug    ] No invisible characters found
+2026-04-03 19:19:13 [debug    ] Scanner completed              elapsed_time_seconds=0.000111 is_valid=True scanner=InvisibleText
+2026-04-03 19:19:14 [debug    ] No secrets detected in the prompt
+2026-04-03 19:19:14 [debug    ] Scanner completed              elapsed_time_seconds=0.114958 is_valid=True scanner=Secrets
+2026-04-03 19:19:14 [info     ] Scanned prompt                 elapsed_time_seconds=0.115772 scores={'BanSubstrings': -1.0, 'InvisibleText': 0.0, 'Secrets': -1.0}
+INFO:     127.0.0.1:56428 - "POST /api/chat HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43352 - "GET /api/chat/diag-fast-calc-3/thinking?message_index=0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:48238 - "GET /api/history/diag-fast-calc-3 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:41542 - "GET /api/history/1775214998836 HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:41556 - "GET /api/chat/1775215096314/thinking?message_index=0 HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:41568 - "GET /api/history/1775215096314 HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:41584 - "GET /api/chat/1775214998836/thinking?message_index=0 HTTP/1.1" 404 Not Found
+INFO:     Started server process [393232]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
+INFO:     127.0.0.1:46714 - "GET /api/chat/new_session HTTP/1.1" 200 OK
+2026-04-03 19:22:05 [debug    ] No banned substrings found
+2026-04-03 19:22:05 [debug    ] Scanner completed              elapsed_time_seconds=0.000901 is_valid=True scanner=BanSubstrings
+2026-04-03 19:22:05 [debug    ] No invisible characters found
+2026-04-03 19:22:05 [debug    ] Scanner completed              elapsed_time_seconds=0.000176 is_valid=True scanner=InvisibleText
+2026-04-03 19:22:05 [debug    ] No secrets detected in the prompt
+2026-04-03 19:22:05 [debug    ] Scanner completed              elapsed_time_seconds=0.135718 is_valid=True scanner=Secrets
+2026-04-03 19:22:05 [info     ] Scanned prompt                 elapsed_time_seconds=0.137216 scores={'BanSubstrings': -1.0, 'InvisibleText': 0.0, 'Secrets': -1.0}
+INFO:     127.0.0.1:46724 - "POST /api/chat HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54142 - "GET /api/chat/new_session HTTP/1.1" 200 OK
+2026-04-03 19:22:06 [debug    ] No banned substrings found
+2026-04-03 19:22:06 [debug    ] Scanner completed              elapsed_time_seconds=0.000457 is_valid=True scanner=BanSubstrings
+2026-04-03 19:22:06 [debug    ] No invisible characters found
+2026-04-03 19:22:06 [debug    ] Scanner completed              elapsed_time_seconds=0.000218 is_valid=True scanner=InvisibleText
+2026-04-03 19:22:06 [debug    ] No secrets detected in the prompt
+2026-04-03 19:22:06 [debug    ] Scanner completed              elapsed_time_seconds=0.031196 is_valid=True scanner=Secrets
+2026-04-03 19:22:06 [info     ] Scanned prompt                 elapsed_time_seconds=0.032805 scores={'BanSubstrings': -1.0, 'InvisibleText': 0.0, 'Secrets': -1.0}
+INFO:     127.0.0.1:54150 - "POST /api/chat HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49630 - "GET /api/chat/1775215325181/thinking?message_index=0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49640 - "GET /api/history/1775215325181 HTTP/1.1" 200 OK
+2026-04-03 19:22:36 [debug    ] No banned substrings found
+2026-04-03 19:22:36 [debug    ] Scanner completed              elapsed_time_seconds=0.000799 is_valid=True scanner=BanSubstrings
+2026-04-03 19:22:36 [debug    ] No invisible characters found
+2026-04-03 19:22:36 [debug    ] Scanner completed              elapsed_time_seconds=0.000192 is_valid=True scanner=InvisibleText
+2026-04-03 19:22:36 [debug    ] No secrets detected in the prompt
+2026-04-03 19:22:36 [debug    ] Scanner completed              elapsed_time_seconds=0.009197 is_valid=True scanner=Secrets
+2026-04-03 19:22:36 [info     ] Scanned prompt                 elapsed_time_seconds=0.010971 scores={'BanSubstrings': -1.0, 'InvisibleText': 0.0, 'Secrets': -1.0}
+INFO:     127.0.0.1:35660 - "POST /api/chat HTTP/1.1" 200 OK
+INFO:     127.0.0.1:35662 - "GET /api/chat/1775215326569/thinking?message_index=0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:35666 - "GET /api/history/1775215326569 HTTP/1.1" 200 OK
+2026-04-03 19:22:52 [debug    ] No banned substrings found
+2026-04-03 19:22:52 [debug    ] Scanner completed              elapsed_time_seconds=0.001872 is_valid=True scanner=BanSubstrings
+2026-04-03 19:22:52 [debug    ] No invisible characters found
+2026-04-03 19:22:52 [debug    ] Scanner completed              elapsed_time_seconds=0.000391 is_valid=True scanner=InvisibleText
+2026-04-03 19:22:52 [debug    ] No secrets detected in the prompt
+2026-04-03 19:22:52 [debug    ] Scanner completed              elapsed_time_seconds=0.016083 is_valid=True scanner=Secrets
+2026-04-03 19:22:52 [info     ] Scanned prompt                 elapsed_time_seconds=0.019224 scores={'BanSubstrings': -1.0, 'InvisibleText': 0.0, 'Secrets': -1.0}
+INFO:     127.0.0.1:38284 - "POST /api/chat HTTP/1.1" 200 OK
+INFO:     Started server process [395826]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
+INFO:     127.0.0.1:45580 - "GET /api/history/final-calc-check HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:45590 - "GET /api/chat/final-calc-check/thinking?message_index=0 HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:36624 - "GET /openapi.json HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58192 - "GET /api/history/1775215325181 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58202 - "GET /api/chat/1775215326569/thinking?message_index=0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58212 - "GET /api/history/1775215326569 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58214 - "GET /api/chat/1775215325181/thinking?message_index=0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54068 - "POST /api/kb/create HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54082 - "POST /api/kb/kb_1775215565870/upload HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56590 - "GET /api/chat/new_session HTTP/1.1" 200 OK
+2026-04-03 19:26:06 [debug    ] No banned substrings found
+2026-04-03 19:26:06 [debug    ] Scanner completed              elapsed_time_seconds=0.000431 is_valid=True scanner=BanSubstrings
+2026-04-03 19:26:06 [debug    ] No invisible characters found
+2026-04-03 19:26:06 [debug    ] Scanner completed              elapsed_time_seconds=0.000123 is_valid=True scanner=InvisibleText
+2026-04-03 19:26:07 [debug    ] No secrets detected in the prompt
+2026-04-03 19:26:07 [debug    ] Scanner completed              elapsed_time_seconds=0.134516 is_valid=True scanner=Secrets
+2026-04-03 19:26:07 [info     ] Scanned prompt                 elapsed_time_seconds=0.135413 scores={'BanSubstrings': -1.0, 'InvisibleText': 0.0, 'Secrets': -1.0}
+INFO:     127.0.0.1:56594 - "POST /api/chat HTTP/1.1" 200 OK
+INFO:     127.0.0.1:40920 - "GET /api/chat/1775215566958/thinking?message_index=0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:40930 - "GET /api/history/1775215566958 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:40944 - "DELETE /api/kb/kb_1775215565870 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:35766 - "GET /api/chat/new_session HTTP/1.1" 200 OK
+2026-04-03 19:26:36 [debug    ] No banned substrings found
+2026-04-03 19:26:36 [debug    ] Scanner completed              elapsed_time_seconds=0.000885 is_valid=True scanner=BanSubstrings
+2026-04-03 19:26:36 [debug    ] No invisible characters found
+2026-04-03 19:26:36 [debug    ] Scanner completed              elapsed_time_seconds=0.000358 is_valid=True scanner=InvisibleText
+2026-04-03 19:26:36 [debug    ] No secrets detected in the prompt
+2026-04-03 19:26:36 [debug    ] Scanner completed              elapsed_time_seconds=0.014 is_valid=True scanner=Secrets
+2026-04-03 19:26:36 [info     ] Scanned prompt                 elapsed_time_seconds=0.016443 scores={'BanSubstrings': -1.0, 'InvisibleText': 0.0, 'Secrets': -1.0}
+INFO:     127.0.0.1:35780 - "POST /api/chat HTTP/1.1" 200 OK
+INFO:     127.0.0.1:35784 - "GET /api/chat/new_session HTTP/1.1" 200 OK
+2026-04-03 19:26:36 [debug    ] No banned substrings found
+2026-04-03 19:26:36 [debug    ] Scanner completed              elapsed_time_seconds=0.000445 is_valid=True scanner=BanSubstrings
+2026-04-03 19:26:36 [debug    ] No invisible characters found
+2026-04-03 19:26:36 [debug    ] Scanner completed              elapsed_time_seconds=0.010607 is_valid=True scanner=InvisibleText
+2026-04-03 19:26:36 [debug    ] No secrets detected in the prompt
+2026-04-03 19:26:36 [debug    ] Scanner completed              elapsed_time_seconds=0.014264 is_valid=True scanner=Secrets
+2026-04-03 19:26:36 [info     ] Scanned prompt                 elapsed_time_seconds=0.036765 scores={'BanSubstrings': -1.0, 'InvisibleText': 0.0, 'Secrets': -1.0}
+INFO:     127.0.0.1:35796 - "POST /api/chat HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51532 - "GET /api/chat/1775215596484/thinking?message_index=0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51546 - "GET /api/history/1775215596484 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43636 - "GET /api/chat/1775215596520/thinking?message_index=0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43638 - "GET /api/history/1775215596520 HTTP/1.1" 200 OK
+WARNING: All log messages before absl::InitializeLog() is called are written to STDERR
+I0000 00:00:1775215681.510977  397224 chttp2_transport.cc:1353] unix:/tmp/tmp5jwbh07q_klclab_milvus.db.sock: Got goaway [11] err=UNAVAILABLE:GOAWAY received; Error code: 11; Debug Text: too_many_pings {grpc_status:14, http2_error:11}
+E0000 00:00:1775215681.511153  397224 chttp2_transport.cc:1385] unix:/tmp/tmp5jwbh07q_klclab_milvus.db.sock: Received a GOAWAY with error code ENHANCE_YOUR_CALM and debug data equal to "too_many_pings". Current keepalive time (before throttling): 10000ms
+INFO:     127.0.0.1:37202 - "GET /openapi.json HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50194 - "GET /api/chat/new_session HTTP/1.1" 200 OK
+2026-04-03 19:35:05 [debug    ] No banned substrings found
+2026-04-03 19:35:05 [debug    ] Scanner completed              elapsed_time_seconds=0.000753 is_valid=True scanner=BanSubstrings
+2026-04-03 19:35:05 [debug    ] No invisible characters found
+2026-04-03 19:35:05 [debug    ] Scanner completed              elapsed_time_seconds=0.000167 is_valid=True scanner=InvisibleText
+2026-04-03 19:35:05 [debug    ] No secrets detected in the prompt
+2026-04-03 19:35:05 [debug    ] Scanner completed              elapsed_time_seconds=0.007706 is_valid=True scanner=Secrets
+2026-04-03 19:35:05 [info     ] Scanned prompt                 elapsed_time_seconds=0.009168 scores={'BanSubstrings': -1.0, 'InvisibleText': 0.0, 'Secrets': -1.0}
+INFO:     127.0.0.1:50210 - "POST /api/chat HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50226 - "GET /api/chat/new_session HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50228 - "GET /api/chat/new_session HTTP/1.1" 200 OK
+2026-04-03 19:35:05 [debug    ] No banned substrings found
+2026-04-03 19:35:05 [debug    ] Scanner completed              elapsed_time_seconds=0.000408 is_valid=True scanner=BanSubstrings
+2026-04-03 19:35:05 [debug    ] No invisible characters found
+2026-04-03 19:35:05 [debug    ] Scanner completed              elapsed_time_seconds=0.000146 is_valid=True scanner=InvisibleText
+2026-04-03 19:35:05 [debug    ] No secrets detected in the prompt
+2026-04-03 19:35:05 [debug    ] Scanner completed              elapsed_time_seconds=0.00879 is_valid=True scanner=Secrets
+2026-04-03 19:35:05 [info     ] Scanned prompt                 elapsed_time_seconds=0.009968 scores={'BanSubstrings': -1.0, 'InvisibleText': 0.0, 'Secrets': -1.0}
+INFO:     127.0.0.1:50232 - "POST /api/chat HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50240 - "POST /api/kb/create HTTP/1.1" 200 OK
+2026-04-03 19:35:05 [debug    ] No banned substrings found
+2026-04-03 19:35:05 [debug    ] Scanner completed              elapsed_time_seconds=0.000384 is_valid=True scanner=BanSubstrings
+2026-04-03 19:35:05 [debug    ] No invisible characters found
+2026-04-03 19:35:05 [debug    ] Scanner completed              elapsed_time_seconds=0.000108 is_valid=True scanner=InvisibleText
+2026-04-03 19:35:05 [debug    ] No secrets detected in the prompt
+2026-04-03 19:35:05 [debug    ] Scanner completed              elapsed_time_seconds=0.007376 is_valid=True scanner=Secrets
+2026-04-03 19:35:05 [info     ] Scanned prompt                 elapsed_time_seconds=0.008302 scores={'BanSubstrings': -1.0, 'InvisibleText': 0.0, 'Secrets': -1.0}
+INFO:     127.0.0.1:50256 - "POST /api/chat HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50260 - "POST /api/kb/kb_1775216105617/upload HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50274 - "GET /api/chat/new_session HTTP/1.1" 200 OK
+2026-04-03 19:35:05 [debug    ] No banned substrings found
+2026-04-03 19:35:05 [debug    ] Scanner completed              elapsed_time_seconds=0.000314 is_valid=True scanner=BanSubstrings
+2026-04-03 19:35:05 [debug    ] No invisible characters found
+2026-04-03 19:35:05 [debug    ] Scanner completed              elapsed_time_seconds=0.000119 is_valid=True scanner=InvisibleText
+2026-04-03 19:35:05 [debug    ] No secrets detected in the prompt
+2026-04-03 19:35:05 [debug    ] Scanner completed              elapsed_time_seconds=0.009472 is_valid=True scanner=Secrets
+2026-04-03 19:35:05 [info     ] Scanned prompt                 elapsed_time_seconds=0.010316 scores={'BanSubstrings': -1.0, 'InvisibleText': 0.0, 'Secrets': -1.0}
+INFO:     127.0.0.1:50290 - "POST /api/chat HTTP/1.1" 200 OK
+INFO:     127.0.0.1:39730 - "GET /api/chat/1775216105544/thinking?message_index=0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58612 - "GET /api/chat/1775216105596/thinking?message_index=0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58622 - "GET /api/history/1775216105596 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58632 - "GET /api/chat/1775216105801/thinking?message_index=0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58638 - "GET /api/history/1775216105801 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58650 - "DELETE /api/kb/kb_1775216105617 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58662 - "GET /api/chat/1775216105572/thinking?message_index=0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58668 - "GET /api/history/1775216105572 HTTP/1.1" 200 OK
+I0000 00:00:1775216241.510916  397516 chttp2_transport.cc:1353] unix:/tmp/tmp5jwbh07q_klclab_milvus.db.sock: Got goaway [11] err=UNAVAILABLE:GOAWAY received; Error code: 11; Debug Text: too_many_pings {http2_error:11, grpc_status:14}
+E0000 00:00:1775216241.511058  397516 chttp2_transport.cc:1385] unix:/tmp/tmp5jwbh07q_klclab_milvus.db.sock: Received a GOAWAY with error code ENHANCE_YOUR_CALM and debug data equal to "too_many_pings". Current keepalive time (before throttling): 20000ms
+INFO:     Started server process [402495]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
+INFO:     127.0.0.1:50946 - "GET /api/chat/new_session HTTP/1.1" 200 OK
+2026-04-03 19:38:07 [debug    ] No banned substrings found
+2026-04-03 19:38:07 [debug    ] Scanner completed              elapsed_time_seconds=0.000663 is_valid=True scanner=BanSubstrings
+2026-04-03 19:38:07 [debug    ] No invisible characters found
+2026-04-03 19:38:07 [debug    ] Scanner completed              elapsed_time_seconds=0.000247 is_valid=True scanner=InvisibleText
+2026-04-03 19:38:07 [debug    ] No secrets detected in the prompt
+2026-04-03 19:38:07 [debug    ] Scanner completed              elapsed_time_seconds=0.131775 is_valid=True scanner=Secrets
+2026-04-03 19:38:07 [info     ] Scanned prompt                 elapsed_time_seconds=0.133296 scores={'BanSubstrings': -1.0, 'InvisibleText': 0.0, 'Secrets': -1.0}
+INFO:     127.0.0.1:50962 - "POST /api/chat HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50968 - "GET /api/chat/new_session HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50978 - "POST /api/kb/create HTTP/1.1" 200 OK
+2026-04-03 19:38:07 [debug    ] No banned substrings found
+2026-04-03 19:38:07 [debug    ] Scanner completed              elapsed_time_seconds=0.00039 is_valid=True scanner=BanSubstrings
+2026-04-03 19:38:07 [debug    ] No invisible characters found
+2026-04-03 19:38:07 [debug    ] Scanner completed              elapsed_time_seconds=0.000103 is_valid=True scanner=InvisibleText
+2026-04-03 19:38:07 [debug    ] No secrets detected in the prompt
+2026-04-03 19:38:07 [debug    ] Scanner completed              elapsed_time_seconds=0.007751 is_valid=True scanner=Secrets
+2026-04-03 19:38:07 [info     ] Scanned prompt                 elapsed_time_seconds=0.00871 scores={'BanSubstrings': -1.0, 'InvisibleText': 0.0, 'Secrets': -1.0}
+INFO:     127.0.0.1:50992 - "POST /api/chat HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50994 - "POST /api/kb/kb_1775216287410/upload HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51006 - "GET /api/chat/new_session HTTP/1.1" 200 OK
+2026-04-03 19:38:09 [debug    ] No banned substrings found
+2026-04-03 19:38:09 [debug    ] Scanner completed              elapsed_time_seconds=0.000302 is_valid=True scanner=BanSubstrings
+2026-04-03 19:38:09 [debug    ] No invisible characters found
+2026-04-03 19:38:09 [debug    ] Scanner completed              elapsed_time_seconds=9.3e-05 is_valid=True scanner=InvisibleText
+2026-04-03 19:38:09 [debug    ] No secrets detected in the prompt
+2026-04-03 19:38:09 [debug    ] Scanner completed              elapsed_time_seconds=0.005247 is_valid=True scanner=Secrets
+2026-04-03 19:38:09 [info     ] Scanned prompt                 elapsed_time_seconds=0.005915 scores={'BanSubstrings': -1.0, 'InvisibleText': 0.0, 'Secrets': -1.0}
+INFO:     127.0.0.1:51010 - "POST /api/chat HTTP/1.1" 200 OK
+INFO:     127.0.0.1:35274 - "GET /api/chat/1775216289067/thinking?message_index=0 HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:35290 - "GET /api/history/1775216289067 HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:35306 - "DELETE /api/kb/kb_1775216287410 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:45978 - "GET /api/chat/1775216287241/thinking?message_index=0 HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:45980 - "GET /api/history/1775216287241 HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:45996 - "GET /api/chat/1775216287404/thinking?message_index=0 HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:46008 - "GET /api/history/1775216287404 HTTP/1.1" 404 Not Found
+INFO:     Started server process [403525]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
+INFO:     127.0.0.1:40256 - "GET /api/chat/new_session HTTP/1.1" 200 OK
+2026-04-03 19:44:23 [debug    ] No banned substrings found
+2026-04-03 19:44:23 [debug    ] Scanner completed              elapsed_time_seconds=0.000313 is_valid=True scanner=BanSubstrings
+2026-04-03 19:44:23 [debug    ] No invisible characters found
+2026-04-03 19:44:23 [debug    ] Scanner completed              elapsed_time_seconds=0.000108 is_valid=True scanner=InvisibleText
+2026-04-03 19:44:23 [debug    ] No secrets detected in the prompt
+2026-04-03 19:44:23 [debug    ] Scanner completed              elapsed_time_seconds=0.146017 is_valid=True scanner=Secrets
+2026-04-03 19:44:23 [info     ] Scanned prompt                 elapsed_time_seconds=0.146757 scores={'BanSubstrings': -1.0, 'InvisibleText': 0.0, 'Secrets': -1.0}
+INFO:     127.0.0.1:40272 - "POST /api/chat HTTP/1.1" 200 OK
+INFO:     127.0.0.1:40286 - "GET /api/chat/new_session HTTP/1.1" 200 OK
+INFO:     127.0.0.1:40292 - "POST /api/kb/create HTTP/1.1" 200 OK
+2026-04-03 19:44:23 [debug    ] No banned substrings found
+2026-04-03 19:44:23 [debug    ] Scanner completed              elapsed_time_seconds=0.000191 is_valid=True scanner=BanSubstrings
+2026-04-03 19:44:23 [debug    ] No invisible characters found
+2026-04-03 19:44:23 [debug    ] Scanner completed              elapsed_time_seconds=0.000115 is_valid=True scanner=InvisibleText
+2026-04-03 19:44:23 [debug    ] No secrets detected in the prompt
+2026-04-03 19:44:23 [debug    ] Scanner completed              elapsed_time_seconds=0.004591 is_valid=True scanner=Secrets
+2026-04-03 19:44:23 [info     ] Scanned prompt                 elapsed_time_seconds=0.005182 scores={'BanSubstrings': -1.0, 'InvisibleText': 0.0, 'Secrets': -1.0}
+INFO:     127.0.0.1:40300 - "POST /api/chat HTTP/1.1" 200 OK
+INFO:     127.0.0.1:40310 - "POST /api/kb/kb_1775216663554/upload HTTP/1.1" 200 OK
+INFO:     127.0.0.1:40316 - "GET /api/chat/new_session HTTP/1.1" 200 OK
+2026-04-03 19:44:24 [debug    ] No banned substrings found
+2026-04-03 19:44:24 [debug    ] Scanner completed              elapsed_time_seconds=0.000489 is_valid=True scanner=BanSubstrings
+2026-04-03 19:44:24 [debug    ] No invisible characters found
+2026-04-03 19:44:24 [debug    ] Scanner completed              elapsed_time_seconds=0.000144 is_valid=True scanner=InvisibleText
+2026-04-03 19:44:24 [debug    ] No secrets detected in the prompt
+2026-04-03 19:44:24 [debug    ] Scanner completed              elapsed_time_seconds=0.008838 is_valid=True scanner=Secrets
+2026-04-03 19:44:24 [info     ] Scanned prompt                 elapsed_time_seconds=0.009905 scores={'BanSubstrings': -1.0, 'InvisibleText': 0.0, 'Secrets': -1.0}
+INFO:     127.0.0.1:40318 - "POST /api/chat HTTP/1.1" 200 OK
+INFO:     127.0.0.1:35498 - "GET /api/chat/1775216663545/thinking?message_index=0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:35502 - "GET /api/history/1775216663545 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:35514 - "GET /api/chat/1775216664813/thinking?message_index=0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:35522 - "GET /api/history/1775216664813 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:35530 - "DELETE /api/kb/kb_1775216663554 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:34936 - "GET /api/chat/1775216663367/thinking?message_index=0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:34944 - "GET /api/history/1775216663367 HTTP/1.1" 200 OK
+WARNING: All log messages before absl::InitializeLog() is called are written to STDERR
+I0000 00:00:1775216789.214909  406808 chttp2_transport.cc:1353] unix:/tmp/tmp6fzxwvan_klclab_milvus.db.sock: Got goaway [11] err=UNAVAILABLE:GOAWAY received; Error code: 11; Debug Text: too_many_pings {grpc_status:14, http2_error:11}
+E0000 00:00:1775216789.215056  406808 chttp2_transport.cc:1385] unix:/tmp/tmp6fzxwvan_klclab_milvus.db.sock: Received a GOAWAY with error code ENHANCE_YOUR_CALM and debug data equal to "too_many_pings". Current keepalive time (before throttling): 10000ms
+INFO:     Started server process [408612]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
+INFO:     127.0.0.1:53274 - "GET /openapi.json HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60760 - "GET /api/chat/new_session HTTP/1.1" 200 OK
+2026-04-03 19:48:10 [debug    ] No banned substrings found
+2026-04-03 19:48:10 [debug    ] Scanner completed              elapsed_time_seconds=0.000397 is_valid=True scanner=BanSubstrings
+2026-04-03 19:48:10 [debug    ] No invisible characters found
+2026-04-03 19:48:10 [debug    ] Scanner completed              elapsed_time_seconds=0.000125 is_valid=True scanner=InvisibleText
+2026-04-03 19:48:10 [debug    ] No secrets detected in the prompt
+2026-04-03 19:48:10 [debug    ] Scanner completed              elapsed_time_seconds=0.068803 is_valid=True scanner=Secrets
+2026-04-03 19:48:10 [info     ] Scanned prompt                 elapsed_time_seconds=0.069786 scores={'BanSubstrings': -1.0, 'InvisibleText': 0.0, 'Secrets': -1.0}
+INFO:     127.0.0.1:60764 - "POST /api/chat HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60772 - "GET /api/chat/new_session HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60784 - "GET /api/chat/new_session HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60786 - "POST /api/kb/create HTTP/1.1" 200 OK
+2026-04-03 19:48:10 [debug    ] No banned substrings found
+2026-04-03 19:48:10 [debug    ] Scanner completed              elapsed_time_seconds=0.000262 is_valid=True scanner=BanSubstrings
+2026-04-03 19:48:10 [debug    ] No invisible characters found
+2026-04-03 19:48:10 [debug    ] Scanner completed              elapsed_time_seconds=0.000134 is_valid=True scanner=InvisibleText
+2026-04-03 19:48:10 [debug    ] No secrets detected in the prompt
+2026-04-03 19:48:10 [debug    ] Scanner completed              elapsed_time_seconds=0.127665 is_valid=True scanner=Secrets
+2026-04-03 19:48:10 [info     ] Scanned prompt                 elapsed_time_seconds=0.12849 scores={'BanSubstrings': -1.0, 'InvisibleText': 0.0, 'Secrets': -1.0}
+INFO:     127.0.0.1:60802 - "POST /api/chat HTTP/1.1" 200 OK
+2026-04-03 19:48:10 [debug    ] No banned substrings found
+2026-04-03 19:48:10 [debug    ] Scanner completed              elapsed_time_seconds=0.00021 is_valid=True scanner=BanSubstrings
+2026-04-03 19:48:10 [debug    ] No invisible characters found
+2026-04-03 19:48:10 [debug    ] Scanner completed              elapsed_time_seconds=0.000118 is_valid=True scanner=InvisibleText
+2026-04-03 19:48:10 [debug    ] No secrets detected in the prompt
+2026-04-03 19:48:10 [debug    ] Scanner completed              elapsed_time_seconds=0.006484 is_valid=True scanner=Secrets
+2026-04-03 19:48:10 [info     ] Scanned prompt                 elapsed_time_seconds=0.007203 scores={'BanSubstrings': -1.0, 'InvisibleText': 0.0, 'Secrets': -1.0}
+INFO:     127.0.0.1:60804 - "POST /api/chat HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60820 - "POST /api/kb/kb_1775216890445/upload HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60832 - "GET /api/chat/new_session HTTP/1.1" 200 OK
+2026-04-03 19:48:11 [debug    ] No banned substrings found
+2026-04-03 19:48:11 [debug    ] Scanner completed              elapsed_time_seconds=0.00029 is_valid=True scanner=BanSubstrings
+2026-04-03 19:48:11 [debug    ] No invisible characters found
+2026-04-03 19:48:11 [debug    ] Scanner completed              elapsed_time_seconds=0.000101 is_valid=True scanner=InvisibleText
+2026-04-03 19:48:11 [debug    ] No secrets detected in the prompt
+2026-04-03 19:48:11 [debug    ] Scanner completed              elapsed_time_seconds=0.011509 is_valid=True scanner=Secrets
+2026-04-03 19:48:11 [info     ] Scanned prompt                 elapsed_time_seconds=0.0123 scores={'BanSubstrings': -1.0, 'InvisibleText': 0.0, 'Secrets': -1.0}
+INFO:     127.0.0.1:60838 - "POST /api/chat HTTP/1.1" 200 OK
+INFO:     127.0.0.1:47252 - "GET /api/chat/1775216890327/thinking?message_index=0 HTTP/1.1" 200 OK
+DB initialized. All-in-Qwen Mode @ http://0.0.0.0:62274/v1 (model='Qwen3-32B')
+--- Pipeline Execution Round 1 ---
+Error in select_table: Error code: 400 - {'error': {'message': "This model's maximum context length is 12000 tokens. However, you requested 1024 output tokens and your prompt contains at least 10977 input tokens, for a total of at least 12001 tokens. Please reduce the length of the input prompt or the number of requested output tokens. (parameter=input_tokens, value=10977)", 'type': 'BadRequestError', 'param': 'input_tokens', 'code': 400}}
+Selected Tables: []
+Error: No tables were selected.
+--- Pipeline Execution Round 2 ---
+Error in select_table: Error code: 400 - {'error': {'message': "This model's maximum context length is 12000 tokens. However, you requested 1024 output tokens and your prompt contains at least 10977 input tokens, for a total of at least 12001 tokens. Please reduce the length of the input prompt or the number of requested output tokens. (parameter=input_tokens, value=10977)", 'type': 'BadRequestError', 'param': 'input_tokens', 'code': 400}}
+Selected Tables: []
+Error: No tables were selected.
+--- Pipeline Execution Round 3 ---
+Error in select_table: Error code: 400 - {'error': {'message': "This model's maximum context length is 12000 tokens. However, you requested 1024 output tokens and your prompt contains at least 10977 input tokens, for a total of at least 12001 tokens. Please reduce the length of the input prompt or the number of requested output tokens. (parameter=input_tokens, value=10977)", 'type': 'BadRequestError', 'param': 'input_tokens', 'code': 400}}
+Selected Tables: []
+Error: No tables were selected.
+--- Pipeline Execution Round 4 ---
+Error in select_table: Error code: 400 - {'error': {'message': "This model's maximum context length is 12000 tokens. However, you requested 1024 output tokens and your prompt contains at least 10977 input tokens, for a total of at least 12001 tokens. Please reduce the length of the input prompt or the number of requested output tokens. (parameter=input_tokens, value=10977)", 'type': 'BadRequestError', 'param': 'input_tokens', 'code': 400}}
+Selected Tables: []
+Error: No tables were selected.
+DB initialized. All-in-Qwen Mode @ http://0.0.0.0:62274/v1 (model='Qwen3-32B')
+--- Pipeline Execution Round 1 ---
+Error in select_table: Error code: 400 - {'error': {'message': "This model's maximum context length is 12000 tokens. However, you requested 1024 output tokens and your prompt contains at least 10977 input tokens, for a total of at least 12001 tokens. Please reduce the length of the input prompt or the number of requested output tokens. (parameter=input_tokens, value=10977)", 'type': 'BadRequestError', 'param': 'input_tokens', 'code': 400}}
+Selected Tables: []
+Error: No tables were selected.
+--- Pipeline Execution Round 2 ---
+Error in select_table: Error code: 400 - {'error': {'message': "This model's maximum context length is 12000 tokens. However, you requested 1024 output tokens and your prompt contains at least 10977 input tokens, for a total of at least 12001 tokens. Please reduce the length of the input prompt or the number of requested output tokens. (parameter=input_tokens, value=10977)", 'type': 'BadRequestError', 'param': 'input_tokens', 'code': 400}}
+Selected Tables: []
+Error: No tables were selected.
+--- Pipeline Execution Round 3 ---
+Error in select_table: Error code: 400 - {'error': {'message': "This model's maximum context length is 12000 tokens. However, you requested 1024 output tokens and your prompt contains at least 10977 input tokens, for a total of at least 12001 tokens. Please reduce the length of the input prompt or the number of requested output tokens. (parameter=input_tokens, value=10977)", 'type': 'BadRequestError', 'param': 'input_tokens', 'code': 400}}
+Selected Tables: []
+Error: No tables were selected.
+--- Pipeline Execution Round 4 ---
+Error in select_table: Error code: 400 - {'error': {'message': "This model's maximum context length is 12000 tokens. However, you requested 1024 output tokens and your prompt contains at least 10977 input tokens, for a total of at least 12001 tokens. Please reduce the length of the input prompt or the number of requested output tokens. (parameter=input_tokens, value=10977)", 'type': 'BadRequestError', 'param': 'input_tokens', 'code': 400}}
+Selected Tables: []
+Error: No tables were selected.
+INFO:     127.0.0.1:48136 - "GET /api/chat/1775216890436/thinking?message_index=0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:48152 - "GET /api/history/1775216890436 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:48154 - "GET /api/chat/1775216890433/thinking?message_index=0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:48160 - "GET /api/history/1775216890433 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43488 - "GET /api/chat/1775216891757/thinking?message_index=0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43498 - "GET /api/history/1775216891757 HTTP/1.1" 200 OK
+WARNING: All log messages before absl::InitializeLog() is called are written to STDERR
+I0000 00:00:1775216980.030288  408612 chttp2_transport.cc:1353] unix:/tmp/tmp13ozzs0k_klclab_milvus.db.sock: Got goaway [11] err=UNAVAILABLE:GOAWAY received; Error code: 11; Debug Text: too_many_pings {grpc_status:14, http2_error:11}
+E0000 00:00:1775216980.030405  408612 chttp2_transport.cc:1385] unix:/tmp/tmp13ozzs0k_klclab_milvus.db.sock: Received a GOAWAY with error code ENHANCE_YOUR_CALM and debug data equal to "too_many_pings". Current keepalive time (before throttling): 10000ms
+INFO:     127.0.0.1:43514 - "DELETE /api/kb/kb_1775216890445 HTTP/1.1" 200 OK
+INFO:     Started server process [410603]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
+INFO:     127.0.0.1:45508 - "GET /openapi.json HTTP/1.1" 200 OK
+INFO:     127.0.0.1:45520 - "GET /api/chat/new_session HTTP/1.1" 200 OK
+2026-04-03 19:50:34 [debug    ] No banned substrings found
+2026-04-03 19:50:34 [debug    ] Scanner completed              elapsed_time_seconds=0.000524 is_valid=True scanner=BanSubstrings
+2026-04-03 19:50:34 [debug    ] No invisible characters found
+2026-04-03 19:50:34 [debug    ] Scanner completed              elapsed_time_seconds=0.000237 is_valid=True scanner=InvisibleText
+2026-04-03 19:50:35 [debug    ] No secrets detected in the prompt
+2026-04-03 19:50:35 [debug    ] Scanner completed              elapsed_time_seconds=0.157975 is_valid=True scanner=Secrets
+2026-04-03 19:50:35 [info     ] Scanned prompt                 elapsed_time_seconds=0.159334 scores={'BanSubstrings': -1.0, 'InvisibleText': 0.0, 'Secrets': -1.0}
+INFO:     127.0.0.1:45530 - "POST /api/chat HTTP/1.1" 200 OK
+INFO:     127.0.0.1:45536 - "GET /api/chat/new_session HTTP/1.1" 200 OK
+INFO:     127.0.0.1:45540 - "POST /api/kb/create HTTP/1.1" 200 OK
+2026-04-03 19:50:35 [debug    ] No banned substrings found
+2026-04-03 19:50:35 [debug    ] Scanner completed              elapsed_time_seconds=0.000412 is_valid=True scanner=BanSubstrings
+2026-04-03 19:50:35 [debug    ] No invisible characters found
+2026-04-03 19:50:35 [debug    ] Scanner completed              elapsed_time_seconds=9.9e-05 is_valid=True scanner=InvisibleText
+2026-04-03 19:50:35 [debug    ] No secrets detected in the prompt
+2026-04-03 19:50:35 [debug    ] Scanner completed              elapsed_time_seconds=0.006196 is_valid=True scanner=Secrets
+2026-04-03 19:50:35 [info     ] Scanned prompt                 elapsed_time_seconds=0.007051 scores={'BanSubstrings': -1.0, 'InvisibleText': 0.0, 'Secrets': -1.0}
+INFO:     127.0.0.1:45556 - "POST /api/chat HTTP/1.1" 200 OK
+INFO:     127.0.0.1:45564 - "POST /api/kb/kb_1775217035143/upload HTTP/1.1" 200 OK
+INFO:     127.0.0.1:38022 - "GET /api/chat/new_session HTTP/1.1" 200 OK
+2026-04-03 19:50:36 [debug    ] No banned substrings found
+2026-04-03 19:50:36 [debug    ] Scanner completed              elapsed_time_seconds=0.000332 is_valid=True scanner=BanSubstrings
+2026-04-03 19:50:36 [debug    ] No invisible characters found
+2026-04-03 19:50:36 [debug    ] Scanner completed              elapsed_time_seconds=0.000145 is_valid=True scanner=InvisibleText
+2026-04-03 19:50:36 [debug    ] No secrets detected in the prompt
+2026-04-03 19:50:36 [debug    ] Scanner completed              elapsed_time_seconds=0.005125 is_valid=True scanner=Secrets
+2026-04-03 19:50:36 [info     ] Scanned prompt                 elapsed_time_seconds=0.006703 scores={'BanSubstrings': -1.0, 'InvisibleText': 0.0, 'Secrets': -1.0}
+INFO:     127.0.0.1:38028 - "POST /api/chat HTTP/1.1" 200 OK
+DB initialized. All-in-Qwen Mode @ http://0.0.0.0:62274/v1 (model='Qwen3-32B')
+--- Pipeline Execution Round 1 ---
+Error in select_table: Error code: 400 - {'error': {'message': "This model's maximum context length is 12000 tokens. However, you requested 1024 output tokens and your prompt contains at least 10977 input tokens, for a total of at least 12001 tokens. Please reduce the length of the input prompt or the number of requested output tokens. (parameter=input_tokens, value=10977)", 'type': 'BadRequestError', 'param': 'input_tokens', 'code': 400}}
+Selected Tables: []
+Error: No tables were selected.
+--- Pipeline Execution Round 2 ---
+Error in select_table: Error code: 400 - {'error': {'message': "This model's maximum context length is 12000 tokens. However, you requested 1024 output tokens and your prompt contains at least 10977 input tokens, for a total of at least 12001 tokens. Please reduce the length of the input prompt or the number of requested output tokens. (parameter=input_tokens, value=10977)", 'type': 'BadRequestError', 'param': 'input_tokens', 'code': 400}}
+Selected Tables: []
+Error: No tables were selected.
+--- Pipeline Execution Round 3 ---
+Error in select_table: Error code: 400 - {'error': {'message': "This model's maximum context length is 12000 tokens. However, you requested 1024 output tokens and your prompt contains at least 10977 input tokens, for a total of at least 12001 tokens. Please reduce the length of the input prompt or the number of requested output tokens. (parameter=input_tokens, value=10977)", 'type': 'BadRequestError', 'param': 'input_tokens', 'code': 400}}
+Selected Tables: []
+Error: No tables were selected.
+--- Pipeline Execution Round 4 ---
+Error in select_table: Error code: 400 - {'error': {'message': "This model's maximum context length is 12000 tokens. However, you requested 1024 output tokens and your prompt contains at least 10977 input tokens, for a total of at least 12001 tokens. Please reduce the length of the input prompt or the number of requested output tokens. (parameter=input_tokens, value=10977)", 'type': 'BadRequestError', 'param': 'input_tokens', 'code': 400}}
+Selected Tables: []
+Error: No tables were selected.
+DB initialized. All-in-Qwen Mode @ http://0.0.0.0:62274/v1 (model='Qwen3-32B')
+--- Pipeline Execution Round 1 ---
+Error in select_table: Error code: 400 - {'error': {'message': "This model's maximum context length is 12000 tokens. However, you requested 1024 output tokens and your prompt contains at least 10977 input tokens, for a total of at least 12001 tokens. Please reduce the length of the input prompt or the number of requested output tokens. (parameter=input_tokens, value=10977)", 'type': 'BadRequestError', 'param': 'input_tokens', 'code': 400}}
+Selected Tables: []
+Error: No tables were selected.
+--- Pipeline Execution Round 2 ---
+Error in select_table: Error code: 400 - {'error': {'message': "This model's maximum context length is 12000 tokens. However, you requested 1024 output tokens and your prompt contains at least 10977 input tokens, for a total of at least 12001 tokens. Please reduce the length of the input prompt or the number of requested output tokens. (parameter=input_tokens, value=10977)", 'type': 'BadRequestError', 'param': 'input_tokens', 'code': 400}}
+Selected Tables: []
+Error: No tables were selected.
+--- Pipeline Execution Round 3 ---
+Error in select_table: Error code: 400 - {'error': {'message': "This model's maximum context length is 12000 tokens. However, you requested 1024 output tokens and your prompt contains at least 10977 input tokens, for a total of at least 12001 tokens. Please reduce the length of the input prompt or the number of requested output tokens. (parameter=input_tokens, value=10977)", 'type': 'BadRequestError', 'param': 'input_tokens', 'code': 400}}
+Selected Tables: []
+Error: No tables were selected.
+--- Pipeline Execution Round 4 ---
+Error in select_table: Error code: 400 - {'error': {'message': "This model's maximum context length is 12000 tokens. However, you requested 1024 output tokens and your prompt contains at least 10977 input tokens, for a total of at least 12001 tokens. Please reduce the length of the input prompt or the number of requested output tokens. (parameter=input_tokens, value=10977)", 'type': 'BadRequestError', 'param': 'input_tokens', 'code': 400}}
+Selected Tables: []
+Error: No tables were selected.
+INFO:     127.0.0.1:48240 - "GET /api/chat/1775217034943/thinking?message_index=0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:48242 - "GET /api/history/1775217034943 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:48258 - "GET /api/chat/1775217035136/thinking?message_index=0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:48270 - "GET /api/history/1775217035136 HTTP/1.1" 200 OK
+WARNING: All log messages before absl::InitializeLog() is called are written to STDERR
+I0000 00:00:1775217131.389801  410953 chttp2_transport.cc:1353] unix:/tmp/tmpsxa17hws_klclab_milvus.db.sock: Got goaway [11] err=UNAVAILABLE:GOAWAY received; Error code: 11; Debug Text: too_many_pings {grpc_status:14, http2_error:11}
+E0000 00:00:1775217131.389906  410953 chttp2_transport.cc:1385] unix:/tmp/tmpsxa17hws_klclab_milvus.db.sock: Received a GOAWAY with error code ENHANCE_YOUR_CALM and debug data equal to "too_many_pings". Current keepalive time (before throttling): 10000ms
+INFO:     127.0.0.1:46240 - "GET /api/chat/1775217036854/thinking?message_index=0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:46252 - "GET /api/history/1775217036854 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:46258 - "DELETE /api/kb/kb_1775217035143 HTTP/1.1" 200 OK
+INFO:     Started server process [413186]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
+INFO:     127.0.0.1:60000 - "GET /api/kb/list?page=1&size=10&_t=1775217269205 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60010 - "GET /api/history/list?search=&page=1&size=10&_t=1775217269954 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60024 - "GET /api/feedback/list?name=&enterprise=&type=like&feedback_type=%E7%82%B9%E8%B5%9E&page=1&size=10&_t=1775217270581 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60034 - "GET /api/feedback/list?name=&enterprise=&type=dislike&feedback_type=%E7%82%B9%E8%B8%A9&page=1&size=10&_t=1775217271206 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60048 - "GET /api/history/list?search=&_t=1775217272366 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60054 - "GET /api/history/1775217036854?_t=1775217272407 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60070 - "GET /api/chat/new_session?_t=1775217274486 HTTP/1.1" 200 OK
+2026-04-03 19:54:37 [debug    ] No banned substrings found
+2026-04-03 19:54:37 [debug    ] Scanner completed              elapsed_time_seconds=0.000685 is_valid=True scanner=BanSubstrings
+2026-04-03 19:54:37 [debug    ] No invisible characters found
+2026-04-03 19:54:37 [debug    ] Scanner completed              elapsed_time_seconds=0.000207 is_valid=True scanner=InvisibleText
+2026-04-03 19:54:37 [debug    ] No secrets detected in the prompt
+2026-04-03 19:54:37 [debug    ] Scanner completed              elapsed_time_seconds=0.07556 is_valid=True scanner=Secrets
+2026-04-03 19:54:37 [info     ] Scanned prompt                 elapsed_time_seconds=0.077074 scores={'BanSubstrings': -1.0, 'InvisibleText': 0.0, 'Secrets': -1.0}
+INFO:     127.0.0.1:37604 - "POST /api/chat HTTP/1.1" 200 OK
+INFO:     127.0.0.1:35424 - "GET /api/chat/1775217274499/thinking?message_index=0 HTTP/1.1" 200 OK
+2026-04-03 19:54:59 [debug    ] No banned substrings found
+2026-04-03 19:54:59 [debug    ] Scanner completed              elapsed_time_seconds=0.000492 is_valid=True scanner=BanSubstrings
+2026-04-03 19:54:59 [debug    ] No invisible characters found
+2026-04-03 19:54:59 [debug    ] Scanner completed              elapsed_time_seconds=0.0002 is_valid=True scanner=InvisibleText
+2026-04-03 19:54:59 [debug    ] No secrets detected in the prompt
+2026-04-03 19:54:59 [debug    ] Scanner completed              elapsed_time_seconds=0.122046 is_valid=True scanner=Secrets
+2026-04-03 19:54:59 [info     ] Scanned prompt                 elapsed_time_seconds=0.123373 scores={'BanSubstrings': -1.0, 'InvisibleText': 0.0, 'Secrets': -1.0}
+INFO:     127.0.0.1:60436 - "POST /api/chat HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57570 - "GET /api/history/1775216891757?_t=1775217390413 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57586 - "GET /api/history/1775216890433?_t=1775217390860 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57592 - "GET /api/history/1775217035136?_t=1775217391262 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53560 - "GET /api/chat/1775217274499/thinking?message_index=1 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52286 - "GET /api/history/1775216890436?_t=1775217477754 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52302 - "GET /api/history/1775216890327?_t=1775217478196 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52312 - "GET /api/history/1775216663367?_t=1775217478729 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52318 - "GET /api/history/1775216664813?_t=1775217479576 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52322 - "GET /api/history/1775216663545?_t=1775217480776 HTTP/1.1" 200 OK
+INFO:     Started server process [414569]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
+INFO:     127.0.0.1:40182 - "GET /openapi.json HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50652 - "GET /api/chat/new_session HTTP/1.1" 200 OK
+2026-04-03 20:00:34 [debug    ] No banned substrings found
+2026-04-03 20:00:34 [debug    ] Scanner completed              elapsed_time_seconds=0.00026 is_valid=True scanner=BanSubstrings
+2026-04-03 20:00:34 [debug    ] No invisible characters found
+2026-04-03 20:00:34 [debug    ] Scanner completed              elapsed_time_seconds=8.7e-05 is_valid=True scanner=InvisibleText
+2026-04-03 20:00:34 [debug    ] No secrets detected in the prompt
+2026-04-03 20:00:34 [debug    ] Scanner completed              elapsed_time_seconds=0.126773 is_valid=True scanner=Secrets
+2026-04-03 20:00:34 [info     ] Scanned prompt                 elapsed_time_seconds=0.12742 scores={'BanSubstrings': -1.0, 'InvisibleText': 0.0, 'Secrets': -1.0}
+INFO:     127.0.0.1:50662 - "POST /api/chat HTTP/1.1" 200 OK
+INFO:     Started server process [415387]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
+INFO:     127.0.0.1:43942 - "GET /api/history/list?search=&_t=1775217761981 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43946 - "GET /api/history/1775217634778?_t=1775217762063 HTTP/1.1" 200 OK
+2026-04-03 20:02:47 [debug    ] No banned substrings found
+2026-04-03 20:02:47 [debug    ] Scanner completed              elapsed_time_seconds=0.000576 is_valid=True scanner=BanSubstrings
+2026-04-03 20:02:47 [debug    ] No invisible characters found
+2026-04-03 20:02:47 [debug    ] Scanner completed              elapsed_time_seconds=0.000246 is_valid=True scanner=InvisibleText
+2026-04-03 20:02:47 [debug    ] No secrets detected in the prompt
+2026-04-03 20:02:47 [debug    ] Scanner completed              elapsed_time_seconds=0.158412 is_valid=True scanner=Secrets
+2026-04-03 20:02:47 [info     ] Scanned prompt                 elapsed_time_seconds=0.159815 scores={'BanSubstrings': -1.0, 'InvisibleText': 0.0, 'Secrets': -1.0}
+INFO:     127.0.0.1:47836 - "POST /api/chat HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58248 - "GET /api/chat/1775217634778/thinking?message_index=1 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:45410 - "GET /api/history/list?search=&_t=1775218184350 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:45424 - "GET /api/history/1775217634778?_t=1775218184408 HTTP/1.1" 200 OK
+INFO:     Started server process [418572]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
+INFO:     127.0.0.1:47726 - "GET /openapi.json HTTP/1.1" 200 OK
+INFO:     127.0.0.1:38028 - "GET /api/chat/new_session HTTP/1.1" 200 OK
+2026-04-03 20:10:25 [debug    ] No banned substrings found
+2026-04-03 20:10:25 [debug    ] Scanner completed              elapsed_time_seconds=0.00058 is_valid=True scanner=BanSubstrings
+2026-04-03 20:10:25 [debug    ] No invisible characters found
+2026-04-03 20:10:25 [debug    ] Scanner completed              elapsed_time_seconds=0.000224 is_valid=True scanner=InvisibleText
+2026-04-03 20:10:26 [debug    ] No secrets detected in the prompt
+2026-04-03 20:10:26 [debug    ] Scanner completed              elapsed_time_seconds=0.155419 is_valid=True scanner=Secrets
+2026-04-03 20:10:26 [info     ] Scanned prompt                 elapsed_time_seconds=0.156803 scores={'BanSubstrings': -1.0, 'InvisibleText': 0.0, 'Secrets': -1.0}
+INFO:     127.0.0.1:38044 - "POST /api/chat HTTP/1.1" 200 OK
+INFO:     127.0.0.1:46180 - "GET /api/chat/new_session HTTP/1.1" 200 OK
+2026-04-03 20:11:00 [debug    ] No banned substrings found
+2026-04-03 20:11:00 [debug    ] Scanner completed              elapsed_time_seconds=0.000478 is_valid=True scanner=BanSubstrings
+2026-04-03 20:11:00 [debug    ] No invisible characters found
+2026-04-03 20:11:00 [debug    ] Scanner completed              elapsed_time_seconds=0.00021 is_valid=True scanner=InvisibleText
+2026-04-03 20:11:00 [debug    ] No secrets detected in the prompt
+2026-04-03 20:11:00 [debug    ] Scanner completed              elapsed_time_seconds=0.011517 is_valid=True scanner=Secrets
+2026-04-03 20:11:00 [info     ] Scanned prompt                 elapsed_time_seconds=0.012967 scores={'BanSubstrings': -1.0, 'InvisibleText': 0.0, 'Secrets': -1.0}
+INFO:     127.0.0.1:46182 - "POST /api/chat HTTP/1.1" 200 OK
+INFO:     127.0.0.1:48344 - "GET /api/chat/new_session HTTP/1.1" 200 OK
+2026-04-03 20:11:26 [debug    ] No banned substrings found
+2026-04-03 20:11:26 [debug    ] Scanner completed              elapsed_time_seconds=0.000391 is_valid=True scanner=BanSubstrings
+2026-04-03 20:11:26 [debug    ] No invisible characters found
+2026-04-03 20:11:26 [debug    ] Scanner completed              elapsed_time_seconds=0.000189 is_valid=True scanner=InvisibleText
+2026-04-03 20:11:26 [debug    ] No secrets detected in the prompt
+2026-04-03 20:11:26 [debug    ] Scanner completed              elapsed_time_seconds=0.008131 is_valid=True scanner=Secrets
+2026-04-03 20:11:26 [info     ] Scanned prompt                 elapsed_time_seconds=0.00945 scores={'BanSubstrings': -1.0, 'InvisibleText': 0.0, 'Secrets': -1.0}
+INFO:     127.0.0.1:48354 - "POST /api/chat HTTP/1.1" 200 OK
+INFO:     Started server process [419781]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
+INFO:     127.0.0.1:44862 - "GET /api/history/list?search=&_t=1775218387321 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:44870 - "GET /api/history/1775218286579?_t=1775218387391 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:44884 - "GET /api/chat/new_session?_t=1775218389746 HTTP/1.1" 200 OK
+2026-04-03 20:13:13 [debug    ] No banned substrings found
+2026-04-03 20:13:13 [debug    ] Scanner completed              elapsed_time_seconds=0.000892 is_valid=True scanner=BanSubstrings
+2026-04-03 20:13:13 [debug    ] No invisible characters found
+2026-04-03 20:13:13 [debug    ] Scanner completed              elapsed_time_seconds=0.00037 is_valid=True scanner=InvisibleText
+2026-04-03 20:13:13 [debug    ] No secrets detected in the prompt
+2026-04-03 20:13:13 [debug    ] Scanner completed              elapsed_time_seconds=0.077847 is_valid=True scanner=Secrets
+2026-04-03 20:13:13 [info     ] Scanned prompt                 elapsed_time_seconds=0.079774 scores={'BanSubstrings': -1.0, 'InvisibleText': 0.0, 'Secrets': -1.0}
+INFO:     127.0.0.1:44896 - "POST /api/chat HTTP/1.1" 200 OK
+2026-04-03 20:13:38 [debug    ] No banned substrings found
+2026-04-03 20:13:38 [debug    ] Scanner completed              elapsed_time_seconds=0.000834 is_valid=True scanner=BanSubstrings
+2026-04-03 20:13:38 [debug    ] No invisible characters found
+2026-04-03 20:13:38 [debug    ] Scanner completed              elapsed_time_seconds=0.000234 is_valid=True scanner=InvisibleText
+2026-04-03 20:13:38 [debug    ] No secrets detected in the prompt
+2026-04-03 20:13:38 [debug    ] Scanner completed              elapsed_time_seconds=0.124787 is_valid=True scanner=Secrets
+2026-04-03 20:13:38 [info     ] Scanned prompt                 elapsed_time_seconds=0.126479 scores={'BanSubstrings': -1.0, 'InvisibleText': 0.0, 'Secrets': -1.0}
+INFO:     127.0.0.1:48688 - "POST /api/chat HTTP/1.1" 200 OK
+INFO:     Started server process [420880]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
+INFO:     127.0.0.1:35614 - "GET /openapi.json HTTP/1.1" 200 OK
+INFO:     127.0.0.1:37008 - "GET /api/chat/new_session HTTP/1.1" 200 OK
+2026-04-03 20:16:57 [debug    ] No banned substrings found
+2026-04-03 20:16:57 [debug    ] Scanner completed              elapsed_time_seconds=0.000692 is_valid=True scanner=BanSubstrings
+2026-04-03 20:16:57 [debug    ] No invisible characters found
+2026-04-03 20:16:57 [debug    ] Scanner completed              elapsed_time_seconds=0.000239 is_valid=True scanner=InvisibleText
+2026-04-03 20:16:57 [debug    ] No secrets detected in the prompt
+2026-04-03 20:16:57 [debug    ] Scanner completed              elapsed_time_seconds=0.075298 is_valid=True scanner=Secrets
+2026-04-03 20:16:57 [info     ] Scanned prompt                 elapsed_time_seconds=0.07694 scores={'BanSubstrings': -1.0, 'InvisibleText': 0.0, 'Secrets': -1.0}
+INFO:     127.0.0.1:37014 - "POST /api/chat HTTP/1.1" 200 OK
+[recommendations] failed: Extra data: line 2 column 1 (char 16)
+INFO:     Started server process [421971]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
+INFO:     127.0.0.1:43332 - "GET /api/history/list?search=&_t=1775218759490 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43338 - "GET /api/history/1775218617641?_t=1775218759531 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43346 - "GET /api/chat/new_session?_t=1775218761266 HTTP/1.1" 200 OK
+2026-04-03 20:19:51 [debug    ] No banned substrings found
+2026-04-03 20:19:51 [debug    ] Scanner completed              elapsed_time_seconds=0.00058 is_valid=True scanner=BanSubstrings
+2026-04-03 20:19:51 [debug    ] No invisible characters found
+2026-04-03 20:19:51 [debug    ] Scanner completed              elapsed_time_seconds=0.000208 is_valid=True scanner=InvisibleText
+2026-04-03 20:19:51 [debug    ] No secrets detected in the prompt
+2026-04-03 20:19:51 [debug    ] Scanner completed              elapsed_time_seconds=0.069863 is_valid=True scanner=Secrets
+2026-04-03 20:19:51 [info     ] Scanned prompt                 elapsed_time_seconds=0.071263 scores={'BanSubstrings': -1.0, 'InvisibleText': 0.0, 'Secrets': -1.0}
+INFO:     127.0.0.1:51144 - "POST /api/chat HTTP/1.1" 200 OK
+2026-04-03 20:20:22 [debug    ] No banned substrings found
+2026-04-03 20:20:22 [debug    ] Scanner completed              elapsed_time_seconds=0.000632 is_valid=True scanner=BanSubstrings
+2026-04-03 20:20:22 [debug    ] No invisible characters found
+2026-04-03 20:20:22 [debug    ] Scanner completed              elapsed_time_seconds=0.000216 is_valid=True scanner=InvisibleText
+2026-04-03 20:20:22 [debug    ] No secrets detected in the prompt
+2026-04-03 20:20:22 [debug    ] Scanner completed              elapsed_time_seconds=0.122405 is_valid=True scanner=Secrets
+2026-04-03 20:20:22 [info     ] Scanned prompt                 elapsed_time_seconds=0.123887 scores={'BanSubstrings': -1.0, 'InvisibleText': 0.0, 'Secrets': -1.0}
+INFO:     127.0.0.1:39498 - "POST /api/chat HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60154 - "GET /api/history/1775218389756?_t=1775218880346 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60170 - "GET /api/history/1775218286579?_t=1775218880713 HTTP/1.1" 200 OK
+INFO:     Started server process [422748]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
+INFO:     127.0.0.1:58370 - "GET /openapi.json HTTP/1.1" 200 OK
+INFO:     Started server process [423344]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
+INFO:     127.0.0.1:59274 - "GET /openapi.json HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56870 - "GET /api/chat/new_session HTTP/1.1" 200 OK
+2026-04-03 20:22:56 [debug    ] No banned substrings found
+2026-04-03 20:22:56 [debug    ] Scanner completed              elapsed_time_seconds=0.000371 is_valid=True scanner=BanSubstrings
+2026-04-03 20:22:56 [debug    ] No invisible characters found
+2026-04-03 20:22:56 [debug    ] Scanner completed              elapsed_time_seconds=0.000107 is_valid=True scanner=InvisibleText
+2026-04-03 20:22:56 [debug    ] No secrets detected in the prompt
+2026-04-03 20:22:56 [debug    ] Scanner completed              elapsed_time_seconds=0.070123 is_valid=True scanner=Secrets
+2026-04-03 20:22:56 [info     ] Scanned prompt                 elapsed_time_seconds=0.071033 scores={'BanSubstrings': -1.0, 'InvisibleText': 0.0, 'Secrets': -1.0}
+INFO:     127.0.0.1:56886 - "POST /api/chat HTTP/1.1" 200 OK
+[recommendations] failed: Extra data: line 2 column 1 (char 16)
+INFO:     127.0.0.1:44960 - "GET /api/chat/1775218976524/thinking?message_index=0 HTTP/1.1" 200 OK
+INFO:     Started server process [423920]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
+INFO:     127.0.0.1:38376 - "GET /api/history/list?search=&_t=1775219018831 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:38380 - "GET /api/history/1775218976524?_t=1775219018894 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:38382 - "GET /api/chat/new_session?_t=1775219020494 HTTP/1.1" 200 OK
+2026-04-03 20:23:43 [debug    ] No banned substrings found
+2026-04-03 20:23:43 [debug    ] Scanner completed              elapsed_time_seconds=0.000464 is_valid=True scanner=BanSubstrings
+2026-04-03 20:23:43 [debug    ] No invisible characters found
+2026-04-03 20:23:43 [debug    ] Scanner completed              elapsed_time_seconds=0.000195 is_valid=True scanner=InvisibleText
+2026-04-03 20:23:43 [debug    ] No secrets detected in the prompt
+2026-04-03 20:23:43 [debug    ] Scanner completed              elapsed_time_seconds=0.07516 is_valid=True scanner=Secrets
+2026-04-03 20:23:43 [info     ] Scanned prompt                 elapsed_time_seconds=0.076369 scores={'BanSubstrings': -1.0, 'InvisibleText': 0.0, 'Secrets': -1.0}
+INFO:     127.0.0.1:38390 - "POST /api/chat HTTP/1.1" 200 OK
+[recommendations] failed: Extra data: line 2 column 1 (char 16)
+2026-04-03 20:24:00 [debug    ] No banned substrings found
+2026-04-03 20:24:00 [debug    ] Scanner completed              elapsed_time_seconds=0.000525 is_valid=True scanner=BanSubstrings
+2026-04-03 20:24:00 [debug    ] No invisible characters found
+2026-04-03 20:24:00 [debug    ] Scanner completed              elapsed_time_seconds=0.000198 is_valid=True scanner=InvisibleText
+2026-04-03 20:24:01 [debug    ] No secrets detected in the prompt
+2026-04-03 20:24:01 [debug    ] Scanner completed              elapsed_time_seconds=0.121747 is_valid=True scanner=Secrets
+2026-04-03 20:24:01 [info     ] Scanned prompt                 elapsed_time_seconds=0.123074 scores={'BanSubstrings': -1.0, 'InvisibleText': 0.0, 'Secrets': -1.0}
+INFO:     127.0.0.1:55476 - "POST /api/chat HTTP/1.1" 200 OK
+INFO:     127.0.0.1:34612 - "GET /api/chat/new_session HTTP/1.1" 200 OK
+2026-04-03 20:24:49 [debug    ] No banned substrings found
+2026-04-03 20:24:49 [debug    ] Scanner completed              elapsed_time_seconds=0.000421 is_valid=True scanner=BanSubstrings
+2026-04-03 20:24:49 [debug    ] No invisible characters found
+2026-04-03 20:24:49 [debug    ] Scanner completed              elapsed_time_seconds=0.000226 is_valid=True scanner=InvisibleText
+2026-04-03 20:24:49 [debug    ] No secrets detected in the prompt
+2026-04-03 20:24:49 [debug    ] Scanner completed              elapsed_time_seconds=0.010843 is_valid=True scanner=Secrets
+2026-04-03 20:24:49 [info     ] Scanned prompt                 elapsed_time_seconds=0.012338 scores={'BanSubstrings': -1.0, 'InvisibleText': 0.0, 'Secrets': -1.0}
+INFO:     127.0.0.1:34628 - "POST /api/chat HTTP/1.1" 200 OK
+INFO:     127.0.0.1:41274 - "GET /api/history/list?search=&_t=1775219108510 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:41290 - "GET /api/history/1775219089813?_t=1775219108545 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:41298 - "GET /api/history/1775219089813 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:41300 - "GET /api/chat/1775219089813/thinking?message_index=0 HTTP/1.1" 200 OK
+INFO:     Started server process [424740]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
+INFO:     127.0.0.1:42002 - "GET /openapi.json HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51684 - "GET /api/chat/new_session HTTP/1.1" 200 OK
+2026-04-03 20:25:57 [debug    ] No banned substrings found
+2026-04-03 20:25:57 [debug    ] Scanner completed              elapsed_time_seconds=0.000494 is_valid=True scanner=BanSubstrings
+2026-04-03 20:25:57 [debug    ] No invisible characters found
+2026-04-03 20:25:57 [debug    ] Scanner completed              elapsed_time_seconds=0.000216 is_valid=True scanner=InvisibleText
+2026-04-03 20:25:57 [debug    ] No secrets detected in the prompt
+2026-04-03 20:25:57 [debug    ] Scanner completed              elapsed_time_seconds=0.157077 is_valid=True scanner=Secrets
+2026-04-03 20:25:57 [info     ] Scanned prompt                 elapsed_time_seconds=0.158413 scores={'BanSubstrings': -1.0, 'InvisibleText': 0.0, 'Secrets': -1.0}
+INFO:     127.0.0.1:51692 - "POST /api/chat HTTP/1.1" 200 OK
+INFO:     Started server process [426152]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
+INFO:     127.0.0.1:56084 - "GET /openapi.json HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56088 - "GET /api/chat/new_session HTTP/1.1" 200 OK
+2026-04-03 20:27:54 [debug    ] No banned substrings found
+2026-04-03 20:27:54 [debug    ] Scanner completed              elapsed_time_seconds=0.000345 is_valid=True scanner=BanSubstrings
+2026-04-03 20:27:54 [debug    ] No invisible characters found
+2026-04-03 20:27:54 [debug    ] Scanner completed              elapsed_time_seconds=0.000128 is_valid=True scanner=InvisibleText
+2026-04-03 20:27:54 [debug    ] No secrets detected in the prompt
+2026-04-03 20:27:54 [debug    ] Scanner completed              elapsed_time_seconds=0.194793 is_valid=True scanner=Secrets
+2026-04-03 20:27:54 [info     ] Scanned prompt                 elapsed_time_seconds=0.195719 scores={'BanSubstrings': -1.0, 'InvisibleText': 0.0, 'Secrets': -1.0}
+INFO:     127.0.0.1:56090 - "POST /api/chat HTTP/1.1" 200 OK
+INFO:     Started server process [426620]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
+INFO:     127.0.0.1:39872 - "GET /openapi.json HTTP/1.1" 200 OK
+INFO:     127.0.0.1:39884 - "GET /api/chat/new_session HTTP/1.1" 200 OK
+2026-04-03 20:28:34 [debug    ] No banned substrings found
+2026-04-03 20:28:34 [debug    ] Scanner completed              elapsed_time_seconds=0.000703 is_valid=True scanner=BanSubstrings
+2026-04-03 20:28:34 [debug    ] No invisible characters found
+2026-04-03 20:28:34 [debug    ] Scanner completed              elapsed_time_seconds=0.000232 is_valid=True scanner=InvisibleText
+2026-04-03 20:28:34 [debug    ] No secrets detected in the prompt
+2026-04-03 20:28:34 [debug    ] Scanner completed              elapsed_time_seconds=0.157014 is_valid=True scanner=Secrets
+2026-04-03 20:28:34 [info     ] Scanned prompt                 elapsed_time_seconds=0.158593 scores={'BanSubstrings': -1.0, 'InvisibleText': 0.0, 'Secrets': -1.0}
+INFO:     127.0.0.1:39896 - "POST /api/chat HTTP/1.1" 200 OK
+INFO:     Started server process [427347]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
+INFO:     127.0.0.1:44946 - "GET /api/chat/new_session?_t=1775219393227 HTTP/1.1" 200 OK
+2026-04-03 20:30:03 [debug    ] No banned substrings found
+2026-04-03 20:30:03 [debug    ] Scanner completed              elapsed_time_seconds=0.000953 is_valid=True scanner=BanSubstrings
+2026-04-03 20:30:03 [debug    ] No invisible characters found
+2026-04-03 20:30:03 [debug    ] Scanner completed              elapsed_time_seconds=0.000213 is_valid=True scanner=InvisibleText
+2026-04-03 20:30:03 [debug    ] No secrets detected in the prompt
+2026-04-03 20:30:03 [debug    ] Scanner completed              elapsed_time_seconds=0.158643 is_valid=True scanner=Secrets
+2026-04-03 20:30:03 [info     ] Scanned prompt                 elapsed_time_seconds=0.160448 scores={'BanSubstrings': -1.0, 'InvisibleText': 0.0, 'Secrets': -1.0}
+INFO:     127.0.0.1:42974 - "POST /api/chat HTTP/1.1" 200 OK
+INFO:     127.0.0.1:34670 - "GET /api/history/list?search=&_t=1775219419635 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:34676 - "GET /api/history/1775219314560?_t=1775219419691 HTTP/1.1" 200 OK
+2026-04-03 20:30:38 [debug    ] No banned substrings found
+2026-04-03 20:30:38 [debug    ] Scanner completed              elapsed_time_seconds=0.000733 is_valid=True scanner=BanSubstrings
+2026-04-03 20:30:38 [debug    ] No invisible characters found
+2026-04-03 20:30:38 [debug    ] Scanner completed              elapsed_time_seconds=0.000257 is_valid=True scanner=InvisibleText
+2026-04-03 20:30:38 [debug    ] No secrets detected in the prompt
+2026-04-03 20:30:38 [debug    ] Scanner completed              elapsed_time_seconds=0.012805 is_valid=True scanner=Secrets
+2026-04-03 20:30:38 [info     ] Scanned prompt                 elapsed_time_seconds=0.014535 scores={'BanSubstrings': -1.0, 'InvisibleText': 0.0, 'Secrets': -1.0}
+INFO:     127.0.0.1:39026 - "POST /api/chat HTTP/1.1" 200 OK
+DB initialized. All-in-Qwen Mode @ http://10.249.40.204:62272/v1 (model='Qwen3.5-27B')
+--- Pipeline Execution Round 1 ---
+[Selector Output]: 用户想要查询"总发票额度"。我需要从数据库表中找出与发票相关的表。
+
+让我分析一下与发票相关的表：
+
+1. `t_invoice` (发票表) - 这是最直接的发票表，包含发票号码、发票代码、发票类型、开票日期、发票金额、发票税额、发票总额等字段。这是查询总发票额度的核心表。
+
+2. `t_invoice_asset_association` (发票_资产关联) - 关联发票和资产，可能包含发票信息。
+
+3. `t_invoice_associated_expense_date` (发票_日期关联) - 关联发票和费用日期。
+
+4. `tb_voucher_invoice` (凭证 - 发票关联表) - 关联凭证和发票。
+
+5. `tb_cost_details_invoice` (费用发票关联表) - 关联费用明细和发票。
+
+6. `t_voucher` (项目 - 凭证表) - 凭证表，可能包含发票关联信息。
+
+7. `t_voucher_project_apportion_detail` (凭证分摊详细组成表) - 可能包含发票相关信息。
+
+8. `t_voucher_project_apportion` (凭证项目分摊表) - 可能包含发票相关信息。
+
+对于查询"总发票额度"，最相关的表应该是：
+1. `t_invoice` - 核心发票表，包含发票金额、发票税额、发票总额等字段
+
+
+2. `tb_voucher_invoice` - 凭证与发票的关联表
+3. `tb_cost_details_invoice` - 费用明细与发票的关联表
+4. `t_voucher` - 凭证表，可能包含发票关联信息
+5. `t_invoice_asset_association` - 发票与资产关联
+6. `t_invoice_associated_expense_date` - 发票与费用日期关联
+
+这些表涵盖了发票的核心数据、与凭证的关联、与费用的关联以及与资产的关联，能够全面支持总发票额度的查询需求。
+</think>
+
+<RES>t_invoice, tb_voucher_invoice, tb_cost_details_invoice, t_voucher, t_invoice_asset_association, t_invoice_associated_expense_date, t_voucher_project_apportion, t_voucher_project_apportion_detail</RES>
+Selected Tables: ['t_invoice', 'tb_voucher_invoice', 'tb_cost_details_invoice', 't_voucher', 't_invoice_asset_association', 't_invoice_associated_expense_date', 't_voucher_project_apportion', 't_voucher_project_apportion_detail']
+[SQLCoder Output]: The user wants to query the total invoice amount (总发票额度).
+
+Looking at the database schema, I need to find the table that contains invoice information and the field that represents the invoice amount.
+
+From the schema:
+- `t_invoice` table contains invoice information
+- `INVOICE_AMOUNT` - 发票金额 (invoice amount)
+- `INVOICE_TAX_AMOUNT` - 发票税额 (invoice tax amount)
+- `INVOICE_TOTAL_AMOUNT` - 发票总额 (invoice total amount)
+
+The question asks for "总发票额度" which likely means the total invoice amount. This could be:
+1. `INVOICE_TOTAL_AMOUNT` - the total amount of invoices
+2. Sum of `INVOICE_AMOUNT` across all invoices
+
+Since "总发票额度" typically means the total amount of all invoices, I should sum up the invoice amounts. The most appropriate field would be `INVOICE_TOTAL_AMOUNT` or `INVOICE_AMOUNT`. Given the context of "总发票额度" (total invoice quota/amount), I'll use `INVOICE_TOTAL_AMOUNT` as it represents the total amount of each invoice.
+
+Let me write a SQL query to sum up the total invoice amounts:
+
+```sql
+SELECT SUM(INVOICE_TOTAL_AMOUNT) FROM t_invoice
+```
+
+Or if they want the sum of invoice amounts:
+```sql
+SELECT SUM(INVOICE_AMOUNT) FROM t_invoice
+```
+
+Since "总发票额度" suggests the total amount, I'll use `INVOICE_TOTAL_AMOUNT` as it's more comprehensive (includes tax).
+
+Actually, looking at the field names:
+- `INVOICE_AMOUNT` - 发票金额 (invoice amount, likely the base amount)
+- `INVOICE_TAX_AMOUNT` - 发票税额 (tax amount)
+- `INVOICE_TOTAL_AMOUNT` - 发票总额 (total amount including tax)
+
+For "总发票额度" (total invoice amount), `INVOICE_TOTAL_AMOUNT` seems most appropriate.
+
+
+```sql
+SELECT SUM(INVOICE_TOTAL_AMOUNT) FROM t_invoice
+```
+
+This query will return the sum of all invoice total amounts.
+</think>
+
+SELECT SUM(INVOICE_TOTAL_AMOUNT) FROM t_invoice
+Generated SQL: SELECT SUM(INVOICE_TOTAL_AMOUNT)
+FROM t_invoice
+SQL Executed Successfully.
+answer {'rowcount': 1, 'fields': ['SUM(INVOICE_TOTAL_AMOUNT)'], 'data': [{'SUM(INVOICE_TOTAL_AMOUNT)': Decimal('99426.02000')}]}
+INFO:     127.0.0.1:45976 - "GET /api/chat/new_session?_t=1775219539426 HTTP/1.1" 200 OK
+2026-04-03 20:32:30 [debug    ] No banned substrings found
+2026-04-03 20:32:30 [debug    ] Scanner completed              elapsed_time_seconds=0.000796 is_valid=True scanner=BanSubstrings
+2026-04-03 20:32:30 [debug    ] No invisible characters found
+2026-04-03 20:32:30 [debug    ] Scanner completed              elapsed_time_seconds=0.000195 is_valid=True scanner=InvisibleText
+2026-04-03 20:32:30 [debug    ] No secrets detected in the prompt
+2026-04-03 20:32:30 [debug    ] Scanner completed              elapsed_time_seconds=0.010964 is_valid=True scanner=Secrets
+2026-04-03 20:32:30 [info     ] Scanned prompt                 elapsed_time_seconds=0.012731 scores={'BanSubstrings': -1.0, 'InvisibleText': 0.0, 'Secrets': -1.0}
+INFO:     127.0.0.1:59512 - "POST /api/chat HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50520 - "GET /api/history/list?search=&_t=1775219561519 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50534 - "GET /api/history/1775219314560?_t=1775219561575 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50542 - "GET /api/history/1775219020509?_t=1775219562897 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50550 - "GET /api/history/1775219157652?_t=1775219563929 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50566 - "GET /api/history/1775219089813?_t=1775219564461 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50570 - "GET /api/history/1775218976524?_t=1775219565462 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50572 - "GET /api/history/1775218761272?_t=1775219565761 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50574 - "GET /api/history/1775218617641?_t=1775219566155 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:47684 - "GET /api/history/1775218286579?_t=1775219566511 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:47696 - "GET /api/history/1775218389756?_t=1775219567593 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:47710 - "GET /api/history/1775219274427?_t=1775219571528 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:47712 - "GET /api/chat/new_session?_t=1775219572726 HTTP/1.1" 200 OK
+2026-04-03 20:32:58 [debug    ] No banned substrings found
+2026-04-03 20:32:58 [debug    ] Scanner completed              elapsed_time_seconds=0.000428 is_valid=True scanner=BanSubstrings
+2026-04-03 20:32:58 [debug    ] No invisible characters found
+2026-04-03 20:32:58 [debug    ] Scanner completed              elapsed_time_seconds=0.00019 is_valid=True scanner=InvisibleText
+2026-04-03 20:32:58 [debug    ] No secrets detected in the prompt
+2026-04-03 20:32:58 [debug    ] Scanner completed              elapsed_time_seconds=0.010283 is_valid=True scanner=Secrets
+2026-04-03 20:32:58 [info     ] Scanned prompt                 elapsed_time_seconds=0.011589 scores={'BanSubstrings': -1.0, 'InvisibleText': 0.0, 'Secrets': -1.0}
+INFO:     127.0.0.1:43300 - "POST /api/chat HTTP/1.1" 200 OK
+INFO:     Started server process [430300]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
+INFO:     127.0.0.1:54268 - "GET /openapi.json HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56446 - "GET /api/chat/new_session HTTP/1.1" 200 OK
+2026-04-03 20:36:40 [debug    ] No banned substrings found
+2026-04-03 20:36:40 [debug    ] Scanner completed              elapsed_time_seconds=0.000745 is_valid=True scanner=BanSubstrings
+2026-04-03 20:36:40 [debug    ] No invisible characters found
+2026-04-03 20:36:40 [debug    ] Scanner completed              elapsed_time_seconds=0.00023 is_valid=True scanner=InvisibleText
+2026-04-03 20:36:41 [debug    ] No secrets detected in the prompt
+2026-04-03 20:36:41 [debug    ] Scanner completed              elapsed_time_seconds=0.077636 is_valid=True scanner=Secrets
+2026-04-03 20:36:41 [info     ] Scanned prompt                 elapsed_time_seconds=0.079345 scores={'BanSubstrings': -1.0, 'InvisibleText': 0.0, 'Secrets': -1.0}
+INFO:     127.0.0.1:56458 - "POST /api/chat HTTP/1.1" 200 OK
+[recommendations] failed: Extra data: line 2 column 1 (char 16)
+INFO:     Started server process [430877]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
+INFO:     127.0.0.1:54316 - "GET /api/history/list?search=&_t=1775219840893 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54324 - "GET /api/history/1775219800907?_t=1775219840988 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54330 - "GET /api/chat/new_session?_t=1775219842407 HTTP/1.1" 200 OK
+2026-04-03 20:37:25 [debug    ] No banned substrings found
+2026-04-03 20:37:25 [debug    ] Scanner completed              elapsed_time_seconds=0.000556 is_valid=True scanner=BanSubstrings
+2026-04-03 20:37:25 [debug    ] No invisible characters found
+2026-04-03 20:37:25 [debug    ] Scanner completed              elapsed_time_seconds=0.000218 is_valid=True scanner=InvisibleText
+2026-04-03 20:37:25 [debug    ] No secrets detected in the prompt
+2026-04-03 20:37:25 [debug    ] Scanner completed              elapsed_time_seconds=0.076886 is_valid=True scanner=Secrets
+2026-04-03 20:37:25 [info     ] Scanned prompt                 elapsed_time_seconds=0.078263 scores={'BanSubstrings': -1.0, 'InvisibleText': 0.0, 'Secrets': -1.0}
+INFO:     127.0.0.1:54346 - "POST /api/chat HTTP/1.1" 200 OK
+[recommendations] failed: Extra data: line 2 column 1 (char 16)
+2026-04-03 20:37:46 [debug    ] No banned substrings found
+2026-04-03 20:37:46 [debug    ] Scanner completed              elapsed_time_seconds=0.000694 is_valid=True scanner=BanSubstrings
+2026-04-03 20:37:46 [debug    ] No invisible characters found
+2026-04-03 20:37:46 [debug    ] Scanner completed              elapsed_time_seconds=0.000255 is_valid=True scanner=InvisibleText
+2026-04-03 20:37:46 [debug    ] No secrets detected in the prompt
+2026-04-03 20:37:46 [debug    ] Scanner completed              elapsed_time_seconds=0.12394 is_valid=True scanner=Secrets
+2026-04-03 20:37:46 [info     ] Scanned prompt                 elapsed_time_seconds=0.125494 scores={'BanSubstrings': -1.0, 'InvisibleText': 0.0, 'Secrets': -1.0}
+INFO:     127.0.0.1:53006 - "POST /api/chat HTTP/1.1" 200 OK
+INFO:     Started server process [432105]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
+INFO:     127.0.0.1:37532 - "GET /openapi.json HTTP/1.1" 200 OK
+INFO:     127.0.0.1:45650 - "GET /api/chat/new_session HTTP/1.1" 200 OK
+2026-04-03 20:41:51 [debug    ] No banned substrings found
+2026-04-03 20:41:51 [debug    ] Scanner completed              elapsed_time_seconds=0.000535 is_valid=True scanner=BanSubstrings
+2026-04-03 20:41:51 [debug    ] No invisible characters found
+2026-04-03 20:41:51 [debug    ] Scanner completed              elapsed_time_seconds=0.000246 is_valid=True scanner=InvisibleText
+2026-04-03 20:41:51 [debug    ] No secrets detected in the prompt
+2026-04-03 20:41:51 [debug    ] Scanner completed              elapsed_time_seconds=0.07695 is_valid=True scanner=Secrets
+2026-04-03 20:41:51 [info     ] Scanned prompt                 elapsed_time_seconds=0.078402 scores={'BanSubstrings': -1.0, 'InvisibleText': 0.0, 'Secrets': -1.0}
+INFO:     127.0.0.1:45658 - "POST /api/chat HTTP/1.1" 200 OK
+INFO:     Started server process [432712]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
+INFO:     127.0.0.1:60814 - "GET /api/history/list?search=&_t=1775220159447 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60826 - "GET /api/history/1775219842443?_t=1775220159515 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60836 - "GET /api/chat/new_session?_t=1775220160847 HTTP/1.1" 200 OK
+2026-04-03 20:42:53 [debug    ] No banned substrings found
+2026-04-03 20:42:53 [debug    ] Scanner completed              elapsed_time_seconds=0.000699 is_valid=True scanner=BanSubstrings
+2026-04-03 20:42:53 [debug    ] No invisible characters found
+2026-04-03 20:42:53 [debug    ] Scanner completed              elapsed_time_seconds=0.00023 is_valid=True scanner=InvisibleText
+2026-04-03 20:42:53 [debug    ] No secrets detected in the prompt
+2026-04-03 20:42:53 [debug    ] Scanner completed              elapsed_time_seconds=0.079791 is_valid=True scanner=Secrets
+2026-04-03 20:42:53 [info     ] Scanned prompt                 elapsed_time_seconds=0.081584 scores={'BanSubstrings': -1.0, 'InvisibleText': 0.0, 'Secrets': -1.0}
+INFO:     127.0.0.1:35998 - "POST /api/chat HTTP/1.1" 200 OK
+[recommendations] failed: Extra data: line 2 column 1 (char 16)
+2026-04-03 20:43:14 [debug    ] No banned substrings found
+2026-04-03 20:43:14 [debug    ] Scanner completed              elapsed_time_seconds=0.000907 is_valid=True scanner=BanSubstrings
+2026-04-03 20:43:14 [debug    ] No invisible characters found
+2026-04-03 20:43:14 [debug    ] Scanner completed              elapsed_time_seconds=0.000262 is_valid=True scanner=InvisibleText
+2026-04-03 20:43:14 [debug    ] No secrets detected in the prompt
+2026-04-03 20:43:14 [debug    ] Scanner completed              elapsed_time_seconds=0.122016 is_valid=True scanner=Secrets
+2026-04-03 20:43:14 [info     ] Scanned prompt                 elapsed_time_seconds=0.123894 scores={'BanSubstrings': -1.0, 'InvisibleText': 0.0, 'Secrets': -1.0}
+INFO:     127.0.0.1:38774 - "POST /api/chat HTTP/1.1" 200 OK
+[recommendations] failed: Extra data: line 2 column 1 (char 18)
+INFO:     Started server process [434111]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
+INFO:     127.0.0.1:58528 - "GET /openapi.json HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52668 - "GET /api/chat/new_session HTTP/1.1" 200 OK
+2026-04-03 20:48:01 [debug    ] No banned substrings found
+2026-04-03 20:48:01 [debug    ] Scanner completed              elapsed_time_seconds=0.000474 is_valid=True scanner=BanSubstrings
+2026-04-03 20:48:01 [debug    ] No invisible characters found
+2026-04-03 20:48:01 [debug    ] Scanner completed              elapsed_time_seconds=0.000208 is_valid=True scanner=InvisibleText
+2026-04-03 20:48:01 [debug    ] No secrets detected in the prompt
+2026-04-03 20:48:01 [debug    ] Scanner completed              elapsed_time_seconds=0.153905 is_valid=True scanner=Secrets
+2026-04-03 20:48:01 [info     ] Scanned prompt                 elapsed_time_seconds=0.155182 scores={'BanSubstrings': -1.0, 'InvisibleText': 0.0, 'Secrets': -1.0}
+INFO:     127.0.0.1:52676 - "POST /api/chat HTTP/1.1" 200 OK
+INFO:     Started server process [435026]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
+INFO:     127.0.0.1:56354 - "GET /api/history/list?search=&_t=1775220583670 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56370 - "GET /api/history/1775220481253?_t=1775220583737 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56384 - "GET /api/chat/new_session?_t=1775220585788 HTTP/1.1" 200 OK
+2026-04-03 20:49:53 [debug    ] No banned substrings found
+2026-04-03 20:49:53 [debug    ] Scanner completed              elapsed_time_seconds=0.00055 is_valid=True scanner=BanSubstrings
+2026-04-03 20:49:53 [debug    ] No invisible characters found
+2026-04-03 20:49:53 [debug    ] Scanner completed              elapsed_time_seconds=0.00023 is_valid=True scanner=InvisibleText
+2026-04-03 20:49:53 [debug    ] No secrets detected in the prompt
+2026-04-03 20:49:53 [debug    ] Scanner completed              elapsed_time_seconds=0.155452 is_valid=True scanner=Secrets
+2026-04-03 20:49:53 [info     ] Scanned prompt                 elapsed_time_seconds=0.156812 scores={'BanSubstrings': -1.0, 'InvisibleText': 0.0, 'Secrets': -1.0}
+INFO:     127.0.0.1:34798 - "POST /api/chat HTTP/1.1" 200 OK
+2026-04-03 20:50:50 [debug    ] No banned substrings found
+2026-04-03 20:50:50 [debug    ] Scanner completed              elapsed_time_seconds=0.000731 is_valid=True scanner=BanSubstrings
+2026-04-03 20:50:50 [debug    ] No invisible characters found
+2026-04-03 20:50:50 [debug    ] Scanner completed              elapsed_time_seconds=0.000195 is_valid=True scanner=InvisibleText
+2026-04-03 20:50:50 [debug    ] No secrets detected in the prompt
+2026-04-03 20:50:50 [debug    ] Scanner completed              elapsed_time_seconds=0.010727 is_valid=True scanner=Secrets
+2026-04-03 20:50:50 [info     ] Scanned prompt                 elapsed_time_seconds=0.012418 scores={'BanSubstrings': -1.0, 'InvisibleText': 0.0, 'Secrets': -1.0}
+INFO:     127.0.0.1:33736 - "POST /api/chat HTTP/1.1" 200 OK
+2026-04-03 20:51:28 [debug    ] No banned substrings found
+2026-04-03 20:51:28 [debug    ] Scanner completed              elapsed_time_seconds=0.000496 is_valid=True scanner=BanSubstrings
+2026-04-03 20:51:28 [debug    ] No invisible characters found
+2026-04-03 20:51:28 [debug    ] Scanner completed              elapsed_time_seconds=0.000205 is_valid=True scanner=InvisibleText
+2026-04-03 20:51:28 [debug    ] No secrets detected in the prompt
+2026-04-03 20:51:28 [debug    ] Scanner completed              elapsed_time_seconds=0.011143 is_valid=True scanner=Secrets
+2026-04-03 20:51:28 [info     ] Scanned prompt                 elapsed_time_seconds=0.012625 scores={'BanSubstrings': -1.0, 'InvisibleText': 0.0, 'Secrets': -1.0}
+INFO:     127.0.0.1:45308 - "POST /api/chat HTTP/1.1" 200 OK
+DB initialized. All-in-Qwen Mode @ http://10.249.40.204:62272/v1 (model='Qwen3.5-27B')
+--- Pipeline Execution Round 1 ---
+[Selector Output]: 用户想要查询发票总额度。我需要从数据库表中找出与发票相关的表。
+
+让我查看一下与发票相关的表：
+
+1. `t_invoice` (发票表) - 包含发票号码、发票代码、发票类型、开票日期、发票金额、发票税额、发票总额等字段。这是最直接的发票表。
+
+2. `t_invoice_asset_association` (发票_资产关联) - 发票与资产的关联表
+
+3. `t_invoice_associated_expense_date` (发票_日期关联) - 发票与日期的关联表
+
+4. `tb_voucher_invoice` (凭证 - 发票关联表) - 凭证与发票的关联表
+
+5. `tb_cost_details_invoice` (费用发票关联表) - 费用明细与发票的关联表
+
+对于查询发票总额度，最相关的表应该是：
+1. `t_invoice` - 这是主要的发票表，包含发票总额字段
+2. `tb_voucher_invoice` - 凭证与发票关联，可能用于统计
+3. `tb_cost_details_invoice` - 费用发票关联，可能用于统计
+
+其他表如 `t_invoice_asset_association` 和 `t_invoice_associated_expense_date` 是关联表，不是主要的发票数据表。
+
+所以最相关的表应该是：
+1. t_invoice (发票表) - 核心表，包含发票总额
+
+
+2. tb_voucher_invoice (凭证 - 发票关联表) - 关联凭证
+3. tb_cost_details_invoice (费用发票关联表) - 关联费用
+
+这些表可以帮助查询发票总额度。
+</think>
+
+<RES>t_invoice, tb_voucher_invoice, tb_cost_details_invoice, t_invoice_asset_association, t_invoice_associated_expense_date</RES>
+Selected Tables: ['t_invoice', 'tb_voucher_invoice', 'tb_cost_details_invoice', 't_invoice_asset_association', 't_invoice_associated_expense_date']
+[SQLCoder Output]: The user wants to query the total invoice amount from the database. Looking at the schema, I can see there's a `t_invoice` table which contains invoice information including `INVOICE_TOTAL_AMOUNT` (发票总额).
+
+To get the total invoice amount, I need to:
+1. Query the `t_invoice` table
+2. Sum up the `INVOICE_TOTAL_AMOUNT` column
+
+The SQL query would be:
+```sql
+SELECT SUM(INVOICE_TOTAL_AMOUNT) FROM t_invoice
+```
+
+This should give me the total invoice amount across all invoices.
+</think>
+
+SELECT SUM(INVOICE_TOTAL_AMOUNT) FROM t_invoice
+Generated SQL: SELECT SUM(INVOICE_TOTAL_AMOUNT)
+FROM t_invoice
+SQL Executed Successfully.
+answer {'rowcount': 1, 'fields': ['SUM(INVOICE_TOTAL_AMOUNT)'], 'data': [{'SUM(INVOICE_TOTAL_AMOUNT)': Decimal('99426.02000')}]}
+INFO:     58.60.1.71:0 - "GET / HTTP/1.1" 404 Not Found
+INFO:     58.60.1.71:0 - "GET / HTTP/1.1" 404 Not Found
+INFO:     58.60.1.71:0 - "GET /openapi.json HTTP/1.1" 200 OK
+INFO:     58.60.1.71:0 - "GET /favicon.ico HTTP/1.1" 404 Not Found
+INFO:     58.60.1.71:0 - "GET /favicon.ico HTTP/1.1" 404 Not Found
+INFO:     58.60.1.71:0 - "GET /apple-touch-icon-precomposed.png HTTP/1.1" 404 Not Found
+INFO:     58.60.1.71:0 - "GET /apple-touch-icon.png HTTP/1.1" 404 Not Found
+INFO:     141.11.146.78:0 - "GET / HTTP/1.1" 404 Not Found
+INFO:     141.11.146.78:0 - "GET /openapi.json HTTP/1.1" 200 OK
+INFO:     39.98.168.103:0 - "GET /api/history/list?search=&start_time=&end_time=&page&size HTTP/1.1" 422 Unprocessable Entity
+INFO:     39.98.168.103:0 - "GET /api/chat/new_session HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54648 - "GET /api/chat/new_session?_t=1775221009726 HTTP/1.1" 200 OK
+2026-04-03 20:57:08 [debug    ] No banned substrings found
+2026-04-03 20:57:08 [debug    ] Scanner completed              elapsed_time_seconds=0.000455 is_valid=True scanner=BanSubstrings
+2026-04-03 20:57:08 [debug    ] No invisible characters found
+2026-04-03 20:57:08 [debug    ] Scanner completed              elapsed_time_seconds=0.000205 is_valid=True scanner=InvisibleText
+2026-04-03 20:57:08 [debug    ] No secrets detected in the prompt
+2026-04-03 20:57:08 [debug    ] Scanner completed              elapsed_time_seconds=0.01062 is_valid=True scanner=Secrets
+2026-04-03 20:57:08 [info     ] Scanned prompt                 elapsed_time_seconds=0.012026 scores={'BanSubstrings': -1.0, 'InvisibleText': 0.0, 'Secrets': -1.0}
+INFO:     127.0.0.1:34596 - "POST /api/chat HTTP/1.1" 200 OK
+INFO:     Started server process [438408]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
+INFO:     127.0.0.1:55424 - "GET /openapi.json HTTP/1.1" 200 OK
+2026-04-03 21:02:30 [debug    ] No banned substrings found
+2026-04-03 21:02:30 [debug    ] Scanner completed              elapsed_time_seconds=0.000492 is_valid=True scanner=BanSubstrings
+2026-04-03 21:02:30 [debug    ] No invisible characters found
+2026-04-03 21:02:30 [debug    ] Scanner completed              elapsed_time_seconds=0.000211 is_valid=True scanner=InvisibleText
+2026-04-03 21:02:30 [debug    ] No secrets detected in the prompt
+2026-04-03 21:02:30 [debug    ] Scanner completed              elapsed_time_seconds=0.075821 is_valid=True scanner=Secrets
+2026-04-03 21:02:30 [info     ] Scanned prompt                 elapsed_time_seconds=0.077128 scores={'BanSubstrings': -1.0, 'InvisibleText': 0.0, 'Secrets': -1.0}
+INFO:     39.98.168.103:0 - "POST /api/chat HTTP/1.1" 200 OK
+[recommendations] failed: Extra data: line 2 column 1 (char 16)
+INFO:     39.98.168.103:0 - "GET /api/chat/1775220944845/thinking?message_index= HTTP/1.1" 422 Unprocessable Entity
+INFO:     39.98.168.103:0 - "GET /api/chat/1775220944845/thinking?message_index=1 HTTP/1.1" 404 Not Found
+INFO:     39.98.168.103:0 - "GET /api/chat/1775220944845/thinking?message_index=0 HTTP/1.1" 200 OK
+INFO:     39.98.168.103:0 - "GET /api/chat/1775220944845/thinking?message_index=1 HTTP/1.1" 404 Not Found
+INFO:     39.98.168.103:0 - "GET /api/history/1775220944845 HTTP/1.1" 200 OK

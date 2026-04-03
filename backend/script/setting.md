@@ -113,6 +113,14 @@ source backend/script/setting.sh
 
 - 联网、工具链或长回答场景下，这个值过小容易超时。
 
+### `CHAT_ENABLE_THINKING=1`
+
+主聊天链路是否保留模型原生 `<think>...</think>` 推理输出。
+
+- `1`：默认开启，便于通过 `/api/chat/{conversation_id}/thinking` 读取模型思考内容。
+- `0`：关闭主聊天模型的原生 thinking，可进一步缩短首包时间。
+- 当前这版会保留 `<think>`，但同时对联网摘要、SQL 辅助模型关闭 thinking，并抑制聊天流的空白首包。
+
 ## SQL Routing / Planner
 
 ### `SQL_ROUTE_TEMPERATURE=0`
@@ -309,7 +317,7 @@ RAG 回答温度。
 
 ## SQL Tool LLM Settings
 
-### `DB_LLM_BASE_URL="http://0.0.0.0:62272/v1"`
+### `DB_LLM_BASE_URL="http://10.249.40.204:62272/v1"`
 
 数据库工具链使用的大模型服务地址。
 
@@ -350,6 +358,13 @@ SQL 自动修订最多尝试多少轮。
 
 - 太大可能明显拉长响应时间。
 
+### `DB_LLM_ENABLE_THINKING=1`
+
+数据库工具内部模型是否保留 `<think>...</think>` 推理输出。
+
+- `0`：默认关闭，可减少选表、生成 SQL、修订 SQL 的额外时延。
+- `1`：仅建议在排查 SQL 生成质量问题时临时开启。
+
 补充：
 
 - `DB_LLM_API_KEY` 是可选项。
@@ -388,7 +403,7 @@ MySQL 端口。
 
 - 对本地或自建兼容网关场景常见。
 
-### `OPENAI_API_BASE="http://0.0.0.0:62272/v1"`
+### `OPENAI_API_BASE="http://10.249.40.204:62272/v1"`
 
 OpenAI 兼容模型服务地址。
 
