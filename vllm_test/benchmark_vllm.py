@@ -13,7 +13,7 @@ from typing import Any
 
 import aiohttp
 import numpy as np
-from transformers import AutoTokenizer
+from transformers import AutoTokenizer, PreTrainedTokenizerFast
 
 
 DEFAULT_CONCURRENCIES = [10, 20, 50, 100, 200, 500]
@@ -101,6 +101,19 @@ def build_prompt(tokenizer: Any, target_tokens: int) -> tuple[str, int]:
         prompt += " " + ("benchmark " * max(4, deficit))
         actual = len(tokenizer.encode(prompt, add_special_tokens=False))
     return prompt, actual
+
+
+def load_tokenizer(tokenizer_path: str, trust_remote_code: bool) -> Any:
+    try:
+        return AutoTokenizer.from_pretrained(
+            tokenizer_path,
+            trust_remote_code=trust_remote_code,
+        )
+    except Exception as exc:  # noqa: BLE001
+        tokenizer_json = Path(tokenizer_path) / "tokenizer.json"
+        if tokenizer_json.exists():
+            return PreTrainedTokenizerFast(tokenizer_file=str(tokenizer_json))
+        raise RuntimeError(f"Failed to load tokenizer from {tokenizer_path}: {exc}") from exc
 
 
 async def warmup_once(session: aiohttp.ClientSession, url: str, model_name: str, prompt: str, output_len: int) -> None:
@@ -470,10 +483,7 @@ async def main() -> None:
     ensure_dir(details_dir)
 
     url = args.base_url.rstrip("/") + args.endpoint
-    tokenizer = AutoTokenizer.from_pretrained(
-        args.tokenizer_path,
-        trust_remote_code=args.trust_remote_code,
-    )
+    tokenizer = load_tokenizer(args.tokenizer_path, args.trust_remote_code)
     prompt, actual_prompt_tokens = build_prompt(tokenizer, args.input_len)
 
     summary_rows: list[dict[str, Any]] = []

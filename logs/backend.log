@@ -2886,3 +2886,4 @@ INFO:     39.98.168.103:0 - "GET /api/chat/1775220944845/thinking?message_index=
 INFO:     39.98.168.103:0 - "GET /api/chat/1775220944845/thinking?message_index=0 HTTP/1.1" 200 OK
 INFO:     39.98.168.103:0 - "GET /api/chat/1775220944845/thinking?message_index=1 HTTP/1.1" 404 Not Found
 INFO:     39.98.168.103:0 - "GET /api/history/1775220944845 HTTP/1.1" 200 OK
+INFO:     141.11.146.78:0 - "GET /openapi.json HTTP/1.1" 200 OK
