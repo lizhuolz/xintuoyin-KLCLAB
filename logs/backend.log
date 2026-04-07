@@ -2887,3 +2887,228 @@ INFO:     39.98.168.103:0 - "GET /api/chat/1775220944845/thinking?message_index=
 INFO:     39.98.168.103:0 - "GET /api/chat/1775220944845/thinking?message_index=1 HTTP/1.1" 404 Not Found
 INFO:     39.98.168.103:0 - "GET /api/history/1775220944845 HTTP/1.1" 200 OK
 INFO:     141.11.146.78:0 - "GET /openapi.json HTTP/1.1" 200 OK
+INFO:     39.98.35.98:0 - "GET /api/kb/list?page&size HTTP/1.1" 422 Unprocessable Entity
+INFO:     39.98.35.98:0 - "POST /api/kb/create HTTP/1.1" 400 Bad Request
+DB initialized. All-in-Qwen Mode @ http://10.249.40.204:62272/v1 (model='Qwen3.5-27B')
+INFO:     39.98.35.98:0 - "GET /api/db/select_options?question= HTTP/1.1" 200 OK
+INFO:     39.98.35.98:0 - "GET /api/chat/new_session HTTP/1.1" 200 OK
+INFO:     39.98.35.98:0 - "POST /api/chat HTTP/1.1" 400 Bad Request
+2026-04-06 17:04:42 [debug    ] No banned substrings found
+2026-04-06 17:04:42 [debug    ] Scanner completed              elapsed_time_seconds=0.001584 is_valid=True scanner=BanSubstrings
+2026-04-06 17:04:42 [debug    ] Scanner completed              elapsed_time_seconds=0.000107 is_valid=True scanner=InvisibleText
+2026-04-06 17:04:42 [debug    ] No secrets detected in the prompt
+2026-04-06 17:04:42 [debug    ] Scanner completed              elapsed_time_seconds=0.009026 is_valid=True scanner=Secrets
+2026-04-06 17:04:42 [info     ] Scanned prompt                 elapsed_time_seconds=0.011458 scores={'BanSubstrings': -1.0, 'InvisibleText': -1.0, 'Secrets': -1.0}
+INFO:     39.98.35.98:0 - "POST /api/chat HTTP/1.1" 200 OK
+INFO:     198.12.121.12:0 - "GET / HTTP/1.1" 404 Not Found
+INFO:     198.12.121.12:0 - "GET /favicon.ico HTTP/1.1" 404 Not Found
+INFO:     198.12.121.12:0 - "GET /openapi.json HTTP/1.1" 200 OK
+INFO:     163.125.254.112:0 - "GET /openapi.json HTTP/1.1" 200 OK
+INFO:     91.243.81.102:0 - "GET /openapi.json HTTP/1.1" 200 OK
+INFO:     91.243.81.102:0 - "GET /favicon.ico HTTP/1.1" 404 Not Found
+INFO:     91.243.81.102:0 - "GET /openapi.json HTTP/1.1" 200 OK
+INFO:     91.243.81.102:0 - "GET /favicon.ico HTTP/1.1" 404 Not Found
+INFO:     91.243.81.102:0 - "GET /openapi.json HTTP/1.1" 200 OK
+INFO:     91.243.81.102:0 - "GET /openapi.json HTTP/1.1" 200 OK
+INFO:     39.98.35.98:0 - "GET /providers HTTP/1.1" 404 Not Found
+INFO:     39.98.35.98:0 - "GET /current-user HTTP/1.1" 404 Not Found
+INFO:     39.98.35.98:0 - "GET /internal/workspace/status HTTP/1.1" 404 Not Found
+INFO:     39.98.35.98:0 - "GET /graph HTTP/1.1" 404 Not Found
+INFO:     39.98.35.98:0 - "GET /external/workspace/status HTTP/1.1" 404 Not Found
+INFO:     39.98.35.98:0 - "GET /get_graph HTTP/1.1" 404 Not Found
+INFO:     39.98.35.98:0 - "GET /internal/get_graph HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:59932 - "GET /v1/models HTTP/1.1" 404 Not Found
+INFO:     39.98.89.227:0 - "GET /api/history/list?search=&start_time=&end_time=&page=1&size=10 HTTP/1.1" 200 OK
+INFO:     39.98.89.227:0 - "GET /api/history/1775220944845 HTTP/1.1" 200 OK
+INFO:     113.248.166.62:0 - "OPTIONS /api/history/list?page=1&limit=20&keyword=&dateRange=&_t=1775527610618 HTTP/1.1" 200 OK
+INFO:     113.248.166.62:0 - "GET /api/history/list?page=1&limit=20&keyword=&dateRange=&_t=1775527610618 HTTP/1.1" 200 OK
+INFO:     113.248.166.62:0 - "OPTIONS /api/history/list?page=1&limit=20&keyword=&dateRange=&_t=1775527795156 HTTP/1.1" 200 OK
+INFO:     113.248.166.62:0 - "GET /api/history/list?page=1&limit=20&keyword=&dateRange=&_t=1775527795156 HTTP/1.1" 200 OK
+INFO:     113.248.166.62:0 - "OPTIONS /api/history/list?page=1&limit=20&keyword=&dateRange=&_t=1775527808557 HTTP/1.1" 200 OK
+INFO:     113.248.166.62:0 - "GET /api/history/list?page=1&limit=20&keyword=&dateRange=&_t=1775527808557 HTTP/1.1" 200 OK
+INFO:     113.248.166.62:0 - "OPTIONS /api/history/list?page=1&limit=20&keyword=&dateRange=&_t=1775527931844 HTTP/1.1" 200 OK
+INFO:     113.248.166.62:0 - "GET /api/history/list?page=1&limit=20&keyword=&dateRange=&_t=1775527931844 HTTP/1.1" 200 OK
+INFO:     113.248.166.62:0 - "OPTIONS /api/history/list?page=1&limit=20&keyword=&dateRange=&_t=1775527977267 HTTP/1.1" 200 OK
+INFO:     113.248.166.62:0 - "GET /api/history/list?page=1&limit=20&keyword=&dateRange=&_t=1775527977267 HTTP/1.1" 200 OK
+INFO:     113.248.166.62:0 - "OPTIONS /api/history/list?page=1&limit=20&keyword=&dateRange=&_t=1775527994945 HTTP/1.1" 200 OK
+INFO:     113.248.166.62:0 - "GET /api/history/list?page=1&limit=20&keyword=&dateRange=&_t=1775527994945 HTTP/1.1" 200 OK
+INFO:     113.248.166.62:0 - "OPTIONS /api/history/list?page=1&limit=20&keyword=&dateRange=&_t=1775528040753 HTTP/1.1" 200 OK
+INFO:     113.248.166.62:0 - "GET /api/history/list?page=1&limit=20&keyword=&dateRange=&_t=1775528040753 HTTP/1.1" 200 OK
+INFO:     113.248.166.62:0 - "OPTIONS /api/history/list?page=1&limit=20&keyword=&dateRange=&_t=1775528047915 HTTP/1.1" 200 OK
+INFO:     113.248.166.62:0 - "OPTIONS /api/history/list?page=1&limit=20&keyword=&dateRange=&_t=1775528112623 HTTP/1.1" 200 OK
+INFO:     113.248.166.62:0 - "OPTIONS /api/history/list?page=1&limit=20&keyword=&dateRange=&_t=1775528112834 HTTP/1.1" 200 OK
+INFO:     113.248.166.62:0 - "OPTIONS /api/history/list?page=1&limit=20&keyword=&dateRange=&_t=1775528113009 HTTP/1.1" 200 OK
+INFO:     113.248.166.62:0 - "OPTIONS /api/history/list?page=1&limit=20&keyword=&dateRange=&_t=1775528113009 HTTP/1.1" 200 OK
+INFO:     113.248.166.62:0 - "OPTIONS /api/history/list?page=1&limit=20&keyword=&dateRange=&_t=1775528112834 HTTP/1.1" 200 OK
+INFO:     113.248.166.62:0 - "OPTIONS /api/history/list?page=1&limit=20&keyword=&dateRange=&_t=1775528047915 HTTP/1.1" 200 OK
+INFO:     113.248.166.62:0 - "OPTIONS /api/history/list?page=1&limit=20&keyword=&dateRange=&_t=1775528112623 HTTP/1.1" 200 OK
+INFO:     113.248.166.62:0 - "GET /api/history/list?page=1&limit=20&keyword=&dateRange=&_t=1775528113009 HTTP/1.1" 200 OK
+INFO:     113.248.166.62:0 - "OPTIONS /api/history/list?page=1&limit=20&keyword=&dateRange=&_t=1775528142169 HTTP/1.1" 200 OK
+INFO:     113.248.166.62:0 - "OPTIONS /api/history/list?page=1&limit=20&keyword=&dateRange=&_t=1775528142384 HTTP/1.1" 200 OK
+INFO:     113.248.166.62:0 - "GET /api/history/list?page=1&limit=20&keyword=&dateRange=&_t=1775528142169 HTTP/1.1" 200 OK
+INFO:     113.248.166.62:0 - "GET /api/history/list?page=1&limit=20&keyword=&dateRange=&_t=1775528142384 HTTP/1.1" 200 OK
+INFO:     113.248.166.62:0 - "OPTIONS /api/history/list?page=1&limit=20&keyword=&dateRange=&_t=1775528148021 HTTP/1.1" 200 OK
+INFO:     39.98.82.250:0 - "GET /api/history/1775220944845 HTTP/1.1" 200 OK
+INFO:     39.98.82.250:0 - "GET /api/history/1775220944845 HTTP/1.1" 200 OK
+INFO:     113.248.166.62:0 - "GET /api/history/list?page=1&limit=20&keyword=&dateRange=&_t=1775528148021 HTTP/1.1" 200 OK
+INFO:     39.98.82.250:0 - "GET /api/history/1775220944845 HTTP/1.1" 200 OK
+INFO:     39.98.82.250:0 - "GET /api/history/1775220944845 HTTP/1.1" 200 OK
+INFO:     113.248.166.62:0 - "OPTIONS /api/history/list?page=1&limit=20&keyword=&dateRange=&_t=1775528200823 HTTP/1.1" 200 OK
+INFO:     113.248.166.62:0 - "GET /api/history/list?page=1&limit=20&keyword=&dateRange=&_t=1775528200823 HTTP/1.1" 200 OK
+INFO:     113.248.166.62:0 - "OPTIONS /api/history/list?page=1&limit=20&keyword=&dateRange=&_t=1775528212273 HTTP/1.1" 200 OK
+INFO:     113.248.166.62:0 - "GET /api/history/list?page=1&limit=20&keyword=&dateRange=&_t=1775528212273 HTTP/1.1" 200 OK
+INFO:     113.248.166.62:0 - "OPTIONS /api/history/1775220944845?_t=1775528218943 HTTP/1.1" 200 OK
+INFO:     113.248.166.62:0 - "OPTIONS /api/history/list?page=1&limit=20&keyword=&dateRange=&_t=1775528289950 HTTP/1.1" 200 OK
+INFO:     113.248.166.62:0 - "OPTIONS /api/history/list?page=1&limit=20&keyword=&dateRange=&_t=1775528290205 HTTP/1.1" 200 OK
+INFO:     113.248.166.62:0 - "OPTIONS /api/history/list?page=1&limit=20&keyword=&dateRange=&_t=1775528290387 HTTP/1.1" 200 OK
+INFO:     113.248.166.62:0 - "GET /api/history/list?page=1&limit=20&keyword=&dateRange=&_t=1775528289950 HTTP/1.1" 200 OK
+INFO:     113.248.166.62:0 - "GET /api/history/list?page=1&limit=20&keyword=&dateRange=&_t=1775528290387 HTTP/1.1" 200 OK
+INFO:     113.248.166.62:0 - "GET /api/history/list?page=1&limit=20&keyword=&dateRange=&_t=1775528290205 HTTP/1.1" 200 OK
+INFO:     39.98.82.250:0 - "GET /api/history/1775220944845 HTTP/1.1" 200 OK
+INFO:     113.248.166.62:0 - "OPTIONS /api/history/list?page=1&limit=20&keyword=&dateRange=&_t=1775528307715 HTTP/1.1" 200 OK
+INFO:     39.98.82.250:0 - "GET /api/history/list?search=&start_time=&end_time=&page=1&size=10 HTTP/1.1" 200 OK
+INFO:     39.98.82.250:0 - "GET /api/history/list?search=&start_time=&end_time=&page=1&size=10 HTTP/1.1" 200 OK
+INFO:     39.98.82.250:0 - "GET /api/history/list?search=&start_time=&end_time=&page=1&size=10 HTTP/1.1" 200 OK
+INFO:     113.248.166.62:0 - "OPTIONS /api/history/list?page=1&limit=20&keyword=&dateRange=&_t=1775528351045 HTTP/1.1" 200 OK
+INFO:     113.248.166.62:0 - "GET /api/history/list?page=1&limit=20&keyword=&dateRange=&_t=1775528351045 HTTP/1.1" 200 OK
+INFO:     113.248.166.62:0 - "OPTIONS /api/history/1775220944845?_t=1775528356424 HTTP/1.1" 200 OK
+INFO:     113.248.166.62:0 - "GET /api/history/1775220944845?_t=1775528356424 HTTP/1.1" 200 OK
+INFO:     113.248.166.62:0 - "OPTIONS /api/history/1775220944845?_t=1775528534094 HTTP/1.1" 200 OK
+INFO:     113.248.166.62:0 - "GET /api/history/1775220944845?_t=1775528534094 HTTP/1.1" 200 OK
+INFO:     113.248.166.62:0 - "OPTIONS /api/history/1775220944845?_t=1775529173063 HTTP/1.1" 200 OK
+INFO:     113.248.166.62:0 - "GET /api/history/1775220944845?_t=1775529173063 HTTP/1.1" 200 OK
+INFO:     113.248.166.62:0 - "OPTIONS /api/history/1775221009776?_t=1775529307822 HTTP/1.1" 200 OK
+INFO:     113.248.166.62:0 - "GET /api/history/1775221009776?_t=1775529307822 HTTP/1.1" 200 OK
+INFO:     113.248.166.62:0 - "OPTIONS /api/history/1775221009776?_t=1775529358199 HTTP/1.1" 200 OK
+INFO:     113.248.166.62:0 - "GET /api/history/1775221009776?_t=1775529358199 HTTP/1.1" 200 OK
+INFO:     113.248.166.62:0 - "OPTIONS /api/history/1775221009776?_t=1775529429881 HTTP/1.1" 200 OK
+INFO:     113.248.166.62:0 - "GET /api/history/1775221009776?_t=1775529429881 HTTP/1.1" 200 OK
+INFO:     39.98.168.103:0 - "GET /api/history/1775220944845 HTTP/1.1" 200 OK
+INFO:     113.248.166.62:0 - "OPTIONS /api/history/1775220481253?_t=1775529689893 HTTP/1.1" 200 OK
+INFO:     113.248.166.62:0 - "GET /api/history/1775220481253?_t=1775529689893 HTTP/1.1" 200 OK
+INFO:     113.248.166.62:0 - "OPTIONS /api/history/1775219572763?_t=1775529773803 HTTP/1.1" 200 OK
+INFO:     113.248.166.62:0 - "GET /api/history/1775219572763?_t=1775529773803 HTTP/1.1" 200 OK
+INFO:     113.248.166.62:0 - "OPTIONS /api/history/1775220944845?_t=1775529803215 HTTP/1.1" 200 OK
+INFO:     113.248.166.62:0 - "GET /api/history/1775220944845?_t=1775529803215 HTTP/1.1" 200 OK
+INFO:     113.248.166.62:0 - "OPTIONS /api/history/list?page=2&limit=20&keyword=&dateRange=&_t=1775529822114 HTTP/1.1" 200 OK
+INFO:     113.248.166.62:0 - "GET /api/history/list?page=2&limit=20&keyword=&dateRange=&_t=1775529822114 HTTP/1.1" 200 OK
+INFO:     113.248.166.62:0 - "OPTIONS /api/history/list?page=4&limit=20&keyword=&dateRange=&_t=1775529826191 HTTP/1.1" 200 OK
+INFO:     113.248.166.62:0 - "GET /api/history/list?page=4&limit=20&keyword=&dateRange=&_t=1775529826191 HTTP/1.1" 200 OK
+INFO:     113.248.166.62:0 - "OPTIONS /api/history/1775216664813?_t=1775529831131 HTTP/1.1" 200 OK
+INFO:     113.248.166.62:0 - "GET /api/history/1775216664813?_t=1775529831131 HTTP/1.1" 200 OK
+INFO:     113.248.166.62:0 - "OPTIONS /api/history/1775216663545?_t=1775529839026 HTTP/1.1" 200 OK
+INFO:     113.248.166.62:0 - "GET /api/history/1775216663545?_t=1775529839026 HTTP/1.1" 200 OK
+INFO:     113.248.166.62:0 - "OPTIONS /api/history/list?page=1&limit=20&search=&timeRange=&_t=1775529949673 HTTP/1.1" 200 OK
+INFO:     113.248.166.62:0 - "GET /api/history/list?page=1&limit=20&search=&timeRange=&_t=1775529949673 HTTP/1.1" 200 OK
+INFO:     113.248.166.62:0 - "OPTIONS /api/history/list?page=1&limit=20&search=&timeRange=&_t=1775529968242 HTTP/1.1" 200 OK
+INFO:     113.248.166.62:0 - "GET /api/history/list?page=1&limit=20&search=&timeRange=&_t=1775529968242 HTTP/1.1" 200 OK
+INFO:     113.248.166.62:0 - "OPTIONS /api/history/list?page=1&limit=20&search=&timeRange=&_t=1775529970390 HTTP/1.1" 200 OK
+INFO:     113.248.166.62:0 - "GET /api/history/list?page=1&limit=20&search=&timeRange=&_t=1775529970390 HTTP/1.1" 200 OK
+INFO:     113.248.166.62:0 - "OPTIONS /api/history/list?page=1&limit=20&search=%E4%BD%A0%E5%A5%BD&timeRange=&_t=1775529979611 HTTP/1.1" 200 OK
+INFO:     113.248.166.62:0 - "GET /api/history/list?page=1&limit=20&search=%E4%BD%A0%E5%A5%BD&timeRange=&_t=1775529979611 HTTP/1.1" 200 OK
+INFO:     113.248.166.62:0 - "OPTIONS /api/history/list?page=1&limit=20&search=%E4%BD%A0%E5%A5%BD&start_time=2026-04-01&end_time=2026-04-02&_t=1775530000194 HTTP/1.1" 200 OK
+INFO:     113.248.166.62:0 - "GET /api/history/list?page=1&limit=20&search=%E4%BD%A0%E5%A5%BD&start_time=2026-04-01&end_time=2026-04-02&_t=1775530000194 HTTP/1.1" 400 Bad Request
+INFO:     113.248.166.62:0 - "OPTIONS /api/history/list?page=1&limit=20&search=&timeRange=&_t=1775530092543 HTTP/1.1" 200 OK
+INFO:     113.248.166.62:0 - "GET /api/history/list?page=1&limit=20&search=&timeRange=&_t=1775530092543 HTTP/1.1" 200 OK
+INFO:     113.248.166.62:0 - "OPTIONS /api/history/list?page=1&limit=20&search=&timeRange=&_t=1775530156093 HTTP/1.1" 200 OK
+INFO:     113.248.166.62:0 - "GET /api/history/list?page=1&limit=20&search=&timeRange=&_t=1775530156093 HTTP/1.1" 200 OK
+INFO:     113.248.166.62:0 - "OPTIONS /api/history/list?page=1&limit=20&search=&start_time=1774972800000&end_time=1775145599000&_t=1775530174850 HTTP/1.1" 200 OK
+INFO:     113.248.166.62:0 - "GET /api/history/list?page=1&limit=20&search=&start_time=1774972800000&end_time=1775145599000&_t=1775530174850 HTTP/1.1" 200 OK
+INFO:     113.248.166.62:0 - "OPTIONS /api/history/list?page=1&limit=20&search=&start_time=1774972800000&end_time=1775318399000&_t=1775530183613 HTTP/1.1" 200 OK
+INFO:     113.248.166.62:0 - "GET /api/history/list?page=1&limit=20&search=&start_time=1774972800000&end_time=1775318399000&_t=1775530183613 HTTP/1.1" 200 OK
+INFO:     113.248.166.62:0 - "OPTIONS /api/history/list?page=3&limit=20&search=&start_time=1774972800000&end_time=1775318399000&_t=1775530195694 HTTP/1.1" 200 OK
+INFO:     39.98.168.103:0 - "GET /api/history/list?search=&start_time=&end_time=&page=1&size=10 HTTP/1.1" 200 OK
+INFO:     39.98.168.103:0 - "GET /api/history/list?search=&start_time=&end_time=&page=4&size=10 HTTP/1.1" 200 OK
+INFO:     113.248.166.62:0 - "OPTIONS /api/history/list?page=1&limit=20&search=&timeRange=&_t=1775530236019 HTTP/1.1" 200 OK
+INFO:     113.248.166.62:0 - "OPTIONS /api/history/list?page=1&limit=20&search=&timeRange=&_t=1775530236019 HTTP/1.1" 200 OK
+INFO:     113.248.166.62:0 - "OPTIONS /api/history/list?page=3&limit=20&search=&start_time=1774972800000&end_time=1775318399000&_t=1775530195694 HTTP/1.1" 200 OK
+INFO:     113.248.166.62:0 - "GET /api/history/list?page=1&limit=20&search=&timeRange=&_t=1775530236019 HTTP/1.1" 200 OK
+INFO:     113.248.166.62:0 - "OPTIONS /api/history/list?page=1&limit=20&search=&timeRange=&_t=1775530287754 HTTP/1.1" 200 OK
+INFO:     113.248.166.62:0 - "GET /api/history/list?page=1&limit=20&search=&timeRange=&_t=1775530287754 HTTP/1.1" 200 OK
+INFO:     113.248.166.62:0 - "OPTIONS /api/history/1775220944845?_t=1775530291013 HTTP/1.1" 200 OK
+INFO:     113.248.166.62:0 - "GET /api/history/1775220944845?_t=1775530291013 HTTP/1.1" 200 OK
+INFO:     39.98.168.103:0 - "GET /api/feedback/list?name=&enterprise=&type=&feedback_type=%E5%85%A8%E9%83%A8&start_time=&end_time=&page=1&size=10 HTTP/1.1" 200 OK
+INFO:     113.248.166.62:0 - "OPTIONS /api/kb/list?page=1&limit=20&_t=1775533840503 HTTP/1.1" 400 Bad Request
+INFO:     39.98.82.250:0 - "GET /api/kb/list?page&size HTTP/1.1" 422 Unprocessable Entity
+INFO:     39.98.82.250:0 - "GET /api/kb/list?page=1&size=10 HTTP/1.1" 200 OK
+INFO:     198.12.121.12:0 - "GET /favicon.ico HTTP/1.1" 404 Not Found
+DB initialized. All-in-Qwen Mode @ http://10.249.40.204:62272/v1 (model='Qwen3.5-27B')
+INFO:     39.98.35.98:0 - "GET /api/db/select_options?question= HTTP/1.1" 200 OK
+INFO:     39.98.35.98:0 - "GET /api/feedback/list?name=&enterprise=&type=&feedback_type=%E5%85%A8%E9%83%A8&start_time=&end_time=&page&size HTTP/1.1" 422 Unprocessable Entity
+INFO:     113.248.166.62:0 - "OPTIONS /api/history/list?page=1&limit=20&search=&timeRange=&_t=1775543668450 HTTP/1.1" 400 Bad Request
+INFO:     113.248.166.62:0 - "OPTIONS /api/kb/list?page=1&limit=20&_t=1775543672419 HTTP/1.1" 400 Bad Request
+INFO:     113.248.166.62:0 - "OPTIONS /api/kb/list?page=1&limit=20&_t=1775543681980 HTTP/1.1" 400 Bad Request
+INFO:     113.248.166.62:0 - "OPTIONS /api/kb/list?page=1&limit=20&_t=1775543682174 HTTP/1.1" 400 Bad Request
+INFO:     113.248.166.62:0 - "OPTIONS /api/kb/list?page=1&limit=20&_t=1775543694995 HTTP/1.1" 400 Bad Request
+INFO:     113.248.166.62:0 - "OPTIONS /api/kb/list?page=1&limit=20&_t=1775543734253 HTTP/1.1" 400 Bad Request
+INFO:     113.248.166.62:0 - "OPTIONS /api/kb/list?page=1&limit=20&_t=1775543736437 HTTP/1.1" 400 Bad Request
+INFO:     113.248.166.62:0 - "OPTIONS /api/kb/list?page=1&size=20&_t=1775543788945 HTTP/1.1" 400 Bad Request
+INFO:     113.248.166.62:0 - "OPTIONS /api/kb/list?page=1&size=20&_t=1775543790183 HTTP/1.1" 400 Bad Request
+INFO:     113.248.166.62:0 - "OPTIONS /api/kb/list?page=1&size=20&_t=1775543799533 HTTP/1.1" 400 Bad Request
+INFO:     113.248.166.62:0 - "OPTIONS /api/kb/list?page=1&size=20&_t=1775543799744 HTTP/1.1" 400 Bad Request
+INFO:     113.248.166.62:0 - "OPTIONS /api/kb/list?page=1&size=20&_t=1775543799970 HTTP/1.1" 400 Bad Request
+INFO:     113.248.166.62:0 - "OPTIONS /api/kb/list?page=1&size=20&_t=1775543800383 HTTP/1.1" 400 Bad Request
+INFO:     113.248.166.62:0 - "OPTIONS /api/kb/list?page=1&size=20&_t=1775543800240 HTTP/1.1" 400 Bad Request
+INFO:     113.248.166.62:0 - "OPTIONS /api/kb/list?page=1&size=20&_t=1775543800593 HTTP/1.1" 400 Bad Request
+INFO:     113.248.166.62:0 - "OPTIONS /api/kb/list?page=1&size=20&_t=1775543803165 HTTP/1.1" 400 Bad Request
+INFO:     113.248.166.62:0 - "OPTIONS /api/kb/list?page=1&size=20&_t=1775543808474 HTTP/1.1" 400 Bad Request
+INFO:     113.248.166.62:0 - "OPTIONS /api/kb/list?page=1&size=20&_t=1775543811348 HTTP/1.1" 400 Bad Request
+INFO:     113.248.166.62:0 - "OPTIONS /api/kb/list?page=1&size=20&_t=1775543817370 HTTP/1.1" 400 Bad Request
+INFO:     113.248.166.62:0 - "OPTIONS /api/history/list?page=1&limit=20&search=&timeRange=&_t=1775543823923 HTTP/1.1" 400 Bad Request
+INFO:     113.248.166.62:0 - "OPTIONS /api/history/list?page=1&search=&timeRange=&size=20&_t=1775543849001 HTTP/1.1" 400 Bad Request
+INFO:     113.248.166.62:0 - "OPTIONS /api/history/list?page=1&search=&timeRange=&size=20&_t=1775543851033 HTTP/1.1" 400 Bad Request
+INFO:     113.248.166.62:0 - "OPTIONS /api/kb/list?page=1&size=20&_t=1775543869667 HTTP/1.1" 400 Bad Request
+INFO:     39.98.89.227:0 - "GET /api/kb/list?page=1&size=10 HTTP/1.1" 200 OK
+INFO:     113.248.166.62:0 - "GET /api/kb/list?page=1&size=20&_t=1775543869667 HTTP/1.1" 200 OK
+INFO:     113.248.166.62:0 - "GET /favicon.ico HTTP/1.1" 404 Not Found
+INFO:     113.248.166.62:0 - "GET /api/kb/list?page=1&size=20&_t=1775543869667 HTTP/1.1" 200 OK
+INFO:     113.248.166.62:0 - "GET /api/kb/list?page=1&size=20&_t=1775543869667 HTTP/1.1" 200 OK
+INFO:     113.248.166.62:0 - "OPTIONS /api/kb/list?page=1&size=20&_t=1775543944254 HTTP/1.1" 400 Bad Request
+INFO:     113.248.166.62:0 - "OPTIONS /api/kb/list?page=1&size=20&_t=1775544017901 HTTP/1.1" 400 Bad Request
+INFO:     113.248.166.62:0 - "GET /api/kb/list?page=1&size=20&_t=1775543869667 HTTP/1.1" 200 OK
+INFO:     113.248.166.62:0 - "GET /api/kb/list?page=1&size=20&_t=1775543869667 HTTP/1.1" 200 OK
+INFO:     39.98.89.227:0 - "GET /api/kb/list?page=1&size=10 HTTP/1.1" 200 OK
+INFO:     113.248.166.62:0 - "OPTIONS /api/history/list?page=1&search=&timeRange=&size=20&_t=1775544060581 HTTP/1.1" 400 Bad Request
+INFO:     113.248.166.62:0 - "OPTIONS /api/kb/list?page=1&size=20&_t=1775544063506 HTTP/1.1" 400 Bad Request
+INFO:     113.248.166.62:0 - "OPTIONS /api/kb/list?page=1&size=20&_t=1775544500397 HTTP/1.1" 400 Bad Request
+INFO:     113.248.166.62:0 - "OPTIONS /api/kb/list?page=1&size=20&_t=1775544519987 HTTP/1.1" 400 Bad Request
+INFO:     113.248.166.62:0 - "OPTIONS /api/kb/list?page=1&size=20&_t=1775544525568 HTTP/1.1" 400 Bad Request
+INFO:     113.248.166.62:0 - "OPTIONS /api/kb/list?page=1&size=20&_t=1775544532990 HTTP/1.1" 400 Bad Request
+INFO:     113.248.166.62:0 - "OPTIONS /api/kb/list?page=1&size=20&_t=1775545007270 HTTP/1.1" 400 Bad Request
+INFO:     113.248.166.62:0 - "OPTIONS /api/kb/list?page=1&size=20&_t=1775545011808 HTTP/1.1" 400 Bad Request
+INFO:     113.248.166.62:0 - "OPTIONS /api/kb/list?page=1&size=20&_t=1775545013731 HTTP/1.1" 400 Bad Request
+INFO:     113.248.166.62:0 - "OPTIONS /api/kb/list?page=1&size=20&_t=1775545030707 HTTP/1.1" 400 Bad Request
+INFO:     113.248.166.62:0 - "OPTIONS /api/kb/list?page=1&size=20&_t=1775545030974 HTTP/1.1" 400 Bad Request
+INFO:     113.248.166.62:0 - "OPTIONS /api/kb/list?page=1&size=20&_t=1775545038834 HTTP/1.1" 400 Bad Request
+INFO:     113.248.166.62:0 - "GET /api/kb/list?page=1&size=20&_t=1775543869667 HTTP/1.1" 200 OK
+INFO:     113.248.166.62:0 - "OPTIONS /api/kb/list?page=1&size=20&_t=1775545151054 HTTP/1.1" 400 Bad Request
+INFO:     113.248.166.62:0 - "OPTIONS /api/kb/list?page=1&size=20&_t=1775545169578 HTTP/1.1" 400 Bad Request
+INFO:     39.98.82.250:0 - "GET /api/kb/list?page=1&size=10 HTTP/1.1" 200 OK
+INFO:     39.98.82.250:0 - "GET /api/kb/list?page=1&size=10 HTTP/1.1" 200 OK
+INFO:     113.248.166.62:0 - "GET /api/kb/list?page=1&size=20&_t=1775543869667 HTTP/1.1" 200 OK
+INFO:     113.248.166.62:0 - "OPTIONS /api/kb/list?page=1&size=20&_t=1775545188944 HTTP/1.1" 400 Bad Request
+INFO:     113.248.166.62:0 - "GET /api/kb/list?page=1&size=20&_t=1775543869667 HTTP/1.1" 200 OK
+INFO:     113.248.166.62:0 - "GET /api/kb/list?page=1&size=20&_t=1775543869667 HTTP/1.1" 200 OK
+INFO:     113.248.166.62:0 - "GET /api/kb/list?page=1&size=20&_t=1775543869667 HTTP/1.1" 200 OK
+INFO:     113.248.166.62:0 - "GET /api/kb/list?page=1&size=20&_t=1775543869667 HTTP/1.1" 200 OK
+INFO:     113.248.166.62:0 - "GET /api/kb/list?page=1&size=20&_t=1775543869667 HTTP/1.1" 200 OK
+INFO:     113.248.166.62:0 - "OPTIONS /api/kb/list?page=1&size=20&_t=1775545169578 HTTP/1.1" 400 Bad Request
+INFO:     113.248.166.62:0 - "OPTIONS /api/kb/list?page=1&size=20&_t=1775545188944 HTTP/1.1" 400 Bad Request
+INFO:     113.248.166.62:0 - "GET /api/kb/list?page=1&size=20&_t=1775543869667 HTTP/1.1" 200 OK
+INFO:     113.248.166.62:0 - "GET /api/kb/list?page=1&size=20&_t=1775543869667 HTTP/1.1" 200 OK
+INFO:     113.248.166.62:0 - "OPTIONS /api/kb/list?page=1&size=20&_t=1775545605376 HTTP/1.1" 400 Bad Request
+INFO:     113.248.166.62:0 - "OPTIONS /api/kb/list?page=1&size=20&_t=1775545606268 HTTP/1.1" 400 Bad Request
+INFO:     113.248.166.62:0 - "OPTIONS /api/kb/list?page=1&size=20&_t=1775545659848 HTTP/1.1" 400 Bad Request
+INFO:     113.248.166.62:0 - "GET /api/kb/list?page=1&size=20&_t=1775543869667 HTTP/1.1" 200 OK
+INFO:     113.248.166.62:0 - "OPTIONS /api/kb/list?page=1&size=20&_t=1775545694137 HTTP/1.1" 400 Bad Request
+INFO:     113.248.166.62:0 - "OPTIONS /api/kb/list?page=1&size=20&_t=1775545801152 HTTP/1.1" 400 Bad Request
+INFO:     113.248.166.62:0 - "OPTIONS /api/kb/list?page=1&size=20&_t=1775545804705 HTTP/1.1" 400 Bad Request
+INFO:     113.248.166.62:0 - "GET /api/kb/list?page=1&size=20&_t=1775545876644 HTTP/1.1" 200 OK
+INFO:     113.248.166.62:0 - "GET /api/kb/list?page=1&size=20&_t=1775545877352 HTTP/1.1" 200 OK
+INFO:     113.248.166.62:0 - "GET /api/kb/list?page=1&size=20&_t=1775545876464 HTTP/1.1" 200 OK
+INFO:     113.248.166.62:0 - "GET /api/kb/list?page=1&size=20&_t=1775545906515 HTTP/1.1" 200 OK
+INFO:     39.98.82.250:0 - "GET /api/kb/list?page&size HTTP/1.1" 422 Unprocessable Entity
+INFO:     39.98.82.250:0 - "GET /api/kb/list?page=1&size=10 HTTP/1.1" 200 OK
+INFO:     39.98.82.250:0 - "GET /api/kb/ca2a9642?url=%E4%BC%81%E4%B8%9A%E7%9F%A5%E8%AF%86%E5%BA%93/%E5%9B%BE%E6%B9%83%EF%BC%88%E5%8C%97%E4%BA%AC%EF%BC%89%E5%8C%BB%E7%96%97%E7%A7%91%E6%8A%80/%E6%B5%8B%E8%AF%95 HTTP/1.1" 200 OK
+INFO:     39.98.82.250:0 - "GET /api/feedback/list?name=&enterprise=&type=&feedback_type=%E5%85%A8%E9%83%A8&start_time=&end_time=&page&size HTTP/1.1" 422 Unprocessable Entity
+INFO:     39.98.82.250:0 - "GET /api/feedback/list?name=&enterprise=&type=&feedback_type=%E5%85%A8%E9%83%A8&start_time=&end_time=&page=1&size=10 HTTP/1.1" 200 OK
