@@ -222,3 +222,22 @@ INFO:     127.0.0.1:58228 - "POST /api/chat HTTP/1.1" 200 OK
 2026-03-28 18:41:09 [debug    ] Scanner completed              elapsed_time_seconds=0.010109 is_valid=True scanner=Secrets
 2026-03-28 18:41:09 [info     ] Scanned prompt                 elapsed_time_seconds=0.011385 scores={'BanSubstrings': -1.0, 'InvisibleText': 0.0, 'Secrets': -1.0}
 INFO:     127.0.0.1:59878 - "POST /api/chat HTTP/1.1" 200 OK
+ WARN The package `llm-guard==0.3.16` does not have an extra named `full`
+INFO:     Started server process [3377069]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+ERROR:    [Errno 98] error while attempting to bind on address ('0.0.0.0', 8000): address already in use
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Started server process [3377869]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+ERROR:    [Errno 98] error while attempting to bind on address ('0.0.0.0', 8000): address already in use
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Started server process [3378367]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+ERROR:    [Errno 98] error while attempting to bind on address ('0.0.0.0', 8000): address already in use
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
