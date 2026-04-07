@@ -1,7 +1,7 @@
 {
-  "total_endpoints": 26,
-  "total_cases": 66,
-  "passed_cases": 66,
+  "total_endpoints": 28,
+  "total_cases": 77,
+  "passed_cases": 77,
   "failed_cases": 0,
   "endpoints": [
     {
@@ -34,8 +34,8 @@
     },
     {
       "endpoint": "api_chat_thinking",
-      "case_count": 3,
-      "passed": 3,
+      "case_count": 4,
+      "passed": 4,
       "failed": 0,
       "file": "api_chat_thinking.md"
     },
@@ -45,6 +45,13 @@
       "passed": 2,
       "failed": 0,
       "file": "api_chat_title.md"
+    },
+    {
+      "endpoint": "api_db_select_options",
+      "case_count": 1,
+      "passed": 1,
+      "failed": 0,
+      "file": "api_db_select_options.md"
     },
     {
       "endpoint": "api_feedback_batch_delete",
@@ -76,8 +83,8 @@
     },
     {
       "endpoint": "api_feedback_list",
-      "case_count": 3,
-      "passed": 3,
+      "case_count": 5,
+      "passed": 5,
       "failed": 0,
       "file": "api_feedback_list.md"
     },
@@ -111,8 +118,8 @@
     },
     {
       "endpoint": "api_history_list",
-      "case_count": 3,
-      "passed": 3,
+      "case_count": 4,
+      "passed": 4,
       "failed": 0,
       "file": "api_history_list.md"
     },
@@ -132,8 +139,8 @@
     },
     {
       "endpoint": "api_kb_delete_file",
-      "case_count": 2,
-      "passed": 2,
+      "case_count": 3,
+      "passed": 3,
       "failed": 0,
       "file": "api_kb_delete_file.md"
     },
@@ -160,15 +167,15 @@
     },
     {
       "endpoint": "api_kb_list",
-      "case_count": 1,
-      "passed": 1,
+      "case_count": 2,
+      "passed": 2,
       "failed": 0,
       "file": "api_kb_list.md"
     },
     {
       "endpoint": "api_kb_update",
-      "case_count": 3,
-      "passed": 3,
+      "case_count": 6,
+      "passed": 6,
       "failed": 0,
       "file": "api_kb_update.md"
     },
@@ -185,6 +192,13 @@
       "passed": 3,
       "failed": 0,
       "file": "api_upload.md"
+    },
+    {
+      "endpoint": "openapi_schema",
+      "case_count": 1,
+      "passed": 1,
+      "failed": 0,
+      "file": "openapi_schema.md"
     }
   ]
 }

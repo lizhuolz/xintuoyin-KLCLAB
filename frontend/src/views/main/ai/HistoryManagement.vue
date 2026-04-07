@@ -46,7 +46,9 @@
     >
       <el-table-column type="selection" width="55" />
       <el-table-column type="index" label="序号" width="70" align="center" />
-      <el-table-column prop="title" label="对话输入" min-width="250" show-overflow-tooltip />
+      <el-table-column prop="title" label="对话标题" min-width="220" show-overflow-tooltip />
+      <el-table-column prop="last_user_input" label="最后一轮提问" min-width="220" show-overflow-tooltip />
+      <el-table-column prop="last_answer" label="最后一轮回答" min-width="240" show-overflow-tooltip />
       <el-table-column label="用户信息" min-width="180">
         <template #default="scope">
           {{ scope.row.user?.name || '-' }} / {{ scope.row.user?.phone || '-' }}
@@ -58,6 +60,12 @@
       <el-table-column label="对话时间" width="180">
         <template #default="scope">{{ scope.row.updatedAtDisplay }}</template>
       </el-table-column>
+      <el-table-column label="RecordID" min-width="150" show-overflow-tooltip>
+        <template #default="scope">{{ scope.row.user?.record_id || '-' }}</template>
+      </el-table-column>
+      <el-table-column label="IP" min-width="150" show-overflow-tooltip>
+        <template #default="scope">{{ scope.row.user?.ip_address || '-' }}</template>
+      </el-table-column>
       <el-table-column prop="message_count" label="轮次" width="90" align="center" />
       <el-table-column label="操作" width="100" fixed="right" align="center">
         <template #default="scope">
@@ -65,6 +73,18 @@
         </template>
       </el-table-column>
     </el-table>
+
+    <div class="pagination-row">
+      <el-pagination
+        v-model:current-page="pagination.page"
+        v-model:page-size="pagination.size"
+        layout="total, prev, pager, next, sizes"
+        :page-sizes="[10, 20, 50, 100]"
+        :total="pagination.total"
+        @current-change="fetchHistories"
+        @size-change="fetchHistories"
+      />
+    </div>
 
     <el-dialog v-model="detailVisible" title="对话详情" width="800px" destroy-on-close custom-class="history-detail-dialog">
       <div class="history-detail-content">
@@ -80,6 +100,14 @@
           <div class="meta-item">
             <span class="label">所属企业：</span>
             <el-input :model-value="currentMeta.company" readonly class="meta-input" />
+          </div>
+          <div class="meta-item">
+            <span class="label">RecordID：</span>
+            <el-input :model-value="currentMeta.recordId" readonly class="meta-input" />
+          </div>
+          <div class="meta-item">
+            <span class="label">IP地址：</span>
+            <el-input :model-value="currentMeta.ipAddress" readonly class="meta-input" />
           </div>
           <div class="meta-item">
             <span class="label">对话时间：</span>
@@ -122,12 +150,20 @@ const currentMeta = reactive({
   name: '',
   phone: '',
   company: '',
+  recordId: '',
+  ipAddress: '',
   timeDisplay: '',
 })
 
 const searchForm = reactive({
   composite: '',
   dateRange: null,
+})
+
+const pagination = reactive({
+  page: 1,
+  size: 10,
+  total: 0,
 })
 
 async function fetchHistories() {
@@ -137,12 +173,17 @@ async function fetchHistories() {
       search: searchForm.composite || '',
       start_time: searchForm.dateRange?.[0] || undefined,
       end_time: searchForm.dateRange?.[1] || undefined,
+      page: pagination.page,
+      size: pagination.size,
     }
     const data = await aiApi.listHistories(params)
     historyList.value = (data.list || []).map((item) => ({
       ...item,
       updatedAtDisplay: item.updatedAt || formatTimestamp(item.updated_at),
     }))
+    pagination.total = data.total || 0
+    pagination.page = data.page || pagination.page
+    pagination.size = data.size || pagination.size
   } catch (error) {
     ElMessage.error(error.message || '获取历史记录失败')
   } finally {
@@ -153,6 +194,8 @@ async function fetchHistories() {
 function resetSearch() {
   searchForm.composite = ''
   searchForm.dateRange = null
+  pagination.page = 1
+  pagination.size = 10
   fetchHistories()
 }
 
@@ -164,6 +207,8 @@ async function viewDetail(row) {
   currentMeta.name = row.user?.name || ''
   currentMeta.phone = row.user?.phone || ''
   currentMeta.company = row.user?.categoryName || ''
+  currentMeta.recordId = row.user?.record_id || ''
+  currentMeta.ipAddress = row.user?.ip_address || ''
   currentMeta.timeDisplay = row.updatedAtDisplay || '-'
 
   try {
@@ -182,13 +227,17 @@ function exportData() {
     return
   }
 
-  const headers = ['序号', '对话输入', '用户姓名', '联系方式', '所属企业', '对话时间', '轮次']
+  const headers = ['序号', '对话标题', '最后一轮提问', '最后一轮回答', '用户姓名', '联系方式', '所属企业', 'RecordID', 'IP地址', '对话时间', '轮次']
   const rows = dataToExport.map((item, index) => [
     index + 1,
     item.title || '新对话',
+    item.last_user_input || '',
+    item.last_answer || '',
     item.user?.name || '',
     item.user?.phone || '',
     item.user?.categoryName || '',
+    item.user?.record_id || '',
+    item.user?.ip_address || '',
     item.updatedAtDisplay || '',
     item.message_count || 0,
   ])
@@ -237,6 +286,7 @@ onMounted(fetchHistories)
 }
 
 .action-bar { margin: 20px 0 12px; }
+.pagination-row { margin-top: 18px; display: flex; justify-content: flex-end; }
 
 .metadata-grid {
   display: grid;

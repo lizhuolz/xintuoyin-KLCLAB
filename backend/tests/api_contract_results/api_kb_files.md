@@ -20,12 +20,12 @@
   "msg": "获取知识库文件成功",
   "data": {
     "id": "kb_1",
-    "url": "企业知识库/文件库",
+    "url": "知识库/文件库",
     "files": [
       {
         "file_id": "kb_1:doc.txt",
         "name": "doc.txt",
-        "url": "企业知识库/文件库/doc.txt",
+        "url": "知识库/文件库/doc.txt",
         "size": 7,
         "uploaded_at": "3",
         "uploadedAt": "2026/03/24 00:00:02"

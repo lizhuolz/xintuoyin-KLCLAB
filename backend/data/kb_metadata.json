@@ -10,9 +10,10 @@
     "users": [
       "王颖奇"
     ],
-    "enabled": false,
-    "updatedAt": "2026/03/11 18:08:15",
-    "fileCount": 0
+    "enabled": true,
+    "updatedAt": "2026/03/30 20:17:56",
+    "fileCount": 0,
+    "updated_at": "1774873076151"
   },
   {
     "id": "6e73d834",
@@ -23,11 +24,16 @@
     "physical_path": "企业知识库/图湃（北京）医疗科技/aa",
     "remark": "",
     "users": [
-      "王颖奇"
+      {
+        "name": "王颖奇",
+        "phone": "",
+        "categoryName": ""
+      }
     ],
     "enabled": true,
-    "updatedAt": "2026/03/24 18:05:38",
-    "fileCount": 1
+    "updatedAt": "2026/04/02 15:57:34",
+    "fileCount": 1,
+    "updated_at": "1775116654839"
   },
   {
     "id": "kb_1774419816622",
@@ -49,5 +55,118 @@
     "updated_at": "1774419896672",
     "createdAt": "2026/03/25 14:23:36",
     "updatedAt": "2026/03/25 14:24:56"
+  },
+  {
+    "id": "kb_1774702385271",
+    "name": "Milvus联调测试库",
+    "model": "openai",
+    "category": "个人知识库",
+    "owner_info": "图湃（北京）医疗科技/技术部",
+    "physical_path": "个人知识库/王颖奇/Milvus联调测试库",
+    "remark": "",
+    "users": [
+      {
+        "name": "王颖奇",
+        "phone": "15323720032",
+        "categoryName": "图湃（北京）医疗科技"
+      }
+    ],
+    "enabled": true,
+    "created_at": "1774702385271",
+    "updated_at": "1774702451398",
+    "createdAt": "2026/03/28 20:53:05",
+    "updatedAt": "2026/03/28 20:54:11"
+  },
+  {
+    "id": "kb_1775213274922",
+    "name": "Agent联调验收库_1775213274",
+    "model": "openai",
+    "category": "知识库",
+    "owner_info": "图湃（北京）医疗科技/技术部",
+    "physical_path": "知识库/王颖奇/Agent联调验收库_1775213274",
+    "remark": "",
+    "users": [
+      {
+        "name": "王颖奇",
+        "phone": "15323720032",
+        "categoryName": "图湃（北京）医疗科技",
+        "record_id": "UID_20250001",
+        "ip_address": "183.230.12.156"
+      }
+    ],
+    "enabled": true,
+    "created_at": "1775213274922",
+    "updated_at": "1775213274922",
+    "createdAt": "2026/04/03 18:47:54",
+    "updatedAt": "2026/04/03 18:47:54"
+  },
+  {
+    "id": "kb_1775213578931",
+    "name": "Agent联调验收库_1775213578",
+    "model": "openai",
+    "category": "知识库",
+    "owner_info": "图湃（北京）医疗科技/技术部",
+    "physical_path": "知识库/王颖奇/Agent联调验收库_1775213578",
+    "remark": "",
+    "users": [
+      {
+        "name": "王颖奇",
+        "phone": "15323720032",
+        "categoryName": "图湃（北京）医疗科技",
+        "record_id": "UID_20250001",
+        "ip_address": "183.230.12.156"
+      }
+    ],
+    "enabled": true,
+    "created_at": "1775213578931",
+    "updated_at": "1775213578982",
+    "createdAt": "2026/04/03 18:52:58",
+    "updatedAt": "2026/04/03 18:52:58"
+  },
+  {
+    "id": "kb_1775213785117",
+    "name": "RAG手工验收库_1775213785",
+    "model": "openai",
+    "category": "知识库",
+    "owner_info": "图湃（北京）医疗科技/技术部",
+    "physical_path": "知识库/王颖奇/RAG手工验收库_1775213785",
+    "remark": "",
+    "users": [
+      {
+        "name": "王颖奇",
+        "phone": "15323720032",
+        "categoryName": "图湃（北京）医疗科技",
+        "record_id": "UID_20250001",
+        "ip_address": "183.230.12.156"
+      }
+    ],
+    "enabled": true,
+    "created_at": "1775213785117",
+    "updated_at": "1775213792466",
+    "createdAt": "2026/04/03 18:56:25",
+    "updatedAt": "2026/04/03 18:56:32"
+  },
+  {
+    "id": "kb_1775214438440",
+    "name": "kb_diag_now",
+    "model": "openai",
+    "category": "知识库",
+    "owner_info": "图湃（北京）医疗科技/技术部",
+    "physical_path": "知识库/王颖奇/kb_diag_now",
+    "remark": "",
+    "users": [
+      {
+        "name": "王颖奇",
+        "phone": "15323720032",
+        "categoryName": "图湃（北京）医疗科技",
+        "record_id": "UID_20250001",
+        "ip_address": "183.230.12.156"
+      }
+    ],
+    "enabled": true,
+    "created_at": "1775214438440",
+    "updated_at": "1775214438440",
+    "createdAt": "2026/04/03 19:07:18",
+    "updatedAt": "2026/04/03 19:07:18"
   }
 ]

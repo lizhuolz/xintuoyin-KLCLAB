@@ -1,0 +1,51 @@
+{
+  "conversation_id": "1775218225829",
+  "title": "请简要介绍一下Milvus是什么",
+  "created_at": "1775218226004",
+  "updated_at": "1775218250851",
+  "createdAt": "2026/04/03 20:10:26",
+  "updatedAt": "2026/04/03 20:10:50",
+  "message_count": 1,
+  "user": {
+    "name": "王颖奇",
+    "phone": "15323720032",
+    "categoryName": "图湃（北京）医疗科技",
+    "record_id": "UID_20250001",
+    "ip_address": "183.230.12.156"
+  },
+  "messages": [
+    {
+      "message_index": 0,
+      "question": "请简要介绍一下Milvus是什么",
+      "files": [],
+      "uploaded_files": [],
+      "file_contexts": [],
+      "web_search": false,
+      "db_version": null,
+      "answer": "",
+      "raw_answer": "",
+      "resource": [],
+      "recommend_answer": [
+        "Milvus的主要功能是什么？",
+        "Milvus适用于哪些场景？",
+        "Milvus如何安装和使用？"
+      ],
+      "feedback": null,
+      "thinking_text": "在正式回答前，我先做了几步准备：\n1. 我调用了 rag_tool，输入大致是：{\"question\": \"请简要介绍一下Milvus是什么\", \"user_identity\": \"guest\"}。\n整理完这些信息后，我再把最终答案组织成对你更自然的回复。",
+      "model_think_text": "",
+      "thinking_steps": [
+        {
+          "kind": "call",
+          "node_name": "chatbot_local",
+          "tool_name": "rag_tool",
+          "preview": "{\"question\": \"请简要介绍一下Milvus是什么\", \"user_identity\": \"guest\"}",
+          "tool_call_id": "chatcmpl-tool-9a4e8fb873da204b"
+        }
+      ],
+      "created_at": "1775218250851",
+      "updated_at": "1775218250851",
+      "createdAt": "2026/04/03 20:10:50",
+      "updatedAt": "2026/04/03 20:10:50"
+    }
+  ]
+}

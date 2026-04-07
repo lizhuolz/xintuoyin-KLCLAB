@@ -20,6 +20,13 @@ def _env_float(name, default):
         return float(default)
 
 
+def _env_bool(name, default):
+    value = os.getenv(name)
+    if value is None:
+        return default
+    return str(value).strip().lower() in {"1", "true", "yes", "on"}
+
+
 # MySQL Info
 HOST = os.getenv("DB_MYSQL_HOST", '183.69.138.62')
 PORT = _env_int("DB_MYSQL_PORT", 33666)
@@ -79,6 +86,7 @@ class DB:
         self.generate_temperature = _env_float("DB_LLM_GENERATE_TEMPERATURE", 0.0)
         self.generate_max_tokens = _env_int("DB_LLM_GENERATE_MAX_TOKENS", 1024)
         self.revise_temperature = _env_float("DB_LLM_REVISE_TEMPERATURE", 0.0)
+        self.extra_body = {} if _env_bool("DB_LLM_ENABLE_THINKING", True) else {"chat_template_kwargs": {"enable_thinking": False}}
 
         # init MySQL
         self.conn = None
@@ -255,7 +263,8 @@ class DB:
                 messages=messages,
                 temperature=self.selector_temperature, 
                 max_tokens=self.selector_max_tokens,
-                stop=["</RES>"] 
+                stop=["</RES>"],
+                extra_body=self.extra_body,
             )
             
             content = response.choices[0].message.content
@@ -313,6 +322,7 @@ class DB:
                 messages=messages,
                 temperature=self.generate_temperature,
                 max_tokens=self.generate_max_tokens,
+                extra_body=self.extra_body,
             )
             
             raw_output = response.choices[0].message.content
@@ -347,7 +357,8 @@ class DB:
              response = self.client.chat.completions.create(
                 model=self.model_name,
                 messages=messages,
-                temperature=self.revise_temperature
+                temperature=self.revise_temperature,
+                extra_body=self.extra_body,
             )
              content = response.choices[0].message.content
              match = re.search(r"<SQL>(.*?)</SQL>", content, re.DOTALL)

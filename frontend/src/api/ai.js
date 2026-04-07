@@ -214,6 +214,56 @@ async function postFormStream(path, formData, onEvent, options = {}) {
   return donePayload || {}
 }
 
+function formDataToJson(formData) {
+  const payload = {}
+  formData.forEach((value, key) => {
+    if (value instanceof File) return
+    payload[key] = value
+  })
+  return payload
+}
+
+function hasBinaryFile(formData) {
+  let found = false
+  formData.forEach((value) => {
+    if (value instanceof File) found = true
+  })
+  return found
+}
+
+async function postJsonStream(path, payload, onEvent, options = {}) {
+  const response = await fetch(buildUrl(path), {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      ...buildHeaders(options.headers),
+    },
+    body: JSON.stringify(payload),
+    signal: options.signal,
+  })
+
+  if (!response.ok) {
+    throw new Error(await readErrorPayload(response, '发送对话失败'))
+  }
+
+  let donePayload = null
+  let streamError = null
+  await consumeSSEStream(response, (event) => {
+    if (event?.type === 'done') {
+      donePayload = event.data || {}
+    }
+    if (event?.type === 'error') {
+      streamError = event.message || '流式请求失败'
+    }
+    onEvent?.(event)
+  })
+
+  if (streamError) {
+    throw new Error(streamError)
+  }
+  return donePayload || {}
+}
+
 async function getTextStream(path, onChunk, options = {}) {
   const response = await fetch(buildUrl(path), {
     method: 'GET',
@@ -231,21 +281,27 @@ export const aiApi = {
     return request.get('/chat/new_session').then((res) => unwrapResponse(res, '新建对话失败'))
   },
   sendChat(formData) {
-    const payload = new FormData()
-    formData.forEach((value, key) => payload.append(key, value))
-    payload.set('stream', 'false')
-    return request.post('/chat', payload, { timeout: 120000 }).then((res) => unwrapResponse(res, '发送对话失败'))
+    if (hasBinaryFile(formData)) {
+      return postFormStream('/chat', formData)
+    }
+    return postJsonStream('/chat', formDataToJson(formData))
   },
   sendChatStream(formData, onEvent, options = {}) {
+    if (!hasBinaryFile(formData)) {
+      return postJsonStream('/chat', formDataToJson(formData), onEvent, options)
+    }
     return postFormStream('/chat', formData, onEvent, options)
   },
   getChatThinking(conversationId, messageIndex) {
-    return getPlainText(`/chat/${encodeURIComponent(conversationId)}/thinking?message_index=${encodeURIComponent(messageIndex)}&stream=false`)
+    return getTextStream(`/chat/${encodeURIComponent(conversationId)}/thinking?message_index=${encodeURIComponent(messageIndex)}`)
   },
   getChatThinkingStream(conversationId, messageIndex, onChunk, options = {}) {
-    return getTextStream(`/chat/${encodeURIComponent(conversationId)}/thinking?message_index=${encodeURIComponent(messageIndex)}&stream=true`, onChunk, options)
+    return getTextStream(`/chat/${encodeURIComponent(conversationId)}/thinking?message_index=${encodeURIComponent(messageIndex)}`, onChunk, options)
   },
   submitChatFeedback(formData) {
+    if (!hasBinaryFile(formData)) {
+      return request.post('/chat/feedback', formDataToJson(formData)).then((res) => unwrapResponse(res, '提交反馈失败'))
+    }
     return request.post('/chat/feedback', formData).then((res) => unwrapResponse(res, '提交反馈失败'))
   },
   listHistories(params = {}) {
@@ -272,13 +328,16 @@ export const aiApi = {
   batchDeleteFeedback(ids) {
     return request.post('/feedback/batch_delete', { ids }).then((res) => unwrapResponse(res, '批量删除反馈失败'))
   },
-  listKnowledgeBases() {
-    return request.get('/kb/list').then((res) => unwrapResponse(res, '获取知识库列表失败'))
+  listKnowledgeBases(params = {}) {
+    return request.get('/kb/list', { params }).then((res) => unwrapResponse(res, '获取知识库列表失败'))
   },
   createKnowledgeBase(formData) {
-    return request.post('/kb/create', formData).then((res) => unwrapResponse(res, '创建知识库失败'))
+    return request.post('/kb/create', formDataToJson(formData)).then((res) => unwrapResponse(res, '创建知识库失败'))
   },
   updateKnowledgeBase(formData) {
+    if (!hasBinaryFile(formData)) {
+      return request.post('/kb/update', formDataToJson(formData)).then((res) => unwrapResponse(res, '更新知识库失败'))
+    }
     return request.post('/kb/update', formData).then((res) => unwrapResponse(res, '更新知识库失败'))
   },
   deleteKnowledgeBase(id) {
@@ -296,11 +355,12 @@ export const aiApi = {
     return request.post(`/kb/${encodeURIComponent(id)}/upload`, formData).then((res) => unwrapResponse(res, '上传知识库文档失败'))
   },
   deleteKnowledgeBaseFile(id, filename) {
-    const formData = new FormData()
-    formData.append('filename', filename)
-    return request.post(`/kb/${encodeURIComponent(id)}/delete_file`, formData).then((res) => unwrapResponse(res, '删除知识库文档失败'))
+    return request.post(`/kb/${encodeURIComponent(id)}/delete_file`, { filename }).then((res) => unwrapResponse(res, '删除知识库文档失败'))
   },
   deleteKnowledgeBaseFiles(id, filenames) {
     return request.post(`/kb/${encodeURIComponent(id)}/delete_files`, { filenames }).then((res) => unwrapResponse(res, '删除知识库文档失败'))
+  },
+  getDbSelectOptions(params = {}) {
+    return request.get('/db/select_options', { params }).then((res) => unwrapResponse(res, '获取数据库显式字段失败'))
   },
 }

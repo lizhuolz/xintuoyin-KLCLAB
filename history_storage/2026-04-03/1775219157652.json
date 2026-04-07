@@ -1,0 +1,43 @@
+{
+  "conversation_id": "1775219157652",
+  "title": "帮我上网查询哈工大校训",
+  "created_at": "1775219157828",
+  "updated_at": "1775219162300",
+  "createdAt": "2026/04/03 20:25:57",
+  "updatedAt": "2026/04/03 20:26:02",
+  "message_count": 1,
+  "user": {
+    "name": "王颖奇",
+    "phone": "15323720032",
+    "categoryName": "图湃（北京）医疗科技",
+    "record_id": "UID_20250001",
+    "ip_address": "183.230.12.156"
+  },
+  "messages": [
+    {
+      "message_index": 0,
+      "question": "帮我上网查询哈工大校训",
+      "files": [],
+      "uploaded_files": [],
+      "file_contexts": [],
+      "web_search": true,
+      "db_version": null,
+      "answer": "",
+      "raw_answer": "用户询问哈工大校训，这是一个需要查询互联网信息的问题。我需要使用tavily_search_with_summary工具来搜索相关信息。\n\n根据回答要求：\n1. 需要结合历史对话、本轮问题和上传文件内容 - 但这里没有历史对话和上传文件，只有当前问题\n2. 没有上传文件，所以不需要考虑文件相关内容\n3. 需要回答用户的问题\n\n让我搜索哈工大校训的信息。\n</think>\n\n",
+      "resource": [],
+      "recommend_answer": [
+        "哈工大校训的英文是什么？",
+        "校训是什么时候确定的？",
+        "校训背后有什么故事？"
+      ],
+      "feedback": null,
+      "thinking_text": "用户询问哈工大校训，这是一个需要查询互联网信息的问题。我需要使用tavily_search_with_summary工具来搜索相关信息。\n\n根据回答要求：\n1. 需要结合历史对话、本轮问题和上传文件内容 - 但这里没有历史对话和上传文件，只有当前问题\n2. 没有上传文件，所以不需要考虑文件相关内容\n3. 需要回答用户的问题\n\n让我搜索哈工大校训的信息。\n",
+      "model_think_text": "用户询问哈工大校训，这是一个需要查询互联网信息的问题。我需要使用tavily_search_with_summary工具来搜索相关信息。\n\n根据回答要求：\n1. 需要结合历史对话、本轮问题和上传文件内容 - 但这里没有历史对话和上传文件，只有当前问题\n2. 没有上传文件，所以不需要考虑文件相关内容\n3. 需要回答用户的问题\n\n让我搜索哈工大校训的信息。",
+      "thinking_steps": [],
+      "created_at": "1775219162300",
+      "updated_at": "1775219162300",
+      "createdAt": "2026/04/03 20:26:02",
+      "updatedAt": "2026/04/03 20:26:02"
+    }
+  ]
+}

@@ -1,0 +1,200 @@
+{
+  "generated_at": "2026-03-30T20:38:52.326477",
+  "targets": {
+    "backend": "http://127.0.0.1:8000",
+    "frontend": [
+      "http://127.0.0.1:5173",
+      "http://127.0.0.1:5174"
+    ],
+    "minio_api": "http://127.0.0.1:9000",
+    "minio_console": "http://127.0.0.1:9001"
+  },
+  "ports": {
+    "backend_new_session": {
+      "ok": false,
+      "status": 502,
+      "elapsed_ms": 5.47,
+      "body": "",
+      "error": null
+    },
+    "minio_api_health": {
+      "ok": true,
+      "status": 200,
+      "elapsed_ms": 4.64,
+      "body": "",
+      "error": null
+    },
+    "minio_console_root": {
+      "ok": true,
+      "status": 200,
+      "elapsed_ms": 5.31,
+      "body": "<!doctype html><html lang=\"en\"><head><meta charset=\"utf-8\"/><base href=\"/\"/><meta content=\"width=device-width,initial-scale=1\" name=\"viewport\"/><meta content=\"#081C42\" media=\"(prefers-color-scheme: light)\" name=\"theme-color\"/><meta content=\"#081C42\" media=\"(prefers-color-scheme: dark)\" name=\"theme-color\"/><meta content=\"MinIO Console\" name=\"description\"/><meta name=\"minio-license\" content=\"agpl\"/><link href=\"./styles/root-styles.css\" rel=\"stylesheet\"/><link href=\"./apple-icon-180x180.png\" rel=\"a",
+      "error": null
+    }
+  },
+  "frontend_proxy": {
+    "http://127.0.0.1:5173": {
+      "root": {
+        "ok": true,
+        "status": 200,
+        "elapsed_ms": 9.2,
+        "body": "<!doctype html>\n<html lang=\"zh-CN\">\n  <head>\n    <script type=\"module\" src=\"/@id/virtual:vue-devtools-path:overlay.js\"></script>\n    <script type=\"module\" src=\"/@id/virtual:vue-inspector-path:load.js\"></script>\n\n    <script type=\"module\" src=\"/@vite/client\"></script>\n\n    <meta charset=\"utf-8\" />\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\" />\n    <title>æ°æé¶å¹³å°</title>\n  </head>\n  <body>\n    <div id=\"app\"></div>\n    <script type=\"module\" src=\"/src/main.js\"></s",
+        "error": null
+      },
+      "proxy_new_session": {
+        "ok": false,
+        "status": 500,
+        "elapsed_ms": 7.6,
+        "body": "",
+        "error": null
+      },
+      "proxy_kb_list": {
+        "ok": false,
+        "status": 500,
+        "elapsed_ms": 7.21,
+        "body": "",
+        "error": null
+      }
+    },
+    "http://127.0.0.1:5174": {
+      "root": {
+        "ok": true,
+        "status": 200,
+        "elapsed_ms": 8.63,
+        "body": "<!doctype html>\n<html lang=\"zh-CN\">\n  <head>\n    <script type=\"module\" src=\"/@id/virtual:vue-devtools-path:overlay.js\"></script>\n    <script type=\"module\" src=\"/@id/virtual:vue-inspector-path:load.js\"></script>\n\n    <script type=\"module\" src=\"/@vite/client\"></script>\n\n    <meta charset=\"utf-8\" />\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\" />\n    <title>æ°æé¶å¹³å°</title>\n  </head>\n  <body>\n    <div id=\"app\"></div>\n    <script type=\"module\" src=\"/src/main.js\"></s",
+        "error": null
+      },
+      "proxy_new_session": {
+        "ok": false,
+        "status": 500,
+        "elapsed_ms": 48.08,
+        "body": "",
+        "error": null
+      },
+      "proxy_kb_list": {
+        "ok": false,
+        "status": 500,
+        "elapsed_ms": 7.96,
+        "body": "",
+        "error": null
+      }
+    }
+  },
+  "backend_api": {
+    "new_session": {
+      "ok": false,
+      "status": 502,
+      "elapsed_ms": 5.52,
+      "body": "",
+      "error": null
+    }
+  },
+  "kb_lifecycle": {
+    "create": {
+      "ok": false,
+      "status": 502,
+      "elapsed_ms": 5.65,
+      "body": "",
+      "error": null
+    }
+  },
+  "stress": {
+    "backend_new_session": {
+      "label": "backend_new_session",
+      "total": 12,
+      "workers": 4,
+      "ok": 0,
+      "failed": 12,
+      "latency_ms": {
+        "min": 6.16,
+        "p50": 9.86,
+        "max": 11.9
+      },
+      "samples": [
+        {
+          "status": 502,
+          "elapsed_ms": 7.68,
+          "error": null
+        },
+        {
+          "status": 502,
+          "elapsed_ms": 6.16,
+          "error": null
+        },
+        {
+          "status": 502,
+          "elapsed_ms": 8.54,
+          "error": null
+        }
+      ]
+    },
+    "backend_kb_list": {
+      "label": "backend_kb_list",
+      "total": 8,
+      "workers": 4,
+      "ok": 0,
+      "failed": 8,
+      "latency_ms": {
+        "min": 6.34,
+        "p50": 9.1,
+        "max": 10.88
+      },
+      "samples": [
+        {
+          "status": 502,
+          "elapsed_ms": 8.89,
+          "error": null
+        },
+        {
+          "status": 502,
+          "elapsed_ms": 8.79,
+          "error": null
+        },
+        {
+          "status": 502,
+          "elapsed_ms": 9.76,
+          "error": null
+        }
+      ]
+    },
+    "frontend_proxy_new_session": {
+      "label": "frontend_proxy_new_session",
+      "total": 8,
+      "workers": 4,
+      "ok": 0,
+      "failed": 8,
+      "latency_ms": {
+        "min": 8.03,
+        "p50": 10.79,
+        "max": 14.07
+      },
+      "samples": [
+        {
+          "status": 500,
+          "elapsed_ms": 8.84,
+          "error": null
+        },
+        {
+          "status": 500,
+          "elapsed_ms": 9.13,
+          "error": null
+        },
+        {
+          "status": 500,
+          "elapsed_ms": 12.55,
+          "error": null
+        }
+      ]
+    }
+  },
+  "summary": {
+    "all_critical_checks_passed": false,
+    "critical_check_count": 10,
+    "passed_checks": 2,
+    "notes": [
+      "前端代理通过 5173/5174 的 /api 路径直连后端验证。",
+      "轻量压测只覆盖无模型或低成本接口，避免重型模型调用导致报告不可复现。",
+      "聊天主链路保留 1 次真实非流式调用，验证前后端集成未断。"
+    ]
+  }
+}

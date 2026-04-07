@@ -1,0 +1,39 @@
+{
+  "conversation_id": "1775214321274",
+  "title": "你好",
+  "created_at": "1775214321292",
+  "updated_at": "1775214323549",
+  "createdAt": "2026/04/03 19:05:21",
+  "updatedAt": "2026/04/03 19:05:23",
+  "message_count": 1,
+  "user": {
+    "name": "王颖奇",
+    "phone": "15323720032",
+    "categoryName": "图湃（北京）医疗科技",
+    "record_id": "UID_20250001",
+    "ip_address": "183.230.12.156"
+  },
+  "messages": [
+    {
+      "message_index": 0,
+      "question": "你好",
+      "files": [],
+      "uploaded_files": [],
+      "file_contexts": [],
+      "web_search": false,
+      "db_version": null,
+      "answer": "你好！有什么问题我可以帮助你吗？",
+      "raw_answer": "你好！有什么问题我可以帮助你吗？",
+      "resource": [],
+      "recommend_answer": [],
+      "feedback": null,
+      "thinking_text": "",
+      "model_think_text": "",
+      "thinking_steps": [],
+      "created_at": "1775214323549",
+      "updated_at": "1775214323549",
+      "createdAt": "2026/04/03 19:05:23",
+      "updatedAt": "2026/04/03 19:05:23"
+    }
+  ]
+}

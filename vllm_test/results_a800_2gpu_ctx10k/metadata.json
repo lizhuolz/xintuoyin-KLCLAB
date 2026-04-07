@@ -1,0 +1,22 @@
+{
+  "generated_at": "2026-04-03T21:35:48",
+  "env_label": "A800x2-Qwen3.5-27B",
+  "base_url": "http://10.249.40.204:62272",
+  "endpoint": "/v1/completions",
+  "model_name": "Qwen3.5-27B",
+  "model_path": "/data2/dlx/models/base4/Qwen3.5-27B",
+  "tokenizer_path": "/data2/lyq/models/Qwen3.5-27B",
+  "input_len_target": 10000,
+  "output_len_target": 1024,
+  "prompt_tokens_actual": 10001,
+  "timeout_seconds": 180,
+  "concurrencies": [
+    5,
+    10,
+    20,
+    40,
+    80,
+    160
+  ],
+  "min_requests": 10
+}
