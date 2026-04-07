@@ -66,7 +66,7 @@ class KBService:
                     "name": item.get("name") or item.get("fullName") or "",
                     "phone": item.get("phone") or item.get("phones") or "",
                     "categoryName": item.get("categoryName") or item.get("company") or "",
-                    "record_id": item.get("record_id") or item.get("recordId") or item.get("RecordID") or item.get("user_id") or "",
+                    "record_id": item.get("record_id") or item.get("recordId") or item.get("RecordID") or "",
                     "ip_address": item.get("ip_address") or item.get("ip") or "",
                 })
             else:
@@ -263,7 +263,7 @@ class KBService:
                 "name": user.get("name", ""),
                 "phone": user.get("phone", ""),
                 "categoryName": user.get("company", ""),
-                "record_id": user.get("record_id") or user.get("RecordID") or user.get("user_id") or "",
+                "record_id": user.get("record_id") or user.get("RecordID") or "",
                 "ip_address": user.get("ip_address", ""),
             }],
             "enabled": True,

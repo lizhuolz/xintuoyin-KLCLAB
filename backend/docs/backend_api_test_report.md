@@ -36,7 +36,7 @@
 - `/api/chat/{conversation_id}/thinking` 在会话或轮次不存在时返回统一 `404`
 - 无文件的 `/api/chat`、`/api/chat/feedback`、`/api/kb/create`、`/api/kb/{id}/delete_file` 已切到 JSON 主路径
 - 带文件的对话、反馈和知识库更新仍保留 multipart 兼容
-- 历史记录分页与字段补充
+- 历史记录分页、MinIO 存储与字段补充
 - 反馈列表重构与筛选
 - 知识库创建去掉 `category`
 - 知识库更新预览/确认、同次删除与上传
@@ -123,7 +123,7 @@ npm run build
 | 历史/反馈/知识库列表分页 | 已生效 |
 | 创建知识库移除 `category` | 已生效 |
 | 更新知识库支持预览、同次上传和删除 | 已生效 |
-| 历史列表补充最后一轮问答和用户 `record_id/ip_address` | 已生效 |
+| 历史列表补充最后一轮问答和用户 `record_id/user_id/ip_address` | 已生效 |
 | 反馈列表改为 `user`、`feedback_type`、`times` 嵌套结构 | 已生效 |
 | 数据库显式选择接口 | 已上线 |
 

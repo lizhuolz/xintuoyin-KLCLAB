@@ -53,14 +53,19 @@ const routes = [
         meta: { title: '历史记录维护' }
       },
       {
+        path: "/ai/feedback",
+        component: () => import("@/views/main/ai/FeedbackList.vue"),
+        meta: { title: '反馈列表' }
+      },
+      {
         path: "/ai/feedback-positive",
         component: () => import("@/views/main/ai/PositiveFeedback.vue"),
-        meta: { title: '正向反馈维护' }
+        meta: { title: '良好回答' }
       },
       {
         path: "/ai/feedback-negative",
         component: () => import("@/views/main/ai/NegativeFeedback.vue"),
-        meta: { title: '负向反馈维护' }
+        meta: { title: '待优化回答' }
       },
       {
         path: "/ai/test-tree",

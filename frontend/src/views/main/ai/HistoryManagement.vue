@@ -63,6 +63,9 @@
       <el-table-column label="RecordID" min-width="150" show-overflow-tooltip>
         <template #default="scope">{{ scope.row.user?.record_id || '-' }}</template>
       </el-table-column>
+      <el-table-column label="UserID" min-width="150" show-overflow-tooltip>
+        <template #default="scope">{{ scope.row.user?.user_id || '-' }}</template>
+      </el-table-column>
       <el-table-column label="IP" min-width="150" show-overflow-tooltip>
         <template #default="scope">{{ scope.row.user?.ip_address || '-' }}</template>
       </el-table-column>
@@ -106,6 +109,10 @@
             <el-input :model-value="currentMeta.recordId" readonly class="meta-input" />
           </div>
           <div class="meta-item">
+            <span class="label">UserID：</span>
+            <el-input :model-value="currentMeta.userId" readonly class="meta-input" />
+          </div>
+          <div class="meta-item">
             <span class="label">IP地址：</span>
             <el-input :model-value="currentMeta.ipAddress" readonly class="meta-input" />
           </div>
@@ -122,6 +129,12 @@
               <div class="msg-type-label">{{ msg.role === 'user' ? '问' : '答' }}</div>
               <div class="msg-content-box" :class="msg.role">
                 <div class="msg-text" v-html="renderMarkdown(msg.content)"></div>
+                <div v-if="msg.role === 'user' && msg.uploadedFiles?.length" class="download-file-list">
+                  <div v-for="file in msg.uploadedFiles" :key="file.file_id || file.filename" class="download-file-row">
+                    <span class="file-name">{{ file.filename }}</span>
+                    <el-button link type="primary" @click="downloadHistoryFile(file, msg.messageIndex)">下载</el-button>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
@@ -135,7 +148,7 @@
 import { ref, reactive, onMounted } from 'vue'
 import MarkdownIt from 'markdown-it'
 import { ElMessage } from 'element-plus'
-import { aiApi, flattenHistoryMessages, formatTimestamp } from '@/api/ai'
+import { aiApi, buildHistoryFileDownloadUrl, flattenHistoryMessages, formatTimestamp } from '@/api/ai'
 
 const md = new MarkdownIt({ html: false, linkify: true, typographer: true })
 const renderMarkdown = (text) => md.render(text || '')
@@ -145,12 +158,14 @@ const loading = ref(false)
 const detailVisible = ref(false)
 const detailMessages = ref([])
 const selectedRows = ref([])
+const currentDetailConversationId = ref('')
 
 const currentMeta = reactive({
   name: '',
   phone: '',
   company: '',
   recordId: '',
+  userId: '',
   ipAddress: '',
   timeDisplay: '',
 })
@@ -204,10 +219,12 @@ function handleSelectionChange(selection) {
 }
 
 async function viewDetail(row) {
+  currentDetailConversationId.value = row.conversation_id
   currentMeta.name = row.user?.name || ''
   currentMeta.phone = row.user?.phone || ''
   currentMeta.company = row.user?.categoryName || ''
   currentMeta.recordId = row.user?.record_id || ''
+  currentMeta.userId = row.user?.user_id || ''
   currentMeta.ipAddress = row.user?.ip_address || ''
   currentMeta.timeDisplay = row.updatedAtDisplay || '-'
 
@@ -221,42 +238,43 @@ async function viewDetail(row) {
 }
 
 function exportData() {
-  const dataToExport = selectedRows.value.length > 0 ? selectedRows.value : historyList.value
-  if (!dataToExport.length) {
-    ElMessage.warning('没有可导出的数据')
-    return
-  }
+  doExport()
+}
 
-  const headers = ['序号', '对话标题', '最后一轮提问', '最后一轮回答', '用户姓名', '联系方式', '所属企业', 'RecordID', 'IP地址', '对话时间', '轮次']
-  const rows = dataToExport.map((item, index) => [
-    index + 1,
-    item.title || '新对话',
-    item.last_user_input || '',
-    item.last_answer || '',
-    item.user?.name || '',
-    item.user?.phone || '',
-    item.user?.categoryName || '',
-    item.user?.record_id || '',
-    item.user?.ip_address || '',
-    item.updatedAtDisplay || '',
-    item.message_count || 0,
-  ])
-
-  let csvContent = '\ufeff' + headers.join(',') + '\n'
-  rows.forEach((row) => {
-    csvContent += row.map((cell) => `"${String(cell).replace(/"/g, '""')}"`).join(',') + '\n'
-  })
-
-  const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' })
+function triggerBlobDownload(blob, filename) {
   const url = URL.createObjectURL(blob)
   const link = document.createElement('a')
   link.setAttribute('href', url)
-  link.setAttribute('download', `对话记录_${new Date().toLocaleDateString()}.csv`)
+  link.setAttribute('download', filename)
   document.body.appendChild(link)
   link.click()
   document.body.removeChild(link)
   URL.revokeObjectURL(url)
-  ElMessage.success('导出成功')
+}
+
+async function doExport() {
+  try {
+    if (selectedRows.value.length === 0) {
+      ElMessage.warning('请先勾选至少一条历史记录')
+      return
+    }
+    const ids = selectedRows.value.map((item) => item.conversation_id)
+    const { blob, filename } = await aiApi.exportHistoryDetails(ids)
+    triggerBlobDownload(blob, filename || '历史详情.txt')
+    ElMessage.success('导出成功')
+  } catch (error) {
+    ElMessage.error(error.message || '导出失败')
+  }
+}
+
+async function downloadHistoryFile(file, messageIndex) {
+  try {
+    const url = buildHistoryFileDownloadUrl(currentDetailConversationId.value, messageIndex, file.file_id)
+    const { blob, filename } = await aiApi.downloadByUrl(url, '下载附件失败')
+    triggerBlobDownload(blob, filename || file.filename || '附件')
+  } catch (error) {
+    ElMessage.error(error.message || '下载附件失败')
+  }
 }
 
 onMounted(fetchHistories)
@@ -323,4 +341,7 @@ onMounted(fetchHistories)
 .msg-content-box.user { background: #fafbff; }
 .msg-content-box.assistant { background: #fff; }
 .msg-text { color: #334155; line-height: 1.7; }
+.download-file-list { margin-top: 12px; padding-top: 12px; border-top: 1px solid #ebeef5; display: flex; flex-direction: column; gap: 8px; }
+.download-file-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.file-name { font-size: 13px; color: #606266; word-break: break-all; }
 </style>

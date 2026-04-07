@@ -1,5 +1,5 @@
 <template>
-  <FeedbackManagementPage mode="positive" />
+  <FeedbackManagementPage mode="all" />
 </template>
 
 <script setup>

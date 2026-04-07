@@ -22,7 +22,7 @@
 <script setup>
 const modules = [
   { to: '/ai/chat', tag: 'Chat', title: 'AI 对话', desc: '新会话、历史切换、反馈提交、思考过程展示。' },
-  { to: '/ai/history', tag: 'History', title: '历史记录', desc: '按时间与关键字检索，并导出对话清单。' },
+  { to: '/ai/history', tag: 'History', title: '历史记录', desc: '按时间与关键字检索，并导出单条对话详情。' },
   { to: '/ai/feedback-positive', tag: 'Feedback', title: '正向反馈', desc: '查看点赞记录，处理并收录优秀回答。' },
   { to: '/ai/feedback-negative', tag: 'Feedback', title: '负向反馈', desc: '查看点踩详情、图片附件和处理状态。' },
   { to: '/ai/kb', tag: 'Knowledge', title: '知识库管理', desc: '创建、编辑、上传与删除知识库文件。' },

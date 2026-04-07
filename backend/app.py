@@ -1,5 +1,7 @@
 import json
 import asyncio
+import io
+import csv
 import os
 import re
 import sys
@@ -75,6 +77,7 @@ CHAT_UPLOAD_ROOT = ROOT_DIR / "uploads" / "chat"
 USER_JSON_PATH = ROOT_DIR / "user.json"
 EXCELLENT_DIR = FEEDBACK_ROOT / "excellent_answers"
 NEGATIVE_QA_DIR = FEEDBACK_ROOT / "negative_answers"
+HISTORY_MINIO_PREFIX = "history"
 
 for path in [HISTORY_ROOT, FEEDBACK_ROOT, CHAT_UPLOAD_ROOT, EXCELLENT_DIR, NEGATIVE_QA_DIR]:
     path.mkdir(parents=True, exist_ok=True)
@@ -118,6 +121,23 @@ def now_display() -> str:
 
 def today_str() -> str:
     return datetime.now().strftime("%Y-%m-%d")
+
+
+def normalize_db_version(value: Optional[str]) -> Optional[str]:
+    if value in (None, ""):
+        return None
+    text = str(value).strip()
+    if not text:
+        return None
+    lowered = text.lower()
+    mapping = {
+        "v0": "1",
+        "0": "1",
+        "1": "1",
+        "v1": "2",
+        "2": "2",
+    }
+    return mapping.get(lowered, text)
 
 
 def _fill_openapi_schema_descriptions(schema: dict):
@@ -253,6 +273,18 @@ def safe_segment(value: str) -> str:
     return safe or now_ms()
 
 
+def resolve_user_id(user: Optional[dict]) -> str:
+    user = user or {}
+    return str(user.get("user_id") or user.get("userId") or user.get("UID") or "UID_DEMO")
+
+
+def resolve_record_id(conversation_id: Optional[str], payload: Optional[dict] = None) -> str:
+    if conversation_id not in (None, ""):
+        return str(conversation_id)
+    payload = payload or {}
+    return str(payload.get("record_id") or payload.get("recordId") or payload.get("RecordID") or "")
+
+
 def get_logged_in_user(access_token: Optional[str] = None):
     if USER_JSON_PATH.exists():
         try:
@@ -264,8 +296,8 @@ def get_logged_in_user(access_token: Optional[str] = None):
                     "phone": user.get("phone", ""),
                     "department": user.get("department", ""),
                     "ip_address": user.get("ip_address") or user.get("ip") or "127.0.0.1",
-                    "user_id": user.get("user_id", "UID_DEMO"),
-                    "record_id": user.get("record_id") or user.get("recordId") or user.get("RecordID") or user.get("user_id", "UID_DEMO"),
+                    "user_id": resolve_user_id(user),
+                    "record_id": "",
                     "access_token": access_token or ""
                 }
         except Exception:
@@ -277,28 +309,30 @@ def get_logged_in_user(access_token: Optional[str] = None):
         "department": "",
         "ip_address": "127.0.0.1",
         "user_id": "UID_DEMO",
-        "record_id": "UID_DEMO",
+        "record_id": "",
         "access_token": access_token or ""
     }
 
 
-def build_user_brief(user: dict):
+def build_user_brief(user: dict, conversation_id: Optional[str] = None):
     return {
         "name": user.get("name", ""),
         "phone": user.get("phone", ""),
         "categoryName": user.get("company", ""),
-        "record_id": user.get("record_id") or user.get("user_id", ""),
+        "user_id": resolve_user_id(user),
+        "record_id": resolve_record_id(conversation_id, user),
         "ip_address": user.get("ip_address", ""),
     }
 
 
-def build_user_payload(user: dict):
+def build_user_payload(user: dict, conversation_id: Optional[str] = None):
     return {
         "name": user.get("name", ""),
         "enterprise": user.get("company", ""),
         "phone": user.get("phone", ""),
         "department": user.get("department", ""),
-        "record_id": user.get("record_id") or user.get("user_id", ""),
+        "user_id": resolve_user_id(user),
+        "record_id": resolve_record_id(conversation_id, user),
         "ip_address": user.get("ip_address", ""),
     }
 
@@ -340,7 +374,8 @@ def build_history_list_item(record: dict) -> dict:
             "name": user.get("name", ""),
             "phone": user.get("phone", ""),
             "categoryName": user.get("categoryName", ""),
-            "record_id": user.get("record_id") or user.get("user_id", ""),
+            "user_id": user.get("user_id") or "",
+            "record_id": user.get("record_id") or record.get("conversation_id", ""),
             "ip_address": user.get("ip_address", ""),
         },
     }
@@ -374,7 +409,8 @@ def build_feedback_user(info: dict) -> dict:
         "name": user.get("name") or info.get("name", ""),
         "enterprise": user.get("enterprise") or info.get("enterprise", ""),
         "phone": user.get("phone") or info.get("phone", ""),
-        "record_id": user.get("record_id") or info.get("record_id", ""),
+        "user_id": user.get("user_id") or info.get("user_id", ""),
+        "record_id": user.get("record_id") or info.get("record_id") or info.get("conversation_id", ""),
         "ip_address": user.get("ip_address") or info.get("ip_address", ""),
     }
 
@@ -429,24 +465,27 @@ def fallback_select_tables(question: str, detailed: dict, limit: int = 8) -> lis
     return [table_name for _, table_name in scored[:limit]]
 
 
-def iter_history_paths():
-    for path in HISTORY_ROOT.rglob("*.json"):
-        yield path
+def list_history_objects():
+    return storage_service.list_files(f"{HISTORY_MINIO_PREFIX}/")
 
 
-def resolve_history_path(conversation_id: str) -> Optional[Path]:
+def resolve_history_path(conversation_id: str) -> Optional[str]:
     safe_id = safe_segment(conversation_id)
-    direct = HISTORY_ROOT / f"{safe_id}.json"
-    if direct.exists():
-        return direct
-    dated = sorted(HISTORY_ROOT.glob(f"*/{safe_id}.json"), reverse=True)
-    if dated:
-        return dated[0]
+    candidates = sorted(
+        (
+            item for item in list_history_objects()
+            if item.get("object_name", "").endswith(f"/{safe_id}.json")
+        ),
+        key=lambda item: item.get("last_modified"),
+        reverse=True,
+    )
+    if candidates:
+        return candidates[0]["object_name"]
     return None
 
 
-def build_history_path(conversation_id: str, date_str: Optional[str] = None) -> Path:
-    return HISTORY_ROOT / (date_str or today_str()) / f"{safe_segment(conversation_id)}.json"
+def build_history_path(conversation_id: str, date_str: Optional[str] = None) -> str:
+    return f"{HISTORY_MINIO_PREFIX}/{date_str or today_str()}/{safe_segment(conversation_id)}.json"
 
 
 def empty_history_record(conversation_id: str, user: Optional[dict] = None):
@@ -461,7 +500,7 @@ def empty_history_record(conversation_id: str, user: Optional[dict] = None):
         "createdAt": display,
         "updatedAt": display,
         "message_count": 0,
-        "user": build_user_brief(user),
+        "user": build_user_brief(user, conversation_id),
         "messages": []
     }
 
@@ -476,7 +515,15 @@ def normalize_legacy_history(conversation_id: str, payload, user: Optional[dict]
         record.setdefault("updated_at", record.get("created_at", now_ms()))
         record.setdefault("createdAt", now_display())
         record.setdefault("updatedAt", record.get("createdAt", now_display()))
-        record.setdefault("user", build_user_brief(user or get_logged_in_user()))
+        current_user = dict(record.get("user") or {})
+        fallback_user = user or get_logged_in_user()
+        current_user.setdefault("name", fallback_user.get("name", ""))
+        current_user.setdefault("phone", fallback_user.get("phone", ""))
+        current_user.setdefault("categoryName", fallback_user.get("company", ""))
+        current_user.setdefault("ip_address", fallback_user.get("ip_address", ""))
+        current_user["user_id"] = current_user.get("user_id") or resolve_user_id(fallback_user)
+        current_user["record_id"] = conversation_id
+        record["user"] = current_user
         return record
 
     record = empty_history_record(conversation_id, user)
@@ -517,35 +564,119 @@ def normalize_legacy_history(conversation_id: str, payload, user: Optional[dict]
 
 
 def load_history_record(conversation_id: str, user: Optional[dict] = None):
-    path = resolve_history_path(conversation_id)
-    if not path:
+    object_name = resolve_history_path(conversation_id)
+    if not object_name:
         return empty_history_record(conversation_id, user), build_history_path(conversation_id)
-    payload = read_json(path, {})
-    return normalize_legacy_history(conversation_id, payload, user), path
+    raw = storage_service.read_file_bytes(object_name)
+    try:
+        payload = json.loads(raw.decode("utf-8")) if raw else {}
+    except Exception:
+        payload = {}
+    return normalize_legacy_history(conversation_id, payload, user), object_name
 
 
-def save_history_record(record: dict, path: Optional[Path] = None):
+def save_history_record(record: dict, path: Optional[str] = None):
     record["title"] = record.get("messages", [{}])[0].get("question", "") if record.get("messages") else ""
     record["message_count"] = len(record.get("messages", []))
     record["updated_at"] = now_ms()
     record["updatedAt"] = now_display()
     target_path = path or resolve_history_path(record["conversation_id"]) or build_history_path(record["conversation_id"])
-    write_json(target_path, record)
+    data = json.dumps(record, ensure_ascii=False, indent=2).encode("utf-8")
+    if not storage_service.upload_file_obj(io.BytesIO(data), target_path, "application/json"):
+        raise RuntimeError(f"保存历史记录失败: {record['conversation_id']}")
     return target_path
 
 
 def list_history_records():
-    records = []
-    for path in iter_history_paths():
+    records_by_id = {}
+    for item in list_history_objects():
         try:
-            payload = read_json(path, {})
-            conversation_id = path.stem
+            object_name = item.get("object_name", "")
+            if not object_name.endswith(".json"):
+                continue
+            conversation_id = Path(object_name).stem
+            raw = storage_service.read_file_bytes(object_name)
+            payload = json.loads(raw.decode("utf-8")) if raw else {}
             record = normalize_legacy_history(conversation_id, payload)
-            record["storage_date"] = path.parent.name if path.parent != HISTORY_ROOT else ""
-            records.append(record)
+            record["storage_date"] = Path(object_name).parent.name
+            records_by_id[conversation_id] = record
         except Exception:
             continue
-    return records
+    return list(records_by_id.values())
+
+
+def filter_history_records(
+    *,
+    ids: Optional[list[str]] = None,
+    search: str = "",
+    start_ms: Optional[int] = None,
+    end_ms: Optional[int] = None,
+):
+    id_set = {str(item) for item in (ids or []) if str(item).strip()}
+    results = []
+    for record in list_history_records():
+        if id_set and str(record.get("conversation_id")) not in id_set:
+            continue
+        updated_at = int(record.get("updated_at") or 0)
+        if start_ms is not None and updated_at < start_ms:
+            continue
+        if end_ms is not None and updated_at > end_ms:
+            continue
+        title = record.get("title", "")
+        text_blob = "\n".join(
+            f"{item.get('question', '')}\n{item.get('answer', '')}"
+            for item in record.get("messages", [])
+        )
+        if search and search.lower() not in (title + text_blob).lower():
+            continue
+        results.append(record)
+    results.sort(key=lambda item: item.get("updated_at", ""), reverse=True)
+    return results
+
+
+def build_history_export_text(record: dict) -> bytes:
+    lines = []
+    title = record.get("title") or "未命名对话"
+    user = record.get("user") or {}
+    lines.append(f"对话标题：{title}")
+    if user.get("name"):
+        lines.append(f"用户：{user.get('name')}")
+    lines.append(f"导出时间：{now_display()}")
+    lines.append("")
+
+    messages = record.get("messages", []) or []
+    for index, item in enumerate(messages, start=1):
+        lines.append(f"第{index}轮")
+        lines.append("问：")
+        lines.append(str(item.get("question") or ""))
+        uploaded_files = item.get("uploaded_files") or []
+        if uploaded_files:
+            filenames = [str(file_item.get("filename") or "") for file_item in uploaded_files if str(file_item.get("filename") or "").strip()]
+            if filenames:
+                lines.append(f"附件：{'、'.join(filenames)}")
+        lines.append("答：")
+        lines.append(str(item.get("answer") or ""))
+        sources = item.get("resource") or []
+        if sources:
+            lines.append("参考链接：")
+            for source in sources:
+                title_text = str(source.get("title") or "未命名来源")
+                link_text = str(source.get("link") or "")
+                if link_text:
+                    lines.append(f"- {title_text}：{link_text}")
+        lines.append("")
+    return "\n".join(lines).encode("utf-8-sig")
+
+
+def find_uploaded_file(conversation_id: str, message_index: int, file_id: str):
+    history_record, _ = load_history_record(conversation_id)
+    target = next((item for item in history_record.get("messages", []) if item.get("message_index") == message_index), None)
+    if not target:
+        return None
+    for file_item in target.get("uploaded_files", []) or []:
+        if str(file_item.get("file_id") or "") == str(file_id):
+            return file_item
+    return None
 
 
 def save_chat_uploads(conversation_id: str, message_index: int, files: List[UploadFile]):
@@ -809,6 +940,17 @@ def update_message_feedback(conversation_id: str, message_index: int, feedback_s
 
 
 def build_feedback_summary(info: dict):
+    uploaded_files = []
+    conversation_id = str(info.get("conversation_id") or "")
+    message_index = info.get("message_index")
+    try:
+        if conversation_id and message_index is not None:
+            history_record, _ = load_history_record(conversation_id)
+            target = next((item for item in history_record.get("messages", []) if item.get("message_index") == message_index), None)
+            if target:
+                uploaded_files = target.get("uploaded_files", []) or []
+    except Exception:
+        uploaded_files = []
     return {
         "id": info.get("id"),
         "conversation_id": info.get("conversation_id"),
@@ -820,7 +962,10 @@ def build_feedback_summary(info: dict):
         "comment": info.get("comment", ""),
         "pictures": info.get("pictures", []),
         "pictures_list": info.get("pictures_list", []),
+        "uploaded_files": uploaded_files,
         "user": build_feedback_user(info),
+        "user_id": info.get("user_id", ""),
+        "record_id": info.get("record_id") or info.get("conversation_id", ""),
         "time": info.get("time", ""),
         "update_time": info.get("update_time", ""),
         "processed_at": info.get("processed_at", ""),
@@ -1462,8 +1607,7 @@ async def chat_endpoint(
     conversation_id = str(payload.get("conversation_id") or "").strip()
     system_prompt = str(payload.get("system_prompt") or "You are a helpful assistant")
     web_search = str(payload.get("web_search", "false")).lower() in {"1", "true", "yes", "on"}
-    db_version = payload.get("db_version")
-    db_version = str(db_version).strip() if db_version not in (None, "") else None
+    db_version = normalize_db_version(payload.get("db_version"))
     user_identity = str(payload.get("user_identity") or "guest")
 
     if not message:
@@ -1543,7 +1687,7 @@ async def chat_endpoint(
                         "createdAt": now_display(),
                         "updatedAt": now_display(),
                     }
-                    history_record["user"] = build_user_brief(user)
+                    history_record["user"] = build_user_brief(user, conversation_id)
                     history_record.setdefault("messages", []).append(message_item)
                     save_history_record(history_record, history_path)
                     yield _sse_event({"type": "done", "data": _build_chat_done_payload(message_item)})
@@ -1600,28 +1744,14 @@ async def list_histories(
     page: int = Query(1, description="页码，从 1 开始。"),
     size: int = Query(10, description="每页数量，默认 10。"),
 ):
-    results = []
     try:
         start_ms = parse_optional_millis(start_time, "start_time")
         end_ms = parse_optional_millis(end_time, "end_time")
         page, size = normalize_page_size(page, size)
     except ValueError as exc:
         return error_response("获取历史记录失败", {"reason": str(exc)}, 400)
-    for record in list_history_records():
-        updated_at = int(record.get("updated_at") or 0)
-        if start_ms is not None and updated_at < start_ms:
-            continue
-        if end_ms is not None and updated_at > end_ms:
-            continue
-        title = record.get("title", "")
-        text_blob = "\n".join(
-            f"{item.get('question', '')}\n{item.get('answer', '')}"
-            for item in record.get("messages", [])
-        )
-        if search and search.lower() not in (title + text_blob).lower():
-            continue
-        results.append(build_history_list_item(record))
-    results.sort(key=lambda item: item.get("updated_at", ""), reverse=True)
+    records = filter_history_records(search=search, start_ms=start_ms, end_ms=end_ms)
+    results = [build_history_list_item(record) for record in records]
     return success_response("获取历史记录成功", paginate_payload(results, page, size))
 
 
@@ -1635,11 +1765,11 @@ async def get_history_detail(conversation_id: str):
 
 @app.delete("/api/chat/{conversation_id}", tags=["历史记录"], summary="删除单条历史记录", description="删除指定会话的历史记录文件，并清理空目录。")
 async def delete_history(conversation_id: str):
-    path = resolve_history_path(conversation_id)
-    if not path:
+    object_name = resolve_history_path(conversation_id)
+    if not object_name:
         return error_response("删除历史对话失败", {"conversation_id": conversation_id}, 404)
-    path.unlink()
-    cleanup_empty_parents(path, HISTORY_ROOT)
+    if not storage_service.delete_file(object_name):
+        return error_response("删除历史对话失败", {"reason": "删除 MinIO 历史文件失败"}, 500)
     return success_response("删除历史对话成功", {"conversation_id": conversation_id})
 
 
@@ -1651,12 +1781,59 @@ async def batch_delete_history(data: dict = Body(...)):
         return error_response("批量删除历史对话失败", {"reason": str(exc)}, 400)
     deleted = []
     for conversation_id in ids:
-        path = resolve_history_path(conversation_id)
-        if path:
-            path.unlink()
-            cleanup_empty_parents(path, HISTORY_ROOT)
+        object_name = resolve_history_path(conversation_id)
+        if object_name and storage_service.delete_file(object_name):
             deleted.append(conversation_id)
     return success_response("批量删除历史对话成功", {"deleted_ids": deleted})
+
+
+@app.post("/api/history/export", tags=["历史记录"], summary="导出历史详情", description="导出选中的会话历史详情；单条返回 TXT，多条返回 ZIP。")
+async def export_history_detail(data: dict = Body(...)):
+    try:
+        ids = ensure_id_list(data, "ids", "conversation_ids")
+    except ValueError as exc:
+        return error_response("导出历史记录失败", {"reason": str(exc)}, 400)
+    if not ids:
+        return error_response("导出历史记录失败", {"reason": "请至少选择一条历史记录"}, 400)
+
+    records = []
+    for conversation_id in ids:
+        history_record, _ = load_history_record(conversation_id)
+        if history_record.get("messages"):
+            records.append(history_record)
+    if not records:
+        return error_response("导出历史记录失败", {"reason": "没有可导出的历史记录"}, 404)
+
+    if len(records) == 1:
+        record = records[0]
+        filename = f"历史详情_{safe_segment(record.get('conversation_id', 'history'))}.txt"
+        headers = {"Content-Disposition": f'attachment; filename="{filename}"'}
+        return StreamingResponse(io.BytesIO(build_history_export_text(record)), media_type="text/plain; charset=utf-8", headers=headers)
+
+    zip_buffer = io.BytesIO()
+    with zipfile.ZipFile(zip_buffer, "w", compression=zipfile.ZIP_DEFLATED) as zf:
+        for record in records:
+            conversation_id = safe_segment(record.get("conversation_id", "history"))
+            zf.writestr(f"历史详情_{conversation_id}.txt", build_history_export_text(record))
+    zip_buffer.seek(0)
+    headers = {"Content-Disposition": f'attachment; filename="历史详情_{datetime.now().strftime("%Y%m%d_%H%M%S")}.zip"'}
+    return StreamingResponse(zip_buffer, media_type="application/zip", headers=headers)
+
+
+@app.get("/api/history/{conversation_id}/messages/{message_index}/files/{file_id}/download", tags=["历史记录"], summary="下载会话上传文件", description="下载某一轮提问中上传的原始附件文件。")
+async def download_history_uploaded_file(conversation_id: str, message_index: int, file_id: str):
+    file_item = find_uploaded_file(conversation_id, message_index, file_id)
+    if not file_item:
+        return error_response("下载附件失败", {"conversation_id": conversation_id, "message_index": message_index, "file_id": file_id}, 404)
+    object_name = file_item.get("object_name") or file_item.get("relative_path")
+    if not object_name:
+        return error_response("下载附件失败", {"reason": "附件对象路径不存在"}, 404)
+    content = storage_service.read_file_bytes(object_name)
+    if not content:
+        return error_response("下载附件失败", {"reason": "从 MinIO 读取附件失败"}, 500)
+    filename = Path(file_item.get("filename") or object_name.rsplit("/", 1)[-1]).name
+    headers = {"Content-Disposition": f'attachment; filename="{filename}"'}
+    return StreamingResponse(io.BytesIO(content), media_type="application/octet-stream", headers=headers)
 
 
 @app.get(
@@ -1807,11 +1984,12 @@ async def save_feedback(
         "comment": comment or "",
         "pictures": picture_names,
         "pictures_list": pictures_list,
-        "user": build_user_payload(user),
+        "user": build_user_payload(user, conversation_id),
         "name": user.get("name", ""),
         "enterprise": user.get("company", ""),
         "phone": user.get("phone", ""),
-        "record_id": user.get("record_id", ""),
+        "user_id": resolve_user_id(user),
+        "record_id": conversation_id,
         "ip_address": user.get("ip_address", ""),
         "feedback_scene": "针对回答效果",
         "question": question,
@@ -2214,6 +2392,16 @@ async def get_db_select_options(
         })
     except Exception as exc:
         return error_response("获取数据库显式可选字段失败", {"reason": str(exc)}, 500)
+
+
+@app.get("/api/db/options", tags=["数据库"], summary="获取数据库选项", description="返回前端可选的数据库版本下拉选项。")
+async def get_db_options():
+    return success_response("获取数据库选项成功", {
+        "options": [
+            {"label": "数据库1", "value": "1"},
+            {"label": "数据库2", "value": "2"},
+        ]
+    })
 
 
 if __name__ == "__main__":

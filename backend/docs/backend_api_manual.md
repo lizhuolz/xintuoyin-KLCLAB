@@ -224,7 +224,8 @@ OpenAPI 地址：
           "name": "王颖奇",
           "enterprise": "图湃（北京）医疗科技",
           "phone": "15323720032",
-          "record_id": "A001",
+          "user_id": "UID_20250001",
+          "record_id": "1776150000000",
           "ip_address": "127.0.0.1"
         }
       }
@@ -239,7 +240,9 @@ OpenAPI 地址：
 说明：
 
 - `last_user_input` 和 `last_answer` 已按 TODO 补齐
-- `user` 中已包含 `record_id` 和 `ip_address`
+- `user.record_id` 表示当前会话的 `conversation_id`
+- `user.user_id` 表示真实用户 ID
+- `user` 中已包含 `record_id`、`user_id` 和 `ip_address`
 
 ### 4.2 `GET /api/history/{conversation_id}`
 
@@ -260,6 +263,22 @@ OpenAPI 地址：
   "ids": ["1776150000000", "1776150000001"]
 }
 ```
+
+### 4.5 `POST /api/history/export`
+
+用途：导出选中的会话历史详情。
+
+说明：
+
+- 请求体格式：`{"ids": ["conversation_id_1", "conversation_id_2"]}`
+- 选中 1 条时返回 `txt`
+- 选中多条时返回 `zip`
+- 每个会话详情文件均为 `txt`
+- 仅导出该会话的问答详情，不包含管理端冗余字段表格
+
+### 4.6 `GET /api/history/{conversation_id}/messages/{message_index}/files/{file_id}/download`
+
+用途：下载某一轮提问里上传的原始附件。
 
 ## 5. 反馈管理
 
@@ -322,7 +341,8 @@ OpenAPI 地址：
     "name": "王颖奇",
     "enterprise": "图湃（北京）医疗科技",
     "phone": "15323720032",
-    "record_id": "A001",
+    "user_id": "UID_20250001",
+    "record_id": "1776150000000",
     "ip_address": "127.0.0.1"
   },
   "feedback_type": {

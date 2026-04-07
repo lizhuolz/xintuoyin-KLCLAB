@@ -140,6 +140,11 @@ export function buildFeedbackPictureUrl(detail, filename) {
   return buildUrl(`/static/feedbacks/${date}/${detail.id}/${encodeURIComponent(filename)}`)
 }
 
+export function buildHistoryFileDownloadUrl(conversationId, messageIndex, fileId) {
+  if (!conversationId || messageIndex === null || messageIndex === undefined || !fileId) return ''
+  return buildUrl(`/history/${encodeURIComponent(conversationId)}/messages/${encodeURIComponent(messageIndex)}/files/${encodeURIComponent(fileId)}/download`)
+}
+
 export function flattenHistoryMessages(historyData) {
   const rounds = Array.isArray(historyData?.messages) ? historyData.messages : []
   return rounds.flatMap((item) => {
@@ -316,6 +321,42 @@ export const aiApi = {
   batchDeleteHistories(ids) {
     return request.post('/history/batch_delete', { ids }).then((res) => unwrapResponse(res, '批量删除历史对话失败'))
   },
+  async exportHistoryDetails(ids) {
+    const response = await fetch(buildUrl('/history/export'), {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        ...buildHeaders(),
+      },
+      body: JSON.stringify({ ids }),
+    })
+    if (!response.ok) {
+      throw new Error(await readErrorPayload(response, '导出历史记录失败'))
+    }
+    const blob = await response.blob()
+    const disposition = response.headers.get('content-disposition') || ''
+    const match = disposition.match(/filename="?(.*?)"?$/i)
+    return {
+      blob,
+      filename: match?.[1] || '历史详情.txt',
+    }
+  },
+  async downloadByUrl(url, fallbackMessage = '下载失败') {
+    const response = await fetch(url.startsWith('http') ? url : buildUrl(url), {
+      method: 'GET',
+      headers: buildHeaders(),
+    })
+    if (!response.ok) {
+      throw new Error(await readErrorPayload(response, fallbackMessage))
+    }
+    const blob = await response.blob()
+    const disposition = response.headers.get('content-disposition') || ''
+    const match = disposition.match(/filename="?(.*?)"?$/i)
+    return {
+      blob,
+      filename: match?.[1] || 'download.bin',
+    }
+  },
   listFeedbacks(params = {}) {
     return request.get('/feedback/list', { params }).then((res) => unwrapResponse(res, '获取反馈列表失败'))
   },
@@ -359,6 +400,9 @@ export const aiApi = {
   },
   deleteKnowledgeBaseFiles(id, filenames) {
     return request.post(`/kb/${encodeURIComponent(id)}/delete_files`, { filenames }).then((res) => unwrapResponse(res, '删除知识库文档失败'))
+  },
+  getDbOptions() {
+    return request.get('/db/options').then((res) => unwrapResponse(res, '获取数据库选项失败'))
   },
   getDbSelectOptions(params = {}) {
     return request.get('/db/select_options', { params }).then((res) => unwrapResponse(res, '获取数据库显式字段失败'))
