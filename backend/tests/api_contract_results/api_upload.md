@@ -27,11 +27,11 @@
     "message_index": 0,
     "files": [
       {
-        "file_id": "file_1775216099025_0",
-        "filename": "note_16.txt",
-        "url": "http://127.0.0.1:9000/xintuoyin-data/chat/2026-04-03/conv-upload/0/note_16.txt?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=minioadmin%2F20260403%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20260403T113459Z&X-Amz-Expires=604800&X-Amz-SignedHeaders=host&X-Amz-Signature=4e21326715dab7efc3f983f93a827634c2e07473455e520330b4d6b007895140",
-        "relative_path": "chat/2026-04-03/conv-upload/0/note_16.txt",
-        "object_name": "chat/2026-04-03/conv-upload/0/note_16.txt"
+        "file_id": "file_1775561505358_0",
+        "filename": "note.txt",
+        "url": "http://127.0.0.1:9000/xintuoyin-data/chat/2026-04-07/conv-upload/0/note.txt?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=minioadmin%2F20260407%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20260407T113145Z&X-Amz-Expires=604800&X-Amz-SignedHeaders=host&X-Amz-Signature=1d454bf1e50ef6775f5dab86dee9625b336ef09a9a949673df52a159cbd09a67",
+        "relative_path": "chat/2026-04-07/conv-upload/0/note.txt",
+        "object_name": "chat/2026-04-07/conv-upload/0/note.txt"
       }
     ]
   }
@@ -91,11 +91,11 @@
     "message_index": 99,
     "files": [
       {
-        "file_id": "file_1775216099053_0",
-        "filename": "note_16.txt",
-        "url": "http://127.0.0.1:9000/xintuoyin-data/chat/2026-04-03/conv-upload-gap/99/note_16.txt?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=minioadmin%2F20260403%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20260403T113459Z&X-Amz-Expires=604800&X-Amz-SignedHeaders=host&X-Amz-Signature=70527cd357c3626099b058882a8bc013c21250e16fc4e670d318ec8ffcca16db",
-        "relative_path": "chat/2026-04-03/conv-upload-gap/99/note_16.txt",
-        "object_name": "chat/2026-04-03/conv-upload-gap/99/note_16.txt"
+        "file_id": "file_1775561505405_0",
+        "filename": "note.txt",
+        "url": "http://127.0.0.1:9000/xintuoyin-data/chat/2026-04-07/conv-upload-gap/99/note.txt?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=minioadmin%2F20260407%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20260407T113145Z&X-Amz-Expires=604800&X-Amz-SignedHeaders=host&X-Amz-Signature=3261085f770c149d5a2ac3335f4fd0179e963a17cd0a7b634bd7109fc186a971",
+        "relative_path": "chat/2026-04-07/conv-upload-gap/99/note.txt",
+        "object_name": "chat/2026-04-07/conv-upload-gap/99/note.txt"
       }
     ]
   }

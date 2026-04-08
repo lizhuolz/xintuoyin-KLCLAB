@@ -9,7 +9,7 @@
 ### request
 ```json
 {
-  "date": "2026-04-03",
+  "date": "2026-04-07",
   "id": "fb_conv-feedback-date_0"
 }
 ```
@@ -45,25 +45,29 @@
     "comment": "",
     "pictures": [],
     "pictures_list": [],
+    "uploaded_files": [],
     "user": {
       "name": "王颖奇",
       "enterprise": "图湃（北京）医疗科技",
       "phone": "15323720032",
-      "record_id": "UID_20250001",
+      "user_id": "UID_20250001",
+      "record_id": "conv-feedback-date",
       "ip_address": "183.230.12.156"
     },
-    "time": "1775216098496",
-    "update_time": "1775216098496",
+    "user_id": "UID_20250001",
+    "record_id": "conv-feedback-date",
+    "time": "1775561462749",
+    "update_time": "1775561462749",
     "processed_at": "",
-    "createdAt": "2026/04/03 19:34:58",
-    "updatedAt": "2026/04/03 19:34:58",
+    "createdAt": "2026/04/07 19:31:02",
+    "updatedAt": "2026/04/07 19:31:02",
     "processedAt": "",
     "times": {
-      "submit_time": "1775216098496",
-      "update_time": "1775216098496",
+      "submit_time": "1775561462749",
+      "update_time": "1775561462749",
       "processed_at": "",
-      "createdAt": "2026/04/03 19:34:58",
-      "updatedAt": "2026/04/03 19:34:58",
+      "createdAt": "2026/04/07 19:31:02",
+      "updatedAt": "2026/04/07 19:31:02",
       "processedAt": ""
     },
     "question": "反馈测试",

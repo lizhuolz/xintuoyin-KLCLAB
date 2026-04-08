@@ -56,7 +56,7 @@ if command -v "$NGROK_BIN" > /dev/null 2>&1; then
     if [ -n "$NGROK_AUTHTOKEN" ]; then
         nohup "$NGROK_BIN" http "$PORT" --domain="$STATIC_DOMAIN" --log=stdout --authtoken="$NGROK_AUTHTOKEN" > "$LOG_DIR/ngrok.log" 2>&1 &
     else
-        nohup "$NGROK_BIN" http "$PORT" --domain="$STATIC_DOMAIN" --log=stdout > "$LOG_DIR/ngrok.log" 2>&1 &
+        nohup "$NGROK_BIN" http "$PORT" --domain="$STATIC_DOMAIN" --log=stdout > "$LOG_DIR/ngrok.log" 2>&1 & 
     fi
 
     NEW_PID=$!

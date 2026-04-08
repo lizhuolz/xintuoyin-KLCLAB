@@ -110,6 +110,23 @@ def extract_last_user_text(messages: List[BaseMessage]) -> str:
     return ""
 
 
+def extract_current_user_question(messages: List[BaseMessage]) -> str:
+    text = extract_last_user_text(messages)
+    if not text:
+        return ""
+
+    current_marker = "【当前用户问题】"
+    answer_marker = "【回答要求】"
+    if current_marker not in text:
+        return text
+
+    current_part = text.split(current_marker, 1)[1]
+    if answer_marker in current_part:
+        current_part = current_part.split(answer_marker, 1)[0]
+    current_part = current_part.strip()
+    return current_part or text
+
+
 def safe_json_load(s: str) -> Dict[str, Any]:
     s = (s or "").strip()
     s = re.sub(r"^```json\s*", "", s, flags=re.IGNORECASE).strip()
@@ -122,4 +139,3 @@ def safe_json_load(s: str) -> Dict[str, Any]:
             s = m.group(0)
 
     return json.loads(s)
-

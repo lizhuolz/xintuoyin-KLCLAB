@@ -14,7 +14,7 @@ import json
 import re
 from typing import Any, Dict, List, Literal, TypedDict
 from langchain_core.messages import AIMessage, BaseMessage, HumanMessage, SystemMessage, ToolMessage
-from agent.utils import extract_last_user_text, safe_json_load
+from agent.utils import extract_current_user_question, extract_last_user_text, safe_json_load
 
 # 获得一个chatbot节点
 def _env_int(name: str, default: int) -> int:
@@ -131,6 +131,36 @@ def _looks_like_rag_query(text: str) -> bool:
     return any(keyword in lowered for keyword in keywords)
 
 
+def _dedupe_tool_calls(message: AIMessage) -> AIMessage:
+    tool_calls = getattr(message, "tool_calls", None) or []
+    if len(tool_calls) <= 1:
+        return message
+
+    deduped = []
+    seen = set()
+    for call in tool_calls:
+        key = (
+            str(call.get("name") or "").strip(),
+            json.dumps(call.get("args") or {}, ensure_ascii=False, sort_keys=True),
+        )
+        if key in seen:
+            continue
+        seen.add(key)
+        deduped.append(call)
+
+    if len(deduped) == len(tool_calls):
+        return message
+
+    return AIMessage(
+        content=getattr(message, "content", "") or "",
+        tool_calls=deduped,
+        additional_kwargs=getattr(message, "additional_kwargs", {}),
+        response_metadata=getattr(message, "response_metadata", {}),
+        id=getattr(message, "id", None),
+        name=getattr(message, "name", None),
+    )
+
+
 def _filter_tool_calls_for_intent(message: AIMessage, user_text: str, enable_web: bool) -> AIMessage:
     tool_calls = getattr(message, "tool_calls", None) or []
     if not tool_calls:
@@ -176,8 +206,21 @@ def _should_force_tool_retry(message: AIMessage, user_text: str, enable_web: boo
     if visible_answer == content and "</think>" in content.lower():
         visible_answer = content.split("</think>", 1)[1]
     visible_answer = visible_answer.replace("</think>", "").strip()
-    if visible_answer:
-        return False
+    lower_content = content.lower()
+    tool_names = [
+        str(getattr(tool, "name", "") or getattr(tool, "__name__", "") or "").strip().lower()
+        for tool in tools
+    ]
+    tool_names = [name for name in tool_names if name]
+    mentions_tool = any(name in lower_content for name in tool_names)
+    looks_like_tool_markup = any(token in lower_content for token in ("<tool_call>", "</tool_call>", "<function=", "tool call", "tool_call"))
+    looks_like_meta_tool_reasoning = mentions_tool and any(
+        token in content for token in ("调用", "工具", "需要使用", "准备使用", "will use", "need to use")
+    )
+    if not visible_answer:
+        return True
+    if looks_like_tool_markup or looks_like_meta_tool_reasoning:
+        return True
     return enable_web or _looks_like_sql_query(user_text) or _looks_like_rag_query(user_text)
 
 
@@ -192,11 +235,12 @@ def make_chatbot_node(
         from langchain_openai import ChatOpenAI
 
         model = state["select_model"]
-        user_text = extract_last_user_text(state["messages"])
+        user_text = extract_current_user_question(state["messages"])
+        llm_streaming = streaming if not tools else False
         base_llm = ChatOpenAI(
             model=model,
             temperature=_env_float("CHAT_MODEL_TEMPERATURE", temperature),
-            streaming=streaming,
+            streaming=llm_streaming,
             max_tokens=_env_int("CHAT_MODEL_MAX_TOKENS", 4096),
             timeout=_env_float("CHAT_MODEL_TIMEOUT", 120),
             model_kwargs=_chat_model_kwargs(enable_thinking and _env_bool("CHAT_ENABLE_THINKING", True)),
@@ -221,6 +265,7 @@ def make_chatbot_node(
         if isinstance(response, AIMessage):
             response = _coerce_xml_tool_calls(response)
             response = _filter_tool_calls_for_intent(response, user_text, bool(state.get("enable_web")))
+            response = _dedupe_tool_calls(response)
             if tools and (_has_invalid_or_missing_tool_name(response) or _should_force_tool_retry(response, user_text, bool(state.get("enable_web")), tools)):
                 strict_tool_prompt = full_system_prompt + (
                     "\n\n【工具调用格式要求】"
@@ -252,6 +297,7 @@ def make_chatbot_node(
                 if isinstance(retry_response, AIMessage):
                     response = _coerce_xml_tool_calls(retry_response)
                     response = _filter_tool_calls_for_intent(response, user_text, bool(state.get("enable_web")))
+                    response = _dedupe_tool_calls(response)
         return {"messages": [response]}
 
     return chatbot_node

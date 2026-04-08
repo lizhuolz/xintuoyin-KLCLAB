@@ -14,11 +14,13 @@ yarn-debug.log*
 yarn-error.log*
 .DS_Store
 
+
 # Backend
 __pycache__/
 *.py[cod]
 *.so
 .runtime/
+logs/
 
 # IDE
 .vscode/

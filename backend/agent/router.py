@@ -4,12 +4,12 @@ from langchain_core.messages import AIMessage
 from langchain_openai import ChatOpenAI
 from agent.messagestate import GraphState
 from langchain_core.messages import ToolMessage
-from agent.utils import extract_last_user_text
+from agent.utils import extract_current_user_question
 
 
 def _looks_like_sql_query(text: str) -> bool:
     lowered = (text or "").lower()
-    keywords = ("数据库", "sql", "表", "字段", "统计", "发票", "员工", "总数", "总额", "查询", "人数", "多少", "汇总", "排行")
+    keywords = ("数据库", "sql", "字段", "统计", "发票", "员工", "总数", "总额", "查询", "人数", "多少", "汇总", "排行", "数据表")
     return any(keyword in lowered for keyword in keywords)
 
 
@@ -41,7 +41,7 @@ def route_after_chatbot_local(state: GraphState) -> Literal["tools_local", "shou
     last = state["messages"][-1]
     if isinstance(last, AIMessage) and getattr(last, "tool_calls", None):
         tool_names = {str(call.get("name") or "").strip() for call in (last.tool_calls or [])}
-        if _looks_like_sql_query(extract_last_user_text(messages)) and "sql_tool" not in tool_names:
+        if _looks_like_sql_query(extract_current_user_question(messages)) and "sql_tool" not in tool_names:
             return "should_sql"
         return "tools_local"
     return "should_sql"
