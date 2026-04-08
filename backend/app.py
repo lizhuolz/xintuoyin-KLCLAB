@@ -8,6 +8,7 @@ import sys
 import shutil
 import zipfile
 import subprocess
+import uuid
 from pathlib import Path
 from datetime import datetime
 from typing import AsyncIterator, List, Optional
@@ -113,6 +114,11 @@ def env_bool(name: str, default: bool) -> bool:
 
 def now_ms() -> str:
     return str(int(datetime.now().timestamp() * 1000))
+
+
+def new_conversation_id() -> str:
+    # Keep a readable time prefix while avoiding same-millisecond collisions.
+    return f"{now_ms()}-{uuid.uuid4().hex[:8]}"
 
 
 def now_display() -> str:
@@ -1517,7 +1523,7 @@ async def _thinking_text_stream(text: str, chunk_size: Optional[int] = None) -> 
 
 @app.get("/api/chat/new_session", tags=["对话"], summary="创建新会话", description="创建一个新的对话会话并返回 conversation_id。")
 async def create_new_session():
-    conversation_id = now_ms()
+    conversation_id = new_conversation_id()
     return success_response("新建对话成功", {"conversation_id": conversation_id})
 
 
@@ -1553,7 +1559,7 @@ async def create_new_session():
                             "summary": "无附件对话请求",
                             "value": {
                                 "message": "你好",
-                                "conversation_id": "1775220000000",
+                                "conversation_id": "1775641095726-184c395e",
                                 "web_search": False,
                                 "user_identity": "guest"
                             }
@@ -2205,6 +2211,27 @@ async def get_kb_detail(id: str, url: Optional[str] = Query(None)):
         "requestBody": {
             "description": "JSON 请求体，包含知识库名称和模型标识。",
             "required": True,
+            "content": {
+                "application/json": {
+                    "schema": {
+                        "type": "object",
+                        "required": ["name"],
+                        "properties": {
+                            "name": {"type": "string", "description": "知识库名称"},
+                            "model": {"type": "string", "description": "模型标识，默认 openai"},
+                        },
+                    },
+                    "examples": {
+                        "create_kb": {
+                            "summary": "创建知识库",
+                            "value": {
+                                "name": "新知识库",
+                                "model": "openai",
+                            },
+                        }
+                    },
+                }
+            },
         }
     },
 )
@@ -2230,6 +2257,68 @@ async def create_kb(request: Request):
         "requestBody": {
             "description": "支持 application/json（无文件）和 multipart/form-data（带文件）的知识库更新请求。",
             "required": True,
+            "content": {
+                "application/json": {
+                    "schema": {
+                        "type": "object",
+                        "required": ["id"],
+                        "properties": {
+                            "id": {"type": "string", "description": "知识库 ID"},
+                            "name": {"type": "string", "description": "知识库名称"},
+                            "remark": {"type": "string", "description": "备注"},
+                            "enabled": {"type": "boolean", "description": "是否启用"},
+                            "users": {
+                                "type": "array",
+                                "description": "授权用户列表",
+                                "items": {"type": "string"},
+                            },
+                            "delete_files": {
+                                "type": "array",
+                                "description": "待删除文件名列表",
+                                "items": {"type": "string"},
+                            },
+                            "confirm": {"type": "boolean", "description": "是否确认提交，false 为预览"},
+                        },
+                    },
+                    "examples": {
+                        "update_kb_json": {
+                            "summary": "无文件更新知识库",
+                            "value": {
+                                "id": "kb_1",
+                                "name": "更新后的知识库",
+                                "remark": "补充备注",
+                                "enabled": True,
+                                "users": ["u001", "u002"],
+                                "delete_files": ["old.txt"],
+                                "confirm": True,
+                            },
+                        }
+                    },
+                },
+                "multipart/form-data": {
+                    "schema": {
+                        "type": "object",
+                        "required": ["id"],
+                        "properties": {
+                            "id": {"type": "string", "description": "知识库 ID"},
+                            "name": {"type": "string", "description": "知识库名称"},
+                            "remark": {"type": "string", "description": "备注"},
+                            "enabled": {"type": "boolean", "description": "是否启用"},
+                            "users": {"type": "string", "description": "JSON 字符串格式的授权用户列表"},
+                            "delete_files": {"type": "string", "description": "JSON 字符串格式的待删除文件名列表"},
+                            "confirm": {"type": "boolean", "description": "是否确认提交，false 为预览"},
+                            "files": {
+                                "type": "array",
+                                "description": "待上传文件",
+                                "items": {"type": "string", "format": "binary"},
+                            },
+                        },
+                    },
+                    "encoding": {
+                        "files": {"style": "form"}
+                    },
+                },
+            },
         }
     },
 )

@@ -181,6 +181,25 @@ SQL 路由判断阶段温度。
 - 越小，前端刷新更频繁。
 - 越大，推送次数更少但实时感更弱。
 
+### `CHAT_STREAM_DELTA_CHARS=8`
+
+主回答和工具过程流式输出时，每次 SSE 推送多少个字符。
+
+- `1` 会表现成“一字一字蹦”。
+- 值越大，前端收到的分片越大，视觉上会更顺。
+- 可以在启动前通过环境变量覆盖，例如：
+
+```bash
+export CHAT_STREAM_DELTA_CHARS=16
+```
+
+### `CHAT_STREAM_CHAR_DELAY_MS=15`
+
+两次 SSE 文本分片之间的等待时间，单位毫秒。
+
+- `0` 表示尽快推送，不额外 sleep。
+- 如果你已经把 `CHAT_STREAM_DELTA_CHARS` 调大，通常也可以把这里适当调小。
+
 ## RAG / Milvus
 
 ### `RAG_VECTOR_BACKEND="milvus"`

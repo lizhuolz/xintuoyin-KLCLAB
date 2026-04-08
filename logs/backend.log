@@ -903,3 +903,637 @@ INFO:     113.251.79.23:0 - "OPTIONS /api/history/list?page=2&size=14&_t=1775631
 INFO:     113.251.79.23:0 - "GET /api/history/list?page=2&size=14&_t=1775631870809 HTTP/1.1" 200 OK
 INFO:     113.251.79.23:0 - "OPTIONS /api/history/list?page=3&size=14&_t=1775631871831 HTTP/1.1" 200 OK
 INFO:     113.251.79.23:0 - "GET /api/history/list?page=3&size=14&_t=1775631871831 HTTP/1.1" 200 OK
+I0000 00:00:1775631975.083836 1806362 chttp2_transport.cc:1353] unix:/tmp/tmpmn69d63w_klclab_milvus.db.sock: Got goaway [11] err=UNAVAILABLE:GOAWAY received; Error code: 11; Debug Text: too_many_pings {grpc_status:14, http2_error:11}
+E0000 00:00:1775631975.083958 1806362 chttp2_transport.cc:1385] unix:/tmp/tmpmn69d63w_klclab_milvus.db.sock: Received a GOAWAY with error code ENHANCE_YOUR_CALM and debug data equal to "too_many_pings". Current keepalive time (before throttling): 10000ms
+INFO:     113.251.79.23:0 - "OPTIONS /api/history/list?page=1&size=14&_t=1775632001809 HTTP/1.1" 200 OK
+INFO:     113.251.79.23:0 - "GET /api/history/list?page=1&size=14&_t=1775632001809 HTTP/1.1" 200 OK
+INFO:     141.11.146.78:0 - "GET /openapi.json HTTP/1.1" 200 OK
+INFO:     39.98.82.250:0 - "GET /api/history/list?search=&start_time=&end_time=&page&size HTTP/1.1" 422 Unprocessable Entity
+INFO:     39.98.82.250:0 - "GET /api/kb/list?page&size HTTP/1.1" 422 Unprocessable Entity
+INFO:     113.251.79.23:0 - "OPTIONS /api/history/list?page=2&size=14&_t=1775632127824 HTTP/1.1" 200 OK
+INFO:     113.251.79.23:0 - "GET /api/history/list?page=2&size=14&_t=1775632127824 HTTP/1.1" 200 OK
+INFO:     113.251.79.23:0 - "OPTIONS /api/history/list?page=3&size=14&_t=1775632128992 HTTP/1.1" 200 OK
+INFO:     113.251.79.23:0 - "GET /api/history/list?page=3&size=14&_t=1775632128992 HTTP/1.1" 200 OK
+INFO:     113.251.79.23:0 - "OPTIONS /api/chat/new_session?_t=1775632143949 HTTP/1.1" 200 OK
+INFO:     113.251.79.23:0 - "GET /api/chat/new_session?_t=1775632143949 HTTP/1.1" 200 OK
+2026-04-08 15:09:05 [debug    ] No banned substrings found
+2026-04-08 15:09:05 [debug    ] Scanner completed              elapsed_time_seconds=0.000606 is_valid=True scanner=BanSubstrings
+2026-04-08 15:09:05 [debug    ] No invisible characters found
+2026-04-08 15:09:05 [debug    ] Scanner completed              elapsed_time_seconds=0.000109 is_valid=True scanner=InvisibleText
+2026-04-08 15:09:05 [debug    ] No secrets detected in the prompt
+2026-04-08 15:09:05 [debug    ] Scanner completed              elapsed_time_seconds=0.005594 is_valid=True scanner=Secrets
+2026-04-08 15:09:05 [info     ] Scanned prompt                 elapsed_time_seconds=0.006763 scores={'BanSubstrings': -1.0, 'InvisibleText': 0.0, 'Secrets': -1.0}
+INFO:     113.251.79.23:0 - "POST /api/chat HTTP/1.1" 200 OK
+INFO:     113.251.79.23:0 - "OPTIONS /api/chat/new_session?_t=1775632250250 HTTP/1.1" 200 OK
+INFO:     113.251.79.23:0 - "GET /api/chat/new_session?_t=1775632250250 HTTP/1.1" 200 OK
+2026-04-08 15:10:51 [debug    ] No banned substrings found
+2026-04-08 15:10:51 [debug    ] Scanner completed              elapsed_time_seconds=0.000434 is_valid=True scanner=BanSubstrings
+2026-04-08 15:10:51 [debug    ] No invisible characters found
+2026-04-08 15:10:51 [debug    ] Scanner completed              elapsed_time_seconds=0.000172 is_valid=True scanner=InvisibleText
+2026-04-08 15:10:51 [debug    ] No secrets detected in the prompt
+2026-04-08 15:10:51 [debug    ] Scanner completed              elapsed_time_seconds=0.007721 is_valid=True scanner=Secrets
+2026-04-08 15:10:51 [info     ] Scanned prompt                 elapsed_time_seconds=0.00902 scores={'BanSubstrings': -1.0, 'InvisibleText': 0.0, 'Secrets': -1.0}
+INFO:     113.251.79.23:0 - "POST /api/chat HTTP/1.1" 200 OK
+I0000 00:00:1775632390.474835 1806362 chttp2_transport.cc:1353] unix:/tmp/tmpmn69d63w_klclab_milvus.db.sock: Got goaway [11] err=UNAVAILABLE:GOAWAY received; Error code: 11; Debug Text: too_many_pings {grpc_status:14, http2_error:11}
+E0000 00:00:1775632390.474940 1806362 chttp2_transport.cc:1385] unix:/tmp/tmpmn69d63w_klclab_milvus.db.sock: Received a GOAWAY with error code ENHANCE_YOUR_CALM and debug data equal to "too_many_pings". Current keepalive time (before throttling): 10000ms
+INFO:     127.0.0.1:33594 - "GET /api/db/options?_t=1775632496117 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:33598 - "GET /api/history/list?search=&_t=1775632496198 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60990 - "GET /api/history/1775631740915?_t=1775632496484 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60994 - "GET /api/history/tool-debug-rag-1?_t=1775632501106 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:32776 - "GET /api/history/tool-debug-fresh-2?_t=1775632503554 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:32778 - "GET /api/history/tool-debug-fresh-1?_t=1775632503977 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:32792 - "GET /api/history/tool-debug-1?_t=1775632504761 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:32804 - "GET /api/history/1775629657149?_t=1775632505249 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:32810 - "GET /api/history/1775629683190?_t=1775632505793 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58056 - "GET /api/history/1775629338595?_t=1775632506177 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58066 - "GET /api/history/1775628775227?_t=1775632507065 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58080 - "GET /api/history/1775622426754?_t=1775632507668 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58088 - "GET /api/chat/new_session?_t=1775632509425 HTTP/1.1" 200 OK
+2026-04-08 15:15:13 [debug    ] No banned substrings found
+2026-04-08 15:15:13 [debug    ] Scanner completed              elapsed_time_seconds=0.00217 is_valid=True scanner=BanSubstrings
+2026-04-08 15:15:13 [debug    ] No invisible characters found
+2026-04-08 15:15:13 [debug    ] Scanner completed              elapsed_time_seconds=0.000384 is_valid=True scanner=InvisibleText
+2026-04-08 15:15:13 [debug    ] No secrets detected in the prompt
+2026-04-08 15:15:13 [debug    ] Scanner completed              elapsed_time_seconds=0.01373 is_valid=True scanner=Secrets
+2026-04-08 15:15:13 [info     ] Scanned prompt                 elapsed_time_seconds=0.017181 scores={'BanSubstrings': -1.0, 'InvisibleText': 0.0, 'Secrets': -1.0}
+INFO:     127.0.0.1:58102 - "POST /api/chat HTTP/1.1" 200 OK
+[recommendations] failed: Extra data: line 2 column 1 (char 16)
+INFO:     127.0.0.1:48394 - "GET /api/chat/new_session?_t=1775632581617 HTTP/1.1" 200 OK
+2026-04-08 15:16:29 [debug    ] No banned substrings found
+2026-04-08 15:16:29 [debug    ] Scanner completed              elapsed_time_seconds=0.000471 is_valid=True scanner=BanSubstrings
+2026-04-08 15:16:29 [debug    ] No invisible characters found
+2026-04-08 15:16:29 [debug    ] Scanner completed              elapsed_time_seconds=0.000117 is_valid=True scanner=InvisibleText
+2026-04-08 15:16:29 [debug    ] No secrets detected in the prompt
+2026-04-08 15:16:29 [debug    ] Scanner completed              elapsed_time_seconds=0.008686 is_valid=True scanner=Secrets
+2026-04-08 15:16:29 [info     ] Scanned prompt                 elapsed_time_seconds=0.009726 scores={'BanSubstrings': -1.0, 'InvisibleText': 0.0, 'Secrets': -1.0}
+INFO:     127.0.0.1:41124 - "POST /api/chat HTTP/1.1" 200 OK
+INFO:     127.0.0.1:42166 - "GET /api/chat/new_session?_t=1775632618018 HTTP/1.1" 200 OK
+2026-04-08 15:16:59 [debug    ] No banned substrings found
+2026-04-08 15:16:59 [debug    ] Scanner completed              elapsed_time_seconds=0.000349 is_valid=True scanner=BanSubstrings
+2026-04-08 15:16:59 [debug    ] No invisible characters found
+2026-04-08 15:16:59 [debug    ] Scanner completed              elapsed_time_seconds=0.000106 is_valid=True scanner=InvisibleText
+2026-04-08 15:16:59 [debug    ] No secrets detected in the prompt
+2026-04-08 15:16:59 [debug    ] Scanner completed              elapsed_time_seconds=0.00544 is_valid=True scanner=Secrets
+2026-04-08 15:16:59 [info     ] Scanned prompt                 elapsed_time_seconds=0.006303 scores={'BanSubstrings': -1.0, 'InvisibleText': 0.0, 'Secrets': -1.0}
+INFO:     127.0.0.1:42174 - "POST /api/chat HTTP/1.1" 200 OK
+INFO:     39.98.82.250:0 - "GET /api/chat/new_session HTTP/1.1" 200 OK
+INFO:     39.98.82.250:0 - "POST /api/chat HTTP/1.1" 400 Bad Request
+2026-04-08 15:18:17 [debug    ] No banned substrings found
+2026-04-08 15:18:17 [debug    ] Scanner completed              elapsed_time_seconds=0.000697 is_valid=True scanner=BanSubstrings
+2026-04-08 15:18:17 [debug    ] No invisible characters found
+2026-04-08 15:18:17 [debug    ] Scanner completed              elapsed_time_seconds=0.000206 is_valid=True scanner=InvisibleText
+2026-04-08 15:18:17 [debug    ] No secrets detected in the prompt
+2026-04-08 15:18:17 [debug    ] Scanner completed              elapsed_time_seconds=0.009239 is_valid=True scanner=Secrets
+2026-04-08 15:18:17 [info     ] Scanned prompt                 elapsed_time_seconds=0.010901 scores={'BanSubstrings': -1.0, 'InvisibleText': 0.0, 'Secrets': -1.0}
+INFO:     39.98.82.250:0 - "POST /api/chat HTTP/1.1" 200 OK
+I0000 00:00:1775632701.559654 1806354 chttp2_transport.cc:1353] unix:/tmp/tmpmn69d63w_klclab_milvus.db.sock: Got goaway [11] err=UNAVAILABLE:GOAWAY received; Error code: 11; Debug Text: too_many_pings {grpc_status:14, http2_error:11}
+E0000 00:00:1775632701.559751 1806354 chttp2_transport.cc:1385] unix:/tmp/tmpmn69d63w_klclab_milvus.db.sock: Received a GOAWAY with error code ENHANCE_YOUR_CALM and debug data equal to "too_many_pings". Current keepalive time (before throttling): 20000ms
+INFO:     39.98.168.103:0 - "GET /api/history/list?search=&start_time=&end_time=&page&size HTTP/1.1" 422 Unprocessable Entity
+INFO:     39.98.168.103:0 - "GET /api/history/list?search=&start_time=&end_time=&page=1&size=10 HTTP/1.1" 200 OK
+INFO:     113.251.79.23:0 - "OPTIONS /api/history/list?page=1&size=14&_t=1775632818891 HTTP/1.1" 200 OK
+INFO:     113.251.79.23:0 - "GET /api/history/list?page=1&size=14&_t=1775632818891 HTTP/1.1" 200 OK
+INFO:     113.251.79.23:0 - "OPTIONS /api/chat/new_session?_t=1775632823354 HTTP/1.1" 200 OK
+INFO:     113.251.79.23:0 - "GET /api/chat/new_session?_t=1775632823354 HTTP/1.1" 200 OK
+INFO:     113.251.79.23:0 - "OPTIONS /api/chat HTTP/1.1" 200 OK
+2026-04-08 15:20:24 [debug    ] No banned substrings found
+2026-04-08 15:20:24 [debug    ] Scanner completed              elapsed_time_seconds=0.001043 is_valid=True scanner=BanSubstrings
+2026-04-08 15:20:24 [debug    ] No invisible characters found
+2026-04-08 15:20:24 [debug    ] Scanner completed              elapsed_time_seconds=0.00019 is_valid=True scanner=InvisibleText
+2026-04-08 15:20:24 [debug    ] No secrets detected in the prompt
+2026-04-08 15:20:24 [debug    ] Scanner completed              elapsed_time_seconds=0.007508 is_valid=True scanner=Secrets
+2026-04-08 15:20:24 [info     ] Scanned prompt                 elapsed_time_seconds=0.00921 scores={'BanSubstrings': -1.0, 'InvisibleText': 0.0, 'Secrets': -1.0}
+INFO:     113.251.79.23:0 - "POST /api/chat HTTP/1.1" 200 OK
+I0000 00:00:1775632828.726955 1806354 chttp2_transport.cc:1353] unix:/tmp/tmpmn69d63w_klclab_milvus.db.sock: Got goaway [11] err=UNAVAILABLE:GOAWAY received; Error code: 11; Debug Text: too_many_pings {http2_error:11, grpc_status:14}
+E0000 00:00:1775632828.727051 1806354 chttp2_transport.cc:1385] unix:/tmp/tmpmn69d63w_klclab_milvus.db.sock: Received a GOAWAY with error code ENHANCE_YOUR_CALM and debug data equal to "too_many_pings". Current keepalive time (before throttling): 10000ms
+I0000 00:00:1775632963.730777 1809393 chttp2_transport.cc:1353] unix:/tmp/tmpmn69d63w_klclab_milvus.db.sock: Got goaway [11] err=UNAVAILABLE:GOAWAY received; Error code: 11; Debug Text: too_many_pings {http2_error:11, grpc_status:14}
+E0000 00:00:1775632963.730925 1809393 chttp2_transport.cc:1385] unix:/tmp/tmpmn69d63w_klclab_milvus.db.sock: Received a GOAWAY with error code ENHANCE_YOUR_CALM and debug data equal to "too_many_pings". Current keepalive time (before throttling): 10000ms
+INFO:     113.251.79.23:0 - "OPTIONS /api/history/list?page=1&size=14&_t=1775632969486 HTTP/1.1" 200 OK
+INFO:     113.251.79.23:0 - "GET /api/history/list?page=1&size=14&_t=1775632969486 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:34070 - "GET /openapi.json HTTP/1.1" 200 OK
+INFO:     113.251.79.23:0 - "OPTIONS /api/chat/new_session?_t=1775633029092 HTTP/1.1" 200 OK
+INFO:     113.251.79.23:0 - "GET /api/chat/new_session?_t=1775633029092 HTTP/1.1" 200 OK
+2026-04-08 15:23:50 [debug    ] No banned substrings found
+2026-04-08 15:23:50 [debug    ] Scanner completed              elapsed_time_seconds=0.000591 is_valid=True scanner=BanSubstrings
+2026-04-08 15:23:50 [debug    ] No invisible characters found
+2026-04-08 15:23:50 [debug    ] Scanner completed              elapsed_time_seconds=0.000135 is_valid=True scanner=InvisibleText
+2026-04-08 15:23:50 [debug    ] No secrets detected in the prompt
+2026-04-08 15:23:50 [debug    ] Scanner completed              elapsed_time_seconds=0.006137 is_valid=True scanner=Secrets
+2026-04-08 15:23:50 [info     ] Scanned prompt                 elapsed_time_seconds=0.007298 scores={'BanSubstrings': -1.0, 'InvisibleText': 0.0, 'Secrets': -1.0}
+INFO:     113.251.79.23:0 - "POST /api/chat HTTP/1.1" 200 OK
+INFO:     Started server process [1812718]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
+INFO:     127.0.0.1:57980 - "GET /openapi.json HTTP/1.1" 200 OK
+INFO:     141.11.146.78:0 - "GET /openapi.json HTTP/1.1" 200 OK
+INFO:     141.11.146.78:0 - "GET /openapi.json HTTP/1.1" 200 OK
+INFO:     141.11.146.78:0 - "GET /openapi.json HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51802 - "GET /openapi.json HTTP/1.1" 200 OK
+INFO:     39.98.82.250:0 - "POST /api/kb/update HTTP/1.1" 400 Bad Request
+INFO:     39.98.82.250:0 - "POST /api/kb/create HTTP/1.1" 400 Bad Request
+INFO:     Started server process [1818247]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
+INFO:     127.0.0.1:41428 - "GET /api/history/1775633500400?_t=1775633514639 HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:41436 - "GET /api/history/1775633499215?_t=1775633515055 HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:41178 - "GET /api/db/options?_t=1775633518523 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:41194 - "GET /api/history/list?search=&_t=1775633518543 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:41198 - "GET /api/history/1775632674186?_t=1775633518821 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:41214 - "GET /api/chat/new_session?_t=1775633519719 HTTP/1.1" 200 OK
+2026-04-08 15:32:01 [debug    ] No banned substrings found
+2026-04-08 15:32:01 [debug    ] Scanner completed              elapsed_time_seconds=0.000785 is_valid=True scanner=BanSubstrings
+2026-04-08 15:32:01 [debug    ] No invisible characters found
+2026-04-08 15:32:01 [debug    ] Scanner completed              elapsed_time_seconds=0.000221 is_valid=True scanner=InvisibleText
+2026-04-08 15:32:01 [debug    ] No secrets detected in the prompt
+2026-04-08 15:32:01 [debug    ] Scanner completed              elapsed_time_seconds=0.076886 is_valid=True scanner=Secrets
+2026-04-08 15:32:01 [info     ] Scanned prompt                 elapsed_time_seconds=0.078531 scores={'BanSubstrings': -1.0, 'InvisibleText': 0.0, 'Secrets': -1.0}
+INFO:     127.0.0.1:41222 - "POST /api/chat HTTP/1.1" 200 OK
+INFO:     39.98.82.250:0 - "GET /api/chat/new_session HTTP/1.1" 200 OK
+2026-04-08 15:33:13 [debug    ] No banned substrings found
+2026-04-08 15:33:13 [debug    ] Scanner completed              elapsed_time_seconds=0.000505 is_valid=True scanner=BanSubstrings
+2026-04-08 15:33:13 [debug    ] No invisible characters found
+2026-04-08 15:33:13 [debug    ] Scanner completed              elapsed_time_seconds=0.000261 is_valid=True scanner=InvisibleText
+2026-04-08 15:33:13 [debug    ] No secrets detected in the prompt
+2026-04-08 15:33:13 [debug    ] Scanner completed              elapsed_time_seconds=0.009293 is_valid=True scanner=Secrets
+2026-04-08 15:33:13 [info     ] Scanned prompt                 elapsed_time_seconds=0.0108 scores={'BanSubstrings': -1.0, 'InvisibleText': 0.0, 'Secrets': -1.0}
+INFO:     39.98.82.250:0 - "POST /api/chat HTTP/1.1" 200 OK
+INFO:     113.251.79.23:0 - "OPTIONS /api/history/list?page=2&size=14&_t=1775633595796 HTTP/1.1" 200 OK
+INFO:     113.251.79.23:0 - "GET /api/history/list?page=2&size=14&_t=1775633595796 HTTP/1.1" 200 OK
+INFO:     113.251.79.23:0 - "OPTIONS /api/history/list?page=3&size=14&_t=1775633668206 HTTP/1.1" 200 OK
+INFO:     113.251.79.23:0 - "GET /api/history/list?page=3&size=14&_t=1775633668206 HTTP/1.1" 200 OK
+WARNING: All log messages before absl::InitializeLog() is called are written to STDERR
+I0000 00:00:1775633691.591826 1818502 chttp2_transport.cc:1353] unix:/tmp/tmprafpcvnp_klclab_milvus.db.sock: Got goaway [11] err=UNAVAILABLE:GOAWAY received; Error code: 11; Debug Text: too_many_pings {grpc_status:14, http2_error:11}
+E0000 00:00:1775633691.591939 1818502 chttp2_transport.cc:1385] unix:/tmp/tmprafpcvnp_klclab_milvus.db.sock: Received a GOAWAY with error code ENHANCE_YOUR_CALM and debug data equal to "too_many_pings". Current keepalive time (before throttling): 10000ms
+INFO:     113.251.79.23:0 - "OPTIONS /api/chat HTTP/1.1" 200 OK
+2026-04-08 15:36:30 [debug    ] No banned substrings found
+2026-04-08 15:36:30 [debug    ] Scanner completed              elapsed_time_seconds=0.001153 is_valid=True scanner=BanSubstrings
+2026-04-08 15:36:30 [debug    ] No invisible characters found
+2026-04-08 15:36:30 [debug    ] Scanner completed              elapsed_time_seconds=0.000238 is_valid=True scanner=InvisibleText
+2026-04-08 15:36:30 [debug    ] No secrets detected in the prompt
+2026-04-08 15:36:30 [debug    ] Scanner completed              elapsed_time_seconds=0.009954 is_valid=True scanner=Secrets
+2026-04-08 15:36:30 [info     ] Scanned prompt                 elapsed_time_seconds=0.01215 scores={'BanSubstrings': -1.0, 'InvisibleText': 0.0, 'Secrets': -1.0}
+INFO:     113.251.79.23:0 - "POST /api/chat HTTP/1.1" 200 OK
+I0000 00:00:1775633906.591815 1818502 chttp2_transport.cc:1353] unix:/tmp/tmprafpcvnp_klclab_milvus.db.sock: Got goaway [11] err=UNAVAILABLE:GOAWAY received; Error code: 11; Debug Text: too_many_pings {http2_error:11, grpc_status:14}
+E0000 00:00:1775633906.591906 1818502 chttp2_transport.cc:1385] unix:/tmp/tmprafpcvnp_klclab_milvus.db.sock: Received a GOAWAY with error code ENHANCE_YOUR_CALM and debug data equal to "too_many_pings". Current keepalive time (before throttling): 20000ms
+INFO:     113.251.79.23:0 - "OPTIONS /api/history/list?page=1&size=14&_t=1775634285895 HTTP/1.1" 200 OK
+INFO:     113.251.79.23:0 - "GET /api/history/list?page=1&size=14&_t=1775634285895 HTTP/1.1" 200 OK
+INFO:     113.251.79.23:0 - "OPTIONS /api/history/list?page=1&size=14&_t=1775634306928 HTTP/1.1" 200 OK
+INFO:     113.251.79.23:0 - "GET /api/history/list?page=1&size=14&_t=1775634306928 HTTP/1.1" 200 OK
+INFO:     113.251.79.23:0 - "OPTIONS /api/chat/new_session?_t=1775634317139 HTTP/1.1" 200 OK
+INFO:     113.251.79.23:0 - "GET /api/chat/new_session?_t=1775634317139 HTTP/1.1" 200 OK
+2026-04-08 15:45:18 [debug    ] No banned substrings found
+2026-04-08 15:45:18 [debug    ] Scanner completed              elapsed_time_seconds=0.000664 is_valid=True scanner=BanSubstrings
+2026-04-08 15:45:18 [debug    ] No invisible characters found
+2026-04-08 15:45:18 [debug    ] Scanner completed              elapsed_time_seconds=0.00018 is_valid=True scanner=InvisibleText
+2026-04-08 15:45:18 [debug    ] No secrets detected in the prompt
+2026-04-08 15:45:18 [debug    ] Scanner completed              elapsed_time_seconds=0.0064 is_valid=True scanner=Secrets
+2026-04-08 15:45:18 [info     ] Scanned prompt                 elapsed_time_seconds=0.007686 scores={'BanSubstrings': -1.0, 'InvisibleText': 0.0, 'Secrets': -1.0}
+INFO:     113.251.79.23:0 - "POST /api/chat HTTP/1.1" 200 OK
+INFO:     113.251.79.23:0 - "OPTIONS /api/history/list?page=1&size=14&_t=1775634341597 HTTP/1.1" 200 OK
+INFO:     113.251.79.23:0 - "GET /api/history/list?page=1&size=14&_t=1775634341597 HTTP/1.1" 200 OK
+INFO:     113.251.79.23:0 - "OPTIONS /api/history/list?page=2&size=14&_t=1775634386013 HTTP/1.1" 200 OK
+INFO:     113.251.79.23:0 - "OPTIONS /api/history/list?page=1&size=14&_t=1775634386608 HTTP/1.1" 200 OK
+INFO:     113.251.79.23:0 - "GET /api/history/list?page=1&size=14&_t=1775634386608 HTTP/1.1" 200 OK
+I0000 00:00:1775634476.591870 1818755 chttp2_transport.cc:1353] unix:/tmp/tmprafpcvnp_klclab_milvus.db.sock: Got goaway [11] err=UNAVAILABLE:GOAWAY received; Error code: 11; Debug Text: too_many_pings {grpc_status:14, http2_error:11}
+E0000 00:00:1775634476.591974 1818755 chttp2_transport.cc:1385] unix:/tmp/tmprafpcvnp_klclab_milvus.db.sock: Received a GOAWAY with error code ENHANCE_YOUR_CALM and debug data equal to "too_many_pings". Current keepalive time (before throttling): 40000ms
+INFO:     39.98.35.98:0 - "GET /api/history/list?search=&start_time=&end_time=&page&size HTTP/1.1" 422 Unprocessable Entity
+INFO:     39.98.35.98:0 - "GET /api/history/list?search=&start_time=&end_time=&page=1&size=10 HTTP/1.1" 200 OK
+INFO:     39.98.35.98:0 - "GET /api/history/1775633030391 HTTP/1.1" 200 OK
+INFO:     113.251.79.23:0 - "OPTIONS /api/history/list?page=2&size=14&_t=1775634920346 HTTP/1.1" 200 OK
+INFO:     113.251.79.23:0 - "OPTIONS /api/history/list?page=1&size=14&_t=1775634921268 HTTP/1.1" 200 OK
+INFO:     113.251.79.23:0 - "GET /api/history/list?page=1&size=14&_t=1775634921268 HTTP/1.1" 200 OK
+INFO:     113.251.79.23:0 - "OPTIONS /api/history/list?page=1&size=14&_t=1775634983050 HTTP/1.1" 200 OK
+INFO:     113.251.79.23:0 - "GET /api/history/list?page=1&size=14&_t=1775634983050 HTTP/1.1" 200 OK
+INFO:     113.251.79.23:0 - "OPTIONS /api/history/list?page=1&size=14&_t=1775635000601 HTTP/1.1" 200 OK
+INFO:     113.251.79.23:0 - "GET /api/history/list?page=1&size=14&_t=1775635000601 HTTP/1.1" 200 OK
+INFO:     113.251.79.23:0 - "OPTIONS /api/history/list?page=2&size=14&_t=1775635005506 HTTP/1.1" 200 OK
+INFO:     113.251.79.23:0 - "GET /api/history/list?page=2&size=14&_t=1775635005506 HTTP/1.1" 200 OK
+INFO:     113.251.79.23:0 - "OPTIONS /api/history/list?page=1&size=14&_t=1775635012511 HTTP/1.1" 200 OK
+INFO:     113.251.79.23:0 - "GET /api/history/list?page=1&size=14&_t=1775635012511 HTTP/1.1" 200 OK
+INFO:     113.251.79.23:0 - "OPTIONS /api/history/list?page=2&size=14&_t=1775635015218 HTTP/1.1" 200 OK
+INFO:     113.251.79.23:0 - "GET /api/history/list?page=2&size=14&_t=1775635015218 HTTP/1.1" 200 OK
+INFO:     113.251.79.23:0 - "OPTIONS /api/history/list?page=3&size=14&_t=1775635020352 HTTP/1.1" 200 OK
+INFO:     113.251.79.23:0 - "GET /api/history/list?page=3&size=14&_t=1775635020352 HTTP/1.1" 200 OK
+INFO:     113.251.79.23:0 - "OPTIONS /api/history/list?page=4&size=14&_t=1775635022046 HTTP/1.1" 200 OK
+INFO:     113.251.79.23:0 - "GET /api/history/list?page=4&size=14&_t=1775635022046 HTTP/1.1" 200 OK
+INFO:     113.251.79.23:0 - "OPTIONS /api/history/list?page=1&size=14&_t=1775635027688 HTTP/1.1" 200 OK
+INFO:     113.251.79.23:0 - "GET /api/history/list?page=1&size=14&_t=1775635027688 HTTP/1.1" 200 OK
+INFO:     113.251.79.23:0 - "OPTIONS /api/history/list?page=2&size=14&_t=1775635036668 HTTP/1.1" 200 OK
+INFO:     113.251.79.23:0 - "GET /api/history/list?page=2&size=14&_t=1775635036668 HTTP/1.1" 200 OK
+INFO:     113.251.79.23:0 - "OPTIONS /api/history/list?page=1&size=14&_t=1775635046285 HTTP/1.1" 200 OK
+INFO:     113.251.79.23:0 - "GET /api/history/list?page=1&size=14&_t=1775635046285 HTTP/1.1" 200 OK
+INFO:     113.251.79.23:0 - "OPTIONS /api/history/list?page=1&size=14&_t=1775635049031 HTTP/1.1" 200 OK
+INFO:     113.251.79.23:0 - "GET /api/history/list?page=1&size=14&_t=1775635049031 HTTP/1.1" 200 OK
+INFO:     113.251.79.23:0 - "OPTIONS /api/history/list?page=2&size=14&_t=1775635067266 HTTP/1.1" 200 OK
+INFO:     113.251.79.23:0 - "OPTIONS /api/history/list?page=1&size=14&_t=1775635067746 HTTP/1.1" 200 OK
+INFO:     113.251.79.23:0 - "GET /api/history/list?page=1&size=14&_t=1775635067746 HTTP/1.1" 200 OK
+INFO:     113.251.79.23:0 - "OPTIONS /api/history/list?page=2&size=14&_t=1775635117183 HTTP/1.1" 200 OK
+INFO:     113.251.79.23:0 - "OPTIONS /api/history/list?page=1&size=14&_t=1775635117944 HTTP/1.1" 200 OK
+INFO:     113.251.79.23:0 - "GET /api/history/list?page=1&size=14&_t=1775635117944 HTTP/1.1" 200 OK
+INFO:     113.251.79.23:0 - "OPTIONS /api/history/list?page=2&size=14&_t=1775635173925 HTTP/1.1" 200 OK
+INFO:     113.251.79.23:0 - "OPTIONS /api/history/list?page=1&size=14&_t=1775635174669 HTTP/1.1" 200 OK
+INFO:     113.251.79.23:0 - "GET /api/history/list?page=1&size=14&_t=1775635174669 HTTP/1.1" 200 OK
+INFO:     113.251.79.23:0 - "OPTIONS /api/history/list?page=1&size=14&_t=1775635187864 HTTP/1.1" 200 OK
+INFO:     113.251.79.23:0 - "GET /api/history/list?page=1&size=14&_t=1775635187864 HTTP/1.1" 200 OK
+INFO:     113.251.79.23:0 - "OPTIONS /api/history/list?page=1&size=14&_t=1775635196545 HTTP/1.1" 200 OK
+INFO:     113.251.79.23:0 - "GET /api/history/list?page=1&size=14&_t=1775635196545 HTTP/1.1" 200 OK
+INFO:     113.251.79.23:0 - "OPTIONS /api/history/list?page=1&size=14&_t=1775635200409 HTTP/1.1" 200 OK
+INFO:     113.251.79.23:0 - "GET /api/history/list?page=1&size=14&_t=1775635200409 HTTP/1.1" 200 OK
+INFO:     113.251.79.23:0 - "OPTIONS /api/history/list?page=2&size=14&_t=1775635203486 HTTP/1.1" 200 OK
+INFO:     113.251.79.23:0 - "GET /api/history/list?page=2&size=14&_t=1775635203486 HTTP/1.1" 200 OK
+INFO:     113.251.79.23:0 - "OPTIONS /api/history/list?page=3&size=14&_t=1775635206802 HTTP/1.1" 200 OK
+INFO:     113.251.79.23:0 - "GET /api/history/list?page=3&size=14&_t=1775635206802 HTTP/1.1" 200 OK
+INFO:     113.251.79.23:0 - "OPTIONS /api/history/list?page=4&size=14&_t=1775635268547 HTTP/1.1" 200 OK
+INFO:     113.251.79.23:0 - "GET /api/history/list?page=4&size=14&_t=1775635268547 HTTP/1.1" 200 OK
+INFO:     113.251.79.23:0 - "GET /api/kb/list?page=1&size=20&_t=1775635356487 HTTP/1.1" 200 OK
+INFO:     113.251.79.23:0 - "GET /api/kb/list?page=1&size=20&_t=1775635409199 HTTP/1.1" 200 OK
+INFO:     113.251.79.23:0 - "GET /api/kb/list?page=1&size=20&_t=1775635421179 HTTP/1.1" 200 OK
+INFO:     113.251.79.23:0 - "GET /api/kb/list?page=1&size=20&_t=1775635477278 HTTP/1.1" 200 OK
+INFO:     113.251.79.23:0 - "GET /api/kb/list?page=1&size=20&_t=1775635481694 HTTP/1.1" 200 OK
+INFO:     113.251.79.23:0 - "OPTIONS /api/history/list?page=1&search=&timeRange=&size=20&_t=1775635483412 HTTP/1.1" 400 Bad Request
+INFO:     113.251.79.23:0 - "OPTIONS /api/history/list?page=1&search=&timeRange=&size=20&_t=1775635487867 HTTP/1.1" 400 Bad Request
+INFO:     113.251.79.23:0 - "GET /api/history/list?page=1&search=&timeRange=&size=20&_t=1775635507050 HTTP/1.1" 200 OK
+INFO:     113.251.79.23:0 - "GET /api/history/list?page=1&search=&timeRange=&size=20&_t=1775635507342 HTTP/1.1" 200 OK
+INFO:     113.251.79.23:0 - "GET /api/history/list?page=1&search=&timeRange=&size=20&_t=1775635507582 HTTP/1.1" 200 OK
+INFO:     113.251.79.23:0 - "GET /api/history/list?page=1&search=&timeRange=&size=20&_t=1775635507749 HTTP/1.1" 200 OK
+INFO:     113.251.79.23:0 - "GET /api/history/list?page=1&search=&timeRange=&size=20&_t=1775635512129 HTTP/1.1" 200 OK
+INFO:     113.251.79.23:0 - "GET /api/history/list?page=1&search=&timeRange=&size=20&_t=1775635512378 HTTP/1.1" 200 OK
+INFO:     113.251.79.23:0 - "GET /api/history/list?page=1&search=&timeRange=&size=20&_t=1775635512612 HTTP/1.1" 200 OK
+INFO:     113.251.79.23:0 - "GET /api/history/list?page=1&search=&timeRange=&size=20&_t=1775635513974 HTTP/1.1" 200 OK
+INFO:     113.251.79.23:0 - "GET /api/history/list?page=1&search=&timeRange=&size=20&_t=1775635548367 HTTP/1.1" 200 OK
+INFO:     113.251.79.23:0 - "GET /api/history/1775633030391?_t=1775635572421 HTTP/1.1" 200 OK
+INFO:     113.251.79.23:0 - "GET /api/history/1775633574320?_t=1775635578075 HTTP/1.1" 200 OK
+INFO:     113.251.79.23:0 - "GET /api/history/list?page=1&search=&timeRange=&size=20&_t=1775635602061 HTTP/1.1" 200 OK
+INFO:     113.251.79.23:0 - "GET /api/history/list?page=1&search=&timeRange=&size=20&_t=1775635609683 HTTP/1.1" 200 OK
+INFO:     113.251.79.23:0 - "GET /api/history/list?page=1&search=&timeRange=&size=20&_t=1775635609972 HTTP/1.1" 200 OK
+INFO:     113.251.79.23:0 - "GET /api/history/list?page=1&search=&timeRange=&size=20&_t=1775635610183 HTTP/1.1" 200 OK
+INFO:     113.251.79.23:0 - "GET /api/history/list?page=1&search=&timeRange=&size=20&_t=1775635610422 HTTP/1.1" 200 OK
+INFO:     113.251.79.23:0 - "GET /api/history/list?page=1&search=&timeRange=&size=20&_t=1775635610630 HTTP/1.1" 200 OK
+INFO:     113.251.79.23:0 - "GET /api/history/list?page=1&search=&timeRange=&size=20&_t=1775635610907 HTTP/1.1" 200 OK
+INFO:     113.251.79.23:0 - "GET /api/history/list?page=1&search=&timeRange=&size=20&_t=1775635611157 HTTP/1.1" 200 OK
+INFO:     113.251.79.23:0 - "GET /api/history/list?page=1&search=&timeRange=&size=20&_t=1775635611399 HTTP/1.1" 200 OK
+INFO:     113.251.79.23:0 - "GET /api/history/list?page=1&search=&timeRange=&size=20&_t=1775635611678 HTTP/1.1" 200 OK
+INFO:     113.251.79.23:0 - "GET /api/history/list?page=1&search=&timeRange=&size=20&_t=1775635611888 HTTP/1.1" 200 OK
+INFO:     113.251.79.23:0 - "GET /api/history/list?page=1&search=&timeRange=&size=20&_t=1775635632456 HTTP/1.1" 200 OK
+INFO:     113.251.79.23:0 - "GET /api/history/list?page=1&search=&timeRange=&size=20&_t=1775635634964 HTTP/1.1" 200 OK
+INFO:     113.251.79.23:0 - "POST /api/history/export HTTP/1.1" 422 Unprocessable Entity
+INFO:     39.98.95.97:0 - "POST /api/history/export HTTP/1.1" 400 Bad Request
+INFO:     113.251.79.23:0 - "GET /api/history/1775633574320?_t=1775635945804 HTTP/1.1" 200 OK
+INFO:     113.251.79.23:0 - "GET /api/history/1775633519762?_t=1775635960856 HTTP/1.1" 200 OK
+INFO:     113.251.79.23:0 - "GET /api/history/1775632618395?_t=1775635973743 HTTP/1.1" 200 OK
+INFO:     113.251.79.23:0 - "GET /api/history/1775631740915?_t=1775635989750 HTTP/1.1" 200 OK
+INFO:     113.251.79.23:0 - "GET /api/history/1775632582001?_t=1775636004398 HTTP/1.1" 200 OK
+INFO:     113.251.79.23:0 - "GET /api/history/list?page=2&search=&timeRange=&size=20&_t=1775636034154 HTTP/1.1" 200 OK
+INFO:     113.251.79.23:0 - "GET /api/history/conv-files?_t=1775636039206 HTTP/1.1" 200 OK
+INFO:     113.251.79.23:0 - "OPTIONS /api/history/list?page=1&size=14&_t=1775636394604 HTTP/1.1" 200 OK
+INFO:     113.251.79.23:0 - "GET /api/history/list?page=1&size=14&_t=1775636394604 HTTP/1.1" 200 OK
+INFO:     113.251.79.23:0 - "OPTIONS /api/history/list?page=1&size=14&_t=1775636455565 HTTP/1.1" 200 OK
+INFO:     113.251.79.23:0 - "GET /api/history/list?page=1&size=14&_t=1775636455565 HTTP/1.1" 200 OK
+INFO:     113.251.79.23:0 - "POST /api/history/export HTTP/1.1" 422 Unprocessable Entity
+INFO:     113.251.79.23:0 - "GET /api/history/list?page=1&search=&timeRange=&size=20&_t=1775636484151 HTTP/1.1" 200 OK
+INFO:     113.251.79.23:0 - "GET /api/history/list?page=1&search=&timeRange=&size=20&_t=1775636484377 HTTP/1.1" 200 OK
+INFO:     113.251.79.23:0 - "GET /api/history/list?page=1&search=&timeRange=&size=20&_t=1775636484645 HTTP/1.1" 200 OK
+INFO:     113.251.79.23:0 - "GET /api/history/list?page=1&search=&timeRange=&size=20&_t=1775636485544 HTTP/1.1" 200 OK
+INFO:     113.251.79.23:0 - "POST /api/history/export HTTP/1.1" 400 Bad Request
+INFO:     113.251.79.23:0 - "POST /api/history/export HTTP/1.1" 400 Bad Request
+INFO:     113.251.79.23:0 - "GET /api/history/list?page=2&search=&timeRange=&size=20&_t=1775636512448 HTTP/1.1" 200 OK
+INFO:     113.251.79.23:0 - "GET /api/history/conv-files?_t=1775636517113 HTTP/1.1" 200 OK
+INFO:     39.98.95.97:0 - "GET /api/history/conv-files/messages/0/files/file_1775561449219_0/download HTTP/1.1" 200 OK
+INFO:     39.98.95.97:0 - "GET /api/history/conv-files/messages/0/files/file_1775561449226_1/download HTTP/1.1" 200 OK
+INFO:     113.251.79.23:0 - "OPTIONS /api/history/list?page=1&size=14&_t=1775636622467 HTTP/1.1" 200 OK
+INFO:     113.251.79.23:0 - "GET /api/history/list?page=1&size=14&_t=1775636622467 HTTP/1.1" 200 OK
+INFO:     113.251.79.23:0 - "OPTIONS /api/history/list?page=2&size=14&_t=1775636791061 HTTP/1.1" 200 OK
+INFO:     113.251.79.23:0 - "GET /api/history/list?page=2&size=14&_t=1775636791061 HTTP/1.1" 200 OK
+INFO:     113.251.79.23:0 - "OPTIONS /api/history/list?page=3&size=14&_t=1775636792460 HTTP/1.1" 200 OK
+INFO:     113.251.79.23:0 - "GET /api/history/list?page=3&size=14&_t=1775636792460 HTTP/1.1" 200 OK
+INFO:     39.98.95.97:0 - "GET /api/history/conv-files/messages/0/files/file_1775561449226_1/download HTTP/1.1" 200 OK
+INFO:     113.251.79.23:0 - "OPTIONS /api/history/list?page=4&size=14&_t=1775636815792 HTTP/1.1" 200 OK
+INFO:     113.251.79.23:0 - "GET /api/history/list?page=4&size=14&_t=1775636815792 HTTP/1.1" 200 OK
+INFO:     113.251.79.23:0 - "OPTIONS /api/history/list?page=1&size=14&_t=1775636854225 HTTP/1.1" 200 OK
+INFO:     113.251.79.23:0 - "GET /api/history/list?page=1&size=14&_t=1775636854225 HTTP/1.1" 200 OK
+INFO:     113.251.79.23:0 - "OPTIONS /api/history/list?page=1&size=14&_t=1775636875789 HTTP/1.1" 200 OK
+INFO:     113.251.79.23:0 - "GET /api/history/list?page=1&size=14&_t=1775636875789 HTTP/1.1" 200 OK
+INFO:     113.251.79.23:0 - "OPTIONS /api/chat/new_session?_t=1775636944759 HTTP/1.1" 200 OK
+INFO:     113.251.79.23:0 - "GET /api/chat/new_session?_t=1775636944759 HTTP/1.1" 200 OK
+INFO:     113.251.79.23:0 - "OPTIONS /api/chat HTTP/1.1" 200 OK
+2026-04-08 16:29:06 [debug    ] No banned substrings found
+2026-04-08 16:29:06 [debug    ] Scanner completed              elapsed_time_seconds=0.003004 is_valid=True scanner=BanSubstrings
+2026-04-08 16:29:06 [debug    ] No invisible characters found
+2026-04-08 16:29:06 [debug    ] Scanner completed              elapsed_time_seconds=0.000577 is_valid=True scanner=InvisibleText
+2026-04-08 16:29:06 [debug    ] No secrets detected in the prompt
+2026-04-08 16:29:06 [debug    ] Scanner completed              elapsed_time_seconds=0.123828 is_valid=True scanner=Secrets
+2026-04-08 16:29:06 [info     ] Scanned prompt                 elapsed_time_seconds=0.128391 scores={'BanSubstrings': -1.0, 'InvisibleText': 0.0, 'Secrets': -1.0}
+INFO:     113.251.79.23:0 - "POST /api/chat HTTP/1.1" 200 OK
+[recommendations] failed: Extra data: line 2 column 1 (char 16)
+INFO:     113.251.79.23:0 - "GET /api/history/conv-files?_t=1775637139666 HTTP/1.1" 200 OK
+I0000 00:00:1775637206.592864 1818755 chttp2_transport.cc:1353] unix:/tmp/tmprafpcvnp_klclab_milvus.db.sock: Got goaway [11] err=UNAVAILABLE:GOAWAY received; Error code: 11; Debug Text: too_many_pings {grpc_status:14, http2_error:11}
+E0000 00:00:1775637206.592969 1818755 chttp2_transport.cc:1385] unix:/tmp/tmprafpcvnp_klclab_milvus.db.sock: Received a GOAWAY with error code ENHANCE_YOUR_CALM and debug data equal to "too_many_pings". Current keepalive time (before throttling): 80000ms
+INFO:     113.251.79.23:0 - "GET /api/history/conv-files?_t=1775637242469 HTTP/1.1" 200 OK
+INFO:     113.251.79.23:0 - "GET /api/history/conv-files?_t=1775637315083 HTTP/1.1" 200 OK
+INFO:     113.251.79.23:0 - "OPTIONS /api/chat/new_session?_t=1775637356831 HTTP/1.1" 200 OK
+INFO:     113.251.79.23:0 - "GET /api/chat/new_session?_t=1775637356831 HTTP/1.1" 200 OK
+2026-04-08 16:35:58 [debug    ] No banned substrings found
+2026-04-08 16:35:58 [debug    ] Scanner completed              elapsed_time_seconds=0.000519 is_valid=True scanner=BanSubstrings
+2026-04-08 16:35:58 [debug    ] No invisible characters found
+2026-04-08 16:35:58 [debug    ] Scanner completed              elapsed_time_seconds=0.000191 is_valid=True scanner=InvisibleText
+2026-04-08 16:35:58 [debug    ] No secrets detected in the prompt
+2026-04-08 16:35:58 [debug    ] Scanner completed              elapsed_time_seconds=0.008171 is_valid=True scanner=Secrets
+2026-04-08 16:35:58 [info     ] Scanned prompt                 elapsed_time_seconds=0.009576 scores={'BanSubstrings': -1.0, 'InvisibleText': 0.0, 'Secrets': -1.0}
+INFO:     113.251.79.23:0 - "POST /api/chat HTTP/1.1" 200 OK
+[recommendations] failed: Extra data: line 2 column 1 (char 16)
+INFO:     113.251.79.23:0 - "GET /api/history/conv-files?_t=1775637377811 HTTP/1.1" 200 OK
+INFO:     113.251.79.23:0 - "OPTIONS /api/chat/new_session?_t=1775637478263 HTTP/1.1" 200 OK
+INFO:     113.251.79.23:0 - "GET /api/chat/new_session?_t=1775637478263 HTTP/1.1" 200 OK
+2026-04-08 16:37:59 [debug    ] No banned substrings found
+2026-04-08 16:37:59 [debug    ] Scanner completed              elapsed_time_seconds=0.000299 is_valid=True scanner=BanSubstrings
+2026-04-08 16:37:59 [debug    ] No invisible characters found
+2026-04-08 16:37:59 [debug    ] Scanner completed              elapsed_time_seconds=0.000111 is_valid=True scanner=InvisibleText
+2026-04-08 16:37:59 [debug    ] No secrets detected in the prompt
+2026-04-08 16:37:59 [debug    ] Scanner completed              elapsed_time_seconds=0.00787 is_valid=True scanner=Secrets
+2026-04-08 16:37:59 [info     ] Scanned prompt                 elapsed_time_seconds=0.008713 scores={'BanSubstrings': -1.0, 'InvisibleText': 0.0, 'Secrets': -1.0}
+INFO:     113.251.79.23:0 - "POST /api/chat HTTP/1.1" 200 OK
+I0000 00:00:1775637981.592831 1818755 chttp2_transport.cc:1353] unix:/tmp/tmprafpcvnp_klclab_milvus.db.sock: Got goaway [11] err=UNAVAILABLE:GOAWAY received; Error code: 11; Debug Text: too_many_pings {http2_error:11, grpc_status:14}
+E0000 00:00:1775637981.592930 1818755 chttp2_transport.cc:1385] unix:/tmp/tmprafpcvnp_klclab_milvus.db.sock: Received a GOAWAY with error code ENHANCE_YOUR_CALM and debug data equal to "too_many_pings". Current keepalive time (before throttling): 160000ms
+INFO:     113.251.79.23:0 - "OPTIONS /api/chat/new_session?_t=1775638103815 HTTP/1.1" 200 OK
+INFO:     113.251.79.23:0 - "GET /api/chat/new_session?_t=1775638103815 HTTP/1.1" 200 OK
+INFO:     113.251.79.23:0 - "OPTIONS /api/chat HTTP/1.1" 200 OK
+2026-04-08 16:48:25 [debug    ] No banned substrings found
+2026-04-08 16:48:25 [debug    ] Scanner completed              elapsed_time_seconds=0.000451 is_valid=True scanner=BanSubstrings
+2026-04-08 16:48:25 [debug    ] No invisible characters found
+2026-04-08 16:48:25 [debug    ] Scanner completed              elapsed_time_seconds=0.000257 is_valid=True scanner=InvisibleText
+2026-04-08 16:48:25 [debug    ] No secrets detected in the prompt
+2026-04-08 16:48:25 [debug    ] Scanner completed              elapsed_time_seconds=0.008142 is_valid=True scanner=Secrets
+2026-04-08 16:48:25 [info     ] Scanned prompt                 elapsed_time_seconds=0.009588 scores={'BanSubstrings': -1.0, 'InvisibleText': 0.0, 'Secrets': -1.0}
+INFO:     113.251.79.23:0 - "POST /api/chat HTTP/1.1" 200 OK
+[recommendations] failed: Extra data: line 2 column 1 (char 16)
+INFO:     113.251.79.23:0 - "GET /api/history/list?page=1&search=&timeRange=&size=20&_t=1775638307397 HTTP/1.1" 200 OK
+INFO:     113.251.79.23:0 - "GET /api/history/list?page=2&search=&timeRange=&size=20&_t=1775638310614 HTTP/1.1" 200 OK
+INFO:     113.251.79.23:0 - "GET /api/history/list?page=3&search=&timeRange=&size=20&_t=1775638315940 HTTP/1.1" 200 OK
+INFO:     113.251.79.23:0 - "GET /api/history/list?page=1&search=&timeRange=&size=20&_t=1775638318864 HTTP/1.1" 200 OK
+INFO:     113.251.79.23:0 - "GET /api/history/list?page=2&search=&timeRange=&size=20&_t=1775638320578 HTTP/1.1" 200 OK
+INFO:     113.251.79.23:0 - "GET /api/history/conv-files?_t=1775638324913 HTTP/1.1" 200 OK
+INFO:     113.251.79.23:0 - "OPTIONS /api/history/list?page=1&size=14&_t=1775638372244 HTTP/1.1" 200 OK
+INFO:     113.251.79.23:0 - "GET /api/history/list?page=1&size=14&_t=1775638372244 HTTP/1.1" 200 OK
+INFO:     113.251.79.23:0 - "GET /api/history/conv-files/messages/0/files/file_1775561449226_1/download HTTP/1.1" 200 OK
+INFO:     113.251.79.23:0 - "OPTIONS /api/history/list?page=2&size=14&_t=1775638576068 HTTP/1.1" 200 OK
+INFO:     113.251.79.23:0 - "GET /api/history/list?page=2&size=14&_t=1775638576068 HTTP/1.1" 200 OK
+INFO:     113.251.79.23:0 - "OPTIONS /api/chat/new_session?_t=1775638616086 HTTP/1.1" 200 OK
+INFO:     113.251.79.23:0 - "GET /api/chat/new_session?_t=1775638616086 HTTP/1.1" 200 OK
+2026-04-08 16:56:57 [debug    ] No banned substrings found
+2026-04-08 16:56:57 [debug    ] Scanner completed              elapsed_time_seconds=0.000344 is_valid=True scanner=BanSubstrings
+2026-04-08 16:56:57 [debug    ] No invisible characters found
+2026-04-08 16:56:57 [debug    ] Scanner completed              elapsed_time_seconds=0.000118 is_valid=True scanner=InvisibleText
+2026-04-08 16:56:57 [debug    ] No secrets detected in the prompt
+2026-04-08 16:56:57 [debug    ] Scanner completed              elapsed_time_seconds=0.005692 is_valid=True scanner=Secrets
+2026-04-08 16:56:57 [info     ] Scanned prompt                 elapsed_time_seconds=0.006558 scores={'BanSubstrings': -1.0, 'InvisibleText': 0.0, 'Secrets': -1.0}
+INFO:     113.251.79.23:0 - "POST /api/chat HTTP/1.1" 200 OK
+[recommendations] failed: Extra data: line 2 column 1 (char 16)
+INFO:     113.251.79.23:0 - "GET /api/history/conv-files?_t=1775638644898 HTTP/1.1" 200 OK
+INFO:     113.251.79.23:0 - "GET /api/history/list?page=1&search=&timeRange=&size=20&_t=1775638667648 HTTP/1.1" 200 OK
+INFO:     113.251.79.23:0 - "GET /api/history/list?page=2&search=&timeRange=&size=20&_t=1775638670571 HTTP/1.1" 200 OK
+INFO:     113.251.79.23:0 - "GET /api/history/conv-files?_t=1775638673642 HTTP/1.1" 200 OK
+INFO:     113.251.79.23:0 - "GET /api/history/conv-files/messages/0/files/file_1775561449219_0/download HTTP/1.1" 200 OK
+INFO:     113.251.79.23:0 - "GET /api/history/conv-files/messages/0/files/file_1775561449226_1/download HTTP/1.1" 200 OK
+INFO:     113.251.79.23:0 - "GET /api/history/1775628775227?_t=1775638700734 HTTP/1.1" 200 OK
+INFO:     113.251.79.23:0 - "GET /api/history/conv-files?_t=1775638707146 HTTP/1.1" 200 OK
+INFO:     113.251.79.23:0 - "GET /api/history/list?page=1&search=&timeRange=&size=20&_t=1775638747224 HTTP/1.1" 200 OK
+INFO:     113.251.79.23:0 - "GET /api/history/list?page=1&search=&timeRange=&size=20&_t=1775638747487 HTTP/1.1" 200 OK
+INFO:     113.251.79.23:0 - "GET /api/history/list?page=1&search=&timeRange=&size=20&_t=1775638747717 HTTP/1.1" 200 OK
+INFO:     113.251.79.23:0 - "OPTIONS /api/chat/new_session?_t=1775638777349 HTTP/1.1" 200 OK
+INFO:     113.251.79.23:0 - "GET /api/chat/new_session?_t=1775638777349 HTTP/1.1" 200 OK
+INFO:     113.251.79.23:0 - "OPTIONS /api/chat HTTP/1.1" 200 OK
+2026-04-08 16:59:38 [debug    ] No banned substrings found
+2026-04-08 16:59:38 [debug    ] Scanner completed              elapsed_time_seconds=0.000311 is_valid=True scanner=BanSubstrings
+2026-04-08 16:59:38 [debug    ] No invisible characters found
+2026-04-08 16:59:38 [debug    ] Scanner completed              elapsed_time_seconds=0.000123 is_valid=True scanner=InvisibleText
+2026-04-08 16:59:38 [debug    ] No secrets detected in the prompt
+2026-04-08 16:59:38 [debug    ] Scanner completed              elapsed_time_seconds=0.005274 is_valid=True scanner=Secrets
+2026-04-08 16:59:38 [info     ] Scanned prompt                 elapsed_time_seconds=0.006138 scores={'BanSubstrings': -1.0, 'InvisibleText': 0.0, 'Secrets': -1.0}
+INFO:     113.251.79.23:0 - "POST /api/chat HTTP/1.1" 200 OK
+[recommendations] failed: Extra data: line 2 column 1 (char 16)
+INFO:     113.251.79.23:0 - "OPTIONS /api/history/list?page=1&size=14&_t=1775638893426 HTTP/1.1" 200 OK
+INFO:     113.251.79.23:0 - "GET /api/history/list?page=1&size=14&_t=1775638893426 HTTP/1.1" 200 OK
+INFO:     113.251.79.23:0 - "GET /api/history/list?page=1&search=&timeRange=&size=20&_t=1775638920843 HTTP/1.1" 200 OK
+INFO:     113.251.79.23:0 - "GET /api/history/list?page=1&search=&timeRange=&size=20&_t=1775638921075 HTTP/1.1" 200 OK
+INFO:     113.251.79.23:0 - "GET /api/history/list?page=1&search=&timeRange=&size=20&_t=1775638921327 HTTP/1.1" 200 OK
+INFO:     113.251.79.23:0 - "GET /api/history/list?page=1&search=&timeRange=&size=20&_t=1775638921575 HTTP/1.1" 200 OK
+INFO:     113.251.79.23:0 - "GET /api/history/list?page=1&search=&timeRange=&size=20&_t=1775638921850 HTTP/1.1" 200 OK
+INFO:     113.251.79.23:0 - "GET /api/history/list?page=1&search=&timeRange=&size=20&_t=1775638922078 HTTP/1.1" 200 OK
+INFO:     113.251.79.23:0 - "GET /api/history/list?page=1&search=&timeRange=&size=20&_t=1775638923363 HTTP/1.1" 200 OK
+INFO:     113.251.79.23:0 - "GET /api/history/list?page=2&search=&timeRange=&size=20&_t=1775638925998 HTTP/1.1" 200 OK
+INFO:     113.251.79.23:0 - "GET /api/history/conv-files?_t=1775638928341 HTTP/1.1" 200 OK
+INFO:     113.251.79.23:0 - "OPTIONS /api/chat/new_session?_t=1775638940070 HTTP/1.1" 200 OK
+INFO:     113.251.79.23:0 - "GET /api/chat/new_session?_t=1775638940070 HTTP/1.1" 200 OK
+2026-04-08 17:02:21 [debug    ] No banned substrings found
+2026-04-08 17:02:21 [debug    ] Scanner completed              elapsed_time_seconds=0.000491 is_valid=True scanner=BanSubstrings
+2026-04-08 17:02:21 [debug    ] No invisible characters found
+2026-04-08 17:02:21 [debug    ] Scanner completed              elapsed_time_seconds=0.000206 is_valid=True scanner=InvisibleText
+2026-04-08 17:02:21 [debug    ] No secrets detected in the prompt
+2026-04-08 17:02:21 [debug    ] Scanner completed              elapsed_time_seconds=0.008518 is_valid=True scanner=Secrets
+2026-04-08 17:02:21 [info     ] Scanned prompt                 elapsed_time_seconds=0.009995 scores={'BanSubstrings': -1.0, 'InvisibleText': 0.0, 'Secrets': -1.0}
+INFO:     113.251.79.23:0 - "POST /api/chat HTTP/1.1" 200 OK
+[recommendations] failed: Extra data: line 2 column 1 (char 16)
+INFO:     113.251.79.23:0 - "GET /api/history/list?page=1&search=&timeRange=&size=20&_t=1775638970615 HTTP/1.1" 200 OK
+INFO:     113.251.79.23:0 - "GET /api/history/list?page=1&search=&timeRange=&size=20&_t=1775638970873 HTTP/1.1" 200 OK
+INFO:     113.251.79.23:0 - "GET /api/history/list?page=2&search=&timeRange=&size=20&_t=1775638974611 HTTP/1.1" 200 OK
+INFO:     113.251.79.23:0 - "GET /api/history/conv-files?_t=1775638976726 HTTP/1.1" 200 OK
+2026-04-08 17:03:12 [debug    ] No banned substrings found
+2026-04-08 17:03:12 [debug    ] Scanner completed              elapsed_time_seconds=0.00039 is_valid=True scanner=BanSubstrings
+2026-04-08 17:03:12 [debug    ] No invisible characters found
+2026-04-08 17:03:12 [debug    ] Scanner completed              elapsed_time_seconds=0.000177 is_valid=True scanner=InvisibleText
+2026-04-08 17:03:12 [debug    ] No secrets detected in the prompt
+2026-04-08 17:03:12 [debug    ] Scanner completed              elapsed_time_seconds=0.007979 is_valid=True scanner=Secrets
+2026-04-08 17:03:12 [info     ] Scanned prompt                 elapsed_time_seconds=0.009248 scores={'BanSubstrings': -1.0, 'InvisibleText': 0.0, 'Secrets': -1.0}
+INFO:     113.251.79.23:0 - "POST /api/chat HTTP/1.1" 200 OK
+[recommendations] failed: Extra data: line 2 column 1 (char 16)
+INFO:     113.251.79.23:0 - "GET /api/history/list?page=1&search=&timeRange=&size=20&_t=1775639026646 HTTP/1.1" 200 OK
+INFO:     113.251.79.23:0 - "GET /api/history/list?page=1&search=&timeRange=&size=20&_t=1775639026891 HTTP/1.1" 200 OK
+INFO:     113.251.79.23:0 - "GET /api/history/list?page=1&search=&timeRange=&size=20&_t=1775639027704 HTTP/1.1" 200 OK
+INFO:     113.251.79.23:0 - "GET /api/history/list?page=2&search=&timeRange=&size=20&_t=1775639030401 HTTP/1.1" 200 OK
+INFO:     113.251.79.23:0 - "GET /api/history/conv-files?_t=1775639033049 HTTP/1.1" 200 OK
+INFO:     113.251.79.23:0 - "GET /api/history/conv-files/messages/0/files/file_1775561449219_0/download?_t=1775639035147 HTTP/1.1" 200 OK
+INFO:     113.251.79.23:0 - "GET /api/history/list?page=1&search=&timeRange=&size=20&_t=1775639044905 HTTP/1.1" 200 OK
+INFO:     113.251.79.23:0 - "GET /api/history/list?page=1&search=&timeRange=&size=20&_t=1775639045219 HTTP/1.1" 200 OK
+INFO:     113.251.79.23:0 - "GET /api/history/list?page=1&search=&timeRange=&size=20&_t=1775639045468 HTTP/1.1" 200 OK
+2026-04-08 17:05:28 [debug    ] No banned substrings found
+2026-04-08 17:05:28 [debug    ] Scanner completed              elapsed_time_seconds=0.000609 is_valid=True scanner=BanSubstrings
+2026-04-08 17:05:28 [debug    ] No invisible characters found
+2026-04-08 17:05:28 [debug    ] Scanner completed              elapsed_time_seconds=0.000223 is_valid=True scanner=InvisibleText
+2026-04-08 17:05:28 [debug    ] No secrets detected in the prompt
+2026-04-08 17:05:28 [debug    ] Scanner completed              elapsed_time_seconds=0.009795 is_valid=True scanner=Secrets
+2026-04-08 17:05:28 [info     ] Scanned prompt                 elapsed_time_seconds=0.011466 scores={'BanSubstrings': -1.0, 'InvisibleText': 0.0, 'Secrets': -1.0}
+INFO:     113.251.79.23:0 - "POST /api/chat HTTP/1.1" 200 OK
+INFO:     113.251.79.23:0 - "GET /api/history/list?page=1&search=&timeRange=&size=20&_t=1775639193361 HTTP/1.1" 200 OK
+INFO:     113.251.79.23:0 - "GET /api/history/list?page=1&search=&timeRange=&size=20&_t=1775639195083 HTTP/1.1" 200 OK
+INFO:     113.251.79.23:0 - "GET /api/history/list?page=2&search=&timeRange=&size=20&_t=1775639197421 HTTP/1.1" 200 OK
+INFO:     113.251.79.23:0 - "GET /api/history/conv-files?_t=1775639199866 HTTP/1.1" 200 OK
+INFO:     113.251.79.23:0 - "GET /api/history/conv-files/messages/0/files/file_1775561449219_0/download?_t=1775639203340 HTTP/1.1" 200 OK
+INFO:     113.251.79.23:0 - "GET /api/history/conv-files/messages/0/files/file_1775561449226_1/download?_t=1775639206060 HTTP/1.1" 200 OK
+INFO:     113.251.79.23:0 - "GET /api/history/conv-files/messages/0/files/file_1775561449219_0/download?_t=1775639212564 HTTP/1.1" 200 OK
+INFO:     113.251.79.23:0 - "GET /api/history/conv-files/messages/0/files/file_1775561449226_1/download?_t=1775639214139 HTTP/1.1" 200 OK
+INFO:     113.251.79.23:0 - "GET /api/history/conv-files?_t=1775639281621 HTTP/1.1" 200 OK
+INFO:     39.98.168.103:0 - "GET /api/feedback/list?name=&enterprise=&type=&feedback_type=%E5%85%A8%E9%83%A8&start_time=&end_time=&page=1&size=10 HTTP/1.1" 200 OK
+INFO:     113.251.79.23:0 - "OPTIONS /api/chat/new_session?_t=1775639521061 HTTP/1.1" 200 OK
+INFO:     113.251.79.23:0 - "GET /api/chat/new_session?_t=1775639521061 HTTP/1.1" 200 OK
+INFO:     113.251.79.23:0 - "OPTIONS /api/chat HTTP/1.1" 200 OK
+2026-04-08 17:12:02 [debug    ] No banned substrings found
+2026-04-08 17:12:02 [debug    ] Scanner completed              elapsed_time_seconds=0.000491 is_valid=True scanner=BanSubstrings
+2026-04-08 17:12:02 [debug    ] No invisible characters found
+2026-04-08 17:12:02 [debug    ] Scanner completed              elapsed_time_seconds=0.000203 is_valid=True scanner=InvisibleText
+2026-04-08 17:12:02 [debug    ] No secrets detected in the prompt
+2026-04-08 17:12:02 [debug    ] Scanner completed              elapsed_time_seconds=0.009194 is_valid=True scanner=Secrets
+2026-04-08 17:12:02 [info     ] Scanned prompt                 elapsed_time_seconds=0.010629 scores={'BanSubstrings': -1.0, 'InvisibleText': 0.0, 'Secrets': -1.0}
+INFO:     113.251.79.23:0 - "POST /api/chat HTTP/1.1" 200 OK
+[recommendations] failed: Extra data: line 2 column 1 (char 16)
+2026-04-08 17:12:35 [debug    ] No banned substrings found
+2026-04-08 17:12:35 [debug    ] Scanner completed              elapsed_time_seconds=0.000561 is_valid=True scanner=BanSubstrings
+2026-04-08 17:12:35 [debug    ] No invisible characters found
+2026-04-08 17:12:35 [debug    ] Scanner completed              elapsed_time_seconds=0.000198 is_valid=True scanner=InvisibleText
+2026-04-08 17:12:35 [debug    ] No secrets detected in the prompt
+2026-04-08 17:12:35 [debug    ] Scanner completed              elapsed_time_seconds=0.008197 is_valid=True scanner=Secrets
+2026-04-08 17:12:35 [info     ] Scanned prompt                 elapsed_time_seconds=0.009711 scores={'BanSubstrings': -1.0, 'InvisibleText': 0.0, 'Secrets': -1.0}
+INFO:     113.251.79.23:0 - "POST /api/chat HTTP/1.1" 200 OK
+2026-04-08 17:12:51 [debug    ] No banned substrings found
+2026-04-08 17:12:51 [debug    ] Scanner completed              elapsed_time_seconds=0.00041 is_valid=True scanner=BanSubstrings
+2026-04-08 17:12:51 [debug    ] No invisible characters found
+2026-04-08 17:12:51 [debug    ] Scanner completed              elapsed_time_seconds=0.000175 is_valid=True scanner=InvisibleText
+2026-04-08 17:12:51 [debug    ] No secrets detected in the prompt
+2026-04-08 17:12:51 [debug    ] Scanner completed              elapsed_time_seconds=0.007558 is_valid=True scanner=Secrets
+2026-04-08 17:12:51 [info     ] Scanned prompt                 elapsed_time_seconds=0.008819 scores={'BanSubstrings': -1.0, 'InvisibleText': 0.0, 'Secrets': -1.0}
+INFO:     113.251.79.23:0 - "POST /api/chat HTTP/1.1" 200 OK
+INFO:     113.251.79.23:0 - "OPTIONS /api/chat/new_session?_t=1775639596893 HTTP/1.1" 200 OK
+INFO:     113.251.79.23:0 - "GET /api/chat/new_session?_t=1775639596893 HTTP/1.1" 200 OK
+2026-04-08 17:13:18 [debug    ] No banned substrings found
+2026-04-08 17:13:18 [debug    ] Scanner completed              elapsed_time_seconds=0.000471 is_valid=True scanner=BanSubstrings
+2026-04-08 17:13:18 [debug    ] No invisible characters found
+2026-04-08 17:13:18 [debug    ] Scanner completed              elapsed_time_seconds=0.000197 is_valid=True scanner=InvisibleText
+2026-04-08 17:13:18 [debug    ] No secrets detected in the prompt
+2026-04-08 17:13:18 [debug    ] Scanner completed              elapsed_time_seconds=0.008848 is_valid=True scanner=Secrets
+2026-04-08 17:13:18 [info     ] Scanned prompt                 elapsed_time_seconds=0.010229 scores={'BanSubstrings': -1.0, 'InvisibleText': 0.0, 'Secrets': -1.0}
+INFO:     113.251.79.23:0 - "POST /api/chat HTTP/1.1" 200 OK
+[recommendations] failed: Extra data: line 2 column 1 (char 16)
+2026-04-08 17:17:43 [debug    ] No banned substrings found
+2026-04-08 17:17:43 [debug    ] Scanner completed              elapsed_time_seconds=0.000369 is_valid=True scanner=BanSubstrings
+2026-04-08 17:17:43 [debug    ] No invisible characters found
+2026-04-08 17:17:43 [debug    ] Scanner completed              elapsed_time_seconds=9.8e-05 is_valid=True scanner=InvisibleText
+2026-04-08 17:17:43 [debug    ] No secrets detected in the prompt
+2026-04-08 17:17:43 [debug    ] Scanner completed              elapsed_time_seconds=0.004273 is_valid=True scanner=Secrets
+2026-04-08 17:17:43 [info     ] Scanned prompt                 elapsed_time_seconds=0.005042 scores={'BanSubstrings': -1.0, 'InvisibleText': 0.0, 'Secrets': -1.0}
+INFO:     113.251.79.23:0 - "POST /api/chat HTTP/1.1" 200 OK
+[recommendations] failed: Extra data: line 2 column 1 (char 16)
+INFO:     113.251.79.23:0 - "GET /api/history/conv-files?_t=1775640020750 HTTP/1.1" 200 OK
+I0000 00:00:1775640111.593836 1818502 chttp2_transport.cc:1353] unix:/tmp/tmprafpcvnp_klclab_milvus.db.sock: Got goaway [11] err=UNAVAILABLE:GOAWAY received; Error code: 11; Debug Text: too_many_pings {grpc_status:14, http2_error:11}
+E0000 00:00:1775640111.593965 1818502 chttp2_transport.cc:1385] unix:/tmp/tmprafpcvnp_klclab_milvus.db.sock: Received a GOAWAY with error code ENHANCE_YOUR_CALM and debug data equal to "too_many_pings". Current keepalive time (before throttling): 320000ms
+INFO:     Started server process [1927670]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
+2026-04-08 17:30:54 [debug    ] No banned substrings found
+2026-04-08 17:30:54 [debug    ] Scanner completed              elapsed_time_seconds=0.000738 is_valid=True scanner=BanSubstrings
+2026-04-08 17:30:54 [debug    ] No invisible characters found
+2026-04-08 17:30:54 [debug    ] Scanner completed              elapsed_time_seconds=0.000259 is_valid=True scanner=InvisibleText
+2026-04-08 17:30:54 [debug    ] No secrets detected in the prompt
+2026-04-08 17:30:54 [debug    ] Scanner completed              elapsed_time_seconds=0.157624 is_valid=True scanner=Secrets
+2026-04-08 17:30:54 [info     ] Scanned prompt                 elapsed_time_seconds=0.159271 scores={'BanSubstrings': -1.0, 'InvisibleText': 0.0, 'Secrets': -1.0}
+INFO:     127.0.0.1:43718 - "POST /api/chat HTTP/1.1" 200 OK
+INFO:     113.251.79.23:0 - "OPTIONS /api/chat/new_session?_t=1775640654216 HTTP/1.1" 200 OK
+INFO:     113.251.79.23:0 - "GET /api/chat/new_session?_t=1775640654216 HTTP/1.1" 200 OK
+2026-04-08 17:31:25 [debug    ] No banned substrings found
+2026-04-08 17:31:25 [debug    ] Scanner completed              elapsed_time_seconds=0.001085 is_valid=True scanner=BanSubstrings
+2026-04-08 17:31:25 [debug    ] No invisible characters found
+2026-04-08 17:31:25 [debug    ] Scanner completed              elapsed_time_seconds=0.000287 is_valid=True scanner=InvisibleText
+2026-04-08 17:31:25 [debug    ] No secrets detected in the prompt
+2026-04-08 17:31:25 [debug    ] Scanner completed              elapsed_time_seconds=0.017316 is_valid=True scanner=Secrets
+2026-04-08 17:31:25 [info     ] Scanned prompt                 elapsed_time_seconds=0.019572 scores={'BanSubstrings': -1.0, 'InvisibleText': 0.0, 'Secrets': -1.0}
+INFO:     127.0.0.1:57170 - "POST /api/chat HTTP/1.1" 200 OK
+INFO:     Started server process [1932957]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
+INFO:     141.11.146.78:0 - "GET /openapi.json HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52206 - "GET /api/db/options?_t=1775640830700 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52216 - "GET /api/history/list?search=&_t=1775640830750 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52228 - "GET /api/history/stream-chunk-check-1?_t=1775640831152 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52234 - "GET /api/chat/new_session?_t=1775640831938 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52240 - "GET /api/chat/new_session?_t=1775640832490 HTTP/1.1" 200 OK
+2026-04-08 17:33:55 [debug    ] No banned substrings found
+2026-04-08 17:33:55 [debug    ] Scanner completed              elapsed_time_seconds=0.000601 is_valid=True scanner=BanSubstrings
+2026-04-08 17:33:55 [debug    ] No invisible characters found
+2026-04-08 17:33:55 [debug    ] Scanner completed              elapsed_time_seconds=0.000255 is_valid=True scanner=InvisibleText
+2026-04-08 17:33:55 [debug    ] No secrets detected in the prompt
+2026-04-08 17:33:55 [debug    ] Scanner completed              elapsed_time_seconds=0.077152 is_valid=True scanner=Secrets
+2026-04-08 17:33:55 [info     ] Scanned prompt                 elapsed_time_seconds=0.078665 scores={'BanSubstrings': -1.0, 'InvisibleText': 0.0, 'Secrets': -1.0}
+INFO:     127.0.0.1:52248 - "POST /api/chat HTTP/1.1" 200 OK
+[recommendations] failed: Extra data: line 2 column 1 (char 16)
+INFO:     113.251.79.23:0 - "OPTIONS /api/chat HTTP/1.1" 200 OK
+2026-04-08 17:34:41 [debug    ] No banned substrings found
+2026-04-08 17:34:41 [debug    ] Scanner completed              elapsed_time_seconds=0.000677 is_valid=True scanner=BanSubstrings
+2026-04-08 17:34:41 [debug    ] No invisible characters found
+2026-04-08 17:34:41 [debug    ] Scanner completed              elapsed_time_seconds=0.000256 is_valid=True scanner=InvisibleText
+2026-04-08 17:34:41 [debug    ] No secrets detected in the prompt
+2026-04-08 17:34:41 [debug    ] Scanner completed              elapsed_time_seconds=0.012897 is_valid=True scanner=Secrets
+2026-04-08 17:34:41 [info     ] Scanned prompt                 elapsed_time_seconds=0.014585 scores={'BanSubstrings': -1.0, 'InvisibleText': 0.0, 'Secrets': -1.0}
+INFO:     113.251.79.23:0 - "POST /api/chat HTTP/1.1" 200 OK
+[recommendations] failed: Extra data: line 2 column 1 (char 16)
+INFO:     113.251.79.23:0 - "OPTIONS /api/chat/new_session?_t=1775641055671 HTTP/1.1" 200 OK
+INFO:     113.251.79.23:0 - "GET /api/chat/new_session?_t=1775641055671 HTTP/1.1" 200 OK
+2026-04-08 17:37:37 [debug    ] No banned substrings found
+2026-04-08 17:37:37 [debug    ] Scanner completed              elapsed_time_seconds=0.000432 is_valid=True scanner=BanSubstrings
+2026-04-08 17:37:37 [debug    ] No invisible characters found
+2026-04-08 17:37:37 [debug    ] Scanner completed              elapsed_time_seconds=0.000198 is_valid=True scanner=InvisibleText
+2026-04-08 17:37:37 [debug    ] No secrets detected in the prompt
+2026-04-08 17:37:37 [debug    ] Scanner completed              elapsed_time_seconds=0.007918 is_valid=True scanner=Secrets
+2026-04-08 17:37:37 [info     ] Scanned prompt                 elapsed_time_seconds=0.009229 scores={'BanSubstrings': -1.0, 'InvisibleText': 0.0, 'Secrets': -1.0}
+INFO:     113.251.79.23:0 - "POST /api/chat HTTP/1.1" 200 OK
+[recommendations] failed: Extra data: line 2 column 1 (char 16)
+INFO:     Started server process [1935748]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
+INFO:     127.0.0.1:58214 - "GET /api/chat/new_session HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58216 - "GET /api/chat/new_session HTTP/1.1" 200 OK
+INFO:     113.251.79.23:0 - "GET /api/history/list?page=1&search=&timeRange=&size=20&_t=1775641103665 HTTP/1.1" 200 OK
+INFO:     113.251.79.23:0 - "GET /api/history/list?page=1&search=&timeRange=&size=20&_t=1775641108176 HTTP/1.1" 200 OK
+INFO:     Started server process [1937426]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
+INFO:     127.0.0.1:39358 - "GET /openapi.json HTTP/1.1" 200 OK
+INFO:     113.251.79.23:0 - "OPTIONS /api/chat/new_session?_t=1775641188694 HTTP/1.1" 200 OK
+INFO:     113.251.79.23:0 - "GET /api/chat/new_session?_t=1775641188694 HTTP/1.1" 200 OK
+2026-04-08 17:39:50 [debug    ] No banned substrings found
+2026-04-08 17:39:50 [debug    ] Scanner completed              elapsed_time_seconds=0.000614 is_valid=True scanner=BanSubstrings
+2026-04-08 17:39:50 [debug    ] No invisible characters found
+2026-04-08 17:39:50 [debug    ] Scanner completed              elapsed_time_seconds=0.000211 is_valid=True scanner=InvisibleText
+2026-04-08 17:39:50 [debug    ] No secrets detected in the prompt
+2026-04-08 17:39:50 [debug    ] Scanner completed              elapsed_time_seconds=0.075959 is_valid=True scanner=Secrets
+2026-04-08 17:39:50 [info     ] Scanned prompt                 elapsed_time_seconds=0.077361 scores={'BanSubstrings': -1.0, 'InvisibleText': 0.0, 'Secrets': -1.0}
+INFO:     113.251.79.23:0 - "POST /api/chat HTTP/1.1" 200 OK
+[recommendations] failed: Extra data: line 2 column 1 (char 16)
+2026-04-08 17:40:09 [debug    ] No banned substrings found
+2026-04-08 17:40:09 [debug    ] Scanner completed              elapsed_time_seconds=0.000278 is_valid=True scanner=BanSubstrings
+2026-04-08 17:40:09 [debug    ] No invisible characters found
+2026-04-08 17:40:09 [debug    ] Scanner completed              elapsed_time_seconds=8.9e-05 is_valid=True scanner=InvisibleText
+2026-04-08 17:40:09 [debug    ] No secrets detected in the prompt
+2026-04-08 17:40:09 [debug    ] Scanner completed              elapsed_time_seconds=0.003167 is_valid=True scanner=Secrets
+2026-04-08 17:40:09 [info     ] Scanned prompt                 elapsed_time_seconds=0.003884 scores={'BanSubstrings': -1.0, 'InvisibleText': 0.0, 'Secrets': -1.0}
+INFO:     113.251.79.23:0 - "POST /api/chat HTTP/1.1" 200 OK
+INFO:     141.11.146.78:0 - "GET /openapi.json HTTP/1.1" 200 OK
+INFO:     Started server process [1938598]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
+INFO:     39.98.165.29:0 - "GET /api/feedback/list?name=&enterprise=&type=&feedback_type=%E5%85%A8%E9%83%A8&start_time=&end_time=&page=1&size=10 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:34094 - "GET /api/db/options?_t=1775641264694 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:34102 - "GET /api/history/list?search=&_t=1775641264747 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:34112 - "GET /api/history/1775641189833-2c12d141?_t=1775641265164 HTTP/1.1" 200 OK
+2026-04-08 17:41:09 [debug    ] No banned substrings found
+2026-04-08 17:41:09 [debug    ] Scanner completed              elapsed_time_seconds=0.000553 is_valid=True scanner=BanSubstrings
+2026-04-08 17:41:09 [debug    ] No invisible characters found
+2026-04-08 17:41:09 [debug    ] Scanner completed              elapsed_time_seconds=0.000283 is_valid=True scanner=InvisibleText
+2026-04-08 17:41:09 [debug    ] No secrets detected in the prompt
+2026-04-08 17:41:09 [debug    ] Scanner completed              elapsed_time_seconds=0.076667 is_valid=True scanner=Secrets
+2026-04-08 17:41:09 [info     ] Scanned prompt                 elapsed_time_seconds=0.078167 scores={'BanSubstrings': -1.0, 'InvisibleText': 0.0, 'Secrets': -1.0}
+INFO:     127.0.0.1:50680 - "POST /api/chat HTTP/1.1" 200 OK
+[recommendations] failed: Extra data: line 2 column 1 (char 16)
