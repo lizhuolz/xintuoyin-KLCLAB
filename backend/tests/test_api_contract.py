@@ -327,13 +327,16 @@ class APITestCase(unittest.TestCase):
         self.assertTrue(done_line)
         return json.loads(done_line[-1][6:])
 
-    def create_feedback(self, conversation_id="conv1"):
+    def create_feedback(self, conversation_id="conv1", feedback_type="like"):
         chat_data = self.create_chat_round(conversation_id=conversation_id, message="反馈测试")
-        response = self.client.post("/api/chat/feedback", json={
+        payload = {
             "conversation_id": conversation_id,
             "message_index": chat_data["message_index"],
-            "type": "like",
-        })
+            "type": feedback_type,
+        }
+        if feedback_type == "dislike":
+            payload["comment"] = "需要优化"
+        response = self.client.post("/api/chat/feedback", json=payload)
         self.assertEqual(response.status_code, 200)
         return response.json()["data"]
 
@@ -637,6 +640,25 @@ class APITestCase(unittest.TestCase):
         self.record_case("api_feedback_process", "success", "POST", "/api/feedback/process", {"id": feedback_data["id"], "processor": "tester", "is_collect": True}, data, passed)
         self.assertTrue(passed)
 
+    def test_api_feedback_process_custom_result(self):
+        feedback_data = self.create_feedback("conv-feedback-process-custom")
+        payload = {
+            "id": feedback_data["id"],
+            "processor": "审核员A",
+            "is_collect": True,
+            "process_result": "已录入回答良好",
+        }
+        res = self.client.post("/api/feedback/process", json=payload)
+        data = res.json()
+        passed = (
+            res.status_code == 200
+            and data["data"]["process_status"] == "已处理"
+            and data["data"]["process_result"] == "已录入回答良好"
+            and data["data"]["processor"] == "审核员A"
+        )
+        self.record_case("api_feedback_process", "custom_result", "POST", "/api/feedback/process", payload, data, passed)
+        self.assertTrue(passed)
+
     def test_api_feedback_process_missing_id(self):
         res = self.client.post("/api/feedback/process", json={"processor": "tester"})
         data = res.json()
@@ -660,6 +682,65 @@ class APITestCase(unittest.TestCase):
         data = res.json()
         passed = res.status_code == 200 and data["code"] == 0
         self.record_case("api_feedback_delete_by_date", "success", "DELETE", "/api/feedback/{date}/{id}", {"date": date_dir, "id": feedback_data["id"]}, data, passed)
+        self.assertTrue(passed)
+
+    def test_api_feedback_file_download(self):
+        conversation_id = f"conv-feedback-file-{app_module.now_ms()}"
+        chat_data = self.create_chat_round(conversation_id=conversation_id, message="带附件的反馈")
+        record, path = app_module.load_history_record(conversation_id)
+        object_name = f"chat/2026-03-24/{conversation_id}/0/probe.txt"
+        record["messages"][0]["uploaded_files"] = [{
+            "file_id": "file-1",
+            "filename": "probe.txt",
+            "object_name": object_name,
+        }]
+        app_module.save_history_record(record, path)
+
+        feedback_res = self.client.post("/api/chat/feedback", json={
+            "conversation_id": conversation_id,
+            "message_index": chat_data["message_index"],
+            "type": "like",
+        })
+        self.assertEqual(feedback_res.status_code, 200)
+        feedback_data = feedback_res.json()["data"]
+        original_read_file_bytes = app_module.storage_service.read_file_bytes
+        try:
+            app_module.storage_service.read_file_bytes = lambda obj: b"download-content" if obj == object_name else original_read_file_bytes(obj)
+            res = self.client.get(f"/api/feedback/{feedback_data['id']}/files/file-1/download")
+        finally:
+            app_module.storage_service.read_file_bytes = original_read_file_bytes
+        passed = res.status_code == 200 and res.content == b"download-content"
+        self.record_case(
+            "api_feedback_file_download",
+            "success",
+            "GET",
+            "/api/feedback/{feedback_id}/files/{file_id}/download",
+            {"feedback_id": feedback_data["id"], "file_id": "file-1"},
+            {"status_code": res.status_code, "content_length": len(res.content)},
+            passed,
+        )
+        self.assertTrue(passed)
+
+    def test_api_history_export_all(self):
+        self.create_chat_round(conversation_id="conv-export-1", message="历史导出1")
+        self.create_chat_round(conversation_id="conv-export-2", message="历史导出2")
+        res = self.client.post("/api/history/export", json={})
+        content_disposition = res.headers.get("content-disposition", "")
+        passed = (
+            res.status_code == 200
+            and res.headers.get("content-type", "").startswith("application/zip")
+            and "filename=" in content_disposition
+            and len(res.content) > 0
+        )
+        self.record_case(
+            "api_history_export",
+            "export_all",
+            "POST",
+            "/api/history/export",
+            {},
+            {"status_code": res.status_code, "content_type": res.headers.get("content-type"), "content_disposition": content_disposition},
+            passed,
+        )
         self.assertTrue(passed)
 
     def test_api_kb_list(self):
@@ -1020,6 +1101,33 @@ class APITestCase(unittest.TestCase):
         )
         self.assertTrue(passed)
 
+    def test_api_history_detail_feedback_after_like(self):
+        chat_data = self.create_chat_round(conversation_id="conv-feedback-history", message="历史点赞校验")
+        feedback_res = self.client.post(
+            "/api/chat/feedback",
+            json={
+                "conversation_id": "conv-feedback-history",
+                "message_index": chat_data["message_index"],
+                "type": "like",
+            },
+        )
+        self.assertEqual(feedback_res.status_code, 200)
+        res = self.client.get("/api/history/conv-feedback-history")
+        data = res.json()
+        messages = data["data"]["messages"]
+        passed = res.status_code == 200 and messages[chat_data["message_index"]]["feedback"] == "like"
+        self.record_case(
+            "api_history_detail",
+            "feedback_after_like",
+            "GET",
+            "/api/history/{conversation_id}",
+            {"conversation_id": "conv-feedback-history"},
+            data,
+            passed,
+            notes="点赞后查询历史详情，目标消息的 feedback 应为 like，而不是 null。",
+        )
+        self.assertTrue(passed)
+
     def test_api_chat_feedback_dislike_with_reason(self):
         chat_data = self.create_chat_round(conversation_id="conv-feedback-ok", message="有效点踩")
         res = self.client.post(
@@ -1085,6 +1193,45 @@ class APITestCase(unittest.TestCase):
         data = res.json()
         passed = res.status_code == 200 and data["data"]["total"] == 0
         self.record_case("api_feedback_list", "filter_no_match", "GET", "/api/feedback/list", {"enterprise": "不存在企业"}, data, passed)
+        self.assertTrue(passed)
+
+    def test_api_feedback_list_mode_filters(self):
+        self.create_feedback("conv-feedback-like", feedback_type="like")
+        self.create_feedback("conv-feedback-dislike", feedback_type="dislike")
+        like_res = self.client.get("/api/feedback/list", params={"type": "like"})
+        dislike_res = self.client.get("/api/feedback/list", params={"type": "dislike"})
+        all_res = self.client.get("/api/feedback/list")
+        like_data = like_res.json()
+        dislike_data = dislike_res.json()
+        all_data = all_res.json()
+        like_types = {item["type"] for item in like_data["data"]["list"]}
+        dislike_types = {item["type"] for item in dislike_data["data"]["list"]}
+        all_types = {item["type"] for item in all_data["data"]["list"]}
+        passed = (
+            like_res.status_code == 200
+            and dislike_res.status_code == 200
+            and all_res.status_code == 200
+            and like_types == {"like"}
+            and dislike_types == {"dislike"}
+            and {"like", "dislike"}.issubset(all_types)
+        )
+        self.record_case(
+            "api_feedback_list",
+            "mode_filters",
+            "GET",
+            "/api/feedback/list",
+            {"type": ["like", "dislike", None]},
+            {
+                "like_total": like_data["data"]["total"],
+                "like_types": sorted(like_types),
+                "dislike_total": dislike_data["data"]["total"],
+                "dislike_types": sorted(dislike_types),
+                "all_total": all_data["data"]["total"],
+                "all_types": sorted(all_types),
+            },
+            passed,
+            notes="`type=dislike` 对应待优化回答，`type=like` 对应良好回答，不传则是反馈列表全部。",
+        )
         self.assertTrue(passed)
 
     def test_api_feedback_detail_by_id_not_found(self):
@@ -1176,15 +1323,70 @@ class APITestCase(unittest.TestCase):
         )
         self.assertTrue(passed)
 
+    def test_api_db_options(self):
+        res = self.client.get("/api/db/options")
+        data = res.json()
+        options = data["data"]["options"]
+        passed = (
+            res.status_code == 200
+            and len(options) == 2
+            and options[0]["value"] == "1"
+            and options[1]["value"] == "2"
+        )
+        self.record_case(
+            "api_db_options",
+            "success",
+            "GET",
+            "/api/db/options",
+            {},
+            data,
+            passed,
+            notes="数据库切换先读选项接口，再将返回的 value 作为 /api/chat 的 db_version 传入。",
+        )
+        self.assertTrue(passed)
+
     def test_openapi_descriptions_filled(self):
         res = self.client.get("/openapi.json")
         data = res.json()
         history_params = data["paths"]["/api/history/list"]["get"]["parameters"]
         update_request_body = data["paths"]["/api/kb/update"]["post"]["requestBody"]
+        history_export_request = data["paths"]["/api/history/export"]["post"]["requestBody"]
+        feedback_process_schema = data["paths"]["/api/feedback/process"]["post"]["requestBody"]["content"]["application/json"]["schema"]
+        feedback_list_response = data["paths"]["/api/feedback/list"]["get"]["responses"]["200"]["content"]["application/json"]["schema"]
+        feedback_type_param = next(param for param in data["paths"]["/api/feedback/list"]["get"]["parameters"] if param["name"] == "type")
+        chat_feedback_request = data["paths"]["/api/chat/feedback"]["post"]["requestBody"]
+        chat_feedback_json = chat_feedback_request["content"]["application/json"]["schema"]
+        chat_feedback_form = chat_feedback_request["content"]["multipart/form-data"]["schema"]
+        feedback_detail_response = data["paths"]["/api/feedback/{feedback_id}"]["get"]["responses"]["200"]["content"]["application/json"]["schema"]
+        feedback_detail_data = feedback_detail_response["properties"]["data"]["properties"]
+        db_options_response = data["paths"]["/api/db/options"]["get"]["responses"]["200"]["content"]["application/json"]["schema"]
+        db_select_response = data["paths"]["/api/db/select_options"]["get"]["responses"]["200"]["content"]["application/json"]["schema"]
         passed = (
             res.status_code == 200
             and all(param.get("description") for param in history_params)
             and bool(update_request_body.get("description"))
+            and history_export_request.get("required") is False
+            and "process_result" in feedback_process_schema.get("properties", {})
+            and "data" in feedback_list_response.get("properties", {})
+            and "待优化回答" in feedback_type_param.get("description", "")
+            and "content" in chat_feedback_request
+            and "conversation_id" in chat_feedback_json.get("properties", {})
+            and "message_index" in chat_feedback_json.get("properties", {})
+            and "type" in chat_feedback_json.get("properties", {})
+            and "files" in chat_feedback_form.get("properties", {})
+            and "pictures" not in chat_feedback_form.get("properties", {})
+            and "state" in feedback_detail_data
+            and "user_id" in feedback_detail_data
+            and "record_id" in feedback_detail_data
+            and "time" in feedback_detail_data
+            and "update_time" in feedback_detail_data
+            and "processed_at" in feedback_detail_data
+            and "createdAt" in feedback_detail_data
+            and "updatedAt" in feedback_detail_data
+            and "processedAt" in feedback_detail_data
+            and "times" in feedback_detail_data
+            and "data" in db_options_response.get("properties", {})
+            and "data" in db_select_response.get("properties", {})
         )
         self.record_case(
             "openapi_schema",
@@ -1195,6 +1397,15 @@ class APITestCase(unittest.TestCase):
             {
                 "history_list_parameter_descriptions": [param.get("description") for param in history_params],
                 "kb_update_request_body_description": update_request_body.get("description"),
+                "history_export_required": history_export_request.get("required"),
+                "feedback_process_properties": sorted(feedback_process_schema.get("properties", {}).keys()),
+                "feedback_list_response_keys": sorted(feedback_list_response.get("properties", {}).keys()),
+                "feedback_type_description": feedback_type_param.get("description"),
+                "chat_feedback_properties": sorted(chat_feedback_json.get("properties", {}).keys()),
+                "chat_feedback_form_properties": sorted(chat_feedback_form.get("properties", {}).keys()),
+                "feedback_detail_properties": sorted(feedback_detail_data.keys()),
+                "db_options_response_keys": sorted(db_options_response.get("properties", {}).keys()),
+                "db_select_response_keys": sorted(db_select_response.get("properties", {}).keys()),
             },
             passed,
             notes="OpenAPI 文档应为 query/path/body 参数自动补齐描述，避免前端导入 Apipost 时出现 undefined。",

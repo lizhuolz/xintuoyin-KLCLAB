@@ -1,0 +1,165 @@
+{
+  "id": "fb_1776060549692-33bdeb47_0",
+  "conversation_id": "1776060549692-33bdeb47",
+  "message_index": 0,
+  "type": "dislike",
+  "state": "dislike",
+  "time": "1776062635631",
+  "update_time": "1776064260511",
+  "createdAt": "2026/04/13 14:43:55",
+  "updatedAt": "2026/04/13 15:11:00",
+  "reasons": [
+    "不理解问题",
+    "遗忘上下文",
+    "回答错误",
+    "逻辑混乱",
+    "时效性差",
+    "色情低俗",
+    "政治敏感",
+    "违法犯罪",
+    "侵犯隐私"
+  ],
+  "comment": "aa",
+  "pictures": [
+    "编组 5@2x.png",
+    "1@2x.png",
+    "1@2x_1.png",
+    "1@2x_2.png",
+    "1@2x_3.png",
+    "1@2x_4.png",
+    "1754443838940 (2).png",
+    "1@2x_5.png",
+    "1@2x_6.png",
+    "2@2x.png",
+    "1@2x_7.png",
+    "2@2x_1.png",
+    "4@2x.png",
+    "1@2x_8.png",
+    "2@2x_2.png",
+    "4@2x_1.png",
+    "1754443838940 (1).png"
+  ],
+  "pictures_list": [
+    {
+      "file_id": "pic_1776062635628_0",
+      "filename": "编组 5@2x.png",
+      "object_name": "feedback/2026-04-13/fb_1776060549692-33bdeb47_0/编组 5@2x.png",
+      "url": "http://127.0.0.1:9000/xintuoyin-data/feedback/2026-04-13/fb_1776060549692-33bdeb47_0/%E7%BC%96%E7%BB%84%205%402x.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=minioadmin%2F20260413%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20260413T064355Z&X-Amz-Expires=604800&X-Amz-SignedHeaders=host&X-Amz-Signature=7f78d74225f982cd236b7e8663d230b0fdf4b8fa262c13254fbecd1f7c86054b"
+    },
+    {
+      "file_id": "pic_1776062897185_0",
+      "filename": "1@2x.png",
+      "object_name": "feedback/2026-04-13/fb_1776060549692-33bdeb47_0/1@2x.png",
+      "url": "http://127.0.0.1:9000/xintuoyin-data/feedback/2026-04-13/fb_1776060549692-33bdeb47_0/1%402x.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=minioadmin%2F20260413%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20260413T064817Z&X-Amz-Expires=604800&X-Amz-SignedHeaders=host&X-Amz-Signature=126c396581f08a2c463b6cab91544fbf8f4ba228f38781083360d47c095d9b1a"
+    },
+    {
+      "file_id": "pic_1776063221199_0",
+      "filename": "1@2x_1.png",
+      "object_name": "feedback/2026-04-13/fb_1776060549692-33bdeb47_0/1@2x_1.png",
+      "url": "http://127.0.0.1:9000/xintuoyin-data/feedback/2026-04-13/fb_1776060549692-33bdeb47_0/1%402x_1.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=minioadmin%2F20260413%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20260413T065341Z&X-Amz-Expires=604800&X-Amz-SignedHeaders=host&X-Amz-Signature=df3606b86621d57a560bdf3d51b4b38775695efe0a2de205cf232780f717f528"
+    },
+    {
+      "file_id": "pic_1776063848106_0",
+      "filename": "1@2x_2.png",
+      "object_name": "feedback/2026-04-13/fb_1776060549692-33bdeb47_0/1@2x_2.png",
+      "url": "http://127.0.0.1:9000/xintuoyin-data/feedback/2026-04-13/fb_1776060549692-33bdeb47_0/1%402x_2.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=minioadmin%2F20260413%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20260413T070408Z&X-Amz-Expires=604800&X-Amz-SignedHeaders=host&X-Amz-Signature=f91d9745fe5d75a0b0781c7b5c6cf7de232babf63abd01b1229efc9cb130b54b"
+    },
+    {
+      "file_id": "pic_1776063938002_0",
+      "filename": "1@2x_3.png",
+      "object_name": "feedback/2026-04-13/fb_1776060549692-33bdeb47_0/1@2x_3.png",
+      "url": "http://127.0.0.1:9000/xintuoyin-data/feedback/2026-04-13/fb_1776060549692-33bdeb47_0/1%402x_3.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=minioadmin%2F20260413%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20260413T070538Z&X-Amz-Expires=604800&X-Amz-SignedHeaders=host&X-Amz-Signature=35a270cba6d65294bdd932cd8b69789344353e8cb5de60321915ac994cb1ff83"
+    },
+    {
+      "file_id": "pic_1776063939097_0",
+      "filename": "1@2x_4.png",
+      "object_name": "feedback/2026-04-13/fb_1776060549692-33bdeb47_0/1@2x_4.png",
+      "url": "http://127.0.0.1:9000/xintuoyin-data/feedback/2026-04-13/fb_1776060549692-33bdeb47_0/1%402x_4.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=minioadmin%2F20260413%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20260413T070539Z&X-Amz-Expires=604800&X-Amz-SignedHeaders=host&X-Amz-Signature=b82a462fca307ec8cdfa5b791ba639845678ee71efd5cacaa9e0fd6ae1928c18"
+    },
+    {
+      "file_id": "pic_1776063939109_1",
+      "filename": "1754443838940 (2).png",
+      "object_name": "feedback/2026-04-13/fb_1776060549692-33bdeb47_0/1754443838940 (2).png",
+      "url": "http://127.0.0.1:9000/xintuoyin-data/feedback/2026-04-13/fb_1776060549692-33bdeb47_0/1754443838940%20%282%29.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=minioadmin%2F20260413%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20260413T070539Z&X-Amz-Expires=604800&X-Amz-SignedHeaders=host&X-Amz-Signature=5c531ff9ff9ade579381f588d9311906003eeb6cd30929663fceaa9f2818b1c3"
+    },
+    {
+      "file_id": "pic_1776063953431_0",
+      "filename": "1@2x_5.png",
+      "object_name": "feedback/2026-04-13/fb_1776060549692-33bdeb47_0/1@2x_5.png",
+      "url": "http://127.0.0.1:9000/xintuoyin-data/feedback/2026-04-13/fb_1776060549692-33bdeb47_0/1%402x_5.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=minioadmin%2F20260413%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20260413T070553Z&X-Amz-Expires=604800&X-Amz-SignedHeaders=host&X-Amz-Signature=36820e214175f331d8bc8f9aa4bca53f251ec6332c126096e15cc95fc4412328"
+    },
+    {
+      "file_id": "pic_1776063953635_0",
+      "filename": "1@2x_6.png",
+      "object_name": "feedback/2026-04-13/fb_1776060549692-33bdeb47_0/1@2x_6.png",
+      "url": "http://127.0.0.1:9000/xintuoyin-data/feedback/2026-04-13/fb_1776060549692-33bdeb47_0/1%402x_6.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=minioadmin%2F20260413%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20260413T070553Z&X-Amz-Expires=604800&X-Amz-SignedHeaders=host&X-Amz-Signature=a042ce97c2f8f0124ddbb2e55ad953bad1024cd050c27d4879b8d48ffb0ddb3c"
+    },
+    {
+      "file_id": "pic_1776063953646_1",
+      "filename": "2@2x.png",
+      "object_name": "feedback/2026-04-13/fb_1776060549692-33bdeb47_0/2@2x.png",
+      "url": "http://127.0.0.1:9000/xintuoyin-data/feedback/2026-04-13/fb_1776060549692-33bdeb47_0/2%402x.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=minioadmin%2F20260413%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20260413T070553Z&X-Amz-Expires=604800&X-Amz-SignedHeaders=host&X-Amz-Signature=4716d5418ac0a04a6a53562604b60a138f54558c476d9191729af98529242eb8"
+    },
+    {
+      "file_id": "pic_1776063954434_0",
+      "filename": "1@2x_7.png",
+      "object_name": "feedback/2026-04-13/fb_1776060549692-33bdeb47_0/1@2x_7.png",
+      "url": "http://127.0.0.1:9000/xintuoyin-data/feedback/2026-04-13/fb_1776060549692-33bdeb47_0/1%402x_7.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=minioadmin%2F20260413%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20260413T070554Z&X-Amz-Expires=604800&X-Amz-SignedHeaders=host&X-Amz-Signature=f1325c2febab14dcb9f8ddb0946967a8792cad9ad0a8359c7a3489091b198c24"
+    },
+    {
+      "file_id": "pic_1776063954446_1",
+      "filename": "2@2x_1.png",
+      "object_name": "feedback/2026-04-13/fb_1776060549692-33bdeb47_0/2@2x_1.png",
+      "url": "http://127.0.0.1:9000/xintuoyin-data/feedback/2026-04-13/fb_1776060549692-33bdeb47_0/2%402x_1.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=minioadmin%2F20260413%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20260413T070554Z&X-Amz-Expires=604800&X-Amz-SignedHeaders=host&X-Amz-Signature=3eac2d4dd6116285daf69bd288fff10ce9934646572117c97aa2569086600cb4"
+    },
+    {
+      "file_id": "pic_1776063954457_2",
+      "filename": "4@2x.png",
+      "object_name": "feedback/2026-04-13/fb_1776060549692-33bdeb47_0/4@2x.png",
+      "url": "http://127.0.0.1:9000/xintuoyin-data/feedback/2026-04-13/fb_1776060549692-33bdeb47_0/4%402x.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=minioadmin%2F20260413%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20260413T070554Z&X-Amz-Expires=604800&X-Amz-SignedHeaders=host&X-Amz-Signature=ccbbe226459010cfeee8803c4047ddc2fba72c5c19e46b6ff2cc5a369f4a87a9"
+    },
+    {
+      "file_id": "pic_1776063955628_0",
+      "filename": "1@2x_8.png",
+      "object_name": "feedback/2026-04-13/fb_1776060549692-33bdeb47_0/1@2x_8.png",
+      "url": "http://127.0.0.1:9000/xintuoyin-data/feedback/2026-04-13/fb_1776060549692-33bdeb47_0/1%402x_8.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=minioadmin%2F20260413%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20260413T070555Z&X-Amz-Expires=604800&X-Amz-SignedHeaders=host&X-Amz-Signature=c489ac6ba456a5e532b10dd00f67877d21c49868a6b8aa66e247ae0227022bea"
+    },
+    {
+      "file_id": "pic_1776063955640_1",
+      "filename": "2@2x_2.png",
+      "object_name": "feedback/2026-04-13/fb_1776060549692-33bdeb47_0/2@2x_2.png",
+      "url": "http://127.0.0.1:9000/xintuoyin-data/feedback/2026-04-13/fb_1776060549692-33bdeb47_0/2%402x_2.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=minioadmin%2F20260413%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20260413T070555Z&X-Amz-Expires=604800&X-Amz-SignedHeaders=host&X-Amz-Signature=32953ce67b74029912f8f6664f24fc09bd3e9ff95dcceda281ce3d122322e75e"
+    },
+    {
+      "file_id": "pic_1776063955651_2",
+      "filename": "4@2x_1.png",
+      "object_name": "feedback/2026-04-13/fb_1776060549692-33bdeb47_0/4@2x_1.png",
+      "url": "http://127.0.0.1:9000/xintuoyin-data/feedback/2026-04-13/fb_1776060549692-33bdeb47_0/4%402x_1.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=minioadmin%2F20260413%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20260413T070555Z&X-Amz-Expires=604800&X-Amz-SignedHeaders=host&X-Amz-Signature=893b97d9880b22d246d34a5b4d12f7ce4989df7fee9d02aea29ab14b9289b077"
+    },
+    {
+      "file_id": "pic_1776063955665_3",
+      "filename": "1754443838940 (1).png",
+      "object_name": "feedback/2026-04-13/fb_1776060549692-33bdeb47_0/1754443838940 (1).png",
+      "url": "http://127.0.0.1:9000/xintuoyin-data/feedback/2026-04-13/fb_1776060549692-33bdeb47_0/1754443838940%20%281%29.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=minioadmin%2F20260413%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20260413T070555Z&X-Amz-Expires=604800&X-Amz-SignedHeaders=host&X-Amz-Signature=5931163ebed6f042e4c2840b595d59a278705da91d0f531860fc2b1f0a855e7b"
+    }
+  ],
+  "user": {
+    "name": "王颖奇",
+    "enterprise": "图湃（北京）医疗科技",
+    "phone": "15323720032",
+    "department": "技术部",
+    "user_id": "UID_20250001",
+    "record_id": "1776060549692-33bdeb47",
+    "ip_address": "183.230.12.156"
+  },
+  "name": "王颖奇",
+  "enterprise": "图湃（北京）医疗科技",
+  "phone": "15323720032",
+  "user_id": "UID_20250001",
+  "record_id": "1776060549692-33bdeb47",
+  "ip_address": "183.230.12.156",
+  "feedback_scene": "针对回答效果",
+  "question": "帮我上网查询疯狂动物城2的剧情",
+  "answer": "根据网络搜索结果，我为您整理了《疯狂动物城2》的剧情信息：\n\n## 🎬 电影基本信息\n\n| 项目 | 内容 |\n|------|------|\n| **导演** | 拜伦·霍华德、杰拉德·布什 |\n| **编剧** | 杰拉德·布什 |\n| **上映时间** | 2025年11月26日（中国内地及北美同步） |\n| **片长** | 108分钟 |\n| **类型** | 喜剧、动画、悬疑、冒险、犯罪 |\n| **配音演员** | 杰森·贝特曼、金妮弗·古德温、关继威、夏奇拉等 |\n\n## 📖 剧情概要\n\n《疯狂动物城2》是2016年《疯狂动物城》的续作，故事主要围绕以下情节展开：\n\n1. **核心事件**：身为爬行动物的**毒蛇盖瑞**（Gary）乱入动物城，造成了不小的混乱\n\n2. **主线任务**：为了搜集情报并抓住蛇盖瑞，**朱迪和尼克**不得不前往未曾去过的动物城偏远区域卧底调查\n\n3. **剧情转折**：在破案过程中，他们意识到此事另有隐情，于是在帮助蛇盖瑞逃跑后，一同沦为了\"逃犯\"\n\n4. **深层谜团**：故事涉及一桩**尘封百年的谜案**，要面对动物城里的庞大势力，以及百年來首度出现的第一条蛇\n\n## 🎯 主题思想\n\n影片通过哺乳类、爬虫类、掠食动物和草食动物之间的矛盾，引导观众：\n- **打破刻板印象和偏见**\n- **阐述\"伙伴的真正意义\"**\n- **展现角色在合作关系中的成长与变化**\n\n## 🏆 票房与荣誉\n\n- **全球票房**：超过17亿美元，成为迪士尼及好莱坞动画电影影史票房冠军\n- **中国内地票房**：45.94亿元（截至2026年3月25日）\n- **获奖情况**：\n  - 第98届奥斯卡金像奖最佳动画长片提名\n  - 第83届金球奖最佳动画长片提名\n  - 第79届英国电影学院奖最佳动画片\n\n## 📚 参考网站链接\n\n1. [百度百科 - 疯狂动物城2](https://baike.baidu.com/item/%E7%96%AF%E7%8B%82%E5%8A%A8%E7%89%A9%E5%9F%8E2/19912782)\n2. [豆瓣电影 - 疯狂动物城2影评](https://m.douban.com/movie/review/17258655/)\n3. [GQ台湾 - 动物方城市2七大重点解析](https://www.gq.com.tw/article/%E8%BF%AA%E5%A3%AB%E5%B0%BC-%E5%8B%95%E7%95%AB%E9%9B%BB%E5%BD%B1-%E5%8B%95%E7%89%A9%E6%96%B9%E5%9F%8E%E5%B8%822-zootopia-%E7%89%B9%E5%85%B8-%E4%B8%8A%E6%98%A0-%E6%BC%94%E5%93%A1-%E9%85%8D%E9%9F%B3-disneyplus)\n\n---\n\n**温馨提示**：以上信息基于网络公开资料整理，具体剧情细节可能因不同来源有所差异。如需了解更多详细内容，建议观看电影或查阅官方资料。",
+  "process_status": "未处理"
+}

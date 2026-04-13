@@ -10,7 +10,7 @@
 ```json
 {
   "ids": [
-    "fb_conv-feedback-batch_0"
+    "fb_conv-feedback-batch_2"
   ]
 }
 ```
@@ -22,7 +22,7 @@
   "msg": "批量删除反馈成功",
   "data": {
     "deleted_ids": [
-      "fb_conv-feedback-batch_0"
+      "fb_conv-feedback-batch_2"
     ]
   }
 }

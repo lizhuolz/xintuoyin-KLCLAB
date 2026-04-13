@@ -1,0 +1,75 @@
+{
+  "generated_at": "2026-04-09 13:32:44",
+  "environment": {
+    "conda_env": "xtyAgent",
+    "cwd": "/home/lyq/xintuoyin-KLCLAB/backend",
+    "cpu_only_for_tests": true
+  },
+  "suites": [
+    {
+      "name": "full_unittest_discover",
+      "command": "python -m unittest discover -s tests -p 'test*.py' -v",
+      "total_tests": 86,
+      "passed_tests": 85,
+      "failed_tests": 1,
+      "duration_seconds": 417.747,
+      "status": "unstable",
+      "notes": [
+        "首次全量 discover 过程中，tests.test_api_contract.APITestCase.test_api_history_batch_delete 偶发失败。",
+        "同一失败用例随后单独复测通过。",
+        "再次带 tee 的 full discover 因 stdout/管道问题未作为最终结论依据。"
+      ],
+      "failures": [
+        {
+          "test": "tests.test_api_contract.APITestCase.test_api_history_batch_delete",
+          "result": "failed_once_then_passed_on_rerun"
+        }
+      ]
+    },
+    {
+      "name": "api_contract_suite",
+      "command": "python tests/run_api_contract_tests.py",
+      "total_tests": 82,
+      "passed_tests": 82,
+      "failed_tests": 0,
+      "status": "passed",
+      "artifacts_dir": "/home/lyq/xintuoyin-KLCLAB/backend/tests/api_contract_results"
+    },
+    {
+      "name": "tool_retry_suite",
+      "command": "python -m unittest tests.test_tool_retry -v",
+      "total_tests": 4,
+      "passed_tests": 4,
+      "failed_tests": 0,
+      "status": "passed",
+      "notes": [
+        "需要设置 CUDA_VISIBLE_DEVICES=''，否则会触发当前机器的 PyTorch CUDA 设备索引异常。"
+      ]
+    }
+  ],
+  "highlights": {
+    "chat_related_coverage": [
+      "chat SSE 默认流式",
+      "chat 错误事件",
+      "历史上下文注入",
+      "附件内容注入",
+      "thinking 文本流",
+      "重复文件名处理",
+      "聊天反馈 like/dislike 校验"
+    ],
+    "boundary_coverage": [
+      "not_found",
+      "invalid_time",
+      "negative_message_index",
+      "invalid JSON/body",
+      "empty/no-match filters",
+      "批量删除/导出/下载"
+    ]
+  },
+  "document_paths": {
+    "contract_summary_json": "/home/lyq/xintuoyin-KLCLAB/backend/tests/api_contract_results/SUMMARY.json",
+    "contract_summary_md": "/home/lyq/xintuoyin-KLCLAB/backend/tests/api_contract_results/SUMMARY.md",
+    "full_report_json": "/home/lyq/xintuoyin-KLCLAB/backend/tests/artifacts/full_test_report.json",
+    "full_report_md": "/home/lyq/xintuoyin-KLCLAB/backend/tests/artifacts/full_test_report.md"
+  }
+}

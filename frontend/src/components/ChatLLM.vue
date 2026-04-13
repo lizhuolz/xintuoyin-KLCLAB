@@ -27,7 +27,7 @@
           :key="conv.id"
           class="sidebar-item"
           :class="{ active: String(currentId) === String(conv.id) }"
-          @click="selectConv(conv.id)"
+          @click="selectConv(conv.id, true)"
         >
           <el-icon class="conv-icon"><ChatDotRound /></el-icon>
           <span v-if="!isSidebarCollapsed" class="conv-title" :title="conv.title">{{ conv.title || '新对话' }}</span>
@@ -496,6 +496,16 @@ function updateAssistantFeedback(messageIndex, feedbackState) {
   message.disliked = feedbackState === 'dislike'
 }
 
+async function syncConversationAfterFeedback() {
+  const conversation = currentConv.value
+  if (!conversation) return
+  conversation.updatedAt = Date.now()
+  moveConversationToTop(conversation)
+  if (historyManagerVisible.value) {
+    await refreshManagerList(managerSearch.value)
+  }
+}
+
 async function submitFeedbackState(messageIndex, type, extraFormData = null) {
   const formData = extraFormData || new FormData()
   formData.append('conversation_id', String(currentId.value))
@@ -508,6 +518,7 @@ const handleLike = async (msg) => {
   try {
     const result = await submitFeedbackState(msg.messageIndex, 'like')
     updateAssistantFeedback(msg.messageIndex, result.state)
+    await syncConversationAfterFeedback()
   } catch (error) {
     ElMessage.error(error.message || '操作失败')
   }
@@ -518,6 +529,7 @@ const handleDislike = async (msg) => {
     try {
       const result = await submitFeedbackState(msg.messageIndex, 'dislike')
       updateAssistantFeedback(msg.messageIndex, result.state)
+      await syncConversationAfterFeedback()
     } catch (error) {
       ElMessage.error(error.message || '操作失败')
     }
@@ -552,6 +564,7 @@ async function submitFeedback() {
   try {
     const result = await submitFeedbackState(currentFeedbackMsgIndex.value, 'dislike', formData)
     updateAssistantFeedback(currentFeedbackMsgIndex.value, result.state)
+    await syncConversationAfterFeedback()
     feedbackVisible.value = false
     ElMessage.success('感谢您的反馈！')
   } catch (error) {
@@ -588,11 +601,15 @@ async function fetchThinkingText(conversationId, messageIndex, onChunk) {
   return ''
 }
 
-async function selectConv(id) {
+async function selectConv(id, forceRefresh = false) {
   currentId.value = String(id)
   sidebarSources.value = []
   const conversation = conversations.value.find((item) => String(item.id) === String(id))
-  if (!conversation || conversation.loaded) {
+  if (!conversation) {
+    nextTick(scrollToBottom)
+    return
+  }
+  if (conversation.loaded && !forceRefresh) {
     nextTick(scrollToBottom)
     return
   }

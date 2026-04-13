@@ -11,7 +11,7 @@ class StorageNotReadyError(RuntimeError):
 
 class StorageService:
     def __init__(self):
-        self.endpoint = os.getenv("MINIO_ENDPOINT", "127.0.0.1:9000").strip()
+        self.endpoint = os.getenv("MINIO_ENDPOINT", "127.0.0.1:9020").strip()
         self.access_key = os.getenv("MINIO_ACCESS_KEY", "minioadmin")
         self.secret_key = os.getenv("MINIO_SECRET_KEY", "minioadmin")
         self.secure = os.getenv("MINIO_SECURE", "false").lower() == "true"

@@ -9,8 +9,8 @@
 ### request
 ```json
 {
-  "date": "2026-04-07",
-  "id": "fb_conv-feedback-delete_0"
+  "date": "2026-04-09",
+  "id": "fb_conv-feedback-delete_2"
 }
 ```
 
@@ -20,7 +20,7 @@
   "code": 0,
   "msg": "删除反馈成功",
   "data": {
-    "id": "fb_conv-feedback-delete_0"
+    "id": "fb_conv-feedback-delete_2"
   }
 }
 ```

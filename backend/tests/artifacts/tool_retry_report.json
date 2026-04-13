@@ -1,0 +1,18 @@
+{
+  "generated_at": "2026-04-09 13:33:04",
+  "suite": "tool_retry",
+  "command": "CUDA_VISIBLE_DEVICES='' python -m unittest tests.test_tool_retry -v",
+  "total_tests": 4,
+  "passed_tests": 4,
+  "failed_tests": 0,
+  "cases": [
+    "test_force_retry_for_meta_tool_reasoning_without_structured_tool_call",
+    "test_dedupe_tool_calls_by_name_and_args",
+    "test_extract_current_user_question_from_composed_prompt",
+    "test_route_after_chatbot_local_does_not_misclassify_composed_prompt_as_sql"
+  ],
+  "notes": [
+    "验证 calculator 等工具调用在思考文本、去重、路由判断场景下不会误判。",
+    "需要使用 CPU-only 环境变量运行，避免当前机器 CUDA 索引异常。"
+  ]
+}

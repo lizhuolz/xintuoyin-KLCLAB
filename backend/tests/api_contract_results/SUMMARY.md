@@ -1,8 +1,8 @@
 # API Test Summary
 
-- total_endpoints: 28
-- total_cases: 77
-- passed_cases: 77
+- total_endpoints: 31
+- total_cases: 82
+- passed_cases: 82
 - failed_cases: 0
 
 - api_chat: 6/6 passed (api_chat.md)
@@ -11,16 +11,19 @@
 - api_chat_new_session: 1/1 passed (api_chat_new_session.md)
 - api_chat_thinking: 4/4 passed (api_chat_thinking.md)
 - api_chat_title: 2/2 passed (api_chat_title.md)
+- api_db_options: 1/1 passed (api_db_options.md)
 - api_db_select_options: 1/1 passed (api_db_select_options.md)
 - api_feedback_batch_delete: 2/2 passed (api_feedback_batch_delete.md)
 - api_feedback_delete_by_date: 2/2 passed (api_feedback_delete_by_date.md)
 - api_feedback_detail_by_date: 2/2 passed (api_feedback_detail_by_date.md)
 - api_feedback_detail_by_id: 2/2 passed (api_feedback_detail_by_id.md)
-- api_feedback_list: 5/5 passed (api_feedback_list.md)
-- api_feedback_process: 3/3 passed (api_feedback_process.md)
+- api_feedback_file_download: 1/1 passed (api_feedback_file_download.md)
+- api_feedback_list: 6/6 passed (api_feedback_list.md)
+- api_feedback_process: 4/4 passed (api_feedback_process.md)
 - api_feedback_upload_pictures: 3/3 passed (api_feedback_upload_pictures.md)
 - api_history_batch_delete: 2/2 passed (api_history_batch_delete.md)
 - api_history_detail: 2/2 passed (api_history_detail.md)
+- api_history_export: 1/1 passed (api_history_export.md)
 - api_history_list: 4/4 passed (api_history_list.md)
 - api_kb_create: 1/1 passed (api_kb_create.md)
 - api_kb_delete: 2/2 passed (api_kb_delete.md)

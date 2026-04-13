@@ -1,0 +1,47 @@
+{
+  "id": "fb_1776047301823-67aec5e8_5",
+  "conversation_id": "1776047301823-67aec5e8",
+  "message_index": 5,
+  "type": "dislike",
+  "state": "dislike",
+  "time": "1776059915507",
+  "update_time": "1776067671942",
+  "createdAt": "2026/04/13 13:58:35",
+  "updatedAt": "2026/04/13 16:07:51",
+  "reasons": [
+    "不理解问题",
+    "回答不完整",
+    "色情低俗"
+  ],
+  "comment": "ff",
+  "pictures": [
+    "屏幕截图 2025-08-04 194701.png"
+  ],
+  "pictures_list": [
+    {
+      "file_id": "pic_1776067667465_0",
+      "filename": "屏幕截图 2025-08-04 194701.png",
+      "object_name": "feedback/2026-04-13/fb_1776047301823-67aec5e8_5/屏幕截图 2025-08-04 194701.png",
+      "url": "http://127.0.0.1:9020/xintuoyin-data/feedback/2026-04-13/fb_1776047301823-67aec5e8_5/%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE%202025-08-04%20194701.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=minioadmin%2F20260413%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20260413T080747Z&X-Amz-Expires=604800&X-Amz-SignedHeaders=host&X-Amz-Signature=09a47eb5331513726f40b0953b0d7c910b12e7ff170b1b0a27c2d0bb819552d8"
+    }
+  ],
+  "user": {
+    "name": "王颖奇",
+    "enterprise": "图湃（北京）医疗科技",
+    "phone": "15323720032",
+    "department": "技术部",
+    "user_id": "UID_20250001",
+    "record_id": "1776047301823-67aec5e8",
+    "ip_address": "183.230.12.156"
+  },
+  "name": "王颖奇",
+  "enterprise": "图湃（北京）医疗科技",
+  "phone": "15323720032",
+  "user_id": "UID_20250001",
+  "record_id": "1776047301823-67aec5e8",
+  "ip_address": "183.230.12.156",
+  "feedback_scene": "针对回答效果",
+  "question": "固定资产报废如何处理？",
+  "answer": "",
+  "process_status": "未处理"
+}

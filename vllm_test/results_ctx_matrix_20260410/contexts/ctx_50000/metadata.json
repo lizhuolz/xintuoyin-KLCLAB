@@ -1,0 +1,24 @@
+{
+  "generated_at": "2026-04-10T18:19:27",
+  "env_label": "context-matrix-Qwen3.5-27B",
+  "base_url": "http://10.249.40.204:62272",
+  "endpoint": "/v1/completions",
+  "model_name": "Qwen3.5-27B",
+  "model_path": "/data2/lyq/models/Qwen3.5-27B",
+  "tokenizer_path": "/data2/lyq/models/Qwen3.5-27B",
+  "input_len_target": 48975,
+  "output_len_target": 1024,
+  "prompt_tokens_actual": 48976,
+  "timeout_seconds": 180,
+  "concurrencies": [
+    10,
+    40,
+    80,
+    120,
+    160,
+    200,
+    300,
+    400
+  ],
+  "min_requests": 10
+}

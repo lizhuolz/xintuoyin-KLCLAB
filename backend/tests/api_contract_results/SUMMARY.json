@@ -1,7 +1,7 @@
 {
-  "total_endpoints": 28,
-  "total_cases": 77,
-  "passed_cases": 77,
+  "total_endpoints": 31,
+  "total_cases": 82,
+  "passed_cases": 82,
   "failed_cases": 0,
   "endpoints": [
     {
@@ -47,6 +47,13 @@
       "file": "api_chat_title.md"
     },
     {
+      "endpoint": "api_db_options",
+      "case_count": 1,
+      "passed": 1,
+      "failed": 0,
+      "file": "api_db_options.md"
+    },
+    {
       "endpoint": "api_db_select_options",
       "case_count": 1,
       "passed": 1,
@@ -82,16 +89,23 @@
       "file": "api_feedback_detail_by_id.md"
     },
     {
+      "endpoint": "api_feedback_file_download",
+      "case_count": 1,
+      "passed": 1,
+      "failed": 0,
+      "file": "api_feedback_file_download.md"
+    },
+    {
       "endpoint": "api_feedback_list",
-      "case_count": 5,
-      "passed": 5,
+      "case_count": 6,
+      "passed": 6,
       "failed": 0,
       "file": "api_feedback_list.md"
     },
     {
       "endpoint": "api_feedback_process",
-      "case_count": 3,
-      "passed": 3,
+      "case_count": 4,
+      "passed": 4,
       "failed": 0,
       "file": "api_feedback_process.md"
     },
@@ -115,6 +129,13 @@
       "passed": 2,
       "failed": 0,
       "file": "api_history_detail.md"
+    },
+    {
+      "endpoint": "api_history_export",
+      "case_count": 1,
+      "passed": 1,
+      "failed": 0,
+      "file": "api_history_export.md"
     },
     {
       "endpoint": "api_history_list",

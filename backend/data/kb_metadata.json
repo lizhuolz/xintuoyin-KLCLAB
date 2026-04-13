@@ -168,5 +168,28 @@
     "updated_at": "1775214438440",
     "createdAt": "2026/04/03 19:07:18",
     "updatedAt": "2026/04/03 19:07:18"
+  },
+  {
+    "id": "kb_1775704300321",
+    "name": "测试44",
+    "model": "openai",
+    "category": "知识库",
+    "owner_info": "图湃（北京）医疗科技/技术部",
+    "physical_path": "知识库/王颖奇/测试44",
+    "remark": "萨芬",
+    "users": [
+      {
+        "name": "王颖奇",
+        "phone": "15323720032",
+        "categoryName": "图湃（北京）医疗科技",
+        "record_id": "",
+        "ip_address": "183.230.12.156"
+      }
+    ],
+    "enabled": false,
+    "created_at": "1775704300321",
+    "updated_at": "1775723135655",
+    "createdAt": "2026/04/09 11:11:40",
+    "updatedAt": "2026/04/09 16:25:35"
   }
 ]

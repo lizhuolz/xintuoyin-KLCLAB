@@ -11,7 +11,7 @@ import subprocess
 import uuid
 from pathlib import Path
 from datetime import datetime
-from typing import AsyncIterator, List, Optional
+from typing import AsyncIterator, List, Literal, Optional
 from xml.etree import ElementTree as ET
 
 from fastapi import Body, FastAPI, File, Form, Header, Query, Request, UploadFile
@@ -963,6 +963,7 @@ def build_feedback_summary(info: dict):
         "message_index": info.get("message_index"),
         "type": info.get("type"),
         "state": info.get("state"),
+        "feedback_scene": info.get("feedback_scene", "针对回答效果"),
         "feedback_type": build_feedback_type_meta(info),
         "reasons": info.get("reasons", []),
         "comment": info.get("comment", ""),
@@ -975,6 +976,7 @@ def build_feedback_summary(info: dict):
         "time": info.get("time", ""),
         "update_time": info.get("update_time", ""),
         "processed_at": info.get("processed_at", ""),
+        "processor": info.get("processor", ""),
         "createdAt": info.get("createdAt", ""),
         "updatedAt": info.get("updatedAt", ""),
         "processedAt": info.get("processedAt", ""),
@@ -991,6 +993,46 @@ def build_feedback_summary(info: dict):
         "process_status": info.get("process_status", "未处理"),
         "process_result": info.get("process_result", ""),
     }
+
+
+def iter_feedback_infos():
+    for path in FEEDBACK_ROOT.glob("*/fb_*/feedback.json"):
+        yield read_json(path, {}), path
+
+
+def collect_feedback_summaries(
+    name: str = "",
+    enterprise: str = "",
+    type: str = "",
+    feedback_type: str = "全部",
+    start_ms: Optional[int] = None,
+    end_ms: Optional[int] = None,
+):
+    results = []
+    for info, _ in iter_feedback_infos():
+        user = build_feedback_user(info)
+        if name and name.lower() not in user.get("name", "").lower():
+            continue
+        if enterprise and enterprise.lower() not in user.get("enterprise", "").lower():
+            continue
+        if type and info.get("type") != type:
+            continue
+        if not match_feedback_type(info, feedback_type):
+            continue
+        update_time = int(info.get("update_time") or 0)
+        if start_ms is not None and update_time < start_ms:
+            continue
+        if end_ms is not None and update_time > end_ms:
+            continue
+        results.append(build_feedback_summary(info))
+    results.sort(key=lambda item: item.get("update_time", ""), reverse=True)
+    return results
+
+
+def collect_history_records(ids: Optional[list[str]] = None):
+    if ids:
+        return filter_history_records(ids=ids)
+    return filter_history_records()
 
 
 async def generate_recommendations(user_msg: str, ai_msg: str) -> List[str]:
@@ -1793,26 +1835,61 @@ async def batch_delete_history(data: dict = Body(...)):
     return success_response("批量删除历史对话成功", {"deleted_ids": deleted})
 
 
-@app.post("/api/history/export", tags=["历史记录"], summary="导出历史详情", description="导出选中的会话历史详情；单条返回 TXT，多条返回 ZIP。")
-async def export_history_detail(data: dict = Body(...)):
+@app.post(
+    "/api/history/export",
+    tags=["历史记录"],
+    summary="导出历史详情",
+    description="导出选中的会话历史详情；传 `ids/conversation_ids` 时导出指定记录，不传时导出全部历史记录。单条返回 TXT，多条返回 ZIP。",
+    openapi_extra={
+        "requestBody": {
+            "description": "可选传入 ids 或 conversation_ids；若请求体为空，则导出全部历史记录。",
+            "required": False,
+            "content": {
+                "application/json": {
+                    "schema": {
+                        "type": "object",
+                        "properties": {
+                            "ids": {
+                                "type": "array",
+                                "items": {"type": "string"},
+                                "description": "要导出的 conversation_id 列表。",
+                            },
+                            "conversation_ids": {
+                                "type": "array",
+                                "items": {"type": "string"},
+                                "description": "兼容字段名，与 ids 含义相同。",
+                            },
+                        },
+                        "example": {"ids": ["1775641095726-184c395e"]},
+                    }
+                }
+            },
+        },
+        "responses": {
+            "200": {
+                "description": "成功导出历史详情；单条为 txt，多条为 zip。",
+                "content": {
+                    "text/plain": {"schema": {"type": "string", "format": "binary"}},
+                    "application/zip": {"schema": {"type": "string", "format": "binary"}},
+                },
+            }
+        },
+    },
+)
+async def export_history_detail(data: Optional[dict] = Body(None)):
+    payload = data or {}
     try:
-        ids = ensure_id_list(data, "ids", "conversation_ids")
+        ids = ensure_id_list(payload, "ids", "conversation_ids")
     except ValueError as exc:
         return error_response("导出历史记录失败", {"reason": str(exc)}, 400)
-    if not ids:
-        return error_response("导出历史记录失败", {"reason": "请至少选择一条历史记录"}, 400)
 
-    records = []
-    for conversation_id in ids:
-        history_record, _ = load_history_record(conversation_id)
-        if history_record.get("messages"):
-            records.append(history_record)
+    records = collect_history_records(ids or None)
     if not records:
         return error_response("导出历史记录失败", {"reason": "没有可导出的历史记录"}, 404)
 
     if len(records) == 1:
         record = records[0]
-        filename = f"历史详情_{safe_segment(record.get('conversation_id', 'history'))}.txt"
+        filename = f"history_export_{safe_segment(record.get('conversation_id', 'history'))}.txt"
         headers = {"Content-Disposition": f'attachment; filename="{filename}"'}
         return StreamingResponse(io.BytesIO(build_history_export_text(record)), media_type="text/plain; charset=utf-8", headers=headers)
 
@@ -1822,7 +1899,7 @@ async def export_history_detail(data: dict = Body(...)):
             conversation_id = safe_segment(record.get("conversation_id", "history"))
             zf.writestr(f"历史详情_{conversation_id}.txt", build_history_export_text(record))
     zip_buffer.seek(0)
-    headers = {"Content-Disposition": f'attachment; filename="历史详情_{datetime.now().strftime("%Y%m%d_%H%M%S")}.zip"'}
+    headers = {"Content-Disposition": f'attachment; filename="history_export_{datetime.now().strftime("%Y%m%d_%H%M%S")}.zip"'}
     return StreamingResponse(zip_buffer, media_type="application/zip", headers=headers)
 
 
@@ -1884,6 +1961,68 @@ async def get_chat_thinking(
         "requestBody": {
             "description": "支持 application/json（无图片）和 multipart/form-data（带图片）。",
             "required": True,
+            "content": {
+                "application/json": {
+                    "schema": {
+                        "type": "object",
+                        "required": ["conversation_id", "message_index", "type"],
+                        "properties": {
+                            "conversation_id": {"type": "string", "description": "会话 ID"},
+                            "message_index": {"type": "integer", "description": "消息轮次，从 0 开始"},
+                            "type": {"type": "string", "enum": ["like", "dislike"], "description": "反馈类型：点赞或点踩"},
+                            "reasons": {
+                                "oneOf": [
+                                    {"type": "array", "items": {"type": "string"}},
+                                    {"type": "string"},
+                                ],
+                                "description": "反馈原因；JSON 可直接传字符串数组，也兼容字符串。",
+                            },
+                            "comment": {"type": "string", "description": "补充说明"},
+                        },
+                    },
+                    "examples": {
+                        "like_feedback": {
+                            "summary": "点赞反馈",
+                            "value": {
+                                "conversation_id": "1775641095726-184c395e",
+                                "message_index": 0,
+                                "type": "like",
+                            },
+                        },
+                        "dislike_feedback": {
+                            "summary": "点踩反馈",
+                            "value": {
+                                "conversation_id": "1775641095726-184c395e",
+                                "message_index": 0,
+                                "type": "dislike",
+                                "reasons": ["回答错误", "回答不完整"],
+                                "comment": "答案需要补充数据来源",
+                            },
+                        },
+                    },
+                },
+                "multipart/form-data": {
+                    "schema": {
+                        "type": "object",
+                        "required": ["conversation_id", "message_index", "type"],
+                        "properties": {
+                            "conversation_id": {"type": "string", "description": "会话 ID"},
+                            "message_index": {"type": "integer", "description": "消息轮次，从 0 开始"},
+                            "type": {"type": "string", "enum": ["like", "dislike"], "description": "反馈类型：点赞或点踩"},
+                            "reasons": {"type": "string", "description": "反馈原因；表单场景建议传 JSON 字符串数组。"},
+                            "comment": {"type": "string", "description": "补充说明"},
+                            "files": {
+                                "type": "array",
+                                "items": {"type": "string", "format": "binary"},
+                                "description": "反馈截图文件列表。",
+                            },
+                        },
+                    },
+                    "encoding": {
+                        "files": {"style": "form"}
+                    },
+                },
+            },
         }
     },
 )
@@ -2067,46 +2206,229 @@ async def upload_feedback_pictures(
     })
 
 
-@app.get("/api/feedback/list", tags=["反馈"], summary="查询反馈列表", description="按姓名、企业、反馈类型、时间范围和分页参数筛选反馈记录。")
+@app.get(
+    "/api/feedback/list",
+    tags=["反馈"],
+    summary="查询反馈列表",
+    description="按姓名、企业、反馈类型、时间范围和分页参数筛选反馈记录，可用于反馈列表、待优化回答、良好回答等页面。",
+    openapi_extra={
+        "responses": {
+            "200": {
+                "description": "反馈列表分页结果。",
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "code": {"type": "integer", "example": 0},
+                                "msg": {"type": "string", "example": "获取反馈列表成功"},
+                                "data": {
+                                    "type": "object",
+                                    "properties": {
+                                        "list": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "id": {"type": "string"},
+                                                    "conversation_id": {"type": "string"},
+                                                    "message_index": {"type": "integer"},
+                                                    "type": {"type": "string", "description": "点赞 like / 点踩 dislike。"},
+                                                    "feedback_scene": {"type": "string", "example": "针对回答效果"},
+                                                    "feedback_type": {
+                                                        "type": "object",
+                                                        "properties": {
+                                                            "primary": {"type": "string"},
+                                                            "scene": {"type": "string"},
+                                                            "labels": {"type": "array", "items": {"type": "string"}},
+                                                            "options": {"type": "array", "items": {"type": "string"}},
+                                                        },
+                                                    },
+                                                    "reasons": {"type": "array", "items": {"type": "string"}},
+                                                    "comment": {"type": "string"},
+                                                    "process_status": {"type": "string", "example": "未处理"},
+                                                    "process_result": {"type": "string", "example": "已录入回答良好"},
+                                                    "processor": {"type": "string", "example": "张三"},
+                                                    "user": {
+                                                        "type": "object",
+                                                        "properties": {
+                                                            "name": {"type": "string"},
+                                                            "enterprise": {"type": "string"},
+                                                            "phone": {"type": "string"},
+                                                            "user_id": {"type": "string"},
+                                                            "record_id": {"type": "string"},
+                                                            "ip_address": {"type": "string"},
+                                                        },
+                                                    },
+                                                    "createdAt": {"type": "string"},
+                                                    "updatedAt": {"type": "string"},
+                                                    "processedAt": {"type": "string"},
+                                                },
+                                            },
+                                        },
+                                        "total": {"type": "integer"},
+                                        "page": {"type": "integer"},
+                                        "size": {"type": "integer"},
+                                        "total_pages": {"type": "integer"},
+                                    },
+                                },
+                            },
+                        }
+                    }
+                },
+            }
+        }
+    },
+)
 async def list_feedbacks(
     name: str = Query("", description="按反馈用户姓名筛选。"),
     enterprise: str = Query("", description="按企业名称筛选。"),
-    type: str = Query("", description="兼容旧版 like/dislike 状态筛选。"),
-    feedback_type: str = Query("全部", description="前端筛选类型，支持 全部、针对问题、针对回答效果、举报、点赞、点踩。"),
+    type: Optional[Literal["like", "dislike"]] = Query(None, description="主类型筛选：`dislike` 表示待优化回答，`like` 表示良好回答；不传表示反馈列表全部。"),
+    feedback_type: Literal["全部", "针对问题", "针对回答效果", "举报", "点赞", "点踩"] = Query("全部", description="反馈细分类型筛选。"),
     start_time: Optional[str] = Query(None, description="开始时间，毫秒时间戳。"),
     end_time: Optional[str] = Query(None, description="结束时间，毫秒时间戳。"),
     page: int = Query(1, description="页码，从 1 开始。"),
     size: int = Query(10, description="每页数量，默认 10。"),
 ):
-    results = []
     try:
         start_ms = parse_optional_millis(start_time, "start_time")
         end_ms = parse_optional_millis(end_time, "end_time")
         page, size = normalize_page_size(page, size)
     except ValueError as exc:
         return error_response("获取反馈列表失败", {"reason": str(exc)}, 400)
-    for path in FEEDBACK_ROOT.glob("*/fb_*/feedback.json"):
-        info = read_json(path, {})
-        user = build_feedback_user(info)
-        if name and name.lower() not in user.get("name", "").lower():
-            continue
-        if enterprise and enterprise.lower() not in user.get("enterprise", "").lower():
-            continue
-        if type and info.get("type") != type:
-            continue
-        if not match_feedback_type(info, feedback_type):
-            continue
-        update_time = int(info.get("update_time") or 0)
-        if start_ms is not None and update_time < start_ms:
-            continue
-        if end_ms is not None and update_time > end_ms:
-            continue
-        results.append(build_feedback_summary(info))
-    results.sort(key=lambda item: item.get("update_time", ""), reverse=True)
+    results = collect_feedback_summaries(
+        name=name,
+        enterprise=enterprise,
+        type=type or "",
+        feedback_type=feedback_type,
+        start_ms=start_ms,
+        end_ms=end_ms,
+    )
     return success_response("获取反馈列表成功", paginate_payload(results, page, size))
 
 
-@app.get("/api/feedback/{feedback_id}", tags=["反馈"], summary="通过反馈 ID 获取详情", description="根据反馈 ID 返回对应的反馈详情。")
+@app.get(
+    "/api/feedback/export",
+    tags=["反馈"],
+    summary="导出反馈列表",
+    description="根据筛选条件导出反馈列表，返回 CSV 文件。",
+)
+async def export_feedbacks(
+    name: str = Query("", description="按反馈用户姓名筛选。"),
+    enterprise: str = Query("", description="按企业名称筛选。"),
+    type: Optional[Literal["like", "dislike"]] = Query(None, description="主类型筛选：`dislike` 表示待优化回答，`like` 表示良好回答；不传表示反馈列表全部。"),
+    feedback_type: Literal["全部", "针对问题", "针对回答效果", "举报", "点赞", "点踩"] = Query("全部", description="反馈细分类型筛选。"),
+    start_time: Optional[str] = Query(None, description="开始时间，毫秒时间戳。"),
+    end_time: Optional[str] = Query(None, description="结束时间，毫秒时间戳。"),
+):
+    try:
+        start_ms = parse_optional_millis(start_time, "start_time")
+        end_ms = parse_optional_millis(end_time, "end_time")
+    except ValueError as exc:
+        return error_response("导出反馈列表失败", {"reason": str(exc)}, 400)
+
+    rows = collect_feedback_summaries(
+        name=name,
+        enterprise=enterprise,
+        type=type or "",
+        feedback_type=feedback_type,
+        start_ms=start_ms,
+        end_ms=end_ms,
+    )
+    if not rows:
+        return error_response("导出反馈列表失败", {"reason": "没有可导出的反馈记录"}, 404)
+
+    csv_buffer = io.StringIO()
+    writer = csv.writer(csv_buffer)
+    writer.writerow(["反馈ID", "会话ID", "反馈分类", "反馈场景", "反馈人", "所属企业", "原因", "更多描述", "处理状态", "处理结果", "处理人", "提交时间"])
+    for item in rows:
+        writer.writerow([
+            item.get("id", ""),
+            item.get("conversation_id", ""),
+            item.get("type", ""),
+            item.get("feedback_scene", ""),
+            (item.get("user") or {}).get("name", ""),
+            (item.get("user") or {}).get("enterprise", ""),
+            "；".join(item.get("reasons") or []),
+            item.get("comment", ""),
+            item.get("process_status", ""),
+            item.get("process_result", ""),
+            item.get("processor", ""),
+            item.get("createdAt", ""),
+        ])
+
+    content = csv_buffer.getvalue().encode("utf-8-sig")
+    filename = f"feedback_export_{datetime.now().strftime('%Y%m%d_%H%M%S')}.csv"
+    headers = {"Content-Disposition": f'attachment; filename="{filename}"'}
+    return StreamingResponse(io.BytesIO(content), media_type="text/csv; charset=utf-8", headers=headers)
+
+
+@app.get(
+    "/api/feedback/{feedback_id}",
+    tags=["反馈"],
+    summary="通过反馈 ID 获取详情",
+    description="根据反馈 ID 返回对应的反馈详情，包含反馈类型、原因、补充描述、处理结果、处理人和原始提问附件信息。",
+    openapi_extra={
+        "responses": {
+            "200": {
+                "description": "反馈详情。",
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "code": {"type": "integer", "example": 0},
+                                "msg": {"type": "string", "example": "获取反馈详情成功"},
+                                "data": {
+                                    "type": "object",
+                                    "properties": {
+                                        "id": {"type": "string"},
+                                        "conversation_id": {"type": "string"},
+                                        "message_index": {"type": "integer"},
+                                        "type": {"type": "string"},
+                                        "state": {"type": ["string", "null"]},
+                                        "feedback_scene": {"type": "string"},
+                                        "feedback_type": {"type": "object"},
+                                        "reasons": {"type": "array", "items": {"type": "string"}},
+                                        "comment": {"type": "string"},
+                                        "pictures": {"type": "array", "items": {"type": "string"}},
+                                        "pictures_list": {"type": "array", "items": {"type": "object"}},
+                                        "uploaded_files": {"type": "array", "items": {"type": "object"}},
+                                        "user": {"type": "object"},
+                                        "user_id": {"type": "string"},
+                                        "record_id": {"type": "string"},
+                                        "time": {"type": "string"},
+                                        "update_time": {"type": "string"},
+                                        "processed_at": {"type": "string"},
+                                        "createdAt": {"type": "string"},
+                                        "updatedAt": {"type": "string"},
+                                        "processedAt": {"type": "string"},
+                                        "times": {
+                                            "type": "object",
+                                            "properties": {
+                                                "submit_time": {"type": "string"},
+                                                "update_time": {"type": "string"},
+                                                "processed_at": {"type": "string"},
+                                                "createdAt": {"type": "string"},
+                                                "updatedAt": {"type": "string"},
+                                                "processedAt": {"type": "string"},
+                                            },
+                                        },
+                                        "question": {"type": "string"},
+                                        "answer": {"type": "string"},
+                                        "process_status": {"type": "string"},
+                                        "process_result": {"type": "string"},
+                                        "processor": {"type": "string"},
+                                    },
+                                },
+                            },
+                        }
+                    }
+                },
+            }
+        }
+    },
+)
 async def get_feedback_detail_by_id(feedback_id: str):
     target_dir = find_feedback_dir(feedback_id)
     if not target_dir:
@@ -2122,7 +2444,34 @@ async def get_feedback_detail(date: str, id: str):
     return success_response("获取反馈详情成功", build_feedback_summary(read_json(path, {})))
 
 
-@app.post("/api/feedback/process", tags=["反馈"], summary="处理反馈", description="将反馈标记为已处理，并可选择收录到优秀问答或负向问答库。")
+@app.post(
+    "/api/feedback/process",
+    tags=["反馈"],
+    summary="处理反馈",
+    description="将反馈标记为已处理，并可选择收录到优秀问答或负向问答库。",
+    openapi_extra={
+        "requestBody": {
+            "description": "处理反馈请求体。",
+            "required": True,
+            "content": {
+                "application/json": {
+                    "schema": {
+                        "type": "object",
+                        "required": ["id"],
+                        "properties": {
+                            "id": {"type": "string", "description": "反馈 ID。"},
+                            "date_path": {"type": "string", "description": "可选，指定反馈所在日期目录。"},
+                            "processor": {"type": "string", "description": "处理人姓名。", "default": "系统管理员"},
+                            "is_collect": {"type": "boolean", "description": "是否收录到优秀/负向问答库。", "default": False},
+                            "process_result": {"type": "string", "description": "可选，自定义处理结果文案。"},
+                        },
+                        "example": {"id": "fb_1775641095726-184c395e_0", "processor": "张三", "is_collect": True, "process_result": "已录入回答良好"},
+                    }
+                }
+            },
+        }
+    },
+)
 async def process_feedback(data: dict = Body(...)):
     date_path = data.get("date_path")
     feedback_id = str(data.get("id") or "").strip()
@@ -2141,6 +2490,7 @@ async def process_feedback(data: dict = Body(...)):
     info["processor"] = processor
     info["processed_at"] = now_ms()
     info["processedAt"] = now_display()
+    custom_process_result = str(data.get("process_result") or "").strip()
     if is_collect:
         target_file = (EXCELLENT_DIR if info.get("type") == "like" else NEGATIVE_QA_DIR) / f"{feedback_id}.json"
         write_json(target_file, {
@@ -2151,11 +2501,29 @@ async def process_feedback(data: dict = Body(...)):
             "collected_at": now_ms(),
             "collectedAt": now_display(),
         })
-        info["process_result"] = "已收录"
+        info["process_result"] = custom_process_result or ("已录入回答良好" if info.get("type") == "like" else "已录入待优化回答")
     else:
-        info["process_result"] = "已处理(未收录)"
+        info["process_result"] = custom_process_result or "已处理(未收录)"
     write_json(info_path, info)
     return success_response("处理反馈成功", build_feedback_summary(info))
+
+
+@app.get(
+    "/api/feedback/{feedback_id}/files/{file_id}/download",
+    tags=["反馈"],
+    summary="下载反馈详情中的原始提问附件",
+    description="根据反馈 ID 和附件 file_id 下载该条反馈对应问答中的原始上传文件。",
+)
+async def download_feedback_uploaded_file(feedback_id: str, file_id: str):
+    target_dir = find_feedback_dir(feedback_id)
+    if not target_dir:
+        return error_response("下载反馈附件失败", {"id": feedback_id}, 404)
+    info = read_json(target_dir / "feedback.json", {})
+    conversation_id = str(info.get("conversation_id") or "").strip()
+    message_index = info.get("message_index")
+    if not conversation_id or message_index is None:
+        return error_response("下载反馈附件失败", {"reason": "反馈记录缺少 conversation_id 或 message_index"}, 404)
+    return await download_history_uploaded_file(conversation_id, int(message_index), file_id)
 
 
 @app.post("/api/feedback/batch_delete", tags=["反馈"], summary="批量删除反馈", description="根据反馈 ID 列表批量删除反馈目录。")
@@ -2455,7 +2823,58 @@ async def delete_kb_file(id: str, request: Request):
     return success_response("删除知识库文档成功", {"id": id, "deleted_files": deleted})
 
 
-@app.get("/api/db/select_options", tags=["数据库"], summary="获取数据库显式可选字段", description="返回数据库中的表、表注释、字段注释，并可基于问题返回推荐表。")
+@app.get(
+    "/api/db/select_options",
+    tags=["数据库"],
+    summary="获取数据库显式可选字段",
+    description="返回数据库中的表、表注释、字段注释，并可基于问题返回推荐表。",
+    openapi_extra={
+        "responses": {
+            "200": {
+                "description": "数据库表与字段选项。",
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "code": {"type": "integer", "example": 0},
+                                "msg": {"type": "string", "example": "获取数据库显式可选字段成功"},
+                                "data": {
+                                    "type": "object",
+                                    "properties": {
+                                        "question": {"type": "string", "example": "我们公司的总员工是多少"},
+                                        "selected_tables": {
+                                            "type": "array",
+                                            "items": {"type": "string"},
+                                            "example": ["employee"],
+                                        },
+                                        "options": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "table_name": {"type": "string", "example": "employee"},
+                                                    "table_comment": {"type": "string", "example": "员工信息表"},
+                                                    "column_comments": {
+                                                        "type": "array",
+                                                        "items": {"type": "string"},
+                                                        "example": ["id: 主键", "name: 姓名", "department: 部门"],
+                                                    },
+                                                    "selected": {"type": "boolean", "example": True},
+                                                },
+                                            },
+                                        },
+                                        "total": {"type": "integer", "example": 2},
+                                    },
+                                },
+                            },
+                        }
+                    }
+                },
+            }
+        }
+    },
+)
 async def get_db_select_options(
     question: Optional[str] = Query(None, description="可选，自然语言问题，用于返回推荐表。"),
 ):
@@ -2483,7 +2902,45 @@ async def get_db_select_options(
         return error_response("获取数据库显式可选字段失败", {"reason": str(exc)}, 500)
 
 
-@app.get("/api/db/options", tags=["数据库"], summary="获取数据库选项", description="返回前端可选的数据库版本下拉选项。")
+@app.get(
+    "/api/db/options",
+    tags=["数据库"],
+    summary="获取数据库选项",
+    description="返回前端可选的数据库版本下拉选项，供 `/api/chat` 的 `db_version` 字段使用。",
+    openapi_extra={
+        "responses": {
+            "200": {
+                "description": "数据库版本下拉选项。",
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "code": {"type": "integer", "example": 0},
+                                "msg": {"type": "string", "example": "获取数据库选项成功"},
+                                "data": {
+                                    "type": "object",
+                                    "properties": {
+                                        "options": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "label": {"type": "string", "example": "数据库1"},
+                                                    "value": {"type": "string", "example": "1"},
+                                                },
+                                            },
+                                        }
+                                    },
+                                },
+                            },
+                        }
+                    }
+                },
+            }
+        }
+    },
+)
 async def get_db_options():
     return success_response("获取数据库选项成功", {
         "options": [

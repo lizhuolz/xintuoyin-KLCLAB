@@ -20,7 +20,7 @@
   - 对话接口多为 `text/plain`
   - 其他管理接口多为 `application/json`
 - 历史记录存储位置：MinIO `history/` 前缀
-- 历史详情导出接口：`POST /api/history/export`，按选中记录导出单个 TXT 或多个 TXT 的 ZIP
+- 历史详情导出接口：`POST /api/history/export`，支持按选中记录导出，也支持无参导出全部历史
 - 原始提问附件下载接口：`GET /api/history/{conversation_id}/messages/{message_index}/files/{file_id}/download`
 - 反馈存储目录：`backend/feedbacks`
 - 知识库能力由 `KBService` 提供：`backend/services/kb_service.py`
@@ -223,11 +223,13 @@ assistant 消息当前可能包含：
 - `id`
 - `processor`
 - `is_collect`
+- `process_result` 可选，自定义处理结果
 
 行为：
 
 - 更新处理状态
 - 可收录到优秀回答库或负面案例库
+- 返回 `process_status`、`process_result`、`processor`
 
 ### `DELETE /api/feedback/{date}/{id}`
 
@@ -235,13 +237,36 @@ assistant 消息当前可能包含：
 
 ### `GET /api/feedback/list`
 
-作用：获取反馈列表。
+作用：获取反馈列表，可用于“反馈列表”“待优化回答”“良好回答”等页面。
 
 查询参数：
 
 - `name`
 - `enterprise`
 - `type`
+  - 不传：反馈列表
+  - `dislike`：待优化回答列表
+  - `like`：良好回答列表
+- `feedback_type`
+- `start_time`
+- `end_time`
+- `page`
+- `size`
+
+返回重点字段：
+
+- `feedback_type`：包含 `primary`、`scene`、`labels`
+- `process_status`
+- `process_result`
+- `processor`
+
+### `GET /api/feedback/{feedback_id}/files/{file_id}/download`
+
+作用：下载某条反馈对应问答中的原始提问附件。
+
+### `GET /api/feedback/export`
+
+作用：按筛选条件导出反馈列表，返回 CSV 文件。
 
 ## 4. 知识库接口
 
@@ -291,7 +316,30 @@ assistant 消息当前可能包含：
 
 - `filename`
 
-## 5. 当前对话链路说明
+## 5. 数据库接口
+
+### `GET /api/db/options`
+
+作用：获取数据库切换下拉选项。
+
+返回重点字段：
+
+- `options[].label`
+- `options[].value`
+
+### `GET /api/db/select_options`
+
+作用：根据自然语言问题返回数据库候选表、字段说明和推荐表。
+
+查询参数：
+
+- `question`
+
+### `POST /api/chat`
+
+补充说明：请求体中的 `db_version` 用于指定当前对话使用哪一个数据库版本；可先调用 `GET /api/db/options` 获取可选值。
+
+## 6. 当前对话链路说明
 
 一次正常前端聊天大致是：
 
@@ -302,7 +350,7 @@ assistant 消息当前可能包含：
 5. 前端再调用 `GET /api/chat/{conversation_id}/thinking?message_index=...`
 6. 前端展示“回答前，我做了这些准备”卡片
 
-## 6. 关键实现位置
+## 7. 关键实现位置
 
 - 主接口定义：`backend/app.py`
 - LangGraph 编排：`backend/agent/build_graph.py`
