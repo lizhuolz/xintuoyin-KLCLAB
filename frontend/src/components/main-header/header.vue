@@ -64,10 +64,7 @@ const userName = computed(() => userStore.userInfo?.name || userStore.userInfo?.
 function handleCommand(command) {
   switch (command) {
     case 'logout':
-      userStore.userInfo = {} // 清除 store
-      localStorage.removeItem('token')
-      localStorage.removeItem('userInfo')
-      router.push('/login')
+      userStore.logout()
       ElMessage.success('已退出登录')
       break
     default:

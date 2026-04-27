@@ -1,0 +1,316 @@
+[
+  {
+    "id": "kb_1776158790792",
+    "name": "公司基础库",
+    "model": "openai",
+    "category": "基础知识库",
+    "owner_info": "图湃（北京）医疗科技/技术部",
+    "physical_path": "2026-04-14/公司基础库",
+    "remark": "",
+    "users": [],
+    "enabled": false,
+    "created_at": "1776158790792",
+    "updated_at": "1776851321801",
+    "createdAt": "2026/04/14 17:26:30",
+    "updatedAt": "2026/04/22 17:48:41"
+  },
+  {
+    "id": "kb_1776159276520",
+    "name": "基础知识库",
+    "model": "openai",
+    "category": "基础知识库",
+    "owner_info": "图湃（北京）医疗科技/技术部",
+    "physical_path": "2026-04-14/基础知识库",
+    "remark": "概述:[一句话描述，简要说明知识库的核心内容和使用目的]\n主要内容:\n[文件一名称]:[对该主题的简短描述，包括关键词或概念]\n[文件二名称]:[对该主题的简短描述，包括关键词或概念]\n[文件三名称]:[对该主题的简短描述，包括关键词或概念]\n适用场景:[描述哪些类型的查询或问题，这个知识库能够提供帮助]\n",
+    "users": [],
+    "enabled": false,
+    "created_at": "1776159276520",
+    "updated_at": "1776851351710",
+    "createdAt": "2026/04/14 17:34:36",
+    "updatedAt": "2026/04/22 17:49:11"
+  },
+  {
+    "id": "kb_1776847569077",
+    "name": "测试2",
+    "model": "openai",
+    "category": "基础知识库",
+    "owner_info": "/",
+    "physical_path": "2026-04-22/测试2",
+    "remark": "概述:[用于用户对政策文件的解读]\n主要内容:\n[咨询类集合]:[关于政策文件的500个问题]\n\n适用场景:[用于用户对政策的访问]\n",
+    "users": [],
+    "enabled": false,
+    "created_at": "1776847569077",
+    "updated_at": "1776851361959",
+    "createdAt": "2026/04/22 16:46:09",
+    "updatedAt": "2026/04/22 17:49:21"
+  },
+  {
+    "id": "kb_1776848317160",
+    "name": "研发费用加计扣除政策",
+    "model": "openai",
+    "category": "基础知识库",
+    "owner_info": "/",
+    "physical_path": "2026-04-22/研发费用加计扣除政策",
+    "remark": "概述:[方便查询研发费用加计扣除政策指引]\n主要内容:\n[研发加计扣除政策执行指引2.0(1)]:[研发费用政策]\n[研发加计扣除政策执行指引2.0(1)]:[研发费用政策]\n适用场景:[研发费用查询或问题，这个知识库能够提供帮助]\n",
+    "users": [],
+    "enabled": false,
+    "created_at": "1776848317160",
+    "updated_at": "1776849936891",
+    "createdAt": "2026/04/22 16:58:37",
+    "updatedAt": "2026/04/22 17:25:36"
+  },
+  {
+    "id": "kb_1776850018121",
+    "name": "测试3",
+    "model": "openai",
+    "category": "基础知识库",
+    "owner_info": "/",
+    "physical_path": "2026-04-22/测试3",
+    "remark": "概述:[RD2026001的项目立项报告、决议书、计划书]\n主要内容:\n[项目立项报告]:[项目基本情况]\n[项目计划任务书.]:[立项的必要性、主要项目指标]\n[项目立项决议书]:[对该主题的简短描述，包括关键词或概念]\n适用场景:[描述哪些类型的查询或问题，这个知识库能够提供帮助]\n",
+    "users": [],
+    "enabled": false,
+    "created_at": "1776850018121",
+    "updated_at": "1777010870138",
+    "createdAt": "2026/04/22 17:26:58",
+    "updatedAt": "2026/04/24 14:07:50"
+  },
+  {
+    "id": "kb_1776851412297",
+    "name": "启用禁用",
+    "model": "openai",
+    "category": "基础知识库",
+    "owner_info": "/",
+    "physical_path": "2026-04-22/启用禁用",
+    "remark": "公司政策",
+    "users": [],
+    "enabled": false,
+    "created_at": "1776851412297",
+    "updated_at": "1776851506601",
+    "createdAt": "2026/04/22 17:50:12",
+    "updatedAt": "2026/04/22 17:51:46"
+  },
+  {
+    "id": "kb_1776910151051",
+    "name": "多文件",
+    "model": "openai",
+    "category": "基础知识库",
+    "owner_info": "/",
+    "physical_path": "2026-04-23/多文件",
+    "remark": "智能文档问答助手v1.0\\v2.0",
+    "users": [],
+    "enabled": false,
+    "created_at": "1776910151051",
+    "updated_at": "1777010903942",
+    "createdAt": "2026/04/23 10:09:11",
+    "updatedAt": "2026/04/24 14:08:23"
+  },
+  {
+    "id": "kb_1776911055628",
+    "name": "doc文件",
+    "model": "openai",
+    "category": "基础知识库",
+    "owner_info": "/",
+    "physical_path": "2026-04-23/doc文件",
+    "remark": "项目管理规范",
+    "users": [],
+    "enabled": false,
+    "created_at": "1776911055628",
+    "updated_at": "1776911075954",
+    "createdAt": "2026/04/23 10:24:15",
+    "updatedAt": "2026/04/23 10:24:35"
+  },
+  {
+    "id": "kb_1776912003946",
+    "name": "doc文件",
+    "model": "openai",
+    "category": "基础知识库",
+    "owner_info": "/",
+    "physical_path": "2026-04-23/doc文件_1",
+    "remark": "概述:[一句话描述，简要说明知识库的核心内容和使用目的]\n主要内容:\n[文件一名称]:[对该主题的简短描述，包括关键词或概念]\n[文件二名称]:[对该主题的简短描述，包括关键词或概念]\n[文件三名称]:[对该主题的简短描述，包括关键词或概念]\n适用场景:[描述哪些类型的查询或问题，这个知识库能够提供帮助]\n",
+    "users": [],
+    "enabled": false,
+    "created_at": "1776912003946",
+    "updated_at": "1777010900202",
+    "createdAt": "2026/04/23 10:40:03",
+    "updatedAt": "2026/04/24 14:08:20"
+  },
+  {
+    "id": "kb_1776912353003",
+    "name": "pptx",
+    "model": "openai",
+    "category": "基础知识库",
+    "owner_info": "/",
+    "physical_path": "2026-04-23/pptx",
+    "remark": "概述:[一句话描述，简要说明知识库的核心内容和使用目的]\n主要内容:\n[文件一名称]:[对该主题的简短描述，包括关键词或概念]\n[文件二名称]:[对该主题的简短描述，包括关键词或概念]\n[文件三名称]:[对该主题的简短描述，包括关键词或概念]\n适用场景:[描述哪些类型的查询或问题，这个知识库能够提供帮助]\n",
+    "users": [],
+    "enabled": false,
+    "created_at": "1776912353003",
+    "updated_at": "1777010897055",
+    "createdAt": "2026/04/23 10:45:53",
+    "updatedAt": "2026/04/24 14:08:17"
+  },
+  {
+    "id": "kb_1776932981974",
+    "name": "测试3",
+    "model": "openai",
+    "category": "知识库",
+    "owner_info": "深圳科士达科技股份有限公司/",
+    "physical_path": "2026-04-23/测试3",
+    "remark": "概述:[一句话描述，简要说明知识库的核心内容和使用目的]\n主要内容:\n[文件一名称]:[对该主题的简短描述，包括关键词或概念]\n[文件二名称]:[对该主题的简短描述，包括关键词或概念]\n[文件三名称]:[对该主题的简短描述，包括关键词或概念]\n适用场景:[描述哪些类型的查询或问题，这个知识库能够提供帮助]\n",
+    "creator_staff_id": 452,
+    "users": [
+      {
+        "staffId": 452,
+        "name": "刘程宇"
+      },
+      {
+        "staffId": 609,
+        "name": "提一"
+      },
+      {
+        "staffId": 610,
+        "name": "提二"
+      },
+      {
+        "staffId": 611,
+        "name": "提三"
+      },
+      {
+        "staffId": 612,
+        "name": "提四"
+      }
+    ],
+    "enabled": true,
+    "created_at": "1776932981974",
+    "updated_at": "1777257716071",
+    "createdAt": "2026/04/23 16:29:41",
+    "updatedAt": "2026/04/27 10:41:56",
+    "tenant_id": 38
+  },
+  {
+    "id": "kb_1776939713076",
+    "name": "md",
+    "model": "openai",
+    "category": "基础知识库",
+    "owner_info": "/",
+    "physical_path": "2026-04-23/md",
+    "remark": "11",
+    "creator_staff_id": null,
+    "users": [],
+    "enabled": false,
+    "created_at": "1776939713076",
+    "updated_at": "1777010893019",
+    "createdAt": "2026/04/23 18:21:53",
+    "updatedAt": "2026/04/24 14:08:13"
+  },
+  {
+    "id": "kb_1776999340782",
+    "name": "测试1",
+    "model": "openai",
+    "category": "知识库",
+    "owner_info": "深圳夸夸菁领科技有限公司/",
+    "physical_path": "2026-04-24/测试1",
+    "remark": "用于企业上市的注意事项",
+    "creator_staff_id": 82,
+    "users": [
+      {
+        "staffId": 82,
+        "name": "陈亚婷"
+      }
+    ],
+    "enabled": false,
+    "created_at": "1776999340782",
+    "updated_at": "1777011587873",
+    "createdAt": "2026/04/24 10:55:40",
+    "updatedAt": "2026/04/24 14:19:47",
+    "tenant_id": 6
+  },
+  {
+    "id": "kb_1777011823887",
+    "name": "docx",
+    "model": "openai",
+    "category": "知识库",
+    "owner_info": "深圳夸夸菁领科技有限公司/",
+    "physical_path": "2026-04-24/docx",
+    "remark": "讲解TP和PP是干什么的",
+    "creator_staff_id": 82,
+    "users": [
+      {
+        "staffId": 82,
+        "name": "陈亚婷"
+      }
+    ],
+    "enabled": false,
+    "created_at": "1777011823887",
+    "updated_at": "1777012385606",
+    "createdAt": "2026/04/24 14:23:43",
+    "updatedAt": "2026/04/24 14:33:05",
+    "tenant_id": 6
+  },
+  {
+    "id": "kb_1777012569594",
+    "name": "xlsx",
+    "model": "openai",
+    "category": "知识库",
+    "owner_info": "深圳夸夸菁领科技有限公司/",
+    "physical_path": "2026-04-24/xlsx",
+    "remark": "公司的工资发放情况",
+    "creator_staff_id": 82,
+    "users": [
+      {
+        "staffId": 82,
+        "name": "陈亚婷"
+      }
+    ],
+    "enabled": false,
+    "created_at": "1777012569594",
+    "updated_at": "1777027084602",
+    "createdAt": "2026/04/24 14:36:09",
+    "updatedAt": "2026/04/24 18:38:04",
+    "tenant_id": 6
+  },
+  {
+    "id": "kb_1777017809897",
+    "name": "测试4",
+    "model": "openai",
+    "category": "知识库",
+    "owner_info": "深圳科士达科技股份有限公司/",
+    "physical_path": "2026-04-24/测试4",
+    "remark": "概述:[一句话描述，简要说明知识库的核心内容和使用目的]\n主要内容:\n[文件一名称]:[对该主题的简短描述，包括关键词或概念]\n[文件二名称]:[对该主题的简短描述，包括关键词或概念]\n[文件三名称]:[对该主题的简短描述，包括关键词或概念]\n适用场景:[描述哪些类型的查询或问题，这个知识库能够提供帮助]\n",
+    "creator_staff_id": 594,
+    "tenant_id": 38,
+    "users": [
+      {
+        "staffId": 594,
+        "name": "yjj"
+      }
+    ],
+    "enabled": true,
+    "created_at": "1777017809897",
+    "updated_at": "1777017849220",
+    "createdAt": "2026/04/24 16:03:29",
+    "updatedAt": "2026/04/24 16:04:09"
+  },
+  {
+    "id": "kb_1777017857389",
+    "name": "测试55",
+    "model": "openai",
+    "category": "知识库",
+    "owner_info": "深圳科士达科技股份有限公司/",
+    "physical_path": "2026-04-24/测试5",
+    "remark": "概述:[一句话描述，简要说明知识库的核心内容和使用目的]\n主要内容:\n[文件一名称]:[对该主题的简短描述，包括关键词或概念]\n[文件二名称]:[对该主题的简短描述，包括关键词或概念]\n[文件三名称]:[对该主题的简短描述，包括关键词或概念]\n适用场景:[描述哪些类型的查询或问题，这个知识库能够提供帮助]\n",
+    "creator_staff_id": 452,
+    "tenant_id": 38,
+    "users": [
+      {
+        "staffId": 452,
+        "name": "刘程宇"
+      }
+    ],
+    "enabled": true,
+    "created_at": "1777017857389",
+    "updated_at": "1777256172751",
+    "createdAt": "2026/04/24 16:04:17",
+    "updatedAt": "2026/04/27 10:16:12"
+  }
+]

@@ -1,0 +1,1317 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>D3 原生知识图谱系统 - 拖拽修复版</title>
+    <script src="https://d3js.org/d3.v3.min.js"></script>
+    <style>
+        /* --- 1. 全局布局约束 (关键) --- */
+        body { 
+            font-family: 'PingFang SC', 'Microsoft YaHei', sans-serif; 
+            margin: 0; 
+            display: flex; 
+            flex-direction: column; 
+            height: 100vh; /* 强制占满屏幕高度 */
+            background: #fff; 
+            overflow: hidden; /* 禁止整个网页出现滚动条 */
+        }
+        
+        /* --- 2. 工具栏 (保持不变) --- */
+        #toolbar { padding: 12px 16px; background: #001529; color: white; display: flex; gap: 12px; align-items: flex-start; flex-wrap: wrap; box-shadow: 0 2px 8px rgba(0,0,0,0.15); z-index: 10; flex-shrink: 0; max-height: 38vh; overflow-y: auto; overflow-x: hidden; }
+        .upload-container { background: #112a45; padding: 10px; border-radius: 6px; min-width: 220px; }
+        .section-title { font-size: 13px; color: #8c8c8c; margin-bottom: 8px; font-weight: bold; }
+        .staged-list { margin-top: 10px; max-height: 100px; overflow-y: auto; background: rgba(0,0,0,0.2); border-radius: 4px; padding: 5px; }
+        .staged-item { display: flex; justify-content: space-between; align-items: center; font-size: 12px; padding: 4px 8px; border-bottom: 1px solid #1a3e5a; }
+        .file-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 180px; color: #e6f7ff; }
+        .remove-btn { color: #ff4d4f; cursor: pointer; font-weight: bold; }
+        button { background: #1890ff; color: white; border: none; padding: 6px 15px; border-radius: 4px; cursor: pointer; }
+        input[type="text"] { border: 1px solid #d9d9d9; padding: 5px 10px; border-radius: 4px; }
+        .compact-editor { min-width: 300px; max-width: 520px; flex: 1 1 420px; border-left: 1px solid #1a3e5a; }
+        .compact-editor details { background: rgba(255,255,255,0.06); border-radius: 6px; padding: 6px 8px; margin-top: 6px; }
+        .compact-editor summary { cursor: pointer; font-size: 12px; color: #d6e4ff; font-weight: bold; }
+        .compact-editor .editor-grid { display: grid; grid-template-columns: repeat(2, minmax(120px, 1fr)); gap: 6px; margin-top: 6px; }
+        .compact-editor .editor-grid .full { grid-column: 1 / -1; }
+        .compact-editor input[type="text"], .compact-editor textarea { width: 100%; box-sizing: border-box; font-size: 12px; padding: 4px 8px; border-radius: 4px; border: 1px solid #d9d9d9; }
+        .compact-editor textarea { min-height: 64px; resize: vertical; }
+        .compact-editor button { width: 100%; padding: 5px 8px; font-size: 12px; }
+        .btn-danger { background: #ff4d4f; }
+        .upload-status { font-size: 12px; color: #ffd666; min-height: 16px; margin-top: 6px; }
+        #processingOverlay { display: none; position: fixed; inset: 0; background: rgba(0, 0, 0, 0.45); z-index: 1200; align-items: center; justify-content: center; }
+        .processing-box { background: #fff; border-radius: 10px; padding: 16px 20px; min-width: 260px; box-shadow: 0 6px 24px rgba(0,0,0,0.25); text-align: center; }
+        .processing-spinner { width: 30px; height: 30px; border: 3px solid #e6f7ff; border-top: 3px solid #1890ff; border-radius: 50%; margin: 0 auto 10px auto; animation: spin 0.9s linear infinite; }
+        .processing-text { color: #001529; font-size: 14px; }
+        @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+        
+        /* --- 3. 主区域布局 (修复核心) --- */
+        #main { 
+            display: flex; 
+            flex: 1;            /* 自动占据剩余高度 */
+            position: relative; 
+            overflow: hidden;   /* 【核心修复】必须加这个，防止#main被侧边栏撑破高度 */
+            height: 0;          /* 【核心修复】Flexbox的hack，强制让flex:1生效而不受内容影响 */
+        }
+        
+        #chart { flex: 1; height: 100%; }
+        
+        #side-panel { 
+            width: 320px; 
+            background: #fff; 
+            border-left: 1px solid #d9d9d9; 
+            padding: 20px; 
+            z-index: 5; 
+            
+            /* 【滚动修复】 */
+            height: 100%;           /* 严格继承 #main 的高度 */
+            overflow-y: auto;       /* 超出部分滚动 */
+            box-sizing: border-box; /* 确保padding不会把高度撑破 */
+            flex-shrink: 0;         /* 防止侧边栏被挤压 */
+        }
+        
+        /* --- 4. 详情内容样式优化 --- */
+        #attrContent {
+            word-wrap: break-word; /* 允许长单词换行 */
+            word-break: break-all; /* 强制长英文/Base64换行 */
+            line-height: 1.6;      /* 增加行高 */
+            padding-bottom: 50px;  /* 底部留白，方便滚动到底 */
+        }
+
+        /* --- 5. D3 视觉样式 --- */
+        .link { fill: none; stroke: #B43232; stroke-width: 0.5px; }
+        circle { fill: #F9EBF9; stroke: #A254A2; stroke-width: 1.5px; cursor: pointer; }
+        text { font: 12px Microsoft YaHei; pointer-events: none; text-shadow: 0 1px 0 #fff, 1px 0 0 #fff, 0 -1px 0 #fff, -1px 0 0 #fff; }
+        .edgelabel { font-size: 10px; fill: #333; }
+        .dimmed { opacity: 0.1 !important; }
+        #fileInput { display: none; }
+        .custom-file-label { background: #3498db; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 12px; display: inline-block; }
+    
+    /* --- 6. Excel 弹窗样式 (新增) --- */
+    .modal-overlay {
+        display: none; /* 默认隐藏 */
+        position: fixed;
+        top: 0; left: 0; width: 100%; height: 100%;
+        background: rgba(0, 0, 0, 0.6); /* 半透明遮罩 */
+        z-index: 1000;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .modal-content {
+        background: white;
+        padding: 20px;
+        border-radius: 8px;
+        width: 80%;
+        max-width: 900px;
+        max-height: 80vh; /* 最大高度占屏幕 80% */
+        overflow-y: auto; /* 内容多了可以滚动 */
+        box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        position: relative;
+        animation: fadeIn 0.3s;
+    }
+
+    .close-modal-btn {
+        position: absolute;
+        top: 10px; right: 15px;
+        font-size: 24px;
+        cursor: pointer;
+        color: #666;
+        font-weight: bold;
+    }
+    .close-modal-btn:hover { color: red; }
+
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
+
+    /* Pandas 生成的表格样式 */
+    .excel-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 14px;
+        margin-top: 10px;
+    }
+    .excel-table th {
+        background-color: #f2f2f2;
+        border: 1px solid #ddd;
+        padding: 8px;
+        text-align: left;
+        font-weight: bold;
+    }
+    .excel-table td {
+        border: 1px solid #ddd;
+        padding: 8px;
+    }
+    .excel-table tr:nth-child(even) { background-color: #f9f9f9; }
+    .excel-table tr:hover { background-color: #e6f7ff; }
+    </style>
+</head>
+<body>
+
+<div id="toolbar">
+    <div class="upload-container">
+        <div class="section-title">0. 图谱数据库</div>
+        <div style="display:flex; gap:5px; margin-bottom:5px;">
+            <select id="dbSelect" style="flex:1; border:1px solid #d9d9d9; border-radius:4px; padding:4px;">
+            </select>
+            <button onclick="switchDb()" style="background:#faad14;">切换</button>
+        </div>
+        <div style="display:flex; gap:5px; margin-bottom:10px;">
+            <input type="text" id="newDbName" placeholder="新图谱名称" style="flex:1;">
+            <button onclick="createDb()" style="background:#52c41a;">新建</button>
+        </div>
+        <div class="section-title">1. 数据上传与暂存</div>
+        <label for="fileInput" class="custom-file-label">选择文件</label>
+        <input type="file" id="fileInput" multiple accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.txt,.md,.html,.csv,.png,.jpg,.jpeg,.bmp" onchange="handleFileSelect(event)">
+        <div id="fileStagingArea" class="staged-list" style="display:none;"></div>
+        <button onclick="uploadStagedFiles()" id="uploadBtn" style="background:#52c41a; margin-top:10px; width:100%; display:none;">上传并生成</button>
+        <div id="uploadStatus" class="upload-status"></div>
+    </div>
+    
+    <div style="display:flex; flex-direction:column; gap:5px">
+        <div class="section-title">2. 节点检索</div>
+        <div style="display:flex; gap:5px; align-items: center;">
+            <select id="entityTypeSelect" onchange="onEntityTypeChange()" style="border:1px solid #d9d9d9; border-radius:4px; padding:4px; min-width:100px;">
+                <option value="">全部种类</option>
+                <option value="1">人员名称</option>
+                <option value="2">企业名称</option>
+                <option value="3">资产名称</option>
+                <option value="4">其它</option>
+            </select>
+            <input type="text" id="searchNode" placeholder="输入节点名" list="nodeNameList">
+            <button onclick="searchAction()">搜索</button>
+        </div>
+    </div>
+
+    <div style="display:flex; flex-direction:column; gap:5px">
+        <div class="section-title">3. 路径分析</div>
+        <div style="display:flex; gap:5px; align-items: center;">
+            <select id="pathEntityTypeSelect" onchange="onPathEntityTypeChange()" style="border:1px solid #d9d9d9; border-radius:4px; padding:4px; min-width:100px;">
+                <option value="">全部种类</option>
+                <option value="1">人员名称</option>
+                <option value="2">企业名称</option>
+                <option value="3">资产名称</option>
+                <option value="4">其它</option>
+            </select>
+            <input type="text" id="pathStart" placeholder="起点" style="width: 60px;" list="pathNodeList" oninput="updatePathDatalists()">
+            <input type="text" id="pathEnd" placeholder="终点" style="width: 60px;" list="pathNodeList" oninput="updatePathDatalists()">
+            <input type="number" id="pathLimit" placeholder="层数" value="3" min="2" style="width: 40px;" title="限制路径最大实体数量" oninput="updatePathDatalists()">
+            
+            <button onclick="findPathAction()">查找</button>
+            <button onclick="resetView()" style="background:#95a5a6">重置</button>
+        </div>
+    </div>
+
+    <div style="display:flex; flex-direction:column; gap:5px; border-left: 1px solid #1a3e5a; padding-left: 15px;">
+        <div class="section-title">4. 中间实体筛选 (必经点)</div>
+        
+        <div style="display:flex; align-items:center; gap:10px; margin-bottom:5px;">
+            <span style="font-size:12px; color:#ccc;">逻辑:</span>
+            <select id="filterType" style="background:#fff; border:none; border-radius:4px; padding:2px;">
+                <option value="OR">OR (满足任一)</option>
+                <option value="AND">AND (必须同时经过)</option>
+            </select>
+        </div>
+
+        <div id="middleNodesContainer" style="display:flex; flex-direction:column; gap:5px; max-height:100px; overflow-y:auto;">
+            <div class="mid-input-group" style="display:flex; gap:5px;">
+                <input type="text" name="midNode" placeholder="中间实体名" style="width: 80px;" list="pathNodeList">
+                <button onclick="addMiddleInput()" style="background:#52c41a; padding:0 8px; font-weight:bold;">+</button>
+            </div>
+        </div>
+    </div>
+
+    <div style="display:flex; flex-direction:column; gap:5px; border-left: 1px solid #1a3e5a; padding-left: 15px;">
+        <div class="section-title">5. 关系筛选 (边类型)</div>
+        
+        <div style="display:flex; align-items:center; gap:10px; margin-bottom:5px;">
+            <span style="font-size:12px; color:#ccc;">逻辑:</span>
+            <select id="relaFilterType" style="background:#fff; border:none; border-radius:4px; padding:2px;">
+                <option value="OR">OR (包含任一)</option>
+                <option value="AND">AND (必须同时包含)</option>
+            </select>
+        </div>
+
+        <div id="relaContainer" style="display:flex; flex-direction:column; gap:5px; max-height:100px; overflow-y:auto;">
+            <div class="rela-input-group" style="display:flex; gap:5px;">
+                <input type="text" name="relaInput" placeholder="关系名称" style="width: 80px;" list="pathRelationList">
+                <button onclick="addRelaInput()" style="background:#faad14; padding:0 8px; font-weight:bold;">+</button>
+            </div>
+        </div>
+    </div>
+
+    <div style="display:flex; flex-direction:column; gap:5px; border-left: 1px solid #1a3e5a; padding-left: 15px;">
+        <div class="section-title">6. 属性筛选 (Key=Value)</div>
+        
+        <div style="display:flex; align-items:center; gap:10px; margin-bottom:5px;">
+            <span style="font-size:12px; color:#ccc;">逻辑:</span>
+            <select id="attrFilterType" style="background:#fff; border:none; border-radius:4px; padding:2px;">
+                <option value="OR">OR (满足任一)</option>
+                <option value="AND">AND (必须同时满足)</option>
+            </select>
+        </div>
+
+        <div id="attrContainer" style="display:flex; flex-direction:column; gap:5px; max-height:100px; overflow-y:auto;">
+            <div class="attr-input-group" style="display:flex; gap:3px;">
+                <input type="text" name="attrKey" placeholder="属性名" style="width: 60px;" list="pathAttrKeyList">
+                <span style="color:white">=</span>
+                <input type="text" name="attrVal" placeholder="属性值" style="width: 60px;" list="pathAttrValList">
+                <button onclick="addAttrInput()" style="background:#722ed1; padding:0 8px; font-weight:bold;">+</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="upload-container compact-editor">
+        <div class="section-title">7. 图谱编辑与合并</div>
+        <details>
+            <summary>节点操作</summary>
+            <div class="editor-grid">
+                <input type="text" id="nodeCreateId" placeholder="新节点ID">
+                <input type="text" id="nodeCreateAttrs" placeholder='属性JSON，如 {"部门":"研发"}'>
+                <button class="full" onclick="createNodeAction()" style="background:#52c41a;">新增节点</button>
+                <input type="text" id="nodeUpdateId" placeholder="要修改的节点ID" list="nodeNameList">
+                <input type="text" id="nodeUpdateNewId" placeholder="新节点ID（可空）">
+                <input class="full" type="text" id="nodeUpdateAttrs" placeholder='增量属性JSON，如 {"阶段":"验证"}'>
+                <button class="full" onclick="updateNodeAction()" style="background:#faad14;">修改节点</button>
+                <input class="full" type="text" id="nodeDeleteId" placeholder="要删除的节点ID" list="nodeNameList">
+                <button class="full" onclick="deleteNodeAction()" style="background:#ff4d4f;">删除节点</button>
+            </div>
+        </details>
+
+        <details>
+            <summary>关系操作</summary>
+            <div class="editor-grid">
+                <input type="text" id="linkCreateSource" placeholder="新增 source" list="nodeNameList">
+                <input type="text" id="linkCreateTarget" placeholder="新增 target" list="nodeNameList">
+                <input class="full" type="text" id="linkCreateRelation" placeholder="新增 relation" list="relationNameList">
+                <button class="full" onclick="createLinkAction()" style="background:#52c41a;">新增关系</button>
+                <input type="text" id="linkUpdateOldSource" placeholder="旧source" list="nodeNameList">
+                <input type="text" id="linkUpdateOldTarget" placeholder="旧target" list="nodeNameList">
+                <input class="full" type="text" id="linkUpdateOldRelation" placeholder="旧relation" list="relationNameList">
+                <input type="text" id="linkUpdateSource" placeholder="新source（可空）" list="nodeNameList">
+                <input type="text" id="linkUpdateTarget" placeholder="新target（可空）" list="nodeNameList">
+                <input class="full" type="text" id="linkUpdateRelation" placeholder="新relation（可空）" list="relationNameList">
+                <button class="full" onclick="updateLinkAction()" style="background:#faad14;">修改关系</button>
+                <input type="text" id="linkDeleteSource" placeholder="删 source" list="nodeNameList">
+                <input type="text" id="linkDeleteTarget" placeholder="删 target" list="nodeNameList">
+                <input class="full" type="text" id="linkDeleteRelation" placeholder="删 relation" list="relationNameList">
+                <button class="full" onclick="deleteLinkAction()" style="background:#ff4d4f;">删除关系</button>
+            </div>
+        </details>
+
+        <details>
+            <summary>图谱合并</summary>
+            <div class="editor-grid">
+                <input class="full" type="text" id="mergeFilePath" placeholder="待合并文件绝对路径（可选）">
+                <textarea class="full" id="mergeGraphJson" placeholder='或粘贴图谱JSON：{"nodes":[],"links":[]}'></textarea>
+                <button class="full" onclick="mergeGraphAction()" style="background:#13c2c2;">执行合并</button>
+                <button class="full btn-danger" onclick="clearGraphAction()">清空当前所有图谱</button>
+            </div>
+        </details>
+    </div>
+</div>
+
+
+<div id="main">
+    <div id="chart"></div>
+    <div id="side-panel">
+        <h3 style="border-bottom: 2px solid #A254A2; padding-bottom: 10px; color:#A254A2;">详情面板</h3>
+        <div id="attrContent">点击节点查看详情...</div>
+    </div>
+</div>
+
+<div id="excelModal" class="modal-overlay" onclick="closeModal(event)">
+    <div class="modal-content" onclick="event.stopPropagation()">
+        <span class="close-modal-btn" onclick="document.getElementById('excelModal').style.display='none'">&times;</span>
+        <h3 id="modalTitle" style="margin-top:0; border-bottom:1px solid #eee; padding-bottom:10px;">文件预览</h3>
+        <div id="modalBody">
+            </div>
+    </div>
+</div>
+
+<div id="processingOverlay">
+    <div class="processing-box">
+        <div class="processing-spinner"></div>
+        <div class="processing-text" id="processingText">正在处理，请稍候...</div>
+    </div>
+</div>
+
+<datalist id="nodeNameList"></datalist>
+<datalist id="relationNameList"></datalist>
+<datalist id="attrKeyList"></datalist>
+<datalist id="attrValList"></datalist>
+
+<datalist id="pathNodeList"></datalist>
+<datalist id="pathNodeListType1"></datalist>
+<datalist id="pathNodeListType2"></datalist>
+<datalist id="pathNodeListType3"></datalist>
+<datalist id="pathNodeListType4"></datalist>
+<datalist id="pathRelationList"></datalist>
+<datalist id="pathAttrKeyList"></datalist>
+<datalist id="pathAttrValList"></datalist>
+
+<script>
+let force, svg, container, zoom;
+let stagedFiles = [];
+let width = window.innerWidth - 320, height = window.innerHeight - 100;
+let uploadProcessing = false;
+
+// --- 初始化画布（包含缩放逻辑修复） ---
+function initCanvas() {
+    d3.select("#chart").selectAll("svg").remove();
+    
+    // 初始化缩放行为
+    zoom = d3.behavior.zoom()
+        .scaleExtent([0.1, 10])
+        .on("zoom", function() {
+            container.attr("transform", "translate(" + d3.event.translate + ")scale(" + d3.event.scale + ")");
+        });
+
+    svg = d3.select("#chart").append("svg")
+        .attr("width", "100%")
+        .attr("height", "100%")
+        .call(zoom)
+        .on("dblclick.zoom", null);
+
+    container = svg.append("g");
+
+    // 箭头定义
+    container.append("marker")
+        .attr("id", "resolved")
+        .attr("markerUnits","userSpaceOnUse")
+        .attr("viewBox", "0 -5 10 10")
+        .attr("refX", 32)
+        .attr("refY", -1)
+        .attr("markerWidth", 12)
+        .attr("markerHeight", 12)
+        .attr("orient", "auto")
+        .append("path")
+        .attr("d", "M0,-5L10,0L0,5")
+        .attr('fill','#B43232');
+}
+
+// --- 核心修复：自定义拖拽行为 ---
+function dragstarted(d) {
+    // 【关键修复】停止事件冒泡，防止触发缩放导致的整个画布移动
+    d3.event.sourceEvent.stopPropagation();
+    d.fixed = true; // 拖拽时固定节点
+    force.start();
+}
+
+function dragged(d) {
+    d.px = d3.event.x;
+    d.py = d3.event.y;
+}
+
+function dragended(d) {
+    d.fixed = false; // 松开后恢复力学模拟（如果你想让它一直固定，可以删掉这一行）
+}
+
+async function loadGraph() {
+    try {
+        const res = await fetch('/get_graph');
+        const respJson = await res.json();
+        
+        if (respJson.code !== 0) {
+            throw new Error(respJson.msg || '获取图谱失败');
+        }
+        const rawData = respJson.data || {};
+        
+        // Old format adaptation logic
+        let rawNodes = rawData.nodes || [];
+        let rawLinks = rawData.links || [];
+
+        // If rawData has 'edges' but no 'links', it might be the old format, 
+        // but our backend now guarantees 'nodes' and 'links' (even if converted from old).
+        // However, if the backend returns the old format structure (which it shouldn't anymore), 
+        // we might need to handle it. But let's assume the new format:
+        // { nodes: [{id, group, attrs, ...}], links: [{source, target, relation, ...}] }
+
+        let nodesMap = {};
+        
+        // Build nodes map from links first to ensure all linked nodes exist
+        let links = rawLinks.map(e => {
+            if(!nodesMap[e.source]) nodesMap[e.source] = { name: e.source, attrs: {} };
+            if(!nodesMap[e.target]) nodesMap[e.target] = { name: e.target, attrs: {} };
+            return { source: nodesMap[e.source], target: nodesMap[e.target], rela: e.relation };
+        });
+
+        // Merge attributes from nodes array
+        rawNodes.forEach(n => {
+            // Use n.id as the key
+            let nodeId = n.id; 
+            if(!nodesMap[nodeId]) {
+                nodesMap[nodeId] = { name: nodeId, attrs: {} };
+            }
+            
+            nodesMap[nodeId].attrs = n.attrs || {}; 
+
+            // Inject special types
+            if (n.type === 'excel') {
+                nodesMap[nodeId].type = 'excel';
+                nodesMap[nodeId].table_html = n.table_html;
+            }
+        });
+
+        let nodes = d3.values(nodesMap);
+
+        // 初始化力导向
+        force = d3.layout.force()
+            .nodes(nodes)
+            .links(links)
+            .size([width, height])
+            .linkDistance(180)
+            .charge(-1500)
+            .on("tick", tick)
+            .start();
+
+        // 应用自定义拖拽
+        const drag = force.drag()
+            .on("dragstart", dragstarted)
+            .on("drag", dragged)
+            .on("dragend", dragended);
+
+        let edges_line = container.selectAll(".link")
+            .data(links)
+            .enter().append("path")
+            .attr("class", "link")
+            .attr("marker-end", "url(#resolved)");
+
+        let edges_text = container.selectAll(".edgelabel")
+            .data(links)
+            .enter().append("text")
+            .attr("class", "edgelabel")
+            .text(d => d.rela);
+
+        let node_group = container.selectAll(".node")
+            .data(nodes)
+            .enter().append("g")
+            .call(drag); // 使用修复后的拖拽
+
+        node_group.append("circle")
+        .attr("r", 28)
+        // [新增] 如果是 excel 节点，换个颜色 (例如绿色)
+        .style("fill", d => d.type === 'excel' ? "#f6ffed" : "#F9EBF9")
+        .style("stroke", d => d.type === 'excel' ? "#52c41a" : "#A254A2")
+        .on("click", function(d) {
+            // [核心修改] 分支逻辑
+            if (d.type === 'excel') {
+                // 如果是 Excel 节点，弹窗
+                showExcelModal(d.name, d.table_html);
+            } else {
+                // 如果是普通节点，显示右侧详情
+                showDetails(d);
+            }
+
+            // 高亮相连边
+            edges_line.style("stroke-width", l => (l.source === d || l.target === d) ? "4px" : "0.5px");
+        });
+
+        // 标签换行复刻
+        node_group.append("text")
+            .attr("dy", ".35em")
+            .attr("text-anchor", "middle")
+            .style("fill", "#A254A2")
+            .each(function(d) {
+                let el = d3.select(this);
+                let name = d.name;
+                let re_en = /[a-zA-Z]+/g;
+                if (name.match(re_en) || name.length <= 4) {
+                    el.append('tspan').text(name);
+                } else {
+                    let top = name.substring(0, 4);
+                    let bot = name.substring(4, name.length);
+                    el.append('tspan').attr('x', 0).attr('y', -7).text(top);
+                    el.append('tspan').attr('x', 0).attr('y', 10).text(bot);
+                }
+            });
+
+        function tick() {
+            edges_line.attr('d', d => `M ${d.source.x} ${d.source.y} L ${d.target.x} ${d.target.y}`);
+            node_group.attr("transform", d => `translate(${d.x},${d.y})`);
+            edges_text.attr('transform', function(d) {
+                let x = (d.source.x + d.target.x) / 2;
+                let y = (d.source.y + d.target.y) / 2;
+                return `translate(${x},${y})`;
+            });
+        }
+
+        window.currentNodes = node_group;
+        window.currentLinks = edges_line;
+        window.allData = { nodes, links };
+
+        populateDatalists(); // Initialize datalists for fuzzy search
+
+    } catch (e) { console.error(e); }
+}
+
+// --- 更新自动补全下拉框 ---
+function populateDatalists() {
+    let nodes = window.allData.nodes || [];
+    let links = window.allData.links || [];
+
+    let nodeNames = new Set();
+    let nodeNamesByType = {1: new Set(), 2: new Set(), 3: new Set(), 4: new Set()};
+    let relations = new Set();
+    let attrKeys = new Set();
+    let attrVals = new Set();
+
+    nodes.forEach(n => {
+        if(n.name) {
+            nodeNames.add(n.name);
+            let group = n.group || 4;
+            if(nodeNamesByType[group]) {
+                nodeNamesByType[group].add(n.name);
+            }
+        }
+        if(n.attrs) {
+            Object.keys(n.attrs).forEach(k => {
+                attrKeys.add(k);
+                if(n.attrs[k]) attrVals.add(n.attrs[k]);
+            });
+        }
+    });
+
+    links.forEach(l => {
+        if(l.rela) relations.add(l.rela);
+    });
+
+    document.getElementById('nodeNameList').innerHTML = Array.from(nodeNames).map(v => `<option value="${v}">`).join('');
+    document.getElementById('relationNameList').innerHTML = Array.from(relations).map(v => `<option value="${v}">`).join('');
+    document.getElementById('attrKeyList').innerHTML = Array.from(attrKeys).map(v => `<option value="${v}">`).join('');
+    document.getElementById('attrValList').innerHTML = Array.from(attrVals).map(v => `<option value="${v}">`).join('');
+
+    for(let t = 1; t <= 4; t++) {
+        let dl = document.getElementById('pathNodeListType' + t);
+        if(dl) dl.innerHTML = Array.from(nodeNamesByType[t]).map(v => `<option value="${v}">`).join('');
+    }
+
+    updatePathDatalists();
+}
+
+// --- 实体种类变化时更新搜索框的候选项 ---
+function onEntityTypeChange() {
+    let selectedType = document.getElementById('entityTypeSelect').value;
+    let searchInput = document.getElementById('searchNode');
+    let allNodes = new Set();
+
+    let nodes = window.allData.nodes || [];
+    nodes.forEach(n => {
+        if(n.name) allNodes.add(n.name);
+    });
+
+    if(selectedType === "") {
+        searchInput.list = document.getElementById('nodeNameList');
+    } else {
+        let typeNodes = nodes.filter(n => (n.group || 4) === parseInt(selectedType)).map(n => n.name);
+        let dlId = 'pathNodeListType' + selectedType;
+        let dl = document.getElementById(dlId);
+        if(dl) {
+            dl.innerHTML = typeNodes.map(v => `<option value="${v}">`).join('');
+            searchInput.list = dl;
+        }
+    }
+}
+
+// --- 路径分析的实体种类变化时更新起终点输入框的候选项 ---
+function onPathEntityTypeChange() {
+    let selectedType = document.getElementById('pathEntityTypeSelect').value;
+    let pathStart = document.getElementById('pathStart');
+    let pathEnd = document.getElementById('pathEnd');
+
+    if(selectedType === "") {
+        pathStart.list = document.getElementById('pathNodeList');
+        pathEnd.list = document.getElementById('pathNodeList');
+    } else {
+        let dlId = 'pathNodeListType' + selectedType;
+        let dl = document.getElementById(dlId);
+        if(dl) {
+            pathStart.list = dl;
+            pathEnd.list = dl;
+        }
+    }
+    updatePathDatalists();
+}
+
+// --- 根据路径分析动态更新筛选下拉框 ---
+function updatePathDatalists() {
+    let startName = document.getElementById('pathStart').value.trim();
+    let endName = document.getElementById('pathEnd').value.trim();
+    let limitStr = document.getElementById('pathLimit').value.trim();
+    let targetLength = limitStr ? parseInt(limitStr) : 3;
+
+    let nodesSource = (window.allData && window.allData.nodes) ? window.allData.nodes : [];
+    let linksSource = (window.allData && window.allData.links) ? window.allData.links : [];
+
+    let filterNodes = new Set();
+    let filterRelations = new Set();
+    let filterAttrKeys = new Set();
+    let filterAttrVals = new Set();
+
+    if (startName && endName && nodesSource.length > 0) {
+        let adj = {};
+        let edgeLookup = {};
+        let nodeLookup = {};
+
+        nodesSource.forEach(n => nodeLookup[n.name] = n);
+        linksSource.forEach(l => {
+            let s = l.source.name;
+            let t = l.target.name;
+            if (!adj[s]) adj[s] = [];
+            adj[s].push(t);
+            edgeLookup[s + "->" + t] = l.rela;
+        });
+
+        if (nodeLookup[startName]) {
+            let queue = [{ current: startName, path: [startName] }];
+            let rawPaths = [];
+
+            while (queue.length > 0) {
+                let item = queue.shift();
+                let curr = item.current;
+                let path = item.path;
+
+                if (curr === endName) {
+                    if (path.length === targetLength) rawPaths.push(path);
+                    continue;
+                }
+                if (path.length >= targetLength) continue;
+
+                let neighbors = adj[curr] || [];
+                for (let nextNode of neighbors) {
+                    if (!path.includes(nextNode)) {
+                        queue.push({ current: nextNode, path: [...path, nextNode] });
+                    }
+                }
+            }
+
+            if (rawPaths.length > 0) {
+                rawPaths.forEach(path => {
+                    for (let i = 0; i < path.length; i++) {
+                        let nName = path[i];
+                        if (nName !== startName && nName !== endName) {
+                            filterNodes.add(nName);
+                        }
+                        
+                        let nodeObj = nodeLookup[nName];
+                        if (nodeObj && nodeObj.attrs) {
+                            Object.keys(nodeObj.attrs).forEach(k => {
+                                filterAttrKeys.add(k);
+                                if (nodeObj.attrs[k]) filterAttrVals.add(nodeObj.attrs[k]);
+                            });
+                        }
+
+                        if (i < path.length - 1) {
+                            let r = edgeLookup[path[i] + "->" + path[i+1]];
+                            if (r) filterRelations.add(r);
+                        }
+                    }
+                });
+                populateSpecificDatalists(filterNodes, filterRelations, filterAttrKeys, filterAttrVals);
+                return;
+            }
+        }
+    }
+
+    // 默认情况：展示全图数据
+    nodesSource.forEach(n => {
+        if(n.name) filterNodes.add(n.name);
+        if(n.attrs) {
+            Object.keys(n.attrs).forEach(k => {
+                filterAttrKeys.add(k);
+                if(n.attrs[k]) filterAttrVals.add(n.attrs[k]);
+            });
+        }
+    });
+    linksSource.forEach(l => {
+        if(l.rela) filterRelations.add(l.rela);
+    });
+
+    populateSpecificDatalists(filterNodes, filterRelations, filterAttrKeys, filterAttrVals);
+}
+
+function populateSpecificDatalists(nodes, relas, attrKeys, attrVals) {
+    document.getElementById('pathNodeList').innerHTML = Array.from(nodes).map(v => `<option value="${v}">`).join('');
+    document.getElementById('pathRelationList').innerHTML = Array.from(relas).map(v => `<option value="${v}">`).join('');
+    document.getElementById('pathAttrKeyList').innerHTML = Array.from(attrKeys).map(v => `<option value="${v}">`).join('');
+    document.getElementById('pathAttrValList').innerHTML = Array.from(attrVals).map(v => `<option value="${v}">`).join('');
+}
+
+// --- 文件暂存管理 ---
+function handleFileSelect(event) {
+    const files = Array.from(event.target.files);
+    const allowedExtensions = ['.pdf', '.doc', '.docx', '.xls', '.xlsx', '.ppt', '.pptx', '.txt', '.md', '.html', '.csv', '.png', '.jpg', '.jpeg', '.bmp'];
+    
+    let invalidFiles = [];
+    files.forEach(f => {
+        const fileName = f.name.toLowerCase();
+        const ext = fileName.substring(fileName.lastIndexOf('.'));
+        if (!allowedExtensions.includes(ext)) {
+            invalidFiles.push(f.name);
+            return;
+        }
+        if (!stagedFiles.some(ex => ex.name === f.name)) stagedFiles.push(f);
+    });
+    
+    if (invalidFiles.length > 0) {
+        alert('以下文件类型不支持，已被过滤：\n' + invalidFiles.join('\n') + '\n\n支持的格式：' + allowedExtensions.join(', '));
+    }
+    
+    renderStaging();
+    event.target.value = '';
+}
+
+function renderStaging() {
+    const area = document.getElementById('fileStagingArea');
+    const btn = document.getElementById('uploadBtn');
+    area.style.display = stagedFiles.length ? 'block' : 'none';
+    btn.style.display = stagedFiles.length ? 'block' : 'none';
+    area.innerHTML = stagedFiles.map((f, i) => `
+        <div class="staged-item">
+            <span class="file-name">📄 ${f.name}</span>
+            <span class="remove-btn" onclick="removeStaged(${i})">×</span>
+        </div>
+    `).join('');
+}
+
+function removeStaged(i) { stagedFiles.splice(i, 1); renderStaging(); }
+
+function setProcessingState(isProcessing, text) {
+    uploadProcessing = isProcessing;
+    const overlay = document.getElementById('processingOverlay');
+    const processingText = document.getElementById('processingText');
+    const uploadStatus = document.getElementById('uploadStatus');
+    const uploadBtn = document.getElementById('uploadBtn');
+    const fileInput = document.getElementById('fileInput');
+    processingText.innerText = text || '正在处理，请稍候...';
+    overlay.style.display = isProcessing ? 'flex' : 'none';
+    if (uploadBtn) {
+        uploadBtn.disabled = isProcessing;
+        uploadBtn.style.opacity = isProcessing ? '0.7' : '1';
+    }
+    if (fileInput) {
+        fileInput.disabled = isProcessing;
+    }
+    uploadStatus.innerText = isProcessing ? '后台正在提取图谱，请勿重复提交。' : '';
+}
+
+async function uploadStagedFiles() {
+    if (uploadProcessing) return;
+    if (!stagedFiles.length) return alert("请先选择文件");
+    const formData = new FormData();
+    stagedFiles.forEach(f => formData.append('file', f));
+    formData.append('isDefault', 'false');
+    setProcessingState(true, '文件上传中，后台正在提取图谱...');
+    try {
+        const res = await fetch('/upload', { method: 'POST', body: formData });
+        const respJson = await res.json().catch(() => ({}));
+        if (respJson.code !== 0 && respJson.code !== 207) {
+            throw new Error(respJson.msg || `上传失败: ${res.status}`);
+        }
+        const data = respJson.data || {};
+        stagedFiles = [];
+        renderStaging();
+        initCanvas();
+        await loadGraph();
+        alert(data.message || (respJson.code === 207 ? "部分文件处理失败，图谱已更新" : "上传成功，图谱已更新"));
+    } catch (e) {
+        alert(e.message || '上传失败');
+    } finally {
+        setProcessingState(false);
+    }
+}
+
+function parseJsonInput(raw, defaultValue = {}) {
+    let text = (raw || '').trim();
+    if (!text) return defaultValue;
+    return JSON.parse(text);
+}
+
+async function graphApiRequest(url, method, body) {
+    const options = { method, headers: { 'Content-Type': 'application/json' } };
+    if (body !== undefined) options.body = JSON.stringify(body);
+    const res = await fetch(url, options);
+    const respJson = await res.json().catch(() => ({}));
+    if (respJson.code !== 0) {
+        throw new Error(respJson.msg || `请求失败: ${res.status}`);
+    }
+    return respJson.data;
+}
+
+async function reloadGraphAfterMutation(successText) {
+    initCanvas();
+    await loadGraph();
+    alert(successText);
+}
+
+async function createNodeAction() {
+    try {
+        const id = document.getElementById('nodeCreateId').value.trim();
+        if (!id) return alert('请输入新节点ID');
+        const attrs = parseJsonInput(document.getElementById('nodeCreateAttrs').value, {});
+        await graphApiRequest('/graph/node', 'POST', { id, attrs });
+        await reloadGraphAfterMutation('新增节点成功');
+    } catch (e) {
+        alert(e.message);
+    }
+}
+
+async function updateNodeAction() {
+    try {
+        const nodeId = document.getElementById('nodeUpdateId').value.trim();
+        if (!nodeId) return alert('请输入要修改的节点ID');
+        const newId = document.getElementById('nodeUpdateNewId').value.trim();
+        const attrsText = document.getElementById('nodeUpdateAttrs').value;
+        const payload = {};
+        if (newId) payload.id = newId;
+        if (attrsText.trim()) payload.attrs = parseJsonInput(attrsText, {});
+        await graphApiRequest(`/graph/node/${encodeURIComponent(nodeId)}`, 'PUT', payload);
+        await reloadGraphAfterMutation('修改节点成功');
+    } catch (e) {
+        alert(e.message);
+    }
+}
+
+async function deleteNodeAction() {
+    try {
+        const nodeId = document.getElementById('nodeDeleteId').value.trim();
+        if (!nodeId) return alert('请输入要删除的节点ID');
+        await graphApiRequest(`/graph/node/${encodeURIComponent(nodeId)}`, 'DELETE');
+        await reloadGraphAfterMutation('删除节点成功');
+    } catch (e) {
+        alert(e.message);
+    }
+}
+
+async function createLinkAction() {
+    try {
+        const source = document.getElementById('linkCreateSource').value.trim();
+        const target = document.getElementById('linkCreateTarget').value.trim();
+        const relation = document.getElementById('linkCreateRelation').value.trim();
+        if (!source || !target || !relation) return alert('请完整填写 source/target/relation');
+        await graphApiRequest('/graph/link', 'POST', { source, target, relation });
+        await reloadGraphAfterMutation('新增关系成功');
+    } catch (e) {
+        alert(e.message);
+    }
+}
+
+async function updateLinkAction() {
+    try {
+        const old_source = document.getElementById('linkUpdateOldSource').value.trim();
+        const old_target = document.getElementById('linkUpdateOldTarget').value.trim();
+        const old_relation = document.getElementById('linkUpdateOldRelation').value.trim();
+        if (!old_source || !old_target || !old_relation) return alert('请完整填写旧source/旧target/旧relation');
+        const source = document.getElementById('linkUpdateSource').value.trim();
+        const target = document.getElementById('linkUpdateTarget').value.trim();
+        const relation = document.getElementById('linkUpdateRelation').value.trim();
+        const payload = { old_source, old_target, old_relation };
+        if (source) payload.source = source;
+        if (target) payload.target = target;
+        if (relation) payload.relation = relation;
+        await graphApiRequest('/graph/link', 'PUT', payload);
+        await reloadGraphAfterMutation('修改关系成功');
+    } catch (e) {
+        alert(e.message);
+    }
+}
+
+async function deleteLinkAction() {
+    try {
+        const source = document.getElementById('linkDeleteSource').value.trim();
+        const target = document.getElementById('linkDeleteTarget').value.trim();
+        const relation = document.getElementById('linkDeleteRelation').value.trim();
+        if (!source || !target || !relation) return alert('请完整填写 source/target/relation');
+        await graphApiRequest('/graph/link', 'DELETE', { source, target, relation });
+        await reloadGraphAfterMutation('删除关系成功');
+    } catch (e) {
+        alert(e.message);
+    }
+}
+
+async function mergeGraphAction() {
+    try {
+        const file_path = document.getElementById('mergeFilePath').value.trim();
+        const graphText = document.getElementById('mergeGraphJson').value.trim();
+        const payload = {};
+        if (graphText) payload.graph = parseJsonInput(graphText, {});
+        if (file_path) payload.file_path = file_path;
+        if (!payload.graph && !payload.file_path) return alert('请填写文件路径或图谱JSON');
+        await graphApiRequest('/graph/merge', 'POST', payload);
+        await reloadGraphAfterMutation('图谱合并成功');
+    } catch (e) {
+        alert(e.message);
+    }
+}
+
+async function clearGraphAction() {
+    try {
+        if (!confirm('确认清空当前所有图谱吗？此操作不可恢复。')) return;
+        await graphApiRequest('/graph/clear', 'POST');
+        await reloadGraphAfterMutation('图谱已清空');
+    } catch (e) {
+        alert(e.message);
+    }
+}
+
+// --- 搜索与路径功能 ---
+function showDetails(d) {
+    let html = `<div style="background:#F9EBF9; padding:10px; border-radius:4px; border-left:4px solid #A254A2;"><b>节点: ${d.name}</b></div><br>`;
+    for (let key in d.attrs) html += `<p><strong>${key}:</strong> ${d.attrs[key]}</p>`;
+    document.getElementById('attrContent').innerHTML = html;
+}
+
+function searchAction() {
+    let val = document.getElementById('searchNode').value.trim();
+    if(!val) return;
+    window.currentNodes.classed("dimmed", d => d.name !== val);
+    window.currentLinks.classed("dimmed", d => d.source.name !== val && d.target.name !== val);
+    let t = window.allData.nodes.find(n => n.name === val);
+    if(t) {
+        let s = 1.2;
+        zoom.translate([width/2 - t.x*s, height/2 - t.y*s]).scale(s).event(svg.transition().duration(750));
+    }
+}
+
+// --- 核心算法终极版：层数 + 实体 + 关系 + 属性筛选 ---
+function findPathAction() {
+    // ===========================
+    // 1. 获取所有输入参数
+    // ===========================
+    let startName = document.getElementById('pathStart').value.trim();
+    let endName = document.getElementById('pathEnd').value.trim();
+    let limitStr = document.getElementById('pathLimit').value.trim();
+    let targetLength = limitStr ? parseInt(limitStr) : 3;
+
+    // [筛选1] 实体
+    let nodeFilterType = document.getElementById('filterType').value;
+    let midInputs = document.getElementsByName('midNode');
+    let midNodes = [];
+    for(let inp of midInputs) if(inp.value.trim()) midNodes.push(inp.value.trim());
+
+    // [筛选2] 关系
+    let relaFilterType = document.getElementById('relaFilterType').value;
+    let relaInputs = document.getElementsByName('relaInput');
+    let targetRelas = [];
+    for(let inp of relaInputs) if(inp.value.trim()) targetRelas.push(inp.value.trim());
+
+    // [筛选3] 属性 (新加的)
+    let attrFilterType = document.getElementById('attrFilterType').value;
+    let attrKeys = document.getElementsByName('attrKey');
+    let attrVals = document.getElementsByName('attrVal');
+    let targetAttrs = [];
+    for(let i=0; i<attrKeys.length; i++) {
+        let k = attrKeys[i].value.trim();
+        let v = attrVals[i].value.trim();
+        if(k && v) targetAttrs.push({ k: k, v: v });
+    }
+
+    if (!startName || !endName) { alert("请输入起点和终点"); return; }
+
+    // ===========================
+    // 2. 数据预处理 (查找表)
+    // ===========================
+    let adj = {}; 
+    let edgeLookup = {}; // 查关系: "A->B" => "Invest"
+    let nodeLookup = {}; // 查节点对象: "A" => {attrs: {...}}
+
+    window.allData.nodes.forEach(n => {
+        nodeLookup[n.name] = n; // 方便后续快速获取属性
+    });
+
+    window.allData.links.forEach(l => {
+        let s = l.source.name;
+        let t = l.target.name;
+        if (!adj[s]) adj[s] = [];
+        adj[s].push(t);
+        edgeLookup[s + "->" + t] = l.rela; 
+    });
+
+    if (!adj[startName] && !nodeLookup[startName]) {
+        alert("起点不存在图谱中");
+        return;
+    }
+
+    // ===========================
+    // 3. BFS 搜索 (获取所有长度符合的路径)
+    // ===========================
+    let queue = [{ current: startName, path: [startName] }];
+    let rawPaths = []; 
+
+    while (queue.length > 0) {
+        let item = queue.shift();
+        let curr = item.current;
+        let path = item.path;
+
+        if (curr === endName) {
+            if (path.length === targetLength) rawPaths.push(path);
+            continue; 
+        }
+        if (path.length >= targetLength) continue;
+
+        let neighbors = adj[curr] || [];
+        for (let nextNode of neighbors) {
+            if (!path.includes(nextNode)) {
+                queue.push({ current: nextNode, path: [...path, nextNode] });
+            }
+        }
+    }
+
+    if (rawPaths.length === 0) {
+        alert(`未找到长度为 ${targetLength} 的路径`);
+        resetView();
+        return;
+    }
+
+    // ===========================
+    // 4. 三重漏斗筛选 (Three-Layer Filtering)
+    // ===========================
+    let validPaths = rawPaths.filter(path => {
+        // --- A. 实体筛选 ---
+        let isNodeValid = true;
+        if (midNodes.length > 0) {
+            if (nodeFilterType === 'AND') {
+                isNodeValid = midNodes.every(n => path.includes(n));
+            } else {
+                isNodeValid = midNodes.some(n => path.includes(n));
+            }
+        }
+        if (!isNodeValid) return false; // 提前剪枝
+
+        // --- B. 关系筛选 ---
+        let isRelaValid = true;
+        if (targetRelas.length > 0) {
+            let pathRelations = [];
+            for (let i = 0; i < path.length - 1; i++) {
+                let r = edgeLookup[path[i] + "->" + path[i+1]];
+                if (r) pathRelations.push(r);
+            }
+            if (relaFilterType === 'AND') {
+                isRelaValid = targetRelas.every(r => pathRelations.includes(r));
+            } else {
+                isRelaValid = targetRelas.some(r => pathRelations.includes(r));
+            }
+        }
+        if (!isRelaValid) return false;
+
+        // --- C. 属性筛选 (Optimized) ---
+        let isAttrValid = true;
+        if (targetAttrs.length > 0) {
+            let nodesInPath = path.map(name => nodeLookup[name]);
+
+            // 定义检查单个节点是否满足单个条件的辅助函数
+            const checkNodeAttr = (node, cond) => {
+                // [安全检查] 如果是 excel 节点或没有 attrs，直接认为不匹配（返回 false）
+                if (node.type === 'excel' || !node.attrs) return false;
+                // 只有当属性存在且相等时才返回 true
+                return node.attrs[cond.k] && String(node.attrs[cond.k]) === String(cond.v);
+            };
+
+            if (attrFilterType === 'AND') {
+                // AND 逻辑：每个条件都必须在路径中找到对应的节点
+                isAttrValid = targetAttrs.every(cond => {
+                    return nodesInPath.some(n => checkNodeAttr(n, cond));
+                });
+            } else {
+                // OR 逻辑：只要有一个条件被满足
+                isAttrValid = targetAttrs.some(cond => {
+                    return nodesInPath.some(n => checkNodeAttr(n, cond));
+                });
+            }
+        }
+        
+        return isAttrValid;
+    });
+
+    // ===========================
+    // 5. 渲染高亮
+    // ===========================
+    if (validPaths.length === 0) {
+        alert("路径存在，但被筛选条件 (实体/关系/属性) 过滤掉了。");
+        resetView();
+        return;
+    }
+
+    let activeNodes = new Set();
+    let activeEdges = new Set();
+
+    validPaths.forEach(path => {
+        for (let i = 0; i < path.length; i++) {
+            activeNodes.add(path[i]);
+            if (i < path.length - 1) {
+                activeEdges.add(path[i] + "-" + path[i+1]);
+            }
+        }
+    });
+
+    window.currentNodes.classed("dimmed", d => !activeNodes.has(d.name));
+    window.currentLinks.classed("dimmed", l => {
+        let key = l.source.name + "-" + l.target.name;
+        return !activeEdges.has(key);
+    });
+    
+    let startNodeObj = nodeLookup[startName];
+    if(startNodeObj) {
+         zoom.translate([width/2 - startNodeObj.x, height/2 - startNodeObj.y]).scale(1).event(svg.transition().duration(750));
+    }
+}
+
+
+function resetView() {
+    window.currentNodes.classed("dimmed", false);
+    window.currentLinks.classed("dimmed", false).style("stroke-width", "0.5px");
+    zoom.translate([0,0]).scale(1).event(svg.transition().duration(750));
+}
+
+// --- 辅助功能：动态添加/删除关系输入框 ---
+function addRelaInput() {
+    const container = document.getElementById('relaContainer');
+    const div = document.createElement('div');
+    div.className = 'rela-input-group';
+    div.style.cssText = "display:flex; gap:5px; margin-top:5px;";
+    div.innerHTML = `
+        <input type="text" name="relaInput" placeholder="关系名称" style="width: 80px;" list="pathRelationList">
+        <button onclick="removeRelaInput(this)" style="background:#ff4d4f; padding:0 8px; font-weight:bold;">-</button>
+    `;
+    container.appendChild(div);
+}
+
+function removeRelaInput(btn) {
+    btn.parentElement.remove();
+}
+
+// --- 辅助功能：动态添加/删除属性输入框 ---
+function addAttrInput() {
+    const container = document.getElementById('attrContainer');
+    const div = document.createElement('div');
+    div.className = 'attr-input-group';
+    div.style.cssText = "display:flex; gap:3px; margin-top:5px;";
+    div.innerHTML = `
+        <input type="text" name="attrKey" placeholder="属性名" style="width: 60px;" list="pathAttrKeyList">
+        <span style="color:white">=</span>
+        <input type="text" name="attrVal" placeholder="属性值" style="width: 60px;" list="pathAttrValList">
+        <button onclick="removeAttrInput(this)" style="background:#ff4d4f; padding:0 8px; font-weight:bold;">-</button>
+    `;
+    container.appendChild(div);
+}
+
+function removeAttrInput(btn) {
+    btn.parentElement.remove();
+}
+
+// --- 辅助功能：动态添加/删除中间实体输入框 ---
+function addMiddleInput() {
+    const container = document.getElementById('middleNodesContainer');
+    const div = document.createElement('div');
+    div.className = 'mid-input-group';
+    div.style.cssText = "display:flex; gap:5px; margin-top:5px;";
+    div.innerHTML = `
+        <input type="text" name="midNode" placeholder="中间实体名" style="width: 80px;" list="pathNodeList">
+        <button onclick="removeMiddleInput(this)" style="background:#ff4d4f; padding:0 8px; font-weight:bold;">-</button>
+    `;
+    container.appendChild(div);
+}
+
+function removeMiddleInput(btn) {
+    btn.parentElement.remove();
+}
+
+// --- 弹窗控制函数 ---
+function showExcelModal(title, htmlContent) {
+    document.getElementById('modalTitle').innerText = "📄 " + title;
+    document.getElementById('modalBody').innerHTML = htmlContent;
+    document.getElementById('excelModal').style.display = 'flex';
+}
+
+function closeModal(event) {
+    // 点击遮罩层关闭
+    if (event.target.id === 'excelModal') {
+        document.getElementById('excelModal').style.display = 'none';
+    }
+}
+
+// --- 多图谱数据库切换 ---
+async function loadDatabases() {
+    try {
+        const res = await fetch('/external/workspace/status');
+        if (!res.ok) return;
+        const respJson = await res.json();
+        if (respJson.code !== 0) return;
+        const data = respJson.data;
+        
+        const select = document.getElementById('dbSelect');
+        select.innerHTML = '';
+        
+        if (data.available_dbs && data.available_dbs.length > 0) {
+            data.available_dbs.forEach(db => {
+                const option = document.createElement('option');
+                option.value = db;
+                option.textContent = db;
+                if (db === data.current_db) {
+                    option.selected = true;
+                }
+                select.appendChild(option);
+            });
+        } else {
+            select.innerHTML = '<option value="output_graph.json">output_graph.json</option>';
+        }
+    } catch (e) {
+        console.error('获取数据库列表失败:', e);
+    }
+}
+
+async function switchDb() {
+    const select = document.getElementById('dbSelect');
+    const dbName = select.value;
+    if (!dbName) return;
+    
+    setProcessingState(true, '正在切换图谱...');
+    try {
+        const res = await fetch('/external/workspace/switch_db', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ db_name: dbName })
+        });
+        const respJson = await res.json();
+        if (respJson.code !== 0) throw new Error(respJson.msg || '切换失败');
+        const data = respJson.data;
+        
+        // 重新加载图谱
+        initCanvas();
+        await loadGraph();
+        alert(data.message || '切换成功');
+    } catch (e) {
+        alert(e.message || '切换失败');
+    } finally {
+        setProcessingState(false);
+    }
+}
+
+async function createDb() {
+    let dbName = document.getElementById('newDbName').value.trim();
+    if (!dbName) return alert('请输入新图谱名称');
+    
+    setProcessingState(true, '正在创建图谱...');
+    try {
+        const res = await fetch('/external/workspace/create_db', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ db_name: dbName })
+        });
+        const respJson = await res.json();
+        if (respJson.code !== 0) throw new Error(respJson.msg || '创建失败');
+        const data = respJson.data;
+        
+        document.getElementById('newDbName').value = ''; // 清空输入框
+        await loadDatabases(); // 重新加载下拉列表
+        initCanvas(); // 初始化画布
+        await loadGraph(); // 重新加载（空）图谱
+        alert(data.message || '创建并切换成功');
+    } catch (e) {
+        alert(e.message || '创建失败');
+    } finally {
+        setProcessingState(false);
+    }
+}
+
+initCanvas();
+loadDatabases().then(() => loadGraph());
+</script>
+</body>
+</html>

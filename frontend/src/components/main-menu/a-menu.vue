@@ -1,84 +1,78 @@
 <template>
   <div class="sidebar-wrapper">
-    <!-- 1. 顶部品牌区 (蓝色背景) -->
-    <div class="brand-header" :class="{ collapsed: layoutStore.isCollapse }">
+    <!-- 顶部品牌区 -->
+    <div class="brand-header" :class="{ collapsed: layout.isCollapse }">
       <div class="logo-icon">
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
           <path d="M12 2C6.48 2 2 6.48 2 12C2 17.52 6.48 22 12 22C17.52 22 22 17.52 22 12C22 6.48 17.52 2 12 2ZM12 6C13.66 6 15 7.34 15 8.4C15 9.46 13.66 10.8 12 10.8C10.34 10.8 9 9.46 9 8.4C9 7.34 10.34 6 12 6ZM12 19.2C9.5 19.2 7.29 17.92 6 15.75C6.03 13.75 10 12.66 12 12.66C13.99 12.66 17.97 13.75 18 15.75C16.71 17.92 14.5 19.2 12 19.2Z" fill="white"/>
         </svg>
       </div>
-      <span class="brand-text">研发猫</span>
+      <span class="brand-text">研发猫AI</span>
     </div>
 
-    <!-- 2. 滚动菜单区 (白色背景) -->
+    <!-- 滚动菜单区 -->
     <div class="menu-scroll-area">
       <el-menu
         :default-active="activeMenu"
         class="el-menu-vertical-demo"
-        :collapse="layoutStore.isCollapse"
+        :collapse="layout.isCollapse"
         :collapse-transition="false"
         unique-opened
         router
       >
-        <el-menu-item index="/home">
-          <el-icon><HomeFilled /></el-icon>
-          <template #title>首页</template>
+        <!-- AI问答（用户端） -->
+        <el-menu-item index="/ai/chat">
+          <template #title>AI问答</template>
         </el-menu-item>
 
-        <el-sub-menu index="1">
+        <!-- AI后台（管理端） -->
+        <el-sub-menu index="admin">
           <template #title>
-            <el-icon><OfficeBuilding /></el-icon>
-            <span>我的企业</span>
+            <span>AI后台</span>
           </template>
-          <el-menu-item index="/org/info">企业信息</el-menu-item>
-        </el-sub-menu>
 
-        <el-sub-menu index="2">
-          <template #title>
-            <el-icon><User /></el-icon>
-            <span>人事管理</span>
-          </template>
-          <el-menu-item index="/hr/staff">员工列表</el-menu-item>
-        </el-sub-menu>
+          <el-menu-item index="/admin/history">
+            <template #title>对话日志</template>
+          </el-menu-item>
 
-        <!-- AI 助手核心功能区 -->
-        <el-sub-menu index="ai">
-          <template #title>
-            <el-icon><Cpu /></el-icon>
-            <span>AI 助手</span>
-          </template>
-          <el-menu-item index="/ai/chat">AI 问答</el-menu-item>
-          <el-menu-item index="/ai/kb">知识库管理</el-menu-item>
-          <el-menu-item index="/ai/history">历史记录维护</el-menu-item>
-          <el-menu-item index="/ai/feedback">反馈列表</el-menu-item>
-          <el-menu-item index="/ai/feedback-negative">待优化回答</el-menu-item>
-          <el-menu-item index="/ai/feedback-positive">良好回答</el-menu-item>
-          <el-menu-item index="/ai/test-tree">结构测试</el-menu-item>
+          <el-menu-item index="/admin/kb">
+            <template #title>知识库</template>
+          </el-menu-item>
+
+          <el-menu-item index="/admin/database">
+            <template #title>链接数据库</template>
+          </el-menu-item>
+
+          <el-sub-menu index="admin-feedback">
+            <template #title>
+              <span>反馈管理</span>
+            </template>
+            <el-menu-item index="/admin/feedback">反馈列表</el-menu-item>
+            <el-menu-item index="/admin/feedback-negative">待优化回答</el-menu-item>
+            <el-menu-item index="/admin/feedback-positive">回答良好</el-menu-item>
+          </el-sub-menu>
         </el-sub-menu>
       </el-menu>
     </div>
 
-    <!-- 3. 底部收起按钮区 -->
-    <div class="collapse-footer" @click="layoutStore.toggleCollapse">
+    <!-- 底部收起按钮区 -->
+    <div class="collapse-footer" @click="layout.toggleCollapse">
       <el-icon size="16">
-        <Expand v-if="layoutStore.isCollapse" />
+        <Expand v-if="layout.isCollapse" />
         <Fold v-else />
       </el-icon>
-      <span class="collapse-text" v-if="!layoutStore.isCollapse">收起导航</span>
+      <span class="collapse-text" v-if="!layout.isCollapse">收起导航</span>
     </div>
   </div>
 </template>
 
 <script setup>
-import { computed } from 'vue'
+import { computed, inject } from 'vue'
 import { useRoute } from 'vue-router'
-import { 
-  HomeFilled, OfficeBuilding, User, Cpu, Fold, Expand 
-} from '@element-plus/icons-vue'
-import { useLayoutStore } from '@/stores/layout'
+import { Fold, Expand } from '@element-plus/icons-vue'
 
 const route = useRoute()
-const layoutStore = useLayoutStore()
+const layout = inject('layout')
 const activeMenu = computed(() => route.path)
 </script>
 
@@ -119,6 +113,18 @@ const activeMenu = computed(() => route.path)
   &:hover { background-color: #f5f5f5; }
 }
 :deep(.el-menu-item.is-active) { background-color: @active-bg; color: @active-text; font-weight: 500; }
+
+// 强制 AI后台 下的子菜单项和嵌套子菜单标题对齐
+:deep(.el-sub-menu .el-menu .el-menu-item) {
+  padding-left: 45px !important;
+}
+:deep(.el-sub-menu .el-menu .el-sub-menu > .el-sub-menu__title) {
+  padding-left: 45px !important;
+}
+// 反馈管理展开后的三级菜单项再缩进
+:deep(.el-sub-menu .el-menu .el-sub-menu .el-menu .el-menu-item) {
+  padding-left: 65px !important;
+}
 
 .collapse-footer {
   height: 48px; border-top: 1px solid #f0f0f0; display: flex; align-items: center; padding-left: 24px;

@@ -1,33 +1,50 @@
 # Environments
 .env
-
+.env.local
 venv/
 .venv/
 .pixi/
 pixi.lock
-GEMINI.md
+
 # Frontend
 node_modules/
 dist/
 npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-.DS_Store
-
 
 # Backend
 __pycache__/
 *.py[cod]
 *.so
-.runtime/
-logs/
+
+# Runtime data
+data/logs/
+data/minio/
+data/milvus/
+data/local_db_query/
+data/feedbacks/
+data/pids.*
+uploads/
+nohup.out
+*.log
+
+# 知识图谱运行时数据
+graph/runtime/external_workspace/*.json
+graph/runtime/external_workspace/uploads/
+graph/runtime/external_workspace/current_db.txt
+graph/runtime/internal_binding_workspace/uploads/
+graph/runtime/internal_binding_workspace/internal_binding_graph.json
+graph/runtime/internal_binding_workspace/workspace_meta.json
+graph/debug/
+
+# 内网穿透二进制
+ngrok
+cpolar
 
 # IDE
 .vscode/
 .idea/
+.DS_Store
 
-# Custom
-.geminiignore
-
-nohup.out
-*.log
+# Misc
+GEMINI.md
+*.claude*

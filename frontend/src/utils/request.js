@@ -15,7 +15,7 @@ const service = axios.create({
 
 service.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem('token')
+    const token = localStorage.getItem('token') || import.meta.env.VITE_DEV_TOKEN || ''
     if (token) {
       config.headers = {
         ...config.headers,
@@ -49,7 +49,7 @@ service.interceptors.response.use(
       ElMessage.error(message || '登录已过期，请重新登录')
       localStorage.removeItem('token')
       localStorage.removeItem('userInfo')
-      router.push('/login')
+      // router.push('/login') // 登录页已移除，后续对接token认证
       return Promise.reject(new Error(message))
     }
 
@@ -72,7 +72,7 @@ service.interceptors.response.use(
           ElMessage.error(message || '登录已过期，请重新登录')
           localStorage.removeItem('token')
           localStorage.removeItem('userInfo')
-          router.push('/login')
+          // router.push('/login') // 登录页已移除，后续对接token认证
           break
         case 403:
           ElMessage.error(message || '没有权限访问该资源')

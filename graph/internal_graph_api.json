@@ -1,0 +1,702 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "系统内数据库知识图谱 API",
+    "description": "系统内数据库知识图谱接口（基于SQL数据库的只读图谱展示、检索、节点详情）",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "/api",
+      "description": "当前服务器"
+    }
+  ],
+  "paths": {
+    "/health": {
+      "get": {
+        "tags": ["基础接口"],
+        "summary": "健康检查",
+        "description": "检查服务健康状态与当前 provider",
+        "operationId": "healthCheck",
+        "responses": {
+          "200": {
+            "description": "成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HealthResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/providers": {
+      "get": {
+        "tags": ["基础接口"],
+        "summary": "可用 Provider 查询",
+        "description": "返回当前可用的图谱数据提供者列表",
+        "operationId": "getProviders",
+        "responses": {
+          "200": {
+            "description": "成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProvidersResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/current-user": {
+      "get": {
+        "tags": ["基础接口"],
+        "summary": "当前用户",
+        "description": "返回当前登录企业/用户信息",
+        "operationId": "getCurrentUser",
+        "responses": {
+          "200": {
+            "description": "成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CurrentUserResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/internal/workspace/status": {
+      "get": {
+        "tags": ["基础接口"],
+        "summary": "系统内图谱状态",
+        "description": "返回系统内图谱是否可用、节点数、关系数和图谱标识",
+        "operationId": "getInternalWorkspaceStatus",
+        "responses": {
+          "200": {
+            "description": "成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InternalWorkspaceStatusResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/graph": {
+      "get": {
+        "tags": ["图谱数据获取"],
+        "summary": "获取系统内图谱（完整结构）",
+        "description": "获取当前系统内图谱全部节点与关系（包含 graphId、graphName 元信息）",
+        "operationId": "getGraphFull",
+        "responses": {
+          "200": {
+            "description": "成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InternalGraphResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/get_graph": {
+      "get": {
+        "tags": ["图谱数据获取"],
+        "summary": "获取系统内图谱（精简结构）",
+        "description": "获取当前系统内图谱全部节点与关系（与系统外 test2.json 同款交互结构，顶层直接是 nodes / links）",
+        "operationId": "getGraphSimple",
+        "responses": {
+          "200": {
+            "description": "成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SimpleGraphResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/internal/get_graph": {
+      "get": {
+        "tags": ["图谱数据获取"],
+        "summary": "获取系统内图谱（别名）",
+        "description": "与 /api/graph 接口相同，返回完整结构的图谱数据",
+        "operationId": "getGraphInternal",
+        "responses": {
+          "200": {
+            "description": "成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InternalGraphResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/search": {
+      "get": {
+        "tags": ["图谱数据获取"],
+        "summary": "节点搜索",
+        "description": "按节点名称/ID模糊匹配返回候选节点",
+        "operationId": "searchNodes",
+        "parameters": [
+          {
+            "name": "keyword",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "搜索关键词"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SearchNodesResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/combined_graph": {
+      "get": {
+        "tags": ["图谱数据获取"],
+        "summary": "获取系统内+绑定图谱合并视图",
+        "description": "同时获取系统内SQL图谱和固定系统内绑定图谱文件的数据，返回两个图谱合并后的节点和关系",
+        "operationId": "getCombinedGraph",
+        "responses": {
+          "200": {
+            "description": "成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CombinedGraphResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/get_all_graph": {
+      "get": {
+        "tags": ["图谱数据获取"],
+        "summary": "导出全部图谱",
+        "description": "一次返回系统内SQL图谱、系统内绑定图谱文件以及所有系统外图谱数据库文件，供跨平台导入或备份使用",
+        "operationId": "getAllGraph",
+        "responses": {
+          "200": {
+            "description": "成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AllGraphsResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/node/{node_id}": {
+      "get": {
+        "tags": ["图谱数据获取"],
+        "summary": "节点详情",
+        "description": "返回指定节点详情视图（后端 resolver 结果，包含多来源属性块）",
+        "operationId": "getNodeDetail",
+        "parameters": [
+          {
+            "name": "node_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "节点 ID"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NodeDetailResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "ApiResponse": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "integer",
+            "description": "0表示成功，非0表示失败"
+          },
+          "msg": {
+            "type": "string",
+            "description": "成功为'成功'，失败为具体的错误信息"
+          },
+          "data": {
+            "type": "object",
+            "description": "具体的业务数据"
+          }
+        }
+      },
+      "HealthResponse": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "integer"
+          },
+          "msg": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          },
+          "app": {
+            "type": "string"
+          },
+          "provider": {
+            "type": "string"
+          }
+        }
+      },
+      "ProvidersResponse": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "integer"
+          },
+          "msg": {
+            "type": "string"
+          },
+          "default_provider": {
+            "type": "string"
+          },
+          "available_providers": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "CurrentUserResponse": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "integer"
+          },
+          "msg": {
+            "type": "string"
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "enterprise_id": {
+                "type": "string"
+              },
+              "enterprise_name": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      },
+      "InternalWorkspaceStatusResponse": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "integer"
+          },
+          "msg": {
+            "type": "string"
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "exists": {
+                "type": "boolean"
+              },
+              "node_count": {
+                "type": "integer"
+              },
+              "link_count": {
+                "type": "integer"
+              },
+              "graphId": {
+                "type": "string"
+              },
+              "graphName": {
+                "type": "string"
+              },
+              "available_graphs": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      },
+      "InternalGraphResponse": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "integer"
+          },
+          "msg": {
+            "type": "string"
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "graphId": {
+                "type": "string"
+              },
+              "graphName": {
+                "type": "string"
+              },
+              "nodes": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/InternalNode"
+                }
+              },
+              "links": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/InternalLink"
+                }
+              }
+            }
+          }
+        }
+      },
+      "SimpleGraphResponse": {
+        "type": "object",
+        "description": "与系统外 test2.json 同款交互结构",
+        "properties": {
+          "nodes": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/InternalNode"
+            }
+          },
+          "links": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/InternalLink"
+            }
+          }
+        }
+      },
+      "InternalNode": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "节点唯一标识"
+          },
+          "name": {
+            "type": "string",
+            "description": "节点名称"
+          },
+          "group": {
+            "type": "integer",
+            "enum": [1, 2, 3, 4],
+            "description": "实体种类：1-人员名称, 2-企业名称, 3-资产名称, 4-其它"
+          },
+          "attrs": {
+            "type": "object",
+            "description": "属性字典"
+          },
+          "type": {
+            "type": "string",
+            "description": "节点类型"
+          },
+          "level": {
+            "type": "integer",
+            "description": "节点层级深度"
+          },
+          "parent_id": {
+            "type": "string",
+            "description": "父节点 ID"
+          },
+          "identity_key": {
+            "type": "string",
+            "description": "实体身份标识键"
+          },
+          "merged_entity": {
+            "type": "boolean",
+            "description": "是否为统一实体"
+          },
+          "merged_entity_kind": {
+            "type": "string",
+            "description": "统一实体类型：person/fixed_asset/intangible_asset/enterprise"
+          }
+        }
+      },
+      "InternalLink": {
+        "type": "object",
+        "properties": {
+          "source": {
+            "type": "string",
+            "description": "起点节点 ID"
+          },
+          "target": {
+            "type": "string",
+            "description": "终点节点 ID"
+          },
+          "relation": {
+            "type": "string",
+            "description": "关系名称"
+          }
+        }
+      },
+      "SearchNodesResponse": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "integer"
+          },
+          "msg": {
+            "type": "string"
+          },
+          "keyword": {
+            "type": "string"
+          },
+          "data": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "description": "节点唯一标识"
+                },
+                "name": {
+                  "type": "string",
+                  "description": "节点名称"
+                },
+                "level": {
+                  "type": "integer",
+                  "description": "节点层级深度"
+                },
+                "parent_id": {
+                  "type": "string",
+                  "description": "父节点 ID"
+                },
+                "type": {
+                  "type": "string",
+                  "description": "节点类型"
+                },
+                "identity_key": {
+                  "type": "string",
+                  "description": "实体身份标识键"
+                }
+              }
+            }
+          }
+        }
+      },
+      "NodeDetailResponse": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "integer"
+          },
+          "msg": {
+            "type": "string"
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string",
+                "description": "节点唯一标识"
+              },
+              "name": {
+                "type": "string",
+                "description": "节点名称"
+              },
+              "type": {
+                "type": "string",
+                "description": "节点类型"
+              },
+              "attrs_blocks": {
+                "type": "array",
+                "description": "属性块数组，按来源分块展示属性",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "title": {
+                      "type": "string",
+                      "description": "属性块标题（如：项目库-项目-无形资产）"
+                    },
+                    "attrs": {
+                      "type": "object",
+                      "description": "属性字典"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "CombinedGraphResponse": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "integer"
+        },
+        "msg": {
+          "type": "string"
+        },
+        "data": {
+          "type": "object",
+          "properties": {
+            "graphId": {
+              "type": "string",
+              "description": "合并图谱标识"
+            },
+            "graphName": {
+              "type": "string",
+              "description": "合并图谱名称"
+            },
+            "nodes": {
+              "type": "array",
+              "description": "合并后的节点列表（去重）"
+            },
+            "links": {
+              "type": "array",
+              "description": "合并后的关系列表（去重）"
+            }
+          }
+        }
+      }
+    },
+    "ExportGraphItem": {
+      "type": "object",
+      "properties": {
+        "graphId": {
+          "type": "string"
+        },
+        "graphName": {
+          "type": "string"
+        },
+        "scope": {
+          "type": "string",
+          "description": "internal 或 external"
+        },
+        "source": {
+          "type": "string",
+          "description": "图谱来源"
+        },
+        "storageType": {
+          "type": "string",
+          "description": "sql 或 json_file"
+        },
+        "persisted": {
+          "type": "boolean"
+        },
+        "isActive": {
+          "type": "boolean"
+        },
+        "node_count": {
+          "type": "integer"
+        },
+        "link_count": {
+          "type": "integer"
+        },
+        "file_path": {
+          "type": "string",
+          "nullable": true
+        },
+        "nodes": {
+          "type": "array",
+          "items": {
+            "type": "object"
+          }
+        },
+        "links": {
+          "type": "array",
+          "items": {
+            "type": "object"
+          }
+        }
+      }
+    },
+    "AllGraphsResponse": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "integer"
+        },
+        "msg": {
+          "type": "string"
+        },
+        "data": {
+          "type": "object",
+          "properties": {
+            "exported_at": {
+              "type": "string",
+              "description": "导出时间"
+            },
+            "graph_count": {
+              "type": "integer"
+            },
+            "internal_graph_count": {
+              "type": "integer"
+            },
+            "external_graph_count": {
+              "type": "integer"
+            },
+            "graphs": {
+              "type": "array",
+              "items": {
+                "$ref": "#/components/schemas/ExportGraphItem"
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

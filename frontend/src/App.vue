@@ -4,8 +4,10 @@
   </div>
 </template>
 <script setup>
+import { useEnumsStore } from '@/stores/enums'
 
-
+const enumsStore = useEnumsStore()
+enumsStore.load()
 </script>
 <style>
 .app {

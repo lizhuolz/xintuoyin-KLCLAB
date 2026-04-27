@@ -1,0 +1,5 @@
+Looking in indexes: https://pypi.mirrors.ustc.edu.cn/simple/
+Collecting PyMySQL
+  Using cached https://mirrors.ustc.edu.cn/pypi/packages/7c/4c/ad33b92b9864cbde84f259d5df035a6447f91891f5be77788e2a3892bce3/pymysql-1.1.2-py3-none-any.whl (45 kB)
+Installing collected packages: PyMySQL
+Successfully installed PyMySQL-1.1.2

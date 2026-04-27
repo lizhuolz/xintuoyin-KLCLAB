@@ -1,7 +1,11 @@
 <template>
   <div class="kb-management-container">
     <div class="header-section">
-      <span class="title">知识库列表</span>
+      <span class="title">知识库管理</span>
+      <el-tabs v-model="activeTab" @tab-change="handleTabChange" class="kb-tabs">
+        <el-tab-pane label="用户知识库" name="user" />
+        <el-tab-pane label="基础知识库" name="base" />
+      </el-tabs>
       <div class="header-actions">
         <el-button @click="fetchKBList">刷新</el-button>
         <el-button type="primary" @click="handleAdd">新增知识库</el-button>
@@ -11,9 +15,9 @@
     <el-table :data="kbList" style="width: 100%" v-loading="loading" stripe header-cell-class-name="kb-table-header">
       <el-table-column prop="name" label="知识库名称" min-width="180" />
       <el-table-column prop="fileCount" label="文件数量" width="100" align="center" />
-      <el-table-column label="使用人" min-width="220">
+      <el-table-column v-if="!isBaseTab" label="使用人" min-width="220">
         <template #default="scope">
-          <span class="users-link" @click="handleEdit(scope.row)">{{ formatUsers(scope.row.users) || '暂未分配' }}</span>
+          <span>{{ formatUsers(scope.row.users) || '暂未分配' }}</span>
         </template>
       </el-table-column>
       <el-table-column prop="remark" label="备注" min-width="180" show-overflow-tooltip />
@@ -48,11 +52,6 @@
     <el-dialog v-model="addVisible" title="添加知识库" width="450px" align-center>
       <el-form :model="addForm" label-width="100px">
         <el-form-item label="知识库名称:" required><el-input v-model="addForm.name" /></el-form-item>
-        <el-form-item label="向量模型:">
-          <el-select v-model="addForm.model" placeholder="请选择">
-            <el-option label="OpenAI - Text Embedding 3" value="openai" />
-          </el-select>
-        </el-form-item>
       </el-form>
       <template #footer>
         <el-button @click="addVisible = false">取消</el-button>
@@ -75,19 +74,51 @@
 
         <el-form :model="editForm" label-position="top" style="margin-top: 16px">
           <el-form-item label="知识库备注">
-            <el-input v-model="editForm.remark" type="textarea" rows="4" placeholder="请输入备注或使用说明" />
+            <el-input v-model="editForm.remark" type="textarea" :rows="remarkUsingTemplate ? 10 : 4" placeholder="请输入备注或使用说明" />
+            <el-button link type="primary" style="margin-top: 4px" @click="toggleRemarkTemplate">{{ remarkUsingTemplate ? '取消模版' : '使用模版' }}</el-button>
           </el-form-item>
         </el-form>
 
-        <div class="user-editor">
+        <div v-if="!isBaseTab" class="user-editor">
           <div class="section-head">
             <span>使用人</span>
+            <el-button size="small" type="primary" @click="userPickerVisible = true">选择使用人</el-button>
           </div>
           <div class="user-tags">
             <el-tag v-for="item in editForm.users" :key="item" closable @close="removeUser(item)">{{ item }}</el-tag>
-            <el-input v-model="userDraft" class="user-input" placeholder="输入姓名后回车添加" @keyup.enter="appendUser" />
+            <span v-if="!editForm.users.length" class="no-user-tip">暂未选择使用人</span>
           </div>
         </div>
+
+        <el-dialog v-model="userPickerVisible" title="选择使用人" width="600px" append-to-body>
+          <div class="user-picker">
+            <div class="picker-left">
+              <div class="picker-count">{{ allMemberNames.length }} 人</div>
+              <div v-for="dept in deptUsers" :key="dept.department" class="dept-group">
+                <div class="dept-name">
+                  <el-checkbox :model-value="isDeptAllSelected(dept)" :indeterminate="isDeptPartial(dept)" @change="toggleDept(dept, $event)">{{ dept.department }}</el-checkbox>
+                </div>
+                <div class="dept-members">
+                  <el-checkbox v-for="name in dept.members" :key="name" :model-value="pickerSelected.includes(name)" @change="toggleMember(name, $event)">{{ name }}</el-checkbox>
+                </div>
+              </div>
+            </div>
+            <div class="picker-actions">
+              <el-button :icon="ArrowRight" @click="addSelected" :disabled="!pickerSelected.length" />
+              <el-button :icon="ArrowLeft" @click="removeSelected" :disabled="!pickerChosen.length" />
+            </div>
+            <div class="picker-right">
+              <div class="picker-count">{{ pickerChosen.length }} 人</div>
+              <div v-for="name in pickerChosen" :key="name" class="chosen-item">
+                <el-checkbox :model-value="true" @change="removeChosen(name)">{{ name }}</el-checkbox>
+              </div>
+            </div>
+          </div>
+          <template #footer>
+            <el-button @click="userPickerVisible = false">取消</el-button>
+            <el-button type="primary" @click="confirmUserPicker">确认</el-button>
+          </template>
+        </el-dialog>
 
         <div class="file-section">
           <div class="section-head">
@@ -101,7 +132,14 @@
             </div>
           </div>
 
-          <el-upload class="kb-uploader-box" drag multiple :show-file-list="false" :http-request="uploadFileRequest">
+          <el-upload
+            class="kb-uploader-box"
+            drag
+            multiple
+            :auto-upload="false"
+            :show-file-list="false"
+            :on-change="handleKbFileSelect"
+          >
             <el-icon class="el-icon--upload"><FolderOpened /></el-icon>
             <div class="el-upload__text">点击或拖拽上传文件</div>
           </el-upload>
@@ -141,9 +179,17 @@
 
 <script setup>
 import { ref, reactive, computed, onMounted } from 'vue'
-import { FolderOpened } from '@element-plus/icons-vue'
+
+import { FolderOpened, ArrowLeft, ArrowRight } from '@element-plus/icons-vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { aiApi } from '@/api/ai'
+
+const activeTab = ref('user')
+const isBaseTab = computed(() => activeTab.value === 'base')
+function handleTabChange() {
+  pagination.page = 1
+  fetchKBList()
+}
 
 const loading = ref(false)
 const total = ref(0)
@@ -160,9 +206,9 @@ const hasPendingChanges = computed(() => pendingUploadFiles.value.length > 0 || 
 const displayFiles = computed(() => {
   const deleteSet = new Set(pendingDeleteFileNames.value)
   const baseFiles = currentFiles.value.map((item) => ({ ...item, __pendingUpload: false })).filter((item) => !deleteSet.has(item.name))
-  const stagedUploads = pendingUploadFiles.value.map((file) => ({
-    name: file.name,
-    size: file.size,
+  const stagedUploads = pendingUploadFiles.value.map((item) => ({
+    name: item.name,
+    size: item.size || 0,
     uploadedAt: '待提交',
     __pendingUpload: true,
   }))
@@ -176,7 +222,7 @@ function isPendingDelete(filename) {
 async function fetchKBList() {
   loading.value = true
   try {
-    const data = await aiApi.listKnowledgeBases({ page: pagination.page, size: pagination.size })
+    const data = await aiApi.listKnowledgeBases({ page: pagination.page, size: pagination.size, type: activeTab.value })
     kbList.value = data.list || []
     total.value = data.total || kbList.value.length
     pagination.page = data.page || pagination.page
@@ -202,11 +248,8 @@ async function confirmAdd() {
     ElMessage.warning('请输入名称')
     return
   }
-  const formData = new FormData()
-  formData.append('name', addForm.name)
-  formData.append('model', addForm.model)
   try {
-    await aiApi.createKnowledgeBase(formData)
+    await aiApi.createKnowledgeBase({ name: addForm.name, model: addForm.model, type: activeTab.value })
     addVisible.value = false
     addForm.name = ''
     addForm.model = 'openai'
@@ -220,7 +263,80 @@ async function confirmAdd() {
 const editVisible = ref(false)
 const editingId = ref('')
 const editForm = reactive({ name: '', remark: '', enabled: true, users: [] })
-const userDraft = ref('')
+const remarkUsingTemplate = ref(false)
+const remarkBeforeTemplate = ref('')
+const REMARK_TEMPLATE = `概述：[一句话描述，简要说明知识库的核心内容和使用目的]
+
+主要内容：
+【文件一名称】[对该主题的简短描述，包括关键词或概念]
+【文件二名称】[对该主题的简短描述，包括关键词或概念]
+【文件三名称】[对该主题的简短描述，包括关键词或概念]
+
+适用场景：[描述哪些类型的查询或问题，这个知识库能够提供帮助]`
+
+function toggleRemarkTemplate() {
+  if (remarkUsingTemplate.value) {
+    editForm.remark = remarkBeforeTemplate.value
+    remarkUsingTemplate.value = false
+  } else {
+    remarkBeforeTemplate.value = editForm.remark
+    editForm.remark = REMARK_TEMPLATE
+    remarkUsingTemplate.value = true
+  }
+}
+
+// 使用人选择器
+const userPickerVisible = ref(false)
+const deptUsers = ref([])
+const pickerSelected = ref([])
+const pickerChosen = ref([])
+const allMemberNames = computed(() => deptUsers.value.flatMap((d) => d.members))
+
+async function fetchDeptUsers() {
+  try {
+    deptUsers.value = await aiApi.getDepartmentUsers() || []
+  } catch { deptUsers.value = [] }
+}
+
+function isDeptAllSelected(dept) {
+  return dept.members.every((n) => pickerSelected.value.includes(n))
+}
+function isDeptPartial(dept) {
+  const count = dept.members.filter((n) => pickerSelected.value.includes(n)).length
+  return count > 0 && count < dept.members.length
+}
+function toggleDept(dept, checked) {
+  if (checked) {
+    const set = new Set(pickerSelected.value)
+    dept.members.forEach((n) => set.add(n))
+    pickerSelected.value = [...set]
+  } else {
+    pickerSelected.value = pickerSelected.value.filter((n) => !dept.members.includes(n))
+  }
+}
+function toggleMember(name, checked) {
+  if (checked) {
+    if (!pickerSelected.value.includes(name)) pickerSelected.value.push(name)
+  } else {
+    pickerSelected.value = pickerSelected.value.filter((n) => n !== name)
+  }
+}
+function addSelected() {
+  const set = new Set(pickerChosen.value)
+  pickerSelected.value.forEach((n) => set.add(n))
+  pickerChosen.value = [...set]
+  pickerSelected.value = []
+}
+function removeSelected() {
+  pickerChosen.value = []
+}
+function removeChosen(name) {
+  pickerChosen.value = pickerChosen.value.filter((n) => n !== name)
+}
+function confirmUserPicker() {
+  editForm.users = [...pickerChosen.value]
+  userPickerVisible.value = false
+}
 
 async function fetchFiles() {
   if (!editingId.value) return
@@ -238,23 +354,19 @@ async function handleEdit(row) {
   editForm.name = row.name || ''
   editForm.remark = row.remark || ''
   editForm.enabled = row.enabled !== false
+  remarkUsingTemplate.value = false
+  remarkBeforeTemplate.value = ''
   editForm.users = (row.users || []).map((item) => item?.name || item).filter(Boolean)
   selectedFileNames.value = []
   pendingUploadFiles.value = []
   pendingDeleteFileNames.value = []
-  userDraft.value = ''
+  pickerSelected.value = []
+  pickerChosen.value = [...editForm.users]
   await fetchFiles()
+  await fetchDeptUsers()
   editVisible.value = true
 }
 
-function appendUser() {
-  const value = userDraft.value.trim()
-  if (!value) return
-  if (!editForm.users.includes(value)) {
-    editForm.users.push(value)
-  }
-  userDraft.value = ''
-}
 
 function removeUser(name) {
   editForm.users = editForm.users.filter((item) => item !== name)
@@ -264,15 +376,33 @@ function handleFileSelectionChange(selection) {
   selectedFileNames.value = selection.map((item) => item.name)
 }
 
-async function uploadFileRequest({ file, onSuccess, onError }) {
+let kbPendingRawFiles = []
+let kbFlushTimer = null
+
+function handleKbFileSelect(uploadFile) {
+  if (!uploadFile?.raw) return
+  kbPendingRawFiles.push(uploadFile.raw)
+  if (kbFlushTimer) clearTimeout(kbFlushTimer)
+  kbFlushTimer = setTimeout(flushKbUploads, 50)
+}
+
+async function flushKbUploads() {
+  kbFlushTimer = null
+  const batch = kbPendingRawFiles.splice(0)
+  if (!batch.length) return
   try {
-    pendingUploadFiles.value = [...pendingUploadFiles.value, file]
-    pendingDeleteFileNames.value = pendingDeleteFileNames.value.filter((name) => name !== file.name)
-    ElMessage.success(`${file.name} 已加入待提交列表`)
-    onSuccess?.({})
+    const result = await aiApi.uploadFiles(batch)
+    const uploaded = result.files || []
+    if (!uploaded.length) return
+    const uploadedNames = new Set(uploaded.map((item) => item.filename))
+    pendingUploadFiles.value = [
+      ...pendingUploadFiles.value,
+      ...uploaded.map((item) => ({ file_id: item.file_id, name: item.filename })),
+    ]
+    pendingDeleteFileNames.value = pendingDeleteFileNames.value.filter((name) => !uploadedNames.has(name))
+    ElMessage.success(`已上传 ${uploaded.length} 个文件`)
   } catch (error) {
     ElMessage.error(error.message || '上传失败')
-    onError?.(error)
   }
 }
 
@@ -318,22 +448,22 @@ function handleCancelEdit() {
   editVisible.value = false
 }
 
-function buildUpdateFormData(confirmValue) {
-  const formData = new FormData()
-  formData.append('id', editingId.value)
-  formData.append('name', editForm.name)
-  formData.append('remark', editForm.remark)
-  formData.append('enabled', String(editForm.enabled))
-  formData.append('users', JSON.stringify(editForm.users.map((name) => ({ name, phone: '', categoryName: '' }))))
-  formData.append('delete_files', JSON.stringify(pendingDeleteFileNames.value))
-  formData.append('confirm', String(confirmValue))
-  pendingUploadFiles.value.forEach((file) => formData.append('files', file))
-  return formData
+function buildUpdatePayload(confirmValue) {
+  return {
+    id: editingId.value,
+    name: editForm.name,
+    remark: editForm.remark,
+    enabled: String(editForm.enabled),
+    users: JSON.stringify(editForm.users.map((name) => ({ name, phone: '', categoryName: '' }))),
+    delete_files: JSON.stringify(pendingDeleteFileNames.value),
+    add_file_ids: pendingUploadFiles.value.map((f) => f.file_id),
+    confirm: String(confirmValue),
+  }
 }
 
 async function confirmEdit() {
   try {
-    const preview = await aiApi.updateKnowledgeBase(buildUpdateFormData(false))
+    const preview = await aiApi.updateKnowledgeBase(buildUpdatePayload(false))
     const pending = preview.pending || {}
     await ElMessageBox.confirm(
       `将删除 ${pending.delete_files?.length || 0} 个文件，上传 ${pending.upload_files?.length || 0} 个文件，并保存当前基础信息。是否确认提交？`,
@@ -352,7 +482,7 @@ async function confirmEdit() {
   }
 
   try {
-    await aiApi.updateKnowledgeBase(buildUpdateFormData(true))
+    await aiApi.updateKnowledgeBase(buildUpdatePayload(true))
     resetPendingChanges()
     editVisible.value = false
     await fetchKBList()
@@ -364,11 +494,16 @@ async function confirmEdit() {
 
 async function handleStatusChange(row) {
   const original = !row.enabled
-  const formData = new FormData()
-  formData.append('id', row.id)
-  formData.append('enabled', String(row.enabled))
+  if (row.enabled) {
+    try {
+      await ElMessageBox.confirm(`确认应用知识库「${row.name}」？`, '提示', { confirmButtonText: '确认', cancelButtonText: '取消', type: 'warning' })
+    } catch {
+      row.enabled = original
+      return
+    }
+  }
   try {
-    await aiApi.updateKnowledgeBase(formData)
+    await aiApi.toggleKnowledgeBaseEnabled(row.id, row.enabled)
     ElMessage.success('状态已更新')
   } catch (error) {
     row.enabled = original
@@ -392,11 +527,11 @@ async function handleDelete(row) {
 
 <style scoped lang="less">
 .kb-management-container { padding: 24px; background: #fff; min-height: 100vh; }
-.header-section { margin-bottom: 20px; display: flex; align-items: center; justify-content: space-between; .title { font-size: 18px; font-weight: bold; } }
+.header-section { margin-bottom: 20px; .title { font-size: 18px; font-weight: bold; } }
+.kb-tabs { margin-bottom: 16px; }
 .header-actions { display: flex; gap: 12px; }
 
 :deep(.kb-table-header) { background-color: #f8f9fb !important; color: #666; }
-.users-link { color: #4080FF; cursor: pointer; text-decoration: underline; }
 .status-switch { margin: 0 auto; }
 
 .footer-actions { margin-top: 24px; .pagination-wrapper { display: flex; justify-content: flex-end; } }
@@ -422,6 +557,21 @@ async function handleDelete(row) {
 
 :deep(.sub-table-header) { background-color: #fcfcfc !important; font-size: 12px; }
 .confirm-btn { background: #4080FF; padding: 10px 30px; }
+
+.no-user-tip { color: #999; font-size: 13px; }
+
+.user-picker {
+  display: flex; gap: 16px; min-height: 280px;
+  .picker-left, .picker-right {
+    flex: 1; border: 1px solid #e5e7eb; border-radius: 8px; padding: 12px; overflow-y: auto; max-height: 350px;
+  }
+  .picker-actions { display: flex; flex-direction: column; justify-content: center; gap: 12px; }
+  .picker-count { font-size: 12px; color: #999; margin-bottom: 8px; }
+  .dept-group { margin-bottom: 8px; }
+  .dept-name { font-weight: 600; margin-bottom: 4px; }
+  .dept-members { padding-left: 20px; display: flex; flex-direction: column; gap: 2px; }
+  .chosen-item { margin-bottom: 2px; }
+}
 
 @media (max-width: 960px) {
   .header-section { flex-direction: column; align-items: flex-start; gap: 12px; }

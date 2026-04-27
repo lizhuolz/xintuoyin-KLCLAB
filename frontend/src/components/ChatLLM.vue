@@ -1,9 +1,10 @@
 <template>
   <div class="chat-container">
     <aside class="sidebar" :class="{ collapsed: isSidebarCollapsed }">
+      <div class="sidebar-brand" v-if="!isSidebarCollapsed">研发猫AI</div>
       <div class="sidebar-header">
         <button v-if="!isSidebarCollapsed" class="new-chat-btn" @click="createNewChat">
-          <span class="plus-icon">+</span> 新建对话
+          <span class="plus-icon">+</span> 新对话
         </button>
         <button class="toggle-btn" @click="isSidebarCollapsed = !isSidebarCollapsed">
           <el-icon><Fold v-if="!isSidebarCollapsed" /><Expand v-else /></el-icon>
@@ -13,7 +14,7 @@
       <div v-if="!isSidebarCollapsed" class="sidebar-search-wrapper">
         <el-input
           v-model="sidebarSearch"
-          placeholder="搜索对话记录或内容..."
+          placeholder="搜索对话记录标题"
           prefix-icon="Search"
           clearable
           size="small"
@@ -21,6 +22,7 @@
         />
       </div>
 
+      <div v-if="!isSidebarCollapsed && conversations.length > 0" class="sidebar-section-label">历史</div>
       <div class="sidebar-list">
         <div
           v-for="conv in conversations"
@@ -50,8 +52,7 @@
 
       <div v-if="currentMessages.length === 0" class="initial-greeting">
         <div class="greeting-content">
-          <h1 class="gradient-text">用户你好</h1>
-          <h2 class="sub-text">需要我为你做什么</h2>
+          <h1 class="gradient-text">早上好！我是研发猫AI助手</h1>
         </div>
       </div>
 
@@ -106,32 +107,24 @@
 
       <footer class="chat-input-area">
         <div class="input-container-inner">
-          <div class="kg-entrance-wrapper">
-            <router-link to="/ai/kb" class="kg-bubble">知识库管理</router-link>
-          </div>
           <div class="input-box-wrapper">
-            <textarea v-model="inputMessage" @keydown.enter.exact.prevent="sendMessage" placeholder="输入消息..." ref="textareaRef"></textarea>
+            <textarea v-model="inputMessage" @keydown.enter.exact.prevent="sendMessage" placeholder="Shift+Enter换行" ref="textareaRef"></textarea>
             <div v-if="files.length > 0" class="mini-previews">
               <div v-for="(file, index) in files" :key="`${file.name}-${index}`" class="mini-file"><span>{{ file.name }}</span><i @click="removeFile(index)">×</i></div>
             </div>
             <div class="bottom-toolbar">
-              <div class="tools-left">
-                <label class="tool-btn">
+              <div class="tools-left"></div>
+              <div class="tools-right">
+                <button class="tool-btn" :class="{ active: thinkingEnabled }" @click="thinkingEnabled = !thinkingEnabled" title="深度思考"><el-icon><MagicStick /></el-icon></button>
+                <button class="tool-btn" :class="{ active: webSearchEnabled }" @click="webSearchEnabled = !webSearchEnabled" title="联网搜索"><el-icon><Search /></el-icon></button>
+                <label class="tool-btn" title="上传文件">
                   <el-icon><Paperclip /></el-icon>
                   <input type="file" multiple @change="handleFileUpload" accept=".pdf,.doc,.docx,.ppt,.pptx,.txt,.md,.xls,.xlsx,.csv" hidden />
                 </label>
-                <button class="tool-btn" :class="{ active: webSearchEnabled }" @click="webSearchEnabled = !webSearchEnabled"><el-icon><Search /></el-icon></button>
-                <div class="pop-wrapper">
-                  <button class="tool-btn" :class="{ active: !!selectedDB }" @click="showDBMenu = !showDBMenu"><el-icon><Coin /></el-icon></button>
-                  <div v-if="showDBMenu" class="pop-menu">
-                    <div v-for="option in dbOptions" :key="option.value" @click="toggleDbVersion(option.value)" :class="{ active: selectedDB === option.value }">{{ option.label }}</div>
-                  </div>
-                </div>
+                <button class="send-submit-btn" :disabled="(!inputMessage.trim() && !files.length) || loading" @click="sendMessage" title="发送"><el-icon><Promotion /></el-icon></button>
               </div>
-              <button class="send-submit-btn" :disabled="(!inputMessage.trim() && !files.length) || loading" @click="sendMessage"><el-icon><Promotion /></el-icon></button>
             </div>
           </div>
-          <div class="legal-footer">©2025-新拓银人工智能 | 渝ICP备2024037824号-1 | v1.0.0</div>
         </div>
       </footer>
     </main>
@@ -158,7 +151,7 @@
           <span class="count-tip">对话记录 ({{ managerList.length }}条)</span>
           <el-input
             v-model="managerSearch"
-            placeholder="搜索名称或对话内容"
+            placeholder="搜索对话记录"
             prefix-icon="Search"
             class="search-input"
             clearable
@@ -219,31 +212,31 @@
       <el-form :model="feedbackForm" label-position="top" class="custom-feedback-form">
         <el-form-item label="针对问题">
           <el-radio-group v-model="feedbackForm.reasons.question">
-            <el-radio label="不理解问题" />
-            <el-radio label="遗忘上下文" />
-            <el-radio label="未遵循要求" />
+            <el-radio label="notUnderstand">不理解问题</el-radio>
+            <el-radio label="missingContext">遗忘上下文</el-radio>
+            <el-radio label="notMeetRequirements">未遵循要求</el-radio>
           </el-radio-group>
         </el-form-item>
 
         <el-form-item label="针对回答效果">
           <el-radio-group v-model="feedbackForm.reasons.answer">
-            <el-radio label="回答错误" />
-            <el-radio label="逻辑混乱" />
-            <el-radio label="时效性差" />
-            <el-radio label="可读性差" />
-            <el-radio label="回答不完整" />
-            <el-radio label="回答笼统不专业" />
+            <el-radio label="wrongAnswer">回答错误</el-radio>
+            <el-radio label="confuseLogic">逻辑混乱</el-radio>
+            <el-radio label="timeMismatch">时效性差</el-radio>
+            <el-radio label="readabilityPoor">可读性差</el-radio>
+            <el-radio label="incompleteAnswer">回答不完整</el-radio>
+            <el-radio label="processUnprofessional">回答笼统不专业</el-radio>
           </el-radio-group>
         </el-form-item>
 
         <el-form-item label="举报">
           <el-radio-group v-model="feedbackForm.reasons.report">
-            <el-radio label="色情低俗" />
-            <el-radio label="政治敏感" />
-            <el-radio label="违法犯罪" />
-            <el-radio label="歧视或偏见回答" />
-            <el-radio label="侵犯隐私" />
-            <el-radio label="内容侵权" />
+            <el-radio label="porn">色情低俗</el-radio>
+            <el-radio label="politics">政治敏感</el-radio>
+            <el-radio label="illegal">违法犯罪</el-radio>
+            <el-radio label="discrimination">歧视或偏见回答</el-radio>
+            <el-radio label="privacy">侵犯隐私</el-radio>
+            <el-radio label="copyright">内容侵权</el-radio>
           </el-radio-group>
         </el-form-item>
 
@@ -289,9 +282,12 @@ import { ref, reactive, computed, nextTick, onMounted, watch } from 'vue'
 import MarkdownIt from 'markdown-it'
 import hljs from 'highlight.js'
 import 'highlight.js/styles/github.css'
-import { Link, DocumentCopy, CaretTop, CaretBottom, Search, Paperclip, Coin, Promotion, TopRight, Fold, Expand, ChatDotRound, Delete, Plus, Setting } from '@element-plus/icons-vue'
+import { Link, DocumentCopy, CaretTop, CaretBottom, Search, Paperclip, Promotion, TopRight, Fold, Expand, ChatDotRound, Delete, Plus, Setting, MagicStick } from '@element-plus/icons-vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { aiApi, flattenHistoryMessages, formatTimestamp } from '@/api/ai'
+import { useEnumsStore } from '@/stores/enums'
+
+const enumsStore = useEnumsStore()
 
 const md = new MarkdownIt({
   html: false,
@@ -316,12 +312,10 @@ const inputMessage = ref('')
 const files = ref([])
 const loading = ref(false)
 const webSearchEnabled = ref(false)
+const thinkingEnabled = ref(false)
 const showDBMenu = ref(false)
 const selectedDB = ref(null)
-const dbOptions = ref([
-  { label: '数据库1', value: '1' },
-  { label: '数据库2', value: '2' },
-])
+const dbOptions = ref([])
 const userIdentity = ref('guest')
 const sidebarSources = ref([])
 const scrollRef = ref(null)
@@ -482,6 +476,7 @@ const feedbackForm = reactive({
 })
 const feedbackFiles = ref([])
 
+
 function resetFeedbackForm() {
   feedbackForm.reasons = { question: '', answer: '', report: '' }
   feedbackForm.comment = ''
@@ -506,18 +501,20 @@ async function syncConversationAfterFeedback() {
   }
 }
 
-async function submitFeedbackState(messageIndex, type, extraFormData = null) {
-  const formData = extraFormData || new FormData()
-  formData.append('conversation_id', String(currentId.value))
-  formData.append('message_index', String(messageIndex))
-  formData.append('type', type)
-  return aiApi.submitChatFeedback(formData)
+async function submitFeedbackState(messageIndex, type, extraPayload = null) {
+  const payload = {
+    ...(extraPayload || {}),
+    conversation_id: String(currentId.value),
+    message_index: String(messageIndex),
+    type: type,
+  }
+  return aiApi.submitChatFeedback(payload)
 }
 
 const handleLike = async (msg) => {
   try {
     const result = await submitFeedbackState(msg.messageIndex, 'like')
-    updateAssistantFeedback(msg.messageIndex, result.state)
+    updateAssistantFeedback(msg.messageIndex, result.feedback)
     await syncConversationAfterFeedback()
   } catch (error) {
     ElMessage.error(error.message || '操作失败')
@@ -528,7 +525,7 @@ const handleDislike = async (msg) => {
   if (msg.disliked) {
     try {
       const result = await submitFeedbackState(msg.messageIndex, 'dislike')
-      updateAssistantFeedback(msg.messageIndex, result.state)
+      updateAssistantFeedback(msg.messageIndex, result.feedback)
       await syncConversationAfterFeedback()
     } catch (error) {
       ElMessage.error(error.message || '操作失败')
@@ -556,14 +553,28 @@ async function submitFeedback() {
     return
   }
 
-  const formData = new FormData()
-  formData.append('reasons', JSON.stringify(feedbackForm.reasons))
-  formData.append('comment', feedbackForm.comment)
-  feedbackFiles.value.forEach((file) => formData.append('files', file))
+  let pictureIds = []
+  if (feedbackFiles.value.length) {
+    try {
+      const result = await aiApi.uploadFiles(feedbackFiles.value)
+      pictureIds = (result.files || []).map((item) => item.file_id)
+    } catch (e) {
+      ElMessage.error(e.message || '上传截图失败')
+      return
+    }
+  }
+
+  const feedbackPayload = {
+    question_issues: feedbackForm.reasons.question ? [feedbackForm.reasons.question] : [],
+    answer_effects: feedbackForm.reasons.answer ? [feedbackForm.reasons.answer] : [],
+    report_reasons: feedbackForm.reasons.report ? [feedbackForm.reasons.report] : [],
+    comment: feedbackForm.comment,
+    picture_ids: pictureIds,
+  }
 
   try {
-    const result = await submitFeedbackState(currentFeedbackMsgIndex.value, 'dislike', formData)
-    updateAssistantFeedback(currentFeedbackMsgIndex.value, result.state)
+    const result = await submitFeedbackState(currentFeedbackMsgIndex.value, 'dislike', feedbackPayload)
+    updateAssistantFeedback(currentFeedbackMsgIndex.value, result.feedback)
     await syncConversationAfterFeedback()
     feedbackVisible.value = false
     ElMessage.success('感谢您的反馈！')
@@ -641,7 +652,7 @@ async function createNewChat() {
 }
 
 function handleFileUpload(event) {
-  const allowed = ['pdf', 'doc', 'docx', 'ppt', 'pptx', 'txt', 'md', 'xls', 'xlsx', 'csv']
+  const allowed = enumsStore.data.allowed_upload_extensions || []
   const selected = Array.from(event.target.files || [])
   const accepted = selected.filter((file) => allowed.includes(file.name.split('.').pop()?.toLowerCase()))
   if (accepted.length < selected.length) {
@@ -674,14 +685,10 @@ function toggleDbVersion(version) {
 async function loadDbOptions() {
   try {
     const data = await aiApi.getDbOptions()
-    if (Array.isArray(data.options) && data.options.length) {
-      dbOptions.value = data.options
-    }
-  } catch (error) {
-    dbOptions.value = [
-      { label: '数据库1', value: '1' },
-      { label: '数据库2', value: '2' },
-    ]
+    dbOptions.value = Array.isArray(data?.databases) ? data.databases : []
+  } catch (err) {
+    console.error('加载数据库选项失败:', err)
+    dbOptions.value = []
   }
 }
 
@@ -716,8 +723,8 @@ async function sendMessage() {
     sources: [],
     recommendations: [],
     thinkingText: '',
-    thinkingVisible: true,
-    thinkingLoading: true,
+    thinkingVisible: thinkingEnabled.value,
+    thinkingLoading: thinkingEnabled.value,
     thinkingError: false,
     liked: false,
     disliked: false,
@@ -728,6 +735,7 @@ async function sendMessage() {
   conversation.messages.push(userMessage, assistantMessage)
   conversation.loaded = true
   if (!conversation.title || conversation.title === '新对话') {
+    // TODO: 后端 done 事件应返回 title 字段，届时改为 conversation.title = donePayload.title
     conversation.title = text.slice(0, 20) || '新对话'
   }
   moveConversationToTop(conversation)
@@ -735,20 +743,33 @@ async function sendMessage() {
   loading.value = true
   nextTick(scrollToBottom)
 
-  const formData = new FormData()
-  formData.append('message', text)
-  formData.append('conversation_id', String(conversation.id))
-  formData.append('web_search', String(webSearchEnabled.value))
-  formData.append('user_identity', userIdentity.value)
-  if (selectedDB.value) {
-    formData.append('db_version', selectedDB.value)
+  let fileIds = []
+  if (pendingFiles.length) {
+    try {
+      const result = await aiApi.uploadFiles(pendingFiles)
+      fileIds = (result.files || []).map((item) => item.file_id)
+    } catch (e) {
+      ElMessage.error(e.message || '上传附件失败')
+      loading.value = false
+      return
+    }
   }
-  pendingFiles.forEach((file) => formData.append('files', file))
+
+  const payload = {
+    message: text,
+    conversation_id: String(conversation.id),
+    web_search: String(webSearchEnabled.value),
+    enable_thinking: String(thinkingEnabled.value),
+    user_identity: userIdentity.value,
+    file_ids: fileIds,
+  }
+  if (selectedDB.value) payload.db_version = selectedDB.value
 
   try {
-    const data = await aiApi.sendChatStream(formData, (event) => {
+    const data = await aiApi.sendChatStream(payload, (event) => {
       if (!event || typeof event !== 'object') return
       if (event.type === 'thinking_delta') {
+        if (!thinkingEnabled.value) return
         assistantMessage.thinkingText += event.delta || ''
         assistantMessage.thinkingVisible = Boolean(assistantMessage.thinkingText)
         assistantMessage.thinkingLoading = false
@@ -811,6 +832,8 @@ watch(currentMessages, () => nextTick(scrollToBottom), { deep: true })
 
 <style scoped lang="less">
 .chat-container { display: flex; height: 100%; background: #fff; overflow: hidden; }
+.sidebar-brand { font-size: 18px; font-weight: 700; color: #333; padding: 4px 12px 8px; }
+.sidebar-section-label { font-size: 12px; color: #999; padding: 8px 12px 4px; text-transform: uppercase; }
 .sidebar { width: 260px; background: #f9f9f9; display: flex; flex-direction: column; border-right: 1px solid #eee; padding: 12px; transition: width 0.3s; }
 .sidebar.collapsed { width: 64px; padding: 12px 8px; }
 .sidebar-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
@@ -835,8 +858,7 @@ watch(currentMessages, () => nextTick(scrollToBottom), { deep: true })
 .chat-header { height: 50px; display: flex; align-items: center; justify-content: center; border-bottom: 1px solid #f0f0f0; font-size: 14px; color: #666; }
 .initial-greeting { flex: 1; display: flex; align-items: center; justify-content: center; }
 .greeting-content { width: 100%; max-width: 600px; padding: 0 20px; }
-.gradient-text { font-size: 48px; background: linear-gradient(90deg, #4285F4, #9B72CB, #D96570); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 10px; }
-.sub-text { font-size: 36px; color: #eee; margin: 0; }
+.gradient-text { font-size: 36px; color: #333; font-weight: 600; text-align: center; }
 .messages-container { flex: 1; overflow-y: auto; padding: 20px 0; }
 .message-inner { max-width: 850px; margin: 0 auto; display: flex; gap: 16px; padding: 12px 24px; }
 .assistant-icon-fixed { width: 28px; height: 28px; animation: rotate 10s linear infinite; }
@@ -868,28 +890,18 @@ watch(currentMessages, () => nextTick(scrollToBottom), { deep: true })
 .loading-row { display: flex; justify-content: center; padding: 24px; font-size: 28px; color: #a0abc0; letter-spacing: 6px; }
 .chat-input-area { padding: 18px 24px 24px; border-top: 1px solid #f2f4f7; }
 .input-container-inner { max-width: 960px; margin: 0 auto; }
-.kg-entrance-wrapper { margin-bottom: 10px; }
-.kg-bubble { display: inline-flex; align-items: center; padding: 8px 14px; border-radius: 999px; background: linear-gradient(135deg, #edf3ff 0%, #f8f2ff 100%); color: #335ea8; text-decoration: none; font-size: 13px; }
 .input-box-wrapper { border: 1px solid #dfe6f0; border-radius: 22px; padding: 14px 16px 12px; box-shadow: 0 12px 24px rgba(20, 40, 80, 0.06); }
 textarea { width: 100%; min-height: 90px; resize: none; border: none; outline: none; font-size: 15px; line-height: 1.7; font-family: inherit; }
 .mini-previews { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
 .mini-file { display: inline-flex; align-items: center; gap: 8px; padding: 6px 10px; border-radius: 999px; background: #f4f6fa; color: #50627a; font-size: 12px; }
 .mini-file i { font-style: normal; cursor: pointer; color: #8b98aa; }
-.bottom-toolbar { display: flex; justify-content: space-between; align-items: center; margin-top: 12px; }
-.tools-left { display: flex; align-items: center; gap: 8px; }
+.bottom-toolbar { display: flex; justify-content: flex-end; align-items: center; margin-top: 12px; }
+.tools-left { flex: 1; }
+.tools-right { display: flex; align-items: center; gap: 4px; }
 .tool-btn { width: 38px; height: 38px; border-radius: 50%; border: none; background: #f5f7fb; color: #73829b; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; position: relative; }
 .tool-btn.active { background: #e6f0ff; color: #2f6de6; }
-.pop-wrapper { position: relative; }
-.pop-menu { position: absolute; bottom: 48px; left: 0; min-width: 120px; background: #fff; border: 1px solid #e5e9f2; border-radius: 12px; box-shadow: 0 18px 32px rgba(22, 39, 77, 0.12); overflow: hidden; }
-.pop-menu > div { padding: 10px 14px; cursor: pointer; font-size: 13px; color: #516179; }
-.pop-menu > div:hover, .pop-menu > div.active { background: #eef4ff; color: #2f6de6; }
-.menu-divider { height: 1px; padding: 0 !important; background: #eef1f6; cursor: default !important; }
 .send-submit-btn { width: 46px; height: 46px; border-radius: 50%; border: none; background: linear-gradient(135deg, #3575f6 0%, #56a4ff 100%); color: #fff; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; box-shadow: 0 10px 18px rgba(53, 117, 246, 0.25); }
 .send-submit-btn:disabled { background: #d8deea; box-shadow: none; cursor: not-allowed; }
-.legal-footer { margin-top: 12px; text-align: center; font-size: 12px; color: #a0abc0; }
-.db-selector-toolbar { display: flex; gap: 12px; }
-.db-selector-summary { margin-top: 12px; color: #516179; font-size: 13px; }
-.db-column-comments { white-space: pre-wrap; line-height: 1.6; color: #516179; }
 .sources-sidebar { width: 340px; border-left: 1px solid #eef1f6; background: #fbfcfe; display: flex; flex-direction: column; }
 .sidebar-sources-header { padding: 18px 20px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #eef1f6; }
 .close-sidebar { border: none; background: transparent; font-size: 24px; color: #93a0b3; cursor: pointer; }

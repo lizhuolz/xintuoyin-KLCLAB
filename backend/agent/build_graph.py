@@ -13,6 +13,8 @@ from agent.router import (
     route_after_chatbot_web,
     route_after_should_sql,
     route_after_sql_planner,
+    route_after_sql_answer,
+    sql_rag_fallback_node,
 )
 
 
@@ -20,7 +22,13 @@ from agent.router import (
 # 2) chatbot（你原有）
 # =============================
 local_chatbot_node = make_chatbot_node(0, LOCAL_TOOLS)
-web_chatbot_node = make_chatbot_node(0, WEB_TOOLS, system_prompt="你是一个智能助手，你可以回答用户的问题，也可以调用网络工具来获取信息。") # 所有的问题的参考答案都需要附上全部对应的参考网站链接(重要!)
+web_chatbot_node = make_chatbot_node(0, WEB_TOOLS, system_prompt=(
+    "你是一个智能助手。用户已开启联网搜索，你必须遵守以下规则：\n"
+    "1. 你必须调用 `tavily_search_with_summary` 工具进行联网搜索，不能跳过。\n"
+    "2. 你也可以同时调用 `rag_tool` 检索知识库。\n"
+    "3. 回答中必须包含搜索到的网页链接作为参考来源。\n"
+    "4. 即使你认为自己已知道答案，也必须先搜索再回答，因为用户需要最新的网络信息和来源链接。"
+))
 should_sql_node = make_should_sql_node(SQL_TOOL_NAME)
 # sql_planner：只允许 SQL 工具调用（产出 tool_calls）
 sql_planner_node = make_chatbot_node(0, SQL_TOOLS, system_prompt="你是一个用户问题总结器,你需要精炼用户的问题，后续你的回答将会给sql代码生成器使用，请让你的回答清晰且能完全表述需求。")
@@ -51,6 +59,7 @@ def build_graph():
     graph_builder.add_node("sql_planner", sql_planner_node)
     graph_builder.add_node("sql_tools", sql_tools_node)
     graph_builder.add_node("sql_answer", sql_answer_node)
+    graph_builder.add_node("sql_rag_fallback", sql_rag_fallback_node)
 
     # START -> (local/web)
     graph_builder.add_conditional_edges(
@@ -81,7 +90,7 @@ def build_graph():
         {
             "tools_web": "tools_web",
             "should_sql": "should_sql",
-             "end": END # 添加结束路径
+            "end": END,
         },
     )
     graph_builder.add_edge("tools_web", "chatbot_web")
@@ -100,7 +109,14 @@ def build_graph():
         {"sql_tools": "sql_tools", "sql_answer": "sql_answer"},
     )
     graph_builder.add_edge("sql_tools", "sql_answer")
-    graph_builder.add_edge("sql_answer", END)
+    # sql_answer 后检查是否需要回退到 RAG
+    graph_builder.add_conditional_edges(
+        "sql_answer",
+        route_after_sql_answer,
+        {"sql_rag_fallback": "sql_rag_fallback", "end": END},
+    )
+    # 回退节点 -> chatbot_local（带 rag_tool 重试）
+    graph_builder.add_edge("sql_rag_fallback", "chatbot_local")
 
     return graph_builder
 

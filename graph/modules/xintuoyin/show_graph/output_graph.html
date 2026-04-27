@@ -1,0 +1,212 @@
+
+<!DOCTYPE html>
+<meta charset="utf-8">
+<style>.link {  fill: none;  stroke: #666;  stroke-width: 1.5px;}#licensing {  fill: green;}.link.licensing {  stroke: green;}.link.resolved {  stroke-dasharray: 0,2 1;}circle {  fill: #ccc;  stroke: #333;  stroke-width: 1.5px;}text {  font: 12px Microsoft YaHei;  pointer-events: none;  text-shadow: 0 1px 0 #fff, 1px 0 0 #fff, 0 -1px 0 #fff, -1px 0 0 #fff;}.linetext {    font-size: 12px Microsoft YaHei;}</style>
+<body>
+<script src="https://d3js.org/d3.v3.min.js"></script>
+
+<script>
+
+var links =
+[
+{source: '补充养老保险费用明细', target: '甲', 'rela': '姓名', type: 'resolved'},
+{source: '补充养老保险费用明细', target: '001', 'rela': '员工编号', type: 'resolved'},
+{source: '补充养老保险费用明细', target: '研发部门', 'rela': '部门', type: 'resolved'},
+{source: '补充养老保险费用明细', target: '¥973.73', 'rela': '单位缴费金额', type: 'resolved'},
+{source: '补充养老保险费用明细', target: '2024年01月01日', 'rela': '缴费日期', type: 'resolved'},
+{source: '调研记录', target: '目前市场上缺少低成本、轻量化、易部署、面向中小企业的AI故障预测解决方案。', 'rela': '结论', type: 'resolved'},
+{source: '调研记录', target: '工业设备智能运维需求与技术应用现状调研', 'rela': '调研主题', type: 'resolved'},
+{source: '调研记录', target: '掌握制造业企业在空压机、电机、泵组等关键设备运维中的主要问题；了解当前企业使用的监测手段及信息化水平；收集用户对AI驱动的故障预测系统的功能期望与接受程度；分析竞争对手产品特点与市场空白点；为项目预算、周期和技术方案提供依据。', 'rela': '调研目的', type: 'resolved'},
+{source: '调研记录', target: '2025年-09月-10日 - 2025年-10月-20日', 'rela': '调研周期（起止时间）', type: 'resolved'},
+{source: '调研记录', target: '中小型制造工厂（机械、电子、食品等行业），样本量N=15，选取方式为问卷 + 电话访谈；现有设备采购客户，样本量N=8，选取方式为深度访谈；高校教授、研究院专家，样本量N=3，选取方式为视频会议；市面上主流PHM系统厂商，样本量N=5款产品，选取方式为文献+官网资料分析；公司售后服务团队，样本量N=1个部门，选取方式为座谈会', 'rela': '调研对象（群体特征、样本量、选取方式）', type: 'resolved'},
+{source: '调研记录', target: '智科未来科技有限公司', 'rela': '执行单位/团队', type: 'resolved'},
+{source: '调研记录', target: '王芳', 'rela': '负责人', type: 'resolved'},
+{source: '调研记录', target: '吴晓峰；李明；赵敏', 'rela': '参与调研人员', type: 'resolved'},
+{source: '调研记录', target: '问卷调查；深度访谈；线上会议；文献查阅', 'rela': '调研方法（问卷调查、深度访谈、实地观察、文献研究等）', type: 'resolved'},
+{source: '调研记录', target: '您所在企业在空压机、电机、泵组等关键设备运维中的主要问题是什么？；您企业当前使用的监测手段有哪些？信息化水平如何？；您希望AI驱动的故障预测系统具备哪些功能？', 'rela': '核心问题（调研问卷/访谈的关键问题）', type: 'resolved'},
+{source: '调研记录', target: '73%的企业表示过去一年内发生过≥2次非计划停机，平均每次损失超5万元；87%的企业仍以定期巡检为主，缺乏实时监控手段；20%的企业具备基本的数据采集系统，多数无法进行趋势预测；平均每年设备维护支出占设备原值的8%~15%；93%的用户希望故障提前预警（≥48小时）；88%的用户希望可视化界面直观易用；76%的用户希望支持手机APP查看；65%的用户希望自动生成维修建议；52%的用户希望边缘部署、不依赖云端', 'rela': '统计结果（百分比、均值、频数等量化数据）', type: 'resolved'},
+{source: '调研记录', target: '我们最怕半夜接到车间电话说机器坏了，影响整条生产线；能提前知道哪里要坏，我们就敢减人了；不要搞得太复杂，操作工也能看懂；出差时也能随时掌握设备状态；不只是报警，最好告诉我要换什么零件；我们厂区网络不稳定，本地运行更安全。', 'rela': '典型观点（受访者引言、开放式问题答案摘要）', type: 'resolved'},
+{source: '调研记录', target: '市场需求明确：中小企业普遍面临设备运维压力大、人力成本高、智能化水平低的问题，对低成本AI预警系统有强烈需求；技术可行性强：现有AI算法已能较好支持故障预测任务，结合边缘计算可实现本地化部署；竞争存在空白：主流平台多面向大型企业，定制化程度高、价格昂贵，中小客户被忽视；实施风险可控：可通过试点合作方式验证效果，逐步优化模型与用户体验', 'rela': '关键发现（趋势、规律、异常数据）', type: 'resolved'},
+{source: '调研记录', target: '本项目提出的“基于深度学习的工业设备故障预测系统”具有明确的市场需求和技术可行性，符合智能制造发展趋势，具备良好的商业前景和社会价值。', 'rela': '主要结论（与调研目的对应）', type: 'resolved'},
+{source: '调研记录', target: '聚焦中小企业市场，推出标准化+模块化的产品形态→产品团队→高优先级；优先开发边缘轻量版系统，满足离线运行需求→技术研发部→高优先级；建立3个试点客户，免费部署并收集反馈，用于迭代优化→市场拓展部→高优先级；加强用户培训与售后服务体系建设，提升客户粘性→客户服务部→中优先级；将调研成果纳入《项目可行性研究报告》和《技术任务书》中→项目管理部→中优先级', 'rela': '对策建议（具体措施、优先级、责任主体）', type: 'resolved'},
+{source: '调研记录', target: '建议建立用户行为长期监测机制；加强跨区域用户对比研究', 'rela': '建议', type: 'resolved'},
+];
+
+var nodes = {};
+
+links.forEach(function(link)
+{
+  link.source = nodes[link.source] || (nodes[link.source] = {name: link.source});
+  link.target = nodes[link.target] || (nodes[link.target] = {name: link.target});
+});
+
+var width = 1920, height = 1080;
+
+var force = d3.layout.force()
+    .nodes(d3.values(nodes))
+    .links(links)
+    .size([width, height])
+    .linkDistance(180)
+    .charge(-1500)
+    .on("tick", tick)
+    .start();
+
+var svg = d3.select("body").append("svg")
+    .attr("width", width)
+    .attr("height", height);
+
+var marker=
+    svg.append("marker")
+    .attr("id", "resolved")
+    .attr("markerUnits","userSpaceOnUse")
+    .attr("viewBox", "0 -5 10 10")
+    .attr("refX",32)
+    .attr("refY", -1)
+    .attr("markerWidth", 12)
+    .attr("markerHeight", 12)
+    .attr("orient", "auto")
+    .attr("stroke-width",2)
+    .append("path")
+    .attr("d", "M0,-5L10,0L0,5")
+    .attr('fill','#000000');
+
+var edges_line = svg.selectAll(".edgepath")
+    .data(force.links())
+    .enter()
+    .append("path")
+    .attr({
+          'd': function(d) {return 'M '+d.source.x+' '+d.source.y+' L '+ d.target.x +' '+d.target.y},
+          'class':'edgepath',
+          'id':function(d,i) {return 'edgepath'+i;}})
+    .style("stroke",function(d){
+         var lineColor;
+		 lineColor="#B43232";
+         return lineColor;
+     })
+    .style("pointer-events", "none")
+    .style("stroke-width",0.5)
+    .attr("marker-end", "url(#resolved)" );
+
+var edges_text = svg.append("g").selectAll(".edgelabel")
+.data(force.links())
+.enter()
+.append("text")
+.style("pointer-events", "none")
+.attr({  'class':'edgelabel',
+               'id':function(d,i){return 'edgepath'+i;},
+               'dx':80,
+               'dy':0
+               });
+
+edges_text.append('textPath')
+.attr('xlink:href',function(d,i) {return '#edgepath'+i})
+.style("pointer-events", "none")
+.text(function(d){return d.rela;});
+
+var circle = svg.append("g").selectAll("circle")
+    .data(force.nodes())
+    .enter().append("circle")
+    .style("fill",function(node){
+        var color;
+        var link=links[node.index];
+		color="#F9EBF9";
+        return color;
+    })
+    .style('stroke',function(node){
+        var color;
+        var link=links[node.index];
+		color="#A254A2";
+        return color;
+    })
+    .attr("r", 28)
+    .on("click",function(node)
+	{
+        edges_line.style("stroke-width",function(line){
+            console.log(line);
+            if(line.source.name==node.name || line.target.name==node.name){
+                return 4;
+            }else{
+                return 0.5;
+            }
+        });
+    })
+    .call(force.drag);
+
+var text = svg.append("g").selectAll("text")
+    .data(force.nodes())
+    .enter()
+    .append("text")
+    .attr("dy", ".35em")
+    .attr("text-anchor", "middle")
+    .style('fill',function(node){
+        var color;
+        var link=links[node.index];
+		color="#A254A2";
+        return color;
+    }).attr('x',function(d){
+        var re_en = /[a-zA-Z]+/g;
+        if(d.name.match(re_en)){
+             d3.select(this).append('tspan')
+             .attr('x',0)
+             .attr('y',2)
+             .text(function(){return d.name;});
+        }
+
+        else if(d.name.length<=4){
+             d3.select(this).append('tspan')
+            .attr('x',0)
+            .attr('y',2)
+            .text(function(){return d.name;});
+        }else{
+            var top=d.name.substring(0,4);
+            var bot=d.name.substring(4,d.name.length);
+
+            d3.select(this).text(function(){return '';});
+
+            d3.select(this).append('tspan')
+                .attr('x',0)
+                .attr('y',-7)
+                .text(function(){return top;});
+
+            d3.select(this).append('tspan')
+                .attr('x',0)
+                .attr('y',10)
+                .text(function(){return bot;});
+        }
+    });
+
+function tick() {
+  circle.attr("transform", transform1);
+  text.attr("transform", transform2);
+
+  edges_line.attr('d', function(d) {
+      var path='M '+d.source.x+' '+d.source.y+' L '+ d.target.x +' '+d.target.y;
+      return path;
+  });
+
+  edges_text.attr('transform',function(d,i){
+        if (d.target.x<d.source.x){
+            bbox = this.getBBox();
+            rx = bbox.x+bbox.width/2;
+            ry = bbox.y+bbox.height/2;
+            return 'rotate(180 '+rx+' '+ry+')';
+        }
+        else {
+            return 'rotate(0)';
+        }
+   });
+}
+
+function linkArc(d) {
+  return 'M '+d.source.x+' '+d.source.y+' L '+ d.target.x +' '+d.target.y
+}
+
+function transform1(d) {
+  return "translate(" + d.x + "," + d.y + ")";
+}
+function transform2(d) {
+      return "translate(" + (d.x) + "," + d.y + ")";
+}
+
+</script>
+

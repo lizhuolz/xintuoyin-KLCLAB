@@ -1,5 +1,0 @@
-# export DEEPSEEK_API_KEY="sk-1c37634b66db4ebd9ac158637ced7247"
-# export OPENAI_API_KEY="sk-1c37634b66db4ebd9ac158637ced7247"
-# export DEEPSEEK_BASE_URL="https://api.deepseek.com"
-# export VITE_API_BASE="/api"
-# export VITE_DEEPSEEK_BASE_URL="https://api.deepseek.com"

@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>综合知识图谱系统</title>
+  <link rel="stylesheet" href="/assets/css/styles.css" />
+</head>
+<body>
+  <div class="page-shell">
+    <header class="topbar">
+      <div>
+        <h1>综合知识图谱系统</h1>
+        <p>默认进入系统内知识图谱；系统内与系统外知识图谱保持独立子界面展示。</p>
+      </div>
+      <div class="topbar-actions">
+        <label style="display: flex; align-items: center; gap: 6px; color: #fff; font-size: 13px;">
+          <input type="checkbox" id="loginStateToggle" checked style="cursor: pointer;" />
+          <span id="loginStateText">登录状态</span>
+        </label>
+        <span class="badge" id="currentUserText">当前用户：--</span>
+        <span class="badge badge-muted" id="externalWorkspaceBadge">系统外子界面：未创建</span>
+      </div>
+    </header>
+
+    <section class="workspace-tabs">
+      <button class="workspace-tab active" data-view="internal">系统内知识图谱</button>
+      <div id="externalTabGroup" class="external-tab-group hidden">
+        <button class="workspace-tab" data-view="external" id="externalTabButton">系统外知识图谱</button>
+        <button class="workspace-tab-delete" id="btnDeleteExternal" title="删除系统外子界面">删除</button>
+      </div>
+    </section>
+
+    <section id="workspaceMessage" class="workspace-message hidden"></section>
+
+    <section id="internalWorkspace" class="workspace-view active">
+      <div class="internal-shell">
+        <div id="toolbar">
+          <div class="tool-column">
+            <div class="section-title">图谱操作</div>
+            <div class="toolbar-inline">
+              <button id="btnReloadGraph" class="btn-warning">刷新图谱</button>
+            </div>
+          </div>
+
+          <div class="tool-column">
+            <div class="section-title">1. 节点检索</div>
+            <div class="toolbar-inline">
+              <input type="text" id="searchNode" placeholder="输入节点名" list="nodeNameList" />
+              <button id="btnSearchNode">搜索</button>
+              <button id="btnClearSearch" class="btn-secondary">清空</button>
+            </div>
+          </div>
+
+          <div class="tool-column">
+            <div class="section-title">2. 路径分析</div>
+            <div class="toolbar-inline">
+              <input type="text" id="pathStart" placeholder="起点" list="pathNodeList" />
+              <input type="text" id="pathEnd" placeholder="终点" list="pathNodeList" />
+              <input type="number" id="pathLimit" value="4" min="2" title="限制路径最大实体数量" />
+              <button id="btnFindPath">查找</button>
+              <button id="btnResetPath" class="btn-secondary">重置</button>
+            </div>
+          </div>
+
+          <div class="tool-column split-left">
+            <div class="section-title">3. 中间实体筛选 (必经点)</div>
+            <div class="toolbar-inline">
+              <span class="muted-mini">逻辑:</span>
+              <select id="filterType">
+                <option value="OR">OR (满足任一)</option>
+                <option value="AND">AND (必须同时经过)</option>
+              </select>
+            </div>
+            <div id="middleNodesContainer" class="filter-container">
+              <div class="mid-input-group toolbar-inline">
+                <input type="text" name="midNode" placeholder="中间实体名" list="pathNodeList" />
+                <button data-add-middle class="btn-success">+</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="tool-column split-left">
+            <div class="section-title">4. 关系筛选 (边类型)</div>
+            <div class="toolbar-inline">
+              <span class="muted-mini">逻辑:</span>
+              <select id="relaFilterType">
+                <option value="OR">OR (包含任一)</option>
+                <option value="AND">AND (必须同时包含)</option>
+              </select>
+            </div>
+            <div id="relaContainer" class="filter-container">
+              <div class="rela-input-group toolbar-inline">
+                <input type="text" name="relaInput" placeholder="关系名称" list="pathRelationList" />
+                <button data-add-rela class="btn-warning">+</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="tool-column split-left">
+            <div class="section-title">5. 属性筛选 (Key=Value)</div>
+            <div class="toolbar-inline">
+              <span class="muted-mini">逻辑:</span>
+              <select id="attrFilterType">
+                <option value="OR">OR (满足任一)</option>
+                <option value="AND">AND (必须同时满足)</option>
+              </select>
+            </div>
+            <div id="attrContainer" class="filter-container">
+              <div class="attr-input-group toolbar-inline">
+                <input type="text" name="attrKey" placeholder="属性名" list="pathAttrKeyList" />
+                <span class="equal">=</span>
+                <input type="text" name="attrVal" placeholder="属性值" list="pathAttrValList" />
+                <button data-add-attr class="btn-purple">+</button>
+              </div>
+            </div>
+          </div>
+
+          <div id="graphStatus" class="status-line">准备就绪，正在加载图谱...</div>
+        </div>
+
+        <div id="main">
+          <div id="chart">
+            <svg id="graphSvg"></svg>
+            <div id="graphEmpty" class="graph-empty">暂无图谱数据</div>
+          </div>
+
+          <aside id="side-panel">
+            <h3>详情面板</h3>
+            <div id="attrContent">点击节点查看相关信息...</div>
+          </aside>
+        </div>
+      </div>
+    </section>
+
+    <section id="externalWorkspace" class="workspace-view hidden">
+      <div class="external-frame-shell">
+        <div class="external-frame-header">
+          <div>
+            <h2>系统外知识图谱子界面</h2>
+            <p id="externalWorkspaceSummary">上传文件后，可在此完整使用原系统外图谱页面。</p>
+          </div>
+          <button id="btnRefreshExternal" class="btn-secondary">刷新子界面</button>
+        </div>
+        <iframe id="externalFrame" class="external-frame" src="/external-view" title="系统外知识图谱"></iframe>
+      </div>
+    </section>
+  </div>
+
+  <datalist id="nodeNameList"></datalist>
+  <datalist id="pathNodeList"></datalist>
+  <datalist id="relationNameList"></datalist>
+  <datalist id="pathRelationList"></datalist>
+  <datalist id="attrKeyList"></datalist>
+  <datalist id="attrValList"></datalist>
+  <datalist id="pathAttrKeyList"></datalist>
+  <datalist id="pathAttrValList"></datalist>
+
+  <script src="https://cdn.jsdelivr.net/npm/d3@7"></script>
+  <script type="module" src="/assets/js/app.js"></script>
+  <script type="module" src="/assets/js/integration.js"></script>
+</body>
+</html>

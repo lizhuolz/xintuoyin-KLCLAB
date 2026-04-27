@@ -2,13 +2,13 @@
   <div class="history-management-container">
     <div class="header-section">
       <div class="title-row">
-        <span class="title">历史对话记录浏览</span>
+        <span class="title">对话日志</span>
       </div>
 
       <el-form :inline="true" :model="searchForm" class="filter-form">
         <div class="filter-row">
           <el-form-item label="搜索">
-            <el-input v-model="searchForm.composite" placeholder="请输入标题或对话内容" style="width: 320px" clearable />
+            <el-input v-model="searchForm.composite" placeholder="输入IP/用户ID/RecordID等关键词" style="width: 320px" clearable />
           </el-form-item>
 
           <el-form-item label="对话日期">
@@ -28,11 +28,11 @@
           <el-button @click="resetSearch">重置</el-button>
           <el-button type="primary" @click="fetchHistories">查询</el-button>
         </div>
-      </el-form>
-    </div>
 
-    <div class="action-bar">
-      <el-button @click="exportData">导出</el-button>
+        <div class="export-row">
+          <el-button type="success" @click="handleExport">导出</el-button>
+        </div>
+      </el-form>
     </div>
 
     <el-table
@@ -46,30 +46,20 @@
     >
       <el-table-column type="selection" width="55" />
       <el-table-column type="index" label="序号" width="70" align="center" />
-      <el-table-column prop="title" label="对话标题" min-width="220" show-overflow-tooltip />
-      <el-table-column prop="last_user_input" label="最后一轮提问" min-width="220" show-overflow-tooltip />
-      <el-table-column prop="last_answer" label="最后一轮回答" min-width="240" show-overflow-tooltip />
-      <el-table-column label="用户信息" min-width="180">
-        <template #default="scope">
-          {{ scope.row.user?.name || '-' }} / {{ scope.row.user?.phone || '-' }}
-        </template>
+      <el-table-column prop="last_user_input" label="对话输入" min-width="220" show-overflow-tooltip />
+      <el-table-column label="IP地址" min-width="150" show-overflow-tooltip>
+        <template #default="scope">{{ scope.row.user?.ip_address || '-' }}</template>
       </el-table-column>
-      <el-table-column label="所属企业" min-width="180" show-overflow-tooltip>
-        <template #default="scope">{{ scope.row.user?.categoryName || '-' }}</template>
+      <el-table-column label="用户ID" min-width="150" show-overflow-tooltip>
+        <template #default="scope">{{ scope.row.user?.user_id || '-' }}</template>
       </el-table-column>
       <el-table-column label="对话时间" width="180">
         <template #default="scope">{{ scope.row.updatedAtDisplay }}</template>
       </el-table-column>
+      <el-table-column prop="last_answer" label="对话回答" min-width="240" show-overflow-tooltip />
       <el-table-column label="RecordID" min-width="150" show-overflow-tooltip>
         <template #default="scope">{{ scope.row.user?.record_id || '-' }}</template>
       </el-table-column>
-      <el-table-column label="UserID" min-width="150" show-overflow-tooltip>
-        <template #default="scope">{{ scope.row.user?.user_id || '-' }}</template>
-      </el-table-column>
-      <el-table-column label="IP" min-width="150" show-overflow-tooltip>
-        <template #default="scope">{{ scope.row.user?.ip_address || '-' }}</template>
-      </el-table-column>
-      <el-table-column prop="message_count" label="轮次" width="90" align="center" />
       <el-table-column label="操作" width="100" fixed="right" align="center">
         <template #default="scope">
           <el-button link type="primary" @click="viewDetail(scope.row)">详情</el-button>
@@ -93,32 +83,20 @@
       <div class="history-detail-content">
         <div class="metadata-grid">
           <div class="meta-item">
-            <span class="label">用户姓名：</span>
-            <el-input :model-value="currentMeta.name" readonly class="meta-input" />
-          </div>
-          <div class="meta-item">
-            <span class="label">联系方式：</span>
-            <el-input :model-value="currentMeta.phone" readonly class="meta-input" />
-          </div>
-          <div class="meta-item">
-            <span class="label">所属企业：</span>
-            <el-input :model-value="currentMeta.company" readonly class="meta-input" />
-          </div>
-          <div class="meta-item">
-            <span class="label">RecordID：</span>
-            <el-input :model-value="currentMeta.recordId" readonly class="meta-input" />
-          </div>
-          <div class="meta-item">
-            <span class="label">UserID：</span>
-            <el-input :model-value="currentMeta.userId" readonly class="meta-input" />
-          </div>
-          <div class="meta-item">
             <span class="label">IP地址：</span>
             <el-input :model-value="currentMeta.ipAddress" readonly class="meta-input" />
           </div>
           <div class="meta-item">
+            <span class="label">用户ID：</span>
+            <el-input :model-value="currentMeta.userId" readonly class="meta-input" />
+          </div>
+          <div class="meta-item">
             <span class="label">对话时间：</span>
             <el-input :model-value="currentMeta.timeDisplay" readonly class="meta-input" />
+          </div>
+          <div class="meta-item">
+            <span class="label">RecordID：</span>
+            <el-input :model-value="currentMeta.recordId" readonly class="meta-input" />
           </div>
         </div>
 
@@ -127,13 +105,15 @@
           <div class="history-detail-list">
             <div v-for="(msg, idx) in detailMessages" :key="idx" class="detail-msg-wrap">
               <div class="msg-type-label">{{ msg.role === 'user' ? '问' : '答' }}</div>
-              <div class="msg-content-box" :class="msg.role">
-                <div class="msg-text" v-html="renderMarkdown(msg.content)"></div>
+              <div class="msg-right-area">
                 <div v-if="msg.role === 'user' && msg.uploadedFiles?.length" class="download-file-list">
                   <div v-for="file in msg.uploadedFiles" :key="file.file_id || file.filename" class="download-file-row">
-                    <span class="file-name">{{ file.filename }}</span>
+                    <span class="file-name">{{ truncateFilename(file.filename) }}</span>
                     <el-button link type="primary" @click="downloadHistoryFile(file, msg.messageIndex)">下载</el-button>
                   </div>
+                </div>
+                <div class="msg-content-box" :class="msg.role">
+                  <div class="msg-text" v-html="renderMarkdown(msg.content)"></div>
                 </div>
               </div>
             </div>
@@ -153,6 +133,16 @@ import { aiApi, buildHistoryFileDownloadUrl, flattenHistoryMessages, formatTimes
 const md = new MarkdownIt({ html: false, linkify: true, typographer: true })
 const renderMarkdown = (text) => md.render(text || '')
 
+function truncateFilename(name) {
+  if (!name) return ''
+  const dotIdx = name.lastIndexOf('.')
+  if (dotIdx <= 0) return name.length > 10 ? name.slice(0, 10) + '...' : name
+  const base = name.slice(0, dotIdx)
+  const ext = name.slice(dotIdx)
+  if (base.length <= 10) return name
+  return base.slice(0, 10) + '...' + ext
+}
+
 const historyList = ref([])
 const loading = ref(false)
 const detailVisible = ref(false)
@@ -161,13 +151,10 @@ const selectedRows = ref([])
 const currentDetailConversationId = ref('')
 
 const currentMeta = reactive({
-  name: '',
-  phone: '',
-  company: '',
-  recordId: '',
-  userId: '',
   ipAddress: '',
+  userId: '',
   timeDisplay: '',
+  recordId: '',
 })
 
 const searchForm = reactive({
@@ -220,13 +207,10 @@ function handleSelectionChange(selection) {
 
 async function viewDetail(row) {
   currentDetailConversationId.value = row.conversation_id
-  currentMeta.name = row.user?.name || ''
-  currentMeta.phone = row.user?.phone || ''
-  currentMeta.company = row.user?.categoryName || ''
-  currentMeta.recordId = row.user?.record_id || ''
-  currentMeta.userId = row.user?.user_id || ''
   currentMeta.ipAddress = row.user?.ip_address || ''
+  currentMeta.userId = row.user?.user_id || ''
   currentMeta.timeDisplay = row.updatedAtDisplay || '-'
+  currentMeta.recordId = row.user?.record_id || ''
 
   try {
     const detail = await aiApi.getHistoryDetail(row.conversation_id)
@@ -235,10 +219,6 @@ async function viewDetail(row) {
   } catch (error) {
     ElMessage.error(error.message || '获取详情失败')
   }
-}
-
-function exportData() {
-  doExport()
 }
 
 function triggerBlobDownload(blob, filename) {
@@ -252,21 +232,6 @@ function triggerBlobDownload(blob, filename) {
   URL.revokeObjectURL(url)
 }
 
-async function doExport() {
-  try {
-    if (selectedRows.value.length === 0) {
-      ElMessage.warning('请先勾选至少一条历史记录')
-      return
-    }
-    const ids = selectedRows.value.map((item) => item.conversation_id)
-    const { blob, filename } = await aiApi.exportHistoryDetails(ids)
-    triggerBlobDownload(blob, filename || '历史详情.txt')
-    ElMessage.success('导出成功')
-  } catch (error) {
-    ElMessage.error(error.message || '导出失败')
-  }
-}
-
 async function downloadHistoryFile(file, messageIndex) {
   try {
     const url = buildHistoryFileDownloadUrl(currentDetailConversationId.value, messageIndex, file.file_id)
@@ -274,6 +239,23 @@ async function downloadHistoryFile(file, messageIndex) {
     triggerBlobDownload(blob, filename || file.filename || '附件')
   } catch (error) {
     ElMessage.error(error.message || '下载附件失败')
+  }
+}
+
+async function handleExport() {
+  try {
+    const params = {}
+    if (selectedRows.value.length) {
+      params.ids = selectedRows.value.map((row) => row.conversation_id)
+    } else {
+      params.search = searchForm.composite || ''
+      params.start_time = searchForm.dateRange?.[0] || undefined
+      params.end_time = searchForm.dateRange?.[1] || undefined
+    }
+    const { blob, filename } = await aiApi.exportHistoryDetails(params.ids || null, params.ids ? undefined : params)
+    triggerBlobDownload(blob, filename)
+  } catch (error) {
+    ElMessage.error(error.message || '导出失败')
   }
 }
 
@@ -301,9 +283,14 @@ onMounted(fetchHistories)
     display: flex;
     gap: 12px;
   }
+
+  .export-row {
+    margin-top: 16px;
+    display: flex;
+    gap: 12px;
+  }
 }
 
-.action-bar { margin: 20px 0 12px; }
 .pagination-row { margin-top: 18px; display: flex; justify-content: flex-end; }
 
 .metadata-grid {
@@ -337,11 +324,12 @@ onMounted(fetchHistories)
 .history-detail-list { display: flex; flex-direction: column; gap: 14px; }
 .detail-msg-wrap { display: flex; gap: 14px; }
 .msg-type-label { width: 34px; height: 34px; border-radius: 50%; background: #eef4ff; color: #2f6de6; display: flex; align-items: center; justify-content: center; font-weight: 700; flex-shrink: 0; }
-.msg-content-box { flex: 1; padding: 14px 16px; border-radius: 14px; border: 1px solid #edf1f7; }
+.msg-right-area { flex: 1; display: flex; flex-direction: column; gap: 8px; }
+.msg-content-box { padding: 14px 16px; border-radius: 14px; border: 1px solid #edf1f7; }
 .msg-content-box.user { background: #fafbff; }
 .msg-content-box.assistant { background: #fff; }
 .msg-text { color: #334155; line-height: 1.7; }
-.download-file-list { margin-top: 12px; padding-top: 12px; border-top: 1px solid #ebeef5; display: flex; flex-direction: column; gap: 8px; }
+.download-file-list { display: flex; flex-direction: column; gap: 8px; }
 .download-file-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
 .file-name { font-size: 13px; color: #606266; word-break: break-all; }
 </style>

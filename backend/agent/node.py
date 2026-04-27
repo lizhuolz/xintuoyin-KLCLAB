@@ -38,7 +38,8 @@ def _env_bool(name: str, default: bool) -> bool:
     return str(value).strip().lower() in {"1", "true", "yes", "on"}
 
 
-def _chat_model_kwargs(enable_thinking: bool) -> dict:
+def _chat_model_kwargs(enable_thinking: bool = True) -> dict:
+    """根据 enable_thinking 控制是否启用模型思考。"""
     if enable_thinking:
         return {}
     return {"extra_body": {"chat_template_kwargs": {"enable_thinking": False}}}
@@ -197,53 +198,36 @@ def _filter_tool_calls_for_intent(message: AIMessage, user_text: str, enable_web
 
 
 def _should_force_tool_retry(message: AIMessage, user_text: str, enable_web: bool, tools) -> bool:
+    """只在 coerce 后仍无 tool_calls 且内容有残留工具标记时才重试。"""
     if not tools or not isinstance(message, AIMessage):
         return False
     if getattr(message, "tool_calls", None):
         return False
     content = getattr(message, "content", "") or ""
-    visible_answer = re.sub(r"<think>.*?</think>", "", content, flags=re.DOTALL | re.IGNORECASE)
-    if visible_answer == content and "</think>" in content.lower():
-        visible_answer = content.split("</think>", 1)[1]
-    visible_answer = visible_answer.replace("</think>", "").strip()
-    lower_content = content.lower()
-    tool_names = [
-        str(getattr(tool, "name", "") or getattr(tool, "__name__", "") or "").strip().lower()
-        for tool in tools
-    ]
-    tool_names = [name for name in tool_names if name]
-    mentions_tool = any(name in lower_content for name in tool_names)
-    looks_like_tool_markup = any(token in lower_content for token in ("<tool_call>", "</tool_call>", "<function=", "tool call", "tool_call"))
-    looks_like_meta_tool_reasoning = mentions_tool and any(
-        token in content for token in ("调用", "工具", "需要使用", "准备使用", "will use", "need to use")
-    )
-    if not visible_answer:
-        return True
-    if looks_like_tool_markup or looks_like_meta_tool_reasoning:
-        return True
-    return enable_web or _looks_like_sql_query(user_text) or _looks_like_rag_query(user_text)
+    lower = content.lower()
+    # 内容中有工具调用标记但没被 coerce 解析出来——需要重试
+    has_markup = any(token in lower for token in ("<tool_call>", "</tool_call>", "<function="))
+    return has_markup
 
 
 def make_chatbot_node(
     temperature: float,
     tools,
     system_prompt: str = "你是一个专业的人工智能助手。",
-    streaming=True,
-    enable_thinking: bool = True,
 ):
     def chatbot_node(state: GraphState):
         from langchain_openai import ChatOpenAI
 
         model = state["select_model"]
         user_text = extract_current_user_question(state["messages"])
-        llm_streaming = streaming if not tools else False
+        enable_thinking = bool(state.get("enable_thinking", False))
         base_llm = ChatOpenAI(
             model=model,
             temperature=_env_float("CHAT_MODEL_TEMPERATURE", temperature),
-            streaming=llm_streaming,
+            streaming=not tools,
             max_tokens=_env_int("CHAT_MODEL_MAX_TOKENS", 4096),
             timeout=_env_float("CHAT_MODEL_TIMEOUT", 120),
-            model_kwargs=_chat_model_kwargs(enable_thinking and _env_bool("CHAT_ENABLE_THINKING", True)),
+            model_kwargs=_chat_model_kwargs(enable_thinking),
         )
         llm = base_llm
         if tools:
@@ -252,11 +236,13 @@ def make_chatbot_node(
         # 强化指令：要求 AI 尊重原文
         instruction = (
             "\n\n【行为准则】"
-            "\n1. 如果你调用了知识库检索工具 `rag_tool`，请务必直接使用返回的原文进行回答。"
-            "\n2. 严禁对原文进行过度总结或润色，必须保留原文的关键指标、数据和术语。"
-            "\n3. 回答时请注明来源（如：根据[XXX文件]记载...）。"
-            "\n4. 如果需要输出 <think>，请只保留关键决策，避免长篇复述问题。"
-            # "\n4. 如果检索结果中没有相关内容，请直说“知识库中未找到相关信息”，不要尝试编造。"
+            "\n1. 你必须始终针对【当前用户提问】进行回答。历史对话仅作参考背景，不要重复回答历史问题。"
+            "\n2. 如果当前输入是不完整的文字、单个标点符号或无意义字符，请直接回复'请输入完整的问题，我会为您解答'，不要基于历史上下文猜测并回答。"
+            "\n3. 如果你调用了知识库检索工具 `rag_tool`，请务必直接使用返回的原文进行回答。"
+            "\n4. 严禁对原文进行过度总结或润色，必须保留原文的关键指标、数据和术语。"
+            "\n5. 回答时请注明来源（如：根据[XXX文件]记载...）。"
+            "\n6. 如果需要输出 <think>，请只保留关键决策，避免长篇复述问题。"
+            "\n7. 涉及知识库内容的问题，你必须调用 `rag_tool` 检索最新内容后再回答，不要直接引用历史对话中的知识库相关回答，因为知识库可能已更新或关闭。"
         )
         
         full_system_prompt = system_prompt + instruction
@@ -264,7 +250,6 @@ def make_chatbot_node(
         response = llm.invoke([sys_msg, *state["messages"]])
         if isinstance(response, AIMessage):
             response = _coerce_xml_tool_calls(response)
-            response = _filter_tool_calls_for_intent(response, user_text, bool(state.get("enable_web")))
             response = _dedupe_tool_calls(response)
             if tools and (_has_invalid_or_missing_tool_name(response) or _should_force_tool_retry(response, user_text, bool(state.get("enable_web")), tools)):
                 strict_tool_prompt = full_system_prompt + (
@@ -289,14 +274,13 @@ def make_chatbot_node(
                     streaming=False,
                     max_tokens=_env_int("CHAT_MODEL_MAX_TOKENS", 4096),
                     timeout=_env_float("CHAT_MODEL_TIMEOUT", 120),
-                    model_kwargs=_chat_model_kwargs(enable_thinking and _env_bool("CHAT_ENABLE_THINKING", True)),
+                    model_kwargs=_chat_model_kwargs(enable_thinking),
                 )
                 if tools:
                     retry_llm = retry_llm.bind_tools(tools)
                 retry_response = retry_llm.invoke([SystemMessage(content=strict_tool_prompt), *state["messages"]])
                 if isinstance(retry_response, AIMessage):
                     response = _coerce_xml_tool_calls(retry_response)
-                    response = _filter_tool_calls_for_intent(response, user_text, bool(state.get("enable_web")))
                     response = _dedupe_tool_calls(response)
         return {"messages": [response]}
 
@@ -337,17 +321,18 @@ def make_should_sql_node(SQL_TOOL_NAME) -> GraphState:
             sql_needed = False
             reason = "LLM 输出解析失败，默认不走 SQL。"
 
-        state["sql_needed"] = sql_needed
-        state["sql_reason"] = reason
+        updates = {
+            "sql_needed": sql_needed,
+            "sql_reason": reason,
+        }
 
-        # 若需要SQL：删掉 chatbot 刚刚可能生成的“最终回答”，避免两段回复
         if sql_needed:
-            last = state["messages"][-1]
+            new_messages = list(state["messages"])
+            last = new_messages[-1] if new_messages else None
             if isinstance(last, AIMessage) and not getattr(last, "tool_calls", None):
-                state["messages"] = state["messages"][:-1]
+                new_messages = new_messages[:-1]
 
-            # 追加 system 指令引导 sql_planner 只调用 SQL 工具
-            state["messages"].append(
+            new_messages.append(
                 HumanMessage(
                     content=(
                         f"系统补充要求：这个问题必须通过数据库查询来回答。你只能调用工具 `{SQL_TOOL_NAME}` 获取数据，"
@@ -355,6 +340,7 @@ def make_should_sql_node(SQL_TOOL_NAME) -> GraphState:
                     )
                 )
             )
+            updates["messages"] = new_messages
 
-        return state
+        return updates
     return res

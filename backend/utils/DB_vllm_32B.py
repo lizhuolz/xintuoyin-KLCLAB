@@ -51,7 +51,15 @@ SELECT_PROMPT="""
 {database_information}
 以下是一个关于该数据库的问题：
 {question}
-请你根据这个问题从以上所有表中选出最相关至多8个表，并且返回表的英文名，用<RES>table_name1, table_name2, ...</RES> （用逗号分隔每个table_name，整体结果包裹在<RES></RES>之间）的形式给出结果。
+请你根据这个问题从以上所有表中选出最相关的至多8个表。
+
+要求：
+1. 只输出真实存在的表名，不要输出占位符或示例名。
+2. 用<RES></RES>包裹结果，表名之间用逗号分隔。
+3. 不要输出任何分析过程，只输出<RES>...</RES>。
+
+示例（假设选了 t_staff 和 t_user 两个表）：
+<RES>t_staff, t_user</RES>
 """
 
 # SQL Generation Prompt (针对 Qwen Chat 优化)
@@ -80,7 +88,7 @@ class DB:
         
         base_url = base_url or os.getenv("DB_LLM_BASE_URL") or os.getenv("OPENAI_API_BASE") or 'https://api.claudeshop.top/v1'
         model_name = model_name or os.getenv("DB_LLM_MODEL_NAME", 'gpt-4o')
-        api_key = api_key or os.getenv("DB_LLM_API_KEY") or os.getenv("OPENAI_API_KEY") or ""
+        api_key = api_key or os.getenv("DB_LLM_API_KEY") or os.getenv("OPENAI_API_KEY") or "EMPTY"
         self.selector_temperature = _env_float("DB_LLM_SELECTOR_TEMPERATURE", 0.1)
         self.selector_max_tokens = _env_int("DB_LLM_SELECTOR_MAX_TOKENS", 1024)
         self.generate_temperature = _env_float("DB_LLM_GENERATE_TEMPERATURE", 0.0)

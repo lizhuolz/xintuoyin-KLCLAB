@@ -1,0 +1,323 @@
+{
+    "nodes": [
+        {
+            "id": "01505 能源效率优化管理软件研发项目",
+            "group": 1,
+            "attrs": {
+                "日期": "2025年02月02日",
+                "项目周期": "2025年02月01日至2026年02月26日",
+                "资金来源": "鑫泰科技咨询服务有限公司自有资金",
+                "经费预算情况": "总预算60万元；其中设备费12万元；人员人工费30万元；设计费3.5万元；测试检验费2万元；差旅费2.5万元；会议费1万元；合作与交流费0.5万元；出版/文献/信息传播/知识产权事务费3.5万元；专家咨询费1.5万元；其他支出0.5万元；人员培训费1万元；间接费用2.5万元",
+                "预期目标": "研发能源效率优化管理软件，通过数字化工具实现能源消耗实时监测、能耗数据分析、节能方案智能推荐，助力企业与家庭降低能源消耗，提升能源利用效率，响应政策引导、科技创新等社会层面节能需求",
+                "项目创新性": "监测分析建议跟踪闭环管理；行业定制化模板；低代码扩展功能"
+            },
+            "file_path": "能源效率优化管理软件研发项目_20251011162100 (1).pdf",
+            "file_category": "项目立项报告"
+        },
+        {
+            "id": "人员工时记录",
+            "group": 1,
+            "attrs": {},
+            "file_path": "人员工时记录.xlsx",
+            "file_category": "人员工时记录",
+            "type": "excel",
+            "table_html": "<table class=\"dataframe excel-table\">\n  <thead>\n    <tr style=\"text-align: right;\">\n      <th>科创报告数据中心 人员工时记录</th>\n      <th>科创报告数据中心 人员工时记录</th>\n      <th>科创报告数据中心 人员工时记录</th>\n      <th>科创报告数据中心 人员工时记录</th>\n      <th>科创报告数据中心 人员工时记录</th>\n      <th>科创报告数据中心 人员工时记录</th>\n      <th>科创报告数据中心 人员工时记录</th>\n    </tr>\n  </thead>\n  <tbody>\n    <tr>\n      <td>日期</td>\n      <td>姓名</td>\n      <td>工号</td>\n      <td>部门</td>\n      <td>聘用方式</td>\n      <td>研发工时</td>\n      <td>研发内容</td>\n    </tr>\n    <tr>\n      <td>45303</td>\n      <td>甲</td>\n      <td>1</td>\n      <td>研发部门</td>\n      <td>正式</td>\n      <td>8</td>\n      <td>None</td>\n    </tr>\n    <tr>\n      <td>45303</td>\n      <td>甲</td>\n      <td>1</td>\n      <td>研发部门</td>\n      <td>正式</td>\n      <td>8</td>\n      <td>None</td>\n    </tr>\n    <tr>\n      <td>45304</td>\n      <td>甲</td>\n      <td>1</td>\n      <td>研发部门</td>\n      <td>正式</td>\n      <td>8</td>\n      <td>None</td>\n    </tr>\n    <tr>\n      <td>45304</td>\n      <td>甲</td>\n      <td>1</td>\n      <td>研发部门</td>\n      <td>正式</td>\n      <td>8</td>\n      <td>None</td>\n    </tr>\n    <tr>\n      <td>45305</td>\n      <td>甲</td>\n      <td>1</td>\n      <td>研发部门</td>\n      <td>正式</td>\n      <td>8</td>\n      <td>None</td>\n    </tr>\n    <tr>\n      <td>45305</td>\n      <td>甲</td>\n      <td>1</td>\n      <td>研发部门</td>\n      <td>正式</td>\n      <td>8</td>\n      <td>None</td>\n    </tr>\n    <tr>\n      <td>45306</td>\n      <td>甲</td>\n      <td>1</td>\n      <td>研发部门</td>\n      <td>正式</td>\n      <td>8</td>\n      <td>None</td>\n    </tr>\n    <tr>\n      <td>45306</td>\n      <td>甲</td>\n      <td>1</td>\n      <td>研发部门</td>\n      <td>正式</td>\n      <td>8</td>\n      <td>None</td>\n    </tr>\n    <tr>\n      <td>45307</td>\n      <td>甲</td>\n      <td>1</td>\n      <td>研发部门</td>\n      <td>正式</td>\n      <td>8</td>\n      <td>None</td>\n    </tr>\n    <tr>\n      <td>45307</td>\n      <td>甲</td>\n      <td>1</td>\n      <td>研发部门</td>\n      <td>正式</td>\n      <td>8</td>\n      <td>None</td>\n    </tr>\n    <tr>\n      <td>45308</td>\n      <td>甲</td>\n      <td>1</td>\n      <td>研发部门</td>\n      <td>正式</td>\n      <td>8</td>\n      <td>None</td>\n    </tr>\n    <tr>\n      <td>45308</td>\n      <td>甲</td>\n      <td>1</td>\n      <td>研发部门</td>\n      <td>正式</td>\n      <td>8</td>\n      <td>None</td>\n    </tr>\n    <tr>\n      <td>45309</td>\n      <td>甲</td>\n      <td>1</td>\n      <td>研发部门</td>\n      <td>正式</td>\n      <td>8</td>\n      <td>None</td>\n    </tr>\n    <tr>\n      <td>45309</td>\n      <td>甲</td>\n      <td>1</td>\n      <td>研发部门</td>\n      <td>正式</td>\n      <td>8</td>\n      <td>None</td>\n    </tr>\n    <tr>\n      <td>45310</td>\n      <td>甲</td>\n      <td>1</td>\n      <td>研发部门</td>\n      <td>正式</td>\n      <td>8</td>\n      <td>None</td>\n    </tr>\n    <tr>\n      <td>45310</td>\n      <td>甲</td>\n      <td>1</td>\n      <td>研发部门</td>\n      <td>正式</td>\n      <td>8</td>\n      <td>None</td>\n    </tr>\n    <tr>\n      <td>45311</td>\n      <td>甲</td>\n      <td>1</td>\n      <td>研发部门</td>\n      <td>正式</td>\n      <td>8</td>\n      <td>None</td>\n    </tr>\n    <tr>\n      <td>45311</td>\n      <td>甲</td>\n      <td>1</td>\n      <td>研发部门</td>\n      <td>正式</td>\n      <td>8</td>\n      <td>None</td>\n    </tr>\n    <tr>\n      <td>45312</td>\n      <td>甲</td>\n      <td>1</td>\n      <td>研发部门</td>\n      <td>正式</td>\n      <td>8</td>\n      <td>None</td>\n    </tr>\n    <tr>\n      <td>45312</td>\n      <td>甲</td>\n      <td>1</td>\n      <td>研发部门</td>\n      <td>正式</td>\n      <td>8</td>\n      <td>None</td>\n    </tr>\n    <tr>\n      <td>45313</td>\n      <td>甲</td>\n      <td>1</td>\n      <td>研发部门</td>\n      <td>正式</td>\n      <td>8</td>\n      <td>None</td>\n    </tr>\n    <tr>\n      <td>45313</td>\n      <td>甲</td>\n      <td>1</td>\n      <td>研发部门</td>\n      <td>正式</td>\n      <td>8</td>\n      <td>None</td>\n    </tr>\n    <tr>\n      <td>45314</td>\n      <td>甲</td>\n      <td>1</td>\n      <td>研发部门</td>\n      <td>正式</td>\n      <td>8</td>\n      <td>None</td>\n    </tr>\n    <tr>\n      <td>45314</td>\n      <td>甲</td>\n      <td>1</td>\n      <td>研发部门</td>\n      <td>正式</td>\n      <td>8</td>\n      <td>None</td>\n    </tr>\n    <tr>\n      <td>45315</td>\n      <td>甲</td>\n      <td>1</td>\n      <td>研发部门</td>\n      <td>正式</td>\n      <td>8</td>\n      <td>None</td>\n    </tr>\n    <tr>\n      <td>45315</td>\n      <td>甲</td>\n      <td>1</td>\n      <td>研发部门</td>\n      <td>正式</td>\n      <td>8</td>\n      <td>None</td>\n    </tr>\n    <tr>\n      <td>45316</td>\n      <td>甲</td>\n      <td>1</td>\n      <td>研发部门</td>\n      <td>正式</td>\n      <td>8</td>\n      <td>None</td>\n    </tr>\n    <tr>\n      <td>45316</td>\n      <td>甲</td>\n      <td>1</td>\n      <td>研发部门</td>\n      <td>正式</td>\n      <td>8</td>\n      <td>None</td>\n    </tr>\n    <tr>\n      <td>2024-01-01 00:00:00</td>\n      <td>小计</td>\n      <td>小计</td>\n      <td>小计</td>\n      <td>小计</td>\n      <td>112</td>\n      <td>None</td>\n    </tr>\n    <tr>\n      <td>2024-01-01 00:00:00</td>\n      <td>小计</td>\n      <td>小计</td>\n      <td>小计</td>\n      <td>小计</td>\n      <td>112</td>\n      <td>None</td>\n    </tr>\n    <tr>\n      <td>45303</td>\n      <td>乙</td>\n      <td>1</td>\n      <td>研发部门</td>\n      <td>正式</td>\n      <td>8</td>\n      <td>None</td>\n    </tr>\n    <tr>\n      <td>45303</td>\n      <td>乙</td>\n      <td>1</td>\n      <td>研发部门</td>\n      <td>正式</td>\n      <td>8</td>\n      <td>None</td>\n    </tr>\n    <tr>\n      <td>45304</td>\n      <td>乙</td>\n      <td>1</td>\n      <td>研发部门</td>\n      <td>正式</td>\n      <td>8</td>\n      <td>None</td>\n    </tr>\n    <tr>\n      <td>45304</td>\n      <td>乙</td>\n      <td>1</td>\n      <td>研发部门</td>\n      <td>正式</td>\n      <td>8</td>\n      <td>None</td>\n    </tr>\n    <tr>\n      <td>45305</td>\n      <td>乙</td>\n      <td>1</td>\n      <td>研发部门</td>\n      <td>正式</td>\n      <td>8</td>\n      <td>None</td>\n    </tr>\n    <tr>\n      <td>45305</td>\n      <td>乙</td>\n      <td>1</td>\n      <td>研发部门</td>\n      <td>正式</td>\n      <td>8</td>\n      <td>None</td>\n    </tr>\n    <tr>\n      <td>45306</td>\n      <td>乙</td>\n      <td>1</td>\n      <td>研发部门</td>\n      <td>正式</td>\n      <td>8</td>\n      <td>None</td>\n    </tr>\n    <tr>\n      <td>45306</td>\n      <td>乙</td>\n      <td>1</td>\n      <td>研发部门</td>\n      <td>正式</td>\n      <td>8</td>\n      <td>None</td>\n    </tr>\n    <tr>\n      <td>45307</td>\n      <td>乙</td>\n      <td>1</td>\n      <td>研发部门</td>\n      <td>正式</td>\n      <td>8</td>\n      <td>None</td>\n    </tr>\n    <tr>\n      <td>45307</td>\n      <td>乙</td>\n      <td>1</td>\n      <td>研发部门</td>\n      <td>正式</td>\n      <td>8</td>\n      <td>None</td>\n    </tr>\n    <tr>\n      <td>45308</td>\n      <td>乙</td>\n      <td>1</td>\n      <td>研发部门</td>\n      <td>正式</td>\n      <td>8</td>\n      <td>None</td>\n    </tr>\n    <tr>\n      <td>45308</td>\n      <td>乙</td>\n      <td>1</td>\n      <td>研发部门</td>\n      <td>正式</td>\n      <td>8</td>\n      <td>None</td>\n    </tr>\n    <tr>\n      <td>45309</td>\n      <td>乙</td>\n      <td>1</td>\n      <td>研发部门</td>\n      <td>正式</td>\n      <td>8</td>\n      <td>None</td>\n    </tr>\n    <tr>\n      <td>45309</td>\n      <td>乙</td>\n      <td>1</td>\n      <td>研发部门</td>\n      <td>正式</td>\n      <td>8</td>\n      <td>None</td>\n    </tr>\n    <tr>\n      <td>45310</td>\n      <td>乙</td>\n      <td>1</td>\n      <td>研发部门</td>\n      <td>正式</td>\n      <td>8</td>\n      <td>None</td>\n    </tr>\n    <tr>\n      <td>45310</td>\n      <td>乙</td>\n      <td>1</td>\n      <td>研发部门</td>\n      <td>正式</td>\n      <td>8</td>\n      <td>None</td>\n    </tr>\n    <tr>\n      <td>45311</td>\n      <td>乙</td>\n      <td>1</td>\n      <td>研发部门</td>\n      <td>正式</td>\n      <td>8</td>\n      <td>None</td>\n    </tr>\n    <tr>\n      <td>45311</td>\n      <td>乙</td>\n      <td>1</td>\n      <td>研发部门</td>\n      <td>正式</td>\n      <td>8</td>\n      <td>None</td>\n    </tr>\n    <tr>\n      <td>45312</td>\n      <td>乙</td>\n      <td>1</td>\n      <td>研发部门</td>\n      <td>正式</td>\n      <td>8</td>\n      <td>None</td>\n    </tr>\n    <tr>\n      <td>45312</td>\n      <td>乙</td>\n      <td>1</td>\n      <td>研发部门</td>\n      <td>正式</td>\n      <td>8</td>\n      <td>None</td>\n    </tr>\n    <tr>\n      <td>45313</td>\n      <td>乙</td>\n      <td>1</td>\n      <td>研发部门</td>\n      <td>正式</td>\n      <td>8</td>\n      <td>None</td>\n    </tr>\n    <tr>\n      <td>45313</td>\n      <td>乙</td>\n      <td>1</td>\n      <td>研发部门</td>\n      <td>正式</td>\n      <td>8</td>\n      <td>None</td>\n    </tr>\n    <tr>\n      <td>45314</td>\n      <td>乙</td>\n      <td>1</td>\n      <td>研发部门</td>\n      <td>正式</td>\n      <td>8</td>\n      <td>None</td>\n    </tr>\n    <tr>\n      <td>45314</td>\n      <td>乙</td>\n      <td>1</td>\n      <td>研发部门</td>\n      <td>正式</td>\n      <td>8</td>\n      <td>None</td>\n    </tr>\n    <tr>\n      <td>45315</td>\n      <td>乙</td>\n      <td>1</td>\n      <td>研发部门</td>\n      <td>正式</td>\n      <td>8</td>\n      <td>None</td>\n    </tr>\n    <tr>\n      <td>45315</td>\n      <td>乙</td>\n      <td>1</td>\n      <td>研发部门</td>\n      <td>正式</td>\n      <td>8</td>\n      <td>None</td>\n    </tr>\n    <tr>\n      <td>45316</td>\n      <td>乙</td>\n      <td>1</td>\n      <td>研发部门</td>\n      <td>正式</td>\n      <td>8</td>\n      <td>None</td>\n    </tr>\n    <tr>\n      <td>45316</td>\n      <td>乙</td>\n      <td>1</td>\n      <td>研发部门</td>\n      <td>正式</td>\n      <td>8</td>\n      <td>None</td>\n    </tr>\n    <tr>\n      <td>45317</td>\n      <td>乙</td>\n      <td>1</td>\n      <td>研发部门</td>\n      <td>正式</td>\n      <td>8</td>\n      <td>None</td>\n    </tr>\n    <tr>\n      <td>45317</td>\n      <td>乙</td>\n      <td>1</td>\n      <td>研发部门</td>\n      <td>正式</td>\n      <td>8</td>\n      <td>None</td>\n    </tr>\n    <tr>\n      <td>45318</td>\n      <td>乙</td>\n      <td>1</td>\n      <td>研发部门</td>\n      <td>正式</td>\n      <td>8</td>\n      <td>None</td>\n    </tr>\n    <tr>\n      <td>45318</td>\n      <td>乙</td>\n      <td>1</td>\n      <td>研发部门</td>\n      <td>正式</td>\n      <td>8</td>\n      <td>None</td>\n    </tr>\n    <tr>\n      <td>2024-01-01 00:00:00</td>\n      <td>小计</td>\n      <td>小计</td>\n      <td>小计</td>\n      <td>小计</td>\n      <td>128</td>\n      <td>None</td>\n    </tr>\n    <tr>\n      <td>2024-01-01 00:00:00</td>\n      <td>小计</td>\n      <td>小计</td>\n      <td>小计</td>\n      <td>小计</td>\n      <td>128</td>\n      <td>None</td>\n    </tr>\n    <tr>\n      <td>None</td>\n      <td>None</td>\n      <td>None</td>\n      <td>None</td>\n      <td>None</td>\n      <td>None</td>\n      <td>None</td>\n    </tr>\n    <tr>\n      <td>None</td>\n      <td>None</td>\n      <td>None</td>\n      <td>None</td>\n      <td>None</td>\n      <td>None</td>\n      <td>None</td>\n    </tr>\n    <tr>\n      <td>None</td>\n      <td>None</td>\n      <td>None</td>\n      <td>None</td>\n      <td>None</td>\n      <td>None</td>\n      <td>None</td>\n    </tr>\n    <tr>\n      <td>None</td>\n      <td>None</td>\n      <td>None</td>\n      <td>None</td>\n      <td>None</td>\n      <td>None</td>\n      <td>None</td>\n    </tr>\n    <tr>\n      <td>None</td>\n      <td>None</td>\n      <td>None</td>\n      <td>None</td>\n      <td>None</td>\n      <td>None</td>\n      <td>None</td>\n    </tr>\n    <tr>\n      <td>有限公司</td>\n      <td>None</td>\n      <td>None</td>\n      <td>None</td>\n      <td>None</td>\n      <td>项目负责人：___________</td>\n      <td>None</td>\n    </tr>\n  </tbody>\n</table>"
+        },
+        {
+            "id": "委托合同",
+            "group": 1,
+            "attrs": {
+                "期限": "自2025年11月4日至2026年2月4日",
+                "价款、报酬、费用": "人民币2,000元（大写：贰仟元整）",
+                "技术内容": "寻找承租人并洽谈租赁条件；代为签署《房屋租赁合同》及相关补充协议；代收首期租金及押金（不超过人民币30,000元）；办理房屋交接手续；其他与本次租赁直接相关的必要事项。",
+                "费用类型": "一次性支付",
+                "争议解决": "本合同引起的或与本合同有关的任何争议，双方应友好协商解决；协商不成的，任何一方均有权向甲方所在地人民法院提起诉讼。",
+                "生效条件": "本合同自双方签字（或盖章）之日起生效。",
+                "附件效力": "本合同一式两份，甲乙双方各执一份，具有同等法律效力。附件：甲方身份证复印件、房屋不动产权证书复印件。"
+            },
+            "file_path": "委托合同.docx",
+            "file_category": "委托合同"
+        },
+        {
+            "id": "项目1",
+            "group": 1,
+            "attrs": {
+                "序号": "1",
+                "项目起止时间": "2024-01-01至2024-07-31",
+                "项目主要研究内容": "产业园智能管理系统是一套整合了智能化设施、安防系统、信息发布系统等，集信息采集、分析、处理于一体的综合性系统。",
+                "研发关键技术": "研究并应用先进的清洗技术，如超声波清洗、喷泉清洗、气动清洗、水力冲击清洗等，针对不同材质的换热器，选择合适的清洗技术",
+                "预期目标": "该系统主要面向产业园内的企业，提供全方位的智能化服务，包括但不限于物业管理、信息发布、安全监控、能耗管理、招商推广等功能。该系统提升了产业园的运营效率，同时也为企业提供了便捷、高效的服务。",
+                "项目编号": "91500000321763471Q240002",
+                "完成情况": "未结束",
+                "支出类型": "资本化",
+                "允许加计扣除金额合计": "61",
+                "人员人工费用": "11",
+                "直接投入费用": "12",
+                "折旧费用": "13",
+                "无形资产摊销": "14",
+                "新产品设计费等": "15",
+                "其他相关费用合计": "17",
+                "经限额调整后的其他相关费用": "53"
+            },
+            "file_path": "研发支出辅助账汇总表.xlsx",
+            "file_category": "研发支出辅助帐汇总表"
+        },
+        {
+            "id": "信托一项目",
+            "group": 1,
+            "attrs": {
+                "序号": "2",
+                "项目起止时间": "2024-01-01至2024-07-31",
+                "项目主要研究内容": "产业园智能管理系统是一套整合了智能化设施、安防系统、信息发布系统等，集信息采集、分析、处理于一体的综合性系统。",
+                "研发关键技术": "研究并应用先进的清洗技术，如超声波清洗、喷泉清洗、气动清洗、水力冲击清洗等，针对不同材质的换热器，选择合适的清洗技术",
+                "预期目标": "该系统主要面向产业园内的企业，提供全方位的智能化服务，包括但不限于物业管理、信息发布、安全监控、能耗管理、招商推广等功能。该系统提升了产业园的运营效率，同时也为企业提供了便捷、高效的服务。"
+            },
+            "file_path": "研发项目汇总表.xlsx",
+            "file_category": "研发项目汇总表"
+        },
+        {
+            "id": "小唐-1",
+            "group": 1,
+            "attrs": {
+                "工号": "1",
+                "入职日期": "2024年-01月-01日",
+                "教育背景（学历 + 专业，如：计算机科学硕士）": "本科",
+                "合同类型（全职 / 兼职 / 实习）": "全职"
+            },
+            "file_path": "研发人员名单.xlsx",
+            "file_category": "研发人员名单"
+        },
+        {
+            "id": "小红-2",
+            "group": 1,
+            "attrs": {
+                "工号": "2",
+                "入职日期": "2024年-01月-01日",
+                "教育背景（学历 + 专业，如：计算机科学硕士）": "博士",
+                "合同类型（全职 / 兼职 / 实习）": "全职"
+            },
+            "file_path": "研发人员名单.xlsx",
+            "file_category": "研发人员名单"
+        },
+        {
+            "id": "科创报告数据中心",
+            "group": 1,
+            "attrs": {
+                "项目编号": "RD240001",
+                "完成情况": "已结束",
+                "支出类型": "费用化",
+                "允许加计扣除金额合计": "60",
+                "人员人工费用": "1",
+                "直接投入费用": "2",
+                "折旧费用": "3",
+                "无形资产摊销": "4",
+                "新产品设计费等": "5",
+                "其他相关费用合计": "7",
+                "经限额调整后的其他相关费用": "52",
+                "资本化金额小计": "62",
+                "费用化金额小计": "63",
+                "金额合计": "64"
+            },
+            "file_path": "研发支出辅助账汇总表.xlsx",
+            "file_category": "研发支出辅助帐汇总表"
+        },
+        {
+            "id": "基于深度学习的医学影像智能诊断算法研究",
+            "group": 1,
+            "attrs": {
+                "日期": "2025年-11月-01日",
+                "项目周期": "2025年11月01日至2027年11月30日",
+                "负责人": "吴晓峰",
+                "立项依据和目的意义": "随着人工智能技术的发展，深度学习在医学影像分析中的应用日益广泛；本项目旨在通过构建高精度的AI诊断模型，提高肺结节和乳腺癌早期筛查的准确率，减轻医生工作负担，提升医疗服务效率和质量。",
+                "主要内容、目标和关键技术": "构建适用于肺结节、乳腺癌早期筛查的高精度AI诊断模型；实现模型在真实临床环境下的验证与优化；发表SCI论文2–3篇，申请发明专利1项，形成可转化技术原型；核心算法准确率 ≥ 92%（ROC AUC）；完成不少于500例临床数据验证；形成可集成至医院PACS系统的软件模块原型。",
+                "进度计划": "准备阶段（2025-12至2026-01）数据收集与预处理；开发阶段（2026-02至2026-07）模型设计与开发；验证阶段（2026-08至2026-12）模型训练与验证；部署阶段（2027-01至2027-06）系统集成与部署；总结阶段（2027-07至2027-11）结题验收与成果转化",
+                "费用预算": "人民币120万元；其中人员费30万元；设备购置费40万元；材料与测试费15万元；差旅与会议费10万元；出版/文献/知识产权费8万元；间接费用17万元"
+            },
+            "file_path": "项目计划任务书.docx",
+            "file_category": "项目计划任务书"
+        },
+        {
+            "id": "研发猫设计方案",
+            "group": 1,
+            "attrs": {
+                "项目主要研究内容": "研发猫系统整体采用“规划-再执行”（Planning-then-Execute）范式，由顶层Agent统一调度，完成用户查询从意图理解到结果返回的全过程。系统在接收用户自然语言输入后，首先通过任务规划器对问题进行解析和意图识别，结合历史问题记录进行匹配优化；若无匹配项，则利用大模型能力进行任务拆解，生成动作链路径。该路径明确了问题解决所需的步骤，并可支持多轮对话和上下文推理，具备高度的灵活性和智能性。在动作执行阶段，系统支持包括SQL查询、RAG、数学推理等在内的多种基础动作类型。执行器会解析并验证任务路径，通过沙盒环境逐步完成各项任务，确保执行过程安全可控。最终结果将通过语言模型转化为自然语言输出返回用户，实现从复杂问题理解到结构化执行、再到人性化回应的完整闭环。",
+                "研发关键技术": "Agentic RAG (Agent-based Retrieval-Augmented Generation) 架构；LangGraph 状态机编排；LlamaIndex 高性能检索技术；图论编排；向量检索；意图识别分类；动态 Prompt 工程；有向有环图 (Cyclic Graph) 管理对话流程；VectorStoreIndex 对文档进行切片和 Embedding 向量化；元数据过滤 (Metadata Filtering)；权限映射；布尔逻辑检索；SQL 意图判官 (`should_sql` node)；动态指令注入 (System Prompt Injection)；工具绑定 (Tool Binding)；异步流式处理 (Async Streaming)；基于图的文本索引机制；双层语义检索范式；检索增强的答案生成机制"
+            },
+            "file_path": "研发猫设计方案(26年2月).docx",
+            "file_category": "研发项目汇总表"
+        },
+        {
+            "id": "add_test",
+            "attrs": {}
+        },
+        {
+            "id": "研发人员名单",
+            "group": 1,
+            "attrs": {}
+        },
+        {
+            "id": "b",
+            "group": 1,
+            "attrs": {}
+        }
+    ],
+    "links": [
+        {
+            "source": "项目立项报告",
+            "target": "01505 能源效率优化管理软件研发项目",
+            "relation": "项目名称",
+            "file_path": "能源效率优化管理软件研发项目_20251011162100 (1).pdf",
+            "file_category": "项目立项报告"
+        },
+        {
+            "source": "项目立项报告",
+            "target": "李四；王五；赵六；孙七",
+            "relation": "参与人员",
+            "file_path": "能源效率优化管理软件研发项目_20251011162100 (1).pdf",
+            "file_category": "项目立项报告"
+        },
+        {
+            "source": "项目立项报告",
+            "target": "张三",
+            "relation": "负责人",
+            "file_path": "能源效率优化管理软件研发项目_20251011162100 (1).pdf",
+            "file_category": "项目立项报告"
+        },
+        {
+            "source": "委托合同",
+            "target": "张三",
+            "relation": "甲方（委托方）",
+            "file_path": "委托合同.docx",
+            "file_category": "委托合同"
+        },
+        {
+            "source": "委托合同",
+            "target": "李四",
+            "relation": "乙方（受托方）",
+            "file_path": "委托合同.docx",
+            "file_category": "委托合同"
+        },
+        {
+            "source": "委托合同",
+            "target": "因不可抗力导致委托事项无法完成，甲方有权单方解除本合同。",
+            "relation": "不可抗力",
+            "file_path": "委托合同.docx",
+            "file_category": "委托合同"
+        },
+        {
+            "source": "委托合同",
+            "target": "甲方联系人：张三，联系电话：138****1234；乙方联系人：李四，联系电话：139****5678",
+            "relation": "项目联系人",
+            "file_path": "委托合同.docx",
+            "file_category": "委托合同"
+        },
+        {
+            "source": "研发项目汇总表",
+            "target": "项目1",
+            "relation": "项目名称",
+            "file_path": "研发项目汇总表.xlsx",
+            "file_category": "研发项目汇总表"
+        },
+        {
+            "source": "项目1",
+            "target": "科技有限公司",
+            "relation": "项目单位",
+            "file_path": "研发项目汇总表.xlsx",
+            "file_category": "研发项目汇总表"
+        },
+        {
+            "source": "项目1",
+            "target": "唐溯穗",
+            "relation": "项目负责人",
+            "file_path": "研发项目汇总表.xlsx",
+            "file_category": "研发项目汇总表"
+        },
+        {
+            "source": "研发项目汇总表",
+            "target": "信托一项目",
+            "relation": "项目名称",
+            "file_path": "研发项目汇总表.xlsx",
+            "file_category": "研发项目汇总表"
+        },
+        {
+            "source": "信托一项目",
+            "target": "科技有限公司",
+            "relation": "项目单位",
+            "file_path": "研发项目汇总表.xlsx",
+            "file_category": "研发项目汇总表"
+        },
+        {
+            "source": "信托一项目",
+            "target": "李明",
+            "relation": "项目负责人",
+            "file_path": "研发项目汇总表.xlsx",
+            "file_category": "研发项目汇总表"
+        },
+        {
+            "source": "研发人员名单",
+            "target": "小唐-1",
+            "relation": "姓名",
+            "file_path": "研发人员名单.xlsx",
+            "file_category": "研发人员名单"
+        },
+        {
+            "source": "小唐-1",
+            "target": "研发部门",
+            "relation": "部门（如：AI 研发部、前端团队、数据中心）",
+            "file_path": "研发人员名单.xlsx",
+            "file_category": "研发人员名单"
+        },
+        {
+            "source": "研发人员名单",
+            "target": "小红-2",
+            "relation": "姓名2",
+            "file_path": "研发人员名单.xlsx",
+            "file_category": "研发人员名单"
+        },
+        {
+            "source": "小红-2",
+            "target": "研发部门",
+            "relation": "部门（如：AI 研发部、前端团队、数据中心）",
+            "file_path": "研发人员名单.xlsx",
+            "file_category": "研发人员名单"
+        },
+        {
+            "source": "研发支出辅助帐汇总表",
+            "target": "科创报告数据中心",
+            "relation": "项目名称",
+            "file_path": "研发支出辅助账汇总表.xlsx",
+            "file_category": "研发支出辅助帐汇总表"
+        },
+        {
+            "source": "研发支出辅助帐汇总表",
+            "target": "项目1",
+            "relation": "项目名称",
+            "file_path": "研发支出辅助账汇总表.xlsx",
+            "file_category": "研发支出辅助帐汇总表"
+        },
+        {
+            "source": "项目计划任务书",
+            "target": "基于深度学习的医学影像智能诊断算法研究",
+            "relation": "项目名称",
+            "file_path": "项目计划任务书.docx",
+            "file_category": "项目计划任务书"
+        },
+        {
+            "source": "研发项目汇总表",
+            "target": "研发猫设计方案",
+            "relation": "项目名称",
+            "file_path": "研发猫设计方案(26年2月).docx",
+            "file_category": "研发项目汇总表"
+        },
+        {
+            "source": "add_test",
+            "target": "研发人员名单",
+            "relation": "test"
+        },
+        {
+            "source": "b",
+            "target": "add_test",
+            "relation": "test"
+        }
+    ]
+}

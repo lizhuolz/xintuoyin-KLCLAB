@@ -1,7 +1,0 @@
-<template>
-  <FeedbackManagementPage mode="positive" />
-</template>
-
-<script setup>
-import FeedbackManagementPage from './FeedbackManagementPage.vue'
-</script>

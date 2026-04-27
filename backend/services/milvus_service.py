@@ -110,18 +110,9 @@ class MilvusService:
             raise MilvusNotReadyError("未配置本地 embedding 模型，请设置 RAG_EMBED_MODEL。")
         if Path(model_ref).exists():
             return model_ref
-        try:
-            from modelscope import snapshot_download
-        except Exception as exc:
-            raise MilvusNotReadyError(
-                f"embedding 模型 {model_ref} 不是本地路径，且 modelscope 不可用: {exc}"
-            ) from exc
-        try:
-            return snapshot_download(model_id=model_ref)
-        except Exception as exc:
-            raise MilvusNotReadyError(
-                f"无法通过 modelscope 下载 embedding 模型 {model_ref}: {exc}"
-            ) from exc
+        # SentenceTransformer 支持直接用 HuggingFace model ID（如 BAAI/bge-small-zh-v1.5）
+        # 会自动下载到 ~/.cache/huggingface/，无需 modelscope
+        return model_ref
 
     def _get_embed_dim(self) -> int:
         if self._embed_dim is None:
@@ -197,8 +188,15 @@ class MilvusService:
             return []
         vectors = self.embed_texts(chunks)
         allowed_users = kb.get("users", []) or []
-        allowed_names = [item.get("name", "").strip() for item in allowed_users if isinstance(item, dict) and item.get("name")]
-        allowed_user_expr = "|" + "|".join(allowed_names) + "|" if allowed_names else "|all|"
+        allowed_ids = []
+        for item in allowed_users:
+            if isinstance(item, dict):
+                sid = str(item.get("staffId") or item.get("staff_id") or item.get("name") or "").strip()
+            else:
+                sid = str(item).strip()
+            if sid:
+                allowed_ids.append(sid)
+        allowed_user_expr = "|" + "|".join(allowed_ids) + "|" if allowed_ids else "|all|"
         category = kb.get("category", "")
         owner_info = kb.get("owner_info", "")
         owner_parts = owner_info.split("/") if owner_info else []
@@ -241,6 +239,21 @@ class MilvusService:
                 client.delete(collection_name=self.settings.collection, filter=f"id in [{', '.join(_quote(item) for item in ids)}]")
             client.insert(collection_name=self.settings.collection, data=records)
 
+    def update_enabled(self, kb_id: str, enabled: bool):
+        self.ensure_collection()
+        client = self._get_client()
+        records = client.query(
+            collection_name=self.settings.collection,
+            filter=f"kb_id == {_quote(kb_id)}",
+            output_fields=["id", "vector", "kb_id", "kb_name", "scope", "belong_to", "allowed_users", "enabled", "file_name", "rel_path", "chunk_no", "content"],
+        )
+        if not records:
+            return
+        for r in records:
+            r["enabled"] = enabled
+        client.delete(collection_name=self.settings.collection, filter=f"kb_id == {_quote(kb_id)}")
+        client.insert(collection_name=self.settings.collection, data=records)
+
     def delete_by_kb(self, kb_id: str):
         self.ensure_collection()
         self._get_client().delete(collection_name=self.settings.collection, filter=f"kb_id == {_quote(kb_id)}")
@@ -252,16 +265,16 @@ class MilvusService:
         self._get_client().delete(collection_name=self.settings.collection, filter=f"kb_id == {_quote(kb_id)} and file_name in [{', '.join(_quote(name) for name in filenames)}]")
 
     def build_permission_filter(self, user: dict[str, Any]) -> str:
-        name = (user.get("name") or "").strip()
-        company = (user.get("company") or "").strip()
-        department = (user.get("department") or "").strip()
+        """
+        权限规则：
+        1. 基础知识库（scope="基础知识库"）所有人都能搜索
+        2. 其他知识库：创建时添加了哪些人员，那些人员就能搜索到
+        """
+        # 用 staffId 匹配（兼容 staff_id / record_id）
+        staff_id = str(user.get("staff_id") or user.get("staffId") or user.get("record_id") or "").strip()
         clauses = ['scope == "基础知识库"']
-        if company:
-            clauses.append(f"belong_to == {_quote(company)}")
-        if department:
-            clauses.append(f"belong_to == {_quote(department)}")
-        if name:
-            clauses.append(f'allowed_users like "%|{name}|%"')
+        if staff_id:
+            clauses.append(f'allowed_users like "%|{staff_id}|%"')
         return "enabled == true and (" + " or ".join(clauses) + ")"
 
     def search(self, *, question: str, user: dict[str, Any], top_k: int | None = None) -> list[dict[str, Any]]:

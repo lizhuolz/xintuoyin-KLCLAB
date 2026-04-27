@@ -1,0 +1,13 @@
+{
+  "databases": [
+    {
+      "id": "db_default",
+      "name": "r_d_test",
+      "host": "183.69.138.62",
+      "port": 33666,
+      "user": "hagongda",
+      "password": "ha.G/o[tEst]n%gD*a"
+    }
+  ],
+  "active_id": "db_default"
+}

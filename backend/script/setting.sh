@@ -3,9 +3,13 @@
 unset http_proxy
 unset https_proxy
 unset all_proxy
+export no_proxy="127.0.0.1,localhost"
+export NO_PROXY="127.0.0.1,localhost"
+export HF_ENDPOINT="https://hf-mirror.com"
 
 SETTING_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 BACKEND_ROOT="$(cd "$SETTING_DIR/.." && pwd)"
+PROJECT_ROOT="$(cd "$BACKEND_ROOT/.." && pwd)"
 export CUDA_VISIBLE_DEVICES=0
 # Search / web retrieval
 export RESEARCH_MAX_RESULTS=3
@@ -15,7 +19,7 @@ export RESEARCH_ENABLE_THINKING=1
 
 # Query embedding / local retrieval
 export QUERY_EMBEDDING_MODEL="BAAI/bge-base-zh-v1.5"
-export QUERY_DB_PATH="${QUERY_DB_PATH:-$BACKEND_ROOT/data/local_db_query}"
+export QUERY_DB_PATH="${QUERY_DB_PATH:-$PROJECT_ROOT/data/local_db_query}"
 
 # Main chat model
 export CHAT_MODEL_NAME="Qwen3.5-27B"
@@ -46,7 +50,7 @@ export RAG_VECTOR_BACKEND="milvus"
 
 # Milvus connection / collection settings
 # MILVUS_URI can point to a milvus-lite local db file or a standalone Milvus endpoint.
-export KL_MILVUS_URI="${KL_MILVUS_URI:-$BACKEND_ROOT/data/milvus/klclab_milvus.db}"
+export KL_MILVUS_URI="${KL_MILVUS_URI:-$PROJECT_ROOT/data/milvus/klclab_milvus.db}"
 export KL_MILVUS_TOKEN=""
 export KL_MILVUS_DB_NAME="default"
 export MILVUS_COLLECTION="klclab_kb_chunks"
@@ -59,19 +63,19 @@ export MILVUS_METRIC_TYPE="COSINE"
 export MILVUS_EMBED_DIM=512
 export MILVUS_BATCH_SIZE=32
 export MILVUS_TOP_K=5
-export MILVUS_SCORE_THRESHOLD=0.35
+export MILVUS_SCORE_THRESHOLD=0.2
 export MILVUS_CHUNK_SIZE=800
 export MILVUS_CHUNK_OVERLAP=120
 
 # RAG model settings
 export RAG_LLM_MODEL="Qwen3.5-27B"
 export RAG_LLM_TEMPERATURE=0.1
-export RAG_EMBED_MODEL="${RAG_EMBED_MODEL:-/data1/public/models/bge-small-zh-v1.5}"
+export RAG_EMBED_MODEL="${RAG_EMBED_MODEL:-BAAI/bge-small-zh-v1.5}"
 export RAG_EMBED_DEVICE="cpu"
 
 # SQL tool LLM settings
 # DB_LLM_API_KEY is optional; if unset, code falls back to OPENAI_API_KEY.
-export DB_LLM_BASE_URL="http://10.249.40.204:62272/v1"
+export DB_LLM_BASE_URL="http://127.0.0.1:62272/v1"
 export DB_LLM_MODEL_NAME="Qwen3.5-27B"
 export DB_LLM_SELECTOR_TEMPERATURE=0.1
 export DB_LLM_SELECTOR_MAX_TOKENS=1024
@@ -89,8 +93,14 @@ export DB_MYSQL_PASSWORD='ha.G/o[tEst]n%gD*a'
 export DB_MYSQL_NAME="r_d_test"
 
 
-export OPENAI_API_KEY="EMPTY" # # lyq 
-export OPENAI_API_BASE="http://10.249.40.204:62272/v1"
+# Partner Redis (login token store)
+export PARTNER_REDIS_HOST="183.69.138.62"
+export PARTNER_REDIS_PORT=6800
+export PARTNER_REDIS_PASSWORD='ty188$#456.8'
+export PARTNER_REDIS_DB=1
+
+export OPENAI_API_KEY="EMPTY" # # lyq
+export OPENAI_API_BASE="http://127.0.0.1:62272/v1"
 export TAVILY_API_KEY=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
 export SECURITY_ENABLE_GIBBERISH=0
 export SECURITY_ENABLE_NO_REFUSAL=0

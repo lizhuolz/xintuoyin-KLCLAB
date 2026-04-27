@@ -5,8 +5,14 @@ description = "Project environment for FastAPI backend"
 channels = ["conda-forge"]
 platforms = ["linux-64"]
 
+# 知识图谱（xty-graph）相关环境变量；图谱已挂载到 xty 同进程，不再单独 run
+[activation.env]
+EXTERNAL_GRAPH_EXTRACT_TIMEOUT_SECONDS = "180"
+FLASK_DEBUG = "false"
+
 [dependencies]
 python = "3.11.*"
+nodejs = ">=20,<23"
 fastapi = "*"
 uvicorn = "*"
 python-multipart = "*"
@@ -25,6 +31,10 @@ regex = "2024.11.6.*"
 pip = ">=25.3,<26"
 faiss = ">=1.9.0,<2"
 pandas = ">=2.3.3,<3"
+redis-py = ">=7.4.0,<8"
+# 图谱模块依赖（docling 要求旧版 pillow/typer），在 conda 层 pin 住，避免被自动升级
+pillow = ">=10.0.0,<12.0.0"
+typer = ">=0.12.5,<0.22.0"
 
 
 [pypi-dependencies]
@@ -38,7 +48,6 @@ tavily-python = ">=0.7.15, <0.8"
 llama-index = "*"
 llama-index-llms-openai = "*"
 llama-index-embeddings-openai = "*"
-llm-guard = { version = ">=0.3.16", extras = ["full"] }
 openpyxl = ">=3.1.5, <4"
 langchain-huggingface = ">=1.2.0, <2"
 sentence-transformers = ">=5.2.3, <6"
@@ -51,6 +60,33 @@ llama-index-vector-stores-milvus = ">=1.1.0, <2"
 setuptools = "*"
 milvus = ">=2.3.5, <3"
 
+# 知识图谱（xty-graph 子项目，挂在同进程下）
+flask = "==3.0.3"
+flask-cors = ">=4.0.0"
+docling = "*"
+rapidocr-onnxruntime = "*"
+pypdfium2 = "*"
+cryptography = ">=47.0.0, <48"
+click = ">=8.0.0"
+a2wsgi = ">=1.10.0"
+
 
 [tasks]
-start-backend = "cd backend && python app.py"
+# 前端
+install-frontend = "cd frontend && npm install"
+dev-frontend = "cd frontend && npm run dev -- --host 0.0.0.0"
+build-frontend = "cd frontend && npm run build"
+
+# 后端
+start-backend = "cd backend && source script/setting.sh && python app.py"
+
+# 基础服务
+start-minio = "bash scripts/start_minio.sh"
+
+# 一键启动（MinIO + 后端 + 前端）
+start = "bash scripts/start.sh"
+stop = "bash scripts/stop_all.sh"
+
+# 图谱模块调试用（默认已挂在 xty 同进程，不需要单独跑）
+graph-standalone = "cd graph && python app.py"
+check-soffice = "soffice --version"

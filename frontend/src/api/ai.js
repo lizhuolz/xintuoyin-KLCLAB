@@ -3,7 +3,7 @@ import request from '@/utils/request'
 export const API_BASE = import.meta.env.VITE_API_BASE || '/api'
 
 function accessToken() {
-  return localStorage.getItem('token') || ''
+  return localStorage.getItem('token') || import.meta.env.VITE_DEV_TOKEN || ''
 }
 
 function buildUrl(path) {
@@ -42,6 +42,19 @@ function parseSSEEventBlock(block) {
     return null
   }
 }
+
+function parseFilenameFromDisposition(disposition, fallback = 'download.bin') {
+  if (!disposition) return fallback
+  // 优先匹配 RFC 5987: filename*=UTF-8''xxx
+  const rfc5987 = disposition.match(/filename\*=UTF-8''([^;]+)/i)
+  if (rfc5987?.[1]) {
+    try { return decodeURIComponent(rfc5987[1]) } catch { /* ignore */ }
+  }
+  // 回退：filename="xxx"
+  const basic = disposition.match(/filename="?([^";]+)"?/i)
+  return basic?.[1] || fallback
+}
+
 
 async function consumeSSEStream(response, onEvent) {
   if (!response.body) {
@@ -113,36 +126,9 @@ export function formatTimestamp(value, fallback = '-') {
   return String(value)
 }
 
-export function inferDateString(detail) {
-  const candidates = [detail?.time, detail?.update_time, detail?.createdAt, detail?.updatedAt]
-  for (const value of candidates) {
-    if (value === null || value === undefined || value === '') continue
-    const num = Number(value)
-    if (!Number.isNaN(num) && num > 0) {
-      const date = new Date(num)
-      const y = date.getFullYear()
-      const m = String(date.getMonth() + 1).padStart(2, '0')
-      const d = String(date.getDate()).padStart(2, '0')
-      return `${y}-${m}-${d}`
-    }
-    const text = String(value)
-    const match = text.match(/(\d{4})[\/-](\d{2})[\/-](\d{2})/)
-    if (match) {
-      return `${match[1]}-${match[2]}-${match[3]}`
-    }
-  }
-  return ''
-}
-
-export function buildFeedbackPictureUrl(detail, filename) {
-  const date = inferDateString(detail)
-  if (!detail?.id || !date || !filename) return ''
-  return buildUrl(`/static/feedbacks/${date}/${detail.id}/${encodeURIComponent(filename)}`)
-}
-
 export function buildHistoryFileDownloadUrl(conversationId, messageIndex, fileId) {
   if (!conversationId || messageIndex === null || messageIndex === undefined || !fileId) return ''
-  return buildUrl(`/history/${encodeURIComponent(conversationId)}/messages/${encodeURIComponent(messageIndex)}/files/${encodeURIComponent(fileId)}/download`)
+  return `/history/${encodeURIComponent(conversationId)}/messages/${encodeURIComponent(messageIndex)}/files/${encodeURIComponent(fileId)}/download`
 }
 
 export function flattenHistoryMessages(historyData) {
@@ -181,59 +167,6 @@ export async function getPlainText(path) {
     throw new Error(await readErrorPayload(response))
   }
   return response.text()
-}
-
-async function postFormStream(path, formData, onEvent, options = {}) {
-  const streamFormData = new FormData()
-  formData.forEach((value, key) => {
-    streamFormData.append(key, value)
-  })
-  streamFormData.set('stream', 'true')
-
-  const response = await fetch(buildUrl(path), {
-    method: 'POST',
-    headers: buildHeaders(options.headers),
-    body: streamFormData,
-    signal: options.signal,
-  })
-
-  if (!response.ok) {
-    throw new Error(await readErrorPayload(response, '发送对话失败'))
-  }
-
-  let donePayload = null
-  let streamError = null
-  await consumeSSEStream(response, (event) => {
-    if (event?.type === 'done') {
-      donePayload = event.data || {}
-    }
-    if (event?.type === 'error') {
-      streamError = event.message || '流式请求失败'
-    }
-    onEvent?.(event)
-  })
-
-  if (streamError) {
-    throw new Error(streamError)
-  }
-  return donePayload || {}
-}
-
-function formDataToJson(formData) {
-  const payload = {}
-  formData.forEach((value, key) => {
-    if (value instanceof File) return
-    payload[key] = value
-  })
-  return payload
-}
-
-function hasBinaryFile(formData) {
-  let found = false
-  formData.forEach((value) => {
-    if (value instanceof File) found = true
-  })
-  return found
 }
 
 async function postJsonStream(path, payload, onEvent, options = {}) {
@@ -282,20 +215,31 @@ async function getTextStream(path, onChunk, options = {}) {
 }
 
 export const aiApi = {
+  getEnums() {
+    return request.get('/config/enums').then((res) => unwrapResponse(res, '获取系统配置失败'))
+  },
   createChatSession() {
     return request.get('/chat/new_session').then((res) => unwrapResponse(res, '新建对话失败'))
   },
-  sendChat(formData) {
-    if (hasBinaryFile(formData)) {
-      return postFormStream('/chat', formData)
+  async uploadFiles(files) {
+    const list = Array.isArray(files) ? files : [files]
+    if (!list.length) return { files: [] }
+    const formData = new FormData()
+    for (const file of list) {
+      formData.append('files', file)
     }
-    return postJsonStream('/chat', formDataToJson(formData))
+    const response = await fetch(buildUrl('/upload'), {
+      method: 'POST',
+      headers: buildHeaders(),
+      body: formData,
+    })
+    if (!response.ok) {
+      throw new Error(await readErrorPayload(response, '上传文件失败'))
+    }
+    return unwrapResponse(await response.json(), '上传文件失败')
   },
-  sendChatStream(formData, onEvent, options = {}) {
-    if (!hasBinaryFile(formData)) {
-      return postJsonStream('/chat', formDataToJson(formData), onEvent, options)
-    }
-    return postFormStream('/chat', formData, onEvent, options)
+  sendChatStream(payload, onEvent, options = {}) {
+    return postJsonStream('/chat', payload, onEvent, options)
   },
   getChatThinking(conversationId, messageIndex) {
     return getTextStream(`/chat/${encodeURIComponent(conversationId)}/thinking?message_index=${encodeURIComponent(messageIndex)}`)
@@ -303,11 +247,8 @@ export const aiApi = {
   getChatThinkingStream(conversationId, messageIndex, onChunk, options = {}) {
     return getTextStream(`/chat/${encodeURIComponent(conversationId)}/thinking?message_index=${encodeURIComponent(messageIndex)}`, onChunk, options)
   },
-  submitChatFeedback(formData) {
-    if (!hasBinaryFile(formData)) {
-      return request.post('/chat/feedback', formDataToJson(formData)).then((res) => unwrapResponse(res, '提交反馈失败'))
-    }
-    return request.post('/chat/feedback', formData).then((res) => unwrapResponse(res, '提交反馈失败'))
+  submitChatFeedback(payload) {
+    return request.post('/chat/feedback', payload).then((res) => unwrapResponse(res, '提交反馈失败'))
   },
   listHistories(params = {}) {
     return request.get('/history/list', { params }).then((res) => unwrapResponse(res, '获取历史记录失败'))
@@ -321,24 +262,24 @@ export const aiApi = {
   batchDeleteHistories(ids) {
     return request.post('/history/batch_delete', { ids }).then((res) => unwrapResponse(res, '批量删除历史对话失败'))
   },
-  async exportHistoryDetails(ids) {
+  async exportHistoryDetails(ids, searchParams) {
+    const payload = ids ? { ids } : (searchParams || {})
     const response = await fetch(buildUrl('/history/export'), {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
         ...buildHeaders(),
       },
-      body: JSON.stringify({ ids }),
+      body: JSON.stringify(payload),
     })
     if (!response.ok) {
       throw new Error(await readErrorPayload(response, '导出历史记录失败'))
     }
     const blob = await response.blob()
     const disposition = response.headers.get('content-disposition') || ''
-    const match = disposition.match(/filename="?(.*?)"?$/i)
     return {
       blob,
-      filename: match?.[1] || '历史详情.txt',
+      filename: parseFilenameFromDisposition(disposition, '对话日志.xlsx'),
     }
   },
   async downloadByUrl(url, fallbackMessage = '下载失败') {
@@ -351,11 +292,13 @@ export const aiApi = {
     }
     const blob = await response.blob()
     const disposition = response.headers.get('content-disposition') || ''
-    const match = disposition.match(/filename="?(.*?)"?$/i)
     return {
       blob,
-      filename: match?.[1] || 'download.bin',
+      filename: parseFilenameFromDisposition(disposition, 'download.bin'),
     }
+  },
+  getFeedbackOptions() {
+    return request.get('/feedback/reason_options').then((res) => unwrapResponse(res, '获取反馈选项失败'))
   },
   listFeedbacks(params = {}) {
     return request.get('/feedback/list', { params }).then((res) => unwrapResponse(res, '获取反馈列表失败'))
@@ -372,14 +315,11 @@ export const aiApi = {
   listKnowledgeBases(params = {}) {
     return request.get('/kb/list', { params }).then((res) => unwrapResponse(res, '获取知识库列表失败'))
   },
-  createKnowledgeBase(formData) {
-    return request.post('/kb/create', formDataToJson(formData)).then((res) => unwrapResponse(res, '创建知识库失败'))
+  createKnowledgeBase(payload) {
+    return request.post('/kb/create', payload).then((res) => unwrapResponse(res, '创建知识库失败'))
   },
-  updateKnowledgeBase(formData) {
-    if (!hasBinaryFile(formData)) {
-      return request.post('/kb/update', formDataToJson(formData)).then((res) => unwrapResponse(res, '更新知识库失败'))
-    }
-    return request.post('/kb/update', formData).then((res) => unwrapResponse(res, '更新知识库失败'))
+  updateKnowledgeBase(payload) {
+    return request.post('/kb/update', payload).then((res) => unwrapResponse(res, '更新知识库失败'))
   },
   deleteKnowledgeBase(id) {
     return request.delete(`/kb/${encodeURIComponent(id)}`).then((res) => unwrapResponse(res, '删除知识库失败'))
@@ -390,21 +330,19 @@ export const aiApi = {
   listKnowledgeBaseFiles(id) {
     return request.get(`/kb/${encodeURIComponent(id)}/files`).then((res) => unwrapResponse(res, '获取知识库文件失败'))
   },
-  uploadKnowledgeBaseFiles(id, files) {
-    const formData = new FormData()
-    files.forEach((file) => formData.append('files', file))
-    return request.post(`/kb/${encodeURIComponent(id)}/upload`, formData).then((res) => unwrapResponse(res, '上传知识库文档失败'))
-  },
-  deleteKnowledgeBaseFile(id, filename) {
-    return request.post(`/kb/${encodeURIComponent(id)}/delete_file`, { filename }).then((res) => unwrapResponse(res, '删除知识库文档失败'))
-  },
-  deleteKnowledgeBaseFiles(id, filenames) {
-    return request.post(`/kb/${encodeURIComponent(id)}/delete_files`, { filenames }).then((res) => unwrapResponse(res, '删除知识库文档失败'))
-  },
   getDbOptions() {
     return request.get('/db/options').then((res) => unwrapResponse(res, '获取数据库选项失败'))
   },
-  getDbSelectOptions(params = {}) {
-    return request.get('/db/select_options', { params }).then((res) => unwrapResponse(res, '获取数据库显式字段失败'))
+  selectDb(id) {
+    return request.post('/db/select', { id }).then((res) => unwrapResponse(res, '切换数据库失败'))
+  },
+  addDatabase(payload) {
+    return request.post('/db/add', payload).then((res) => unwrapResponse(res, '新增数据库失败'))
+  },
+  getDepartmentUsers() {
+    return request.get('/department_users').then((res) => unwrapResponse(res, '获取部门人员失败'))
+  },
+  toggleKnowledgeBaseEnabled(id, enabled) {
+    return request.post('/kb/toggle_enabled', { id, enabled }).then((res) => unwrapResponse(res, '切换知识库状态失败'))
   },
 }

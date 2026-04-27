@@ -1,6 +1,6 @@
 from __future__ import annotations
 from typing import  Literal
-from langchain_core.messages import AIMessage
+from langchain_core.messages import AIMessage, HumanMessage
 from langchain_openai import ChatOpenAI
 from agent.messagestate import GraphState
 from langchain_core.messages import ToolMessage
@@ -36,22 +36,73 @@ def route_after_sql_planner(state: GraphState) -> Literal["sql_tools", "sql_answ
 # =============================
 def route_after_chatbot_local(state: GraphState) -> Literal["tools_local", "should_sql","end"]:
     messages = state["messages"]
-    if len(messages) > 1 and isinstance(messages[-2], ToolMessage):
+    # 如果 messages 中已有 ToolMessage，说明工具已执行过，直接结束
+    has_tool_result = any(isinstance(m, ToolMessage) for m in messages)
+    if has_tool_result:
         return "end"
-    last = state["messages"][-1]
+    last = messages[-1]
     if isinstance(last, AIMessage) and getattr(last, "tool_calls", None):
-        tool_names = {str(call.get("name") or "").strip() for call in (last.tool_calls or [])}
-        if _looks_like_sql_query(extract_current_user_question(messages)) and "sql_tool" not in tool_names:
-            return "should_sql"
         return "tools_local"
-    return "should_sql"
+    # 没有 tool_calls 也没执行过工具，检查是否需要 SQL
+    if _looks_like_sql_query(extract_current_user_question(messages)):
+        return "should_sql"
+    return "end"
 
 
-def route_after_chatbot_web(state: GraphState) -> Literal["tools_web", "should_sql"]:
+def route_after_chatbot_web(state: GraphState) -> Literal["tools_web", "should_sql", "end"]:
     messages = state["messages"]
-    if len(messages) > 1 and isinstance(messages[-2], ToolMessage):
+    has_tool_result = any(isinstance(m, ToolMessage) for m in messages)
+    if has_tool_result:
         return "end"
-    last = state["messages"][-1]
+    last = messages[-1]
     if isinstance(last, AIMessage) and getattr(last, "tool_calls", None):
         return "tools_web"
+    # 联网模式下模型没调搜索工具 → 走 should_sql 看看是否需要 SQL
+    # 如果也不需要 SQL，should_sql 会让它走 chatbot_local 再产出最终回答
     return "should_sql"
+
+    # 注意：web_chatbot_node 的 system prompt 已强制要求调用 tavily_search，
+    # 如果模型仍然不调用，node.py 的 _should_force_tool_retry 会触发重试。
+
+
+def _sql_result_is_empty(state: GraphState) -> bool:
+    """检查 SQL 查询结果是否为空/无结果。"""
+    messages = state.get("messages", [])
+    # 从后往前找最后一个 sql_tool 的 ToolMessage
+    for msg in reversed(messages):
+        if isinstance(msg, ToolMessage) and (msg.name or "") == "sql_tool":
+            content = (msg.content or "").lower()
+            empty_indicators = ("没有", "未找到", "无结果", "no result", "empty", "error", "错误", "不存在")
+            return any(indicator in content for indicator in empty_indicators)
+    return False
+
+
+def route_after_sql_answer(state: GraphState) -> Literal["sql_rag_fallback", "end"]:
+    """SQL 回答后检查是否需要回退到 RAG。"""
+    if state.get("sql_fallback_done"):
+        return "end"
+    if _sql_result_is_empty(state):
+        return "sql_rag_fallback"
+    return "end"
+
+
+def sql_rag_fallback_node(state: GraphState):
+    """SQL 查询无结果时，清理 SQL 相关消息，提示模型用 rag_tool 重试。"""
+    messages = list(state["messages"])
+    # 移除 SQL 子流程产生的消息（ToolMessage + 相关 AIMessage）
+    cleaned = []
+    skip_tool_ids = set()
+    for msg in messages:
+        if isinstance(msg, ToolMessage) and (msg.name or "") == "sql_tool":
+            skip_tool_ids.add(getattr(msg, "tool_call_id", None))
+            continue
+        if isinstance(msg, AIMessage):
+            tool_calls = getattr(msg, "tool_calls", None) or []
+            if any(tc.get("name") == "sql_tool" for tc in tool_calls):
+                continue
+        cleaned.append(msg)
+    # 添加提示
+    cleaned.append(HumanMessage(
+        content="数据库中未查询到相关数据，请尝试调用 rag_tool 从知识库中检索回答。"
+    ))
+    return {"messages": cleaned, "sql_fallback_done": True}

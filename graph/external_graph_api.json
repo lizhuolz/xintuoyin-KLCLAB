@@ -1,0 +1,760 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "系统外知识图谱 API",
+    "description": "系统外知识图谱接口，包含多图谱数据库切换、文件上传提取、节点和边编辑等功能",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "/",
+      "description": "当前服务器"
+    }
+  ],
+  "paths": {
+    "/external/workspace/status": {
+      "get": {
+        "tags": ["环境与文件管理"],
+        "summary": "获取工作区状态",
+        "description": "获取当前工作区的元数据信息，包括上传的文件列表、图谱节点数、关系数以及可用的图谱数据库列表",
+        "operationId": "getWorkspaceStatus",
+        "responses": {
+          "200": {
+            "description": "成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WorkspaceStatus"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/external/workspace/switch_db": {
+      "post": {
+        "tags": ["环境与文件管理"],
+        "summary": "切换图谱数据库",
+        "description": "切换当前系统外图谱指向的底层 JSON 数据库文件",
+        "operationId": "switchDatabase",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["db_name"],
+                "properties": {
+                  "db_name": {
+                    "type": "string",
+                    "description": "目标图谱数据库文件名（需以 .json 结尾）"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/external/workspace/create_db": {
+      "post": {
+        "tags": ["环境与文件管理"],
+        "summary": "创建新图谱数据库",
+        "description": "创建一个全新的图谱数据库文件并自动切换到该库",
+        "operationId": "createDatabase",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["db_name"],
+                "properties": {
+                  "db_name": {
+                    "type": "string",
+                    "description": "新图谱数据库的名称"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/external/workspace/clear": {
+      "post": {
+        "tags": ["环境与文件管理"],
+        "summary": "清空工作区",
+        "description": "清空当前激活的图谱数据，并删除所有上传暂存的文件",
+        "operationId": "clearWorkspace",
+        "responses": {
+          "200": {
+            "description": "成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/upload": {
+      "post": {
+        "tags": ["环境与文件管理"],
+        "summary": "上传文件提取图谱",
+        "description": "上传多个文档或图片，通过后台大模型脚本提取图谱数据。根据isDefault参数决定合并到系统内图谱或外部图谱数据库",
+        "operationId": "uploadFiles",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "file": {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "format": "binary"
+                    },
+                    "description": "支持多文件上传"
+                  },
+                  "isDefault": {
+                    "type": "boolean",
+                    "default": true,
+                    "description": "是否为系统内图谱。true时提取的图谱合并到系统内SQL图谱；false时提取到外部图谱数据库"
+                  },
+                  "graphId": {
+                    "type": "string",
+                    "description": "外部图谱数据库标识（仅isDefault为false时有效）。为空时创建新数据库；非空时匹配现有数据库并在基础上新增内容"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UploadResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/external/file/{filename}": {
+      "get": {
+        "tags": ["环境与文件管理"],
+        "summary": "访问上传的文件",
+        "description": "根据文件名获取之前上传的文档内容",
+        "operationId": "getUploadedFile",
+        "parameters": [
+          {
+            "name": "filename",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "文件名"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "文件二进制流"
+          }
+        }
+      }
+    },
+    "/get_graph": {
+      "get": {
+        "tags": ["图谱数据获取与编辑"],
+        "summary": "获取当前图谱数据",
+        "description": "获取当前激活图谱的所有节点和关系数据，同时返回当前图谱的标识信息",
+        "operationId": "getGraph",
+        "responses": {
+          "200": {
+            "description": "成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GraphResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/graph/node": {
+      "post": {
+        "tags": ["图谱数据获取与编辑"],
+        "summary": "新增节点",
+        "description": "向当前图谱中手动新增一个节点",
+        "operationId": "createNode",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["id"],
+                "properties": {
+                  "id": {
+                    "type": "string",
+                    "description": "节点唯一标识/名称"
+                  },
+                  "group": {
+                    "type": "integer",
+                    "enum": [1, 2, 3, 4],
+                    "default": 1,
+                    "description": "实体种类：1-人员名称, 2-企业名称, 3-资产名称, 4-其它"
+                  },
+                  "attrs": {
+                    "type": "object",
+                    "description": "节点的属性字典（键值对）"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/graph/node/{node_id}": {
+      "put": {
+        "tags": ["图谱数据获取与编辑"],
+        "summary": "修改节点",
+        "description": "修改指定节点的信息（支持修改 ID 和增量更新属性）",
+        "operationId": "updateNode",
+        "parameters": [
+          {
+            "name": "node_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "原节点的 ID"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "string",
+                    "description": "新的节点 ID"
+                  },
+                  "group": {
+                    "type": "integer",
+                    "enum": [1, 2, 3, 4],
+                    "description": "新的实体种类"
+                  },
+                  "attrs": {
+                    "type": "object",
+                    "description": "需要增量更新的属性字典"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": ["图谱数据获取与编辑"],
+        "summary": "删除节点",
+        "description": "删除指定节点，并级联删除与该节点相关的所有边（关系）",
+        "operationId": "deleteNode",
+        "parameters": [
+          {
+            "name": "node_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "要删除的节点 ID"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/graph/link": {
+      "post": {
+        "tags": ["图谱数据获取与编辑"],
+        "summary": "新增关系",
+        "description": "在两个节点之间新增一条关系边。如果起点或终点节点不存在，会自动创建对应节点（group默认为1）",
+        "operationId": "createLink",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["source", "target", "relation"],
+                "properties": {
+                  "source": {
+                    "type": "string",
+                    "description": "起点节点 ID"
+                  },
+                  "target": {
+                    "type": "string",
+                    "description": "终点节点 ID"
+                  },
+                  "relation": {
+                    "type": "string",
+                    "description": "关系名称/边类型"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": ["图谱数据获取与编辑"],
+        "summary": "修改关系",
+        "description": "修改现有的某条关系边",
+        "operationId": "updateLink",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["old_source", "old_target", "old_relation"],
+                "properties": {
+                  "old_source": {
+                    "type": "string",
+                    "description": "原起点 ID"
+                  },
+                  "old_target": {
+                    "type": "string",
+                    "description": "原终点 ID"
+                  },
+                  "old_relation": {
+                    "type": "string",
+                    "description": "原关系名称"
+                  },
+                  "source": {
+                    "type": "string",
+                    "description": "新起点 ID"
+                  },
+                  "target": {
+                    "type": "string",
+                    "description": "新终点 ID"
+                  },
+                  "relation": {
+                    "type": "string",
+                    "description": "新关系名称"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": ["图谱数据获取与编辑"],
+        "summary": "删除关系",
+        "description": "删除指定的某条关系边",
+        "operationId": "deleteLink",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["source", "target", "relation"],
+                "properties": {
+                  "source": {
+                    "type": "string",
+                    "description": "起点节点 ID"
+                  },
+                  "target": {
+                    "type": "string",
+                    "description": "终点节点 ID"
+                  },
+                  "relation": {
+                    "type": "string",
+                    "description": "关系名称/边类型"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/graph/merge": {
+      "post": {
+        "tags": ["图谱数据获取与编辑"],
+        "summary": "图谱合并",
+        "description": "将外部传入的图谱 JSON 数据合并到当前图谱中（执行去重策略）",
+        "operationId": "mergeGraph",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "graph": {
+                    "type": "object",
+                    "description": "包含 nodes 和 links 的图谱对象"
+                  },
+                  "file_path": {
+                    "type": "string",
+                    "description": "服务器本地的待合并 JSON 文件绝对路径"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/graph/clear": {
+      "post": {
+        "tags": ["图谱数据获取与编辑"],
+        "summary": "清空当前图谱数据",
+        "description": "单纯清空当前激活数据库文件内的图谱节点和连线数据（不删除文件本身和工作区上传暂存记录）",
+        "operationId": "clearGraph",
+        "responses": {
+          "200": {
+            "description": "成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "ApiResponse": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "integer",
+            "description": "0表示成功，非0表示失败"
+          },
+          "msg": {
+            "type": "string",
+            "description": "成功为'成功'，失败为具体的错误信息"
+          },
+          "data": {
+            "type": "object",
+            "description": "具体的业务数据"
+          }
+        }
+      },
+      "WorkspaceStatus": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "integer"
+          },
+          "msg": {
+            "type": "string"
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "exists": {
+                "type": "boolean"
+              },
+              "files": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "last_upload_at": {
+                "type": "string"
+              },
+              "node_count": {
+                "type": "integer"
+              },
+              "link_count": {
+                "type": "integer"
+              },
+              "current_db": {
+                "type": "string"
+              },
+              "available_dbs": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      },
+      "UploadResponse": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "integer"
+          },
+          "msg": {
+            "type": "string"
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "status": {
+                "type": "string"
+              },
+              "message": {
+                "type": "string"
+              },
+              "isDefault": {
+                "type": "boolean",
+                "description": "是否为系统内图谱"
+              },
+              "graphId": {
+                "type": "string",
+                "description": "外部图谱数据库标识（isDefault为false时返回）"
+              },
+              "merged_to": {
+                "type": "string",
+                "description": "合并目标（isDefault为true时返回）"
+              },
+              "files": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string"
+                    },
+                    "name": {
+                      "type": "string"
+                    },
+                    "url": {
+                      "type": "string"
+                    }
+                  }
+                }
+              },
+              "preprocess_results": {
+                "type": "array",
+                "description": "文件预处理结果列表"
+              },
+              "workspace": {
+                "type": "object"
+              },
+              "graph": {
+                "type": "object",
+                "properties": {
+                  "node_count": {
+                    "type": "integer"
+                  },
+                  "link_count": {
+                    "type": "integer"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "GraphResponse": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "integer"
+          },
+          "msg": {
+            "type": "string"
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "graphId": {
+                "type": "string"
+              },
+              "graphName": {
+                "type": "string"
+              },
+              "nodes": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/Node"
+                }
+              },
+              "links": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/Link"
+                }
+              }
+            }
+          }
+        }
+      },
+      "Node": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "节点唯一标识"
+          },
+          "group": {
+            "type": "integer",
+            "enum": [1, 2, 3, 4],
+            "description": "实体种类：1-人员名称, 2-企业名称, 3-资产名称, 4-其它"
+          },
+          "attrs": {
+            "type": "object",
+            "description": "属性字典"
+          }
+        }
+      },
+      "Link": {
+        "type": "object",
+        "properties": {
+          "source": {
+            "type": "string",
+            "description": "起点节点 ID"
+          },
+          "target": {
+            "type": "string",
+            "description": "终点节点 ID"
+          },
+          "relation": {
+            "type": "string",
+            "description": "关系名称"
+          }
+        }
+      }
+    }
+  }
+}

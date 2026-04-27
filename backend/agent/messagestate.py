@@ -7,4 +7,7 @@ class GraphState(MessagesState, total=False):
     sql_needed: bool
     sql_reason: str
     enable_web: bool
+    enable_thinking: bool
     select_model: str
+    user_identity: str
+    sql_fallback_done: bool

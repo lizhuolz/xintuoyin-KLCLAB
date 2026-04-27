@@ -6,7 +6,6 @@ import json
 from langchain_core.messages import AIMessageChunk
 from langgraph.checkpoint.memory import MemorySaver
 from agent.build_graph import graph_builder
-from utils.security import check_input_safety, check_output_safety
 from langchain_core.messages import AIMessageChunk, ToolMessage
 import os
 
@@ -16,8 +15,7 @@ app = graph_builder.compile(checkpointer=checkpointer)
 
 def main():
     print("==================================================")
-    print("🛡️  LangGraph Agent (Secure CLI Mode) 已启动")
-    print("   防火墙已加载：输入、输出均受 LLM Guard 保护")
+    print("LangGraph Agent CLI Mode 已启动")
     print("   输入 'exit' 或 'quit' 退出。")
     print("==================================================")
     
@@ -34,16 +32,10 @@ def main():
         if user_text.lower() in ("exit", "quit"):
             break
 
-        # --- 🛡️ 1. 输入防火墙检查 ---
-        sanitized_prompt, is_safe, error_msg = check_input_safety(user_text)
-        if not is_safe:
-            print(f"\n🛑 [本地拦截] {error_msg}")
-            continue
-
-        # --- 2. 执行 Agent ---
+        # 执行 Agent
         config = {"configurable": {"thread_id": thread_id}}
         inputs = {
-            "messages": [("user", sanitized_prompt)],
+            "messages": [("user", user_text)],
             "enable_web": True,
             "select_model":  os.getenv("CHAT_MODEL_NAME"),
             "user_identity": "admin" # CLI 默认管理员权限
@@ -97,13 +89,7 @@ def main():
         # except Exception as e:
         #     print(f"\n\n❌ 系统运行错误: {e}")
 
-        print("") 
-
-        # --- 🛡️ 3. 输出防火墙审计 ---
-        if full_response_text:
-            out_safe, out_msg = check_output_safety(sanitized_prompt, full_response_text)
-            if not out_safe:
-                print(f"⚠️ [内容警告] {out_msg}")
+        print("")
 
 if __name__ == "__main__":
     main()

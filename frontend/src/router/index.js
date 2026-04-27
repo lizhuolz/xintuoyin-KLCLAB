@@ -1,93 +1,59 @@
 import { createRouter, createWebHistory } from "vue-router";
-import First from '@/views/first/First.vue'
-import Login from '@/views/login/Login.vue'
 import Layout from '@/views/main/Layout.vue'
 
 const routes = [
   {
-    path: '/login',
-    name: 'Login',
-    component: Login
-  },
-  {
-    path: '/first',
-    name: 'First',
-    component: First
-  },
-  {
     path: '/',
-    redirect: '/home'
+    redirect: '/ai/chat'
   },
   {
     path: '/',
     component: Layout,
     children: [
       {
-        path: "/home",
-        component: () => import("@/views/main/home/Home.vue"),
-        alias: ["/home/"],
-        meta: { title: '首页' }
-      },
-      {
         path: "",
-        redirect: "/home"
-      },
-      {
-        path: "/ai",
-        component: () => import("@/views/main/ai/index.vue"),
-        meta: { title: 'ai' }
+        redirect: "/ai/chat"
       },
       {
         path: "/ai/chat",
         component: () => import("@/views/main/ai/LLMChat.vue"),
-        meta: { title: 'AI 对话' }
+        meta: { title: 'AI问答', hideBreadcrumb: true, fullWidth: true }
       },
       {
-        path: "/ai/kb",
-        component: () => import("@/views/main/ai/KBManagement.vue"),
-        meta: { title: '知识库管理' }
-      },
-      {
-        path: "/ai/history",
+        path: "/admin/history",
         component: () => import("@/views/main/ai/HistoryManagement.vue"),
-        meta: { title: '历史记录维护' }
+        meta: { title: '对话日志', parent: 'AI后台' }
       },
       {
-        path: "/ai/feedback",
-        component: () => import("@/views/main/ai/FeedbackList.vue"),
-        meta: { title: '反馈列表' }
+        path: "/admin/feedback",
+        component: () => import("@/views/main/ai/FeedbackManagementPage.vue"),
+        meta: { title: '反馈列表', parent: 'AI后台 / 反馈管理', mode: 'all' }
       },
       {
-        path: "/ai/feedback-positive",
-        component: () => import("@/views/main/ai/PositiveFeedback.vue"),
-        meta: { title: '良好回答' }
+        path: "/admin/feedback-negative",
+        component: () => import("@/views/main/ai/FeedbackManagementPage.vue"),
+        meta: { title: '待优化回答', parent: 'AI后台 / 反馈管理', mode: 'negative' }
       },
       {
-        path: "/ai/feedback-negative",
-        component: () => import("@/views/main/ai/NegativeFeedback.vue"),
-        meta: { title: '待优化回答' }
+        path: "/admin/feedback-positive",
+        component: () => import("@/views/main/ai/FeedbackManagementPage.vue"),
+        meta: { title: '回答良好', parent: 'AI后台 / 反馈管理', mode: 'positive' }
       },
       {
-        path: "/ai/test-tree",
-        component: () => import("@/views/main/ai/FileTreeTest.vue"),
-        meta: { title: '结构测试' }
+        path: "/admin/kb",
+        component: () => import("@/views/main/ai/KBManagement.vue"),
+        meta: { title: '知识库', parent: 'AI后台' }
       },
       {
-        path: "/org/info",
-        component: () => import("@/views/main/org/OrgInfo.vue"),
-        meta: { title: '企业信息' }
-      },
-      {
-        path: "/hr/staff",
-        component: () => import("@/views/main/hr/StaffList.vue"),
-        meta: { title: '员工列表' }
+        path: "/admin/database",
+        component: () => import("@/views/main/ai/DatabaseLink.vue"),
+        meta: { title: '链接数据库', parent: 'AI后台' }
       },
     ]
   },
   {
     path: '/:pathMatch(.*)*',
-    name: 'NotFound',
-    component: () => import('@/views/not-found/NotFound.vue')
+    redirect: '/ai/chat'
   }
 ]
 

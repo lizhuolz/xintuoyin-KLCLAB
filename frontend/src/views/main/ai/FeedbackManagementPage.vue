@@ -4,84 +4,83 @@
       <div class="title-row">
         <span class="title">{{ pageTitle }}</span>
       </div>
-      <div class="filter-toolbar">
-        <el-input v-model="filters.name" placeholder="反馈人姓名" class="filter-item" clearable />
-        <el-input v-model="filters.enterprise" placeholder="所属企业" class="filter-item" clearable />
-        <el-select v-if="showTypeFilter" v-model="filters.type" placeholder="反馈主类型" class="filter-item" style="width: 160px" clearable>
-          <el-option label="全部" value="" />
-          <el-option label="待优化回答" value="dislike" />
-          <el-option label="良好回答" value="like" />
-        </el-select>
-        <el-select v-model="filters.feedback_type" placeholder="反馈细分类型" class="filter-item" style="width: 180px">
-          <el-option v-for="item in feedbackTypeOptions" :key="item.value" :label="item.label" :value="item.value" />
-        </el-select>
-        <el-select
-          v-if="showReasonFilter"
-          v-model="reasonKeyword"
-          placeholder="反馈原因分类"
-          class="filter-item"
-          style="width: 220px"
-          clearable
-        >
-          <el-option label="全部" value="" />
-          <el-option-group label="针对问题">
-            <el-option v-for="item in REASON_MAP.question" :key="item" :label="item" :value="item" />
-          </el-option-group>
-          <el-option-group label="针对回答效果">
-            <el-option v-for="item in REASON_MAP.answer" :key="item" :label="item" :value="item" />
-          </el-option-group>
-          <el-option-group label="举报">
-            <el-option v-for="item in REASON_MAP.report" :key="item" :label="item" :value="item" />
-          </el-option-group>
-        </el-select>
-        <el-button type="primary" @click="fetchFeedbacks">查询</el-button>
-        <el-button @click="resetFilters">重置</el-button>
-      </div>
+      <el-form :inline="true" class="filter-form">
+        <div class="filter-row">
+          <el-form-item label="搜索">
+            <el-input v-model="filters.search" placeholder="输入反馈人、联系方式、所属企业" style="width: 300px" clearable />
+          </el-form-item>
+          <el-form-item label="反馈类型">
+            <el-select v-model="filters.feedback_type" style="width: 160px">
+              <el-option v-for="item in feedbackTypeOptions" :key="item.value" :label="item.label" :value="item.value" />
+            </el-select>
+          </el-form-item>
+          <el-form-item v-if="mode === 'all'" label="处理状态">
+            <el-select v-model="filters.process_status" style="width: 140px" clearable>
+              <el-option v-for="item in feedbackStatusOptions" :key="item.value" :label="item.label" :value="item.value" />
+            </el-select>
+          </el-form-item>
+          <el-form-item label="反馈日期">
+            <el-date-picker v-model="filters.dateRange" type="daterange" range-separator="至" start-placeholder="开始日期" end-placeholder="结束日期" value-format="x" style="width: 280px" />
+          </el-form-item>
+          <el-form-item label="处理日期">
+            <el-date-picker v-model="filters.processedDateRange" type="daterange" range-separator="至" start-placeholder="开始日期" end-placeholder="结束日期" value-format="x" style="width: 280px" />
+          </el-form-item>
+        </div>
+        <div class="button-row">
+          <el-button @click="resetFilters">重置</el-button>
+          <el-button type="primary" @click="fetchFeedbacks">查询</el-button>
+        </div>
+        <div class="export-row">
+          <el-button type="success" @click="handleExport">导出</el-button>
+        </div>
+      </el-form>
     </div>
 
-    <el-table :data="feedbackList" v-loading="loading" style="width: 100%; margin-top: 20px">
+    <el-table :data="feedbackList" v-loading="loading" style="width: 100%; margin-top: 10px" @selection-change="handleSelectionChange">
+      <el-table-column type="selection" width="55" />
       <el-table-column type="index" label="序号" width="70" align="center" />
-      <el-table-column label="反馈人" width="120">
+      <el-table-column label="反馈人" width="100">
         <template #default="scope">{{ scope.row.user?.name || '-' }}</template>
       </el-table-column>
-      <el-table-column label="所属企业" width="180" show-overflow-tooltip>
+      <el-table-column label="联系方式" width="140">
+        <template #default="scope">{{ scope.row.user?.phone || '-' }}</template>
+      </el-table-column>
+      <el-table-column label="所属企业" min-width="160" show-overflow-tooltip>
         <template #default="scope">{{ scope.row.user?.enterprise || '-' }}</template>
       </el-table-column>
-      <el-table-column label="反馈分类" width="150" align="center">
-        <template #default="scope">{{ scope.row.type === 'dislike' ? '待优化回答' : '良好回答' }}</template>
-      </el-table-column>
-      <el-table-column label="原因" min-width="220">
-        <template #default="scope">
-          <template v-if="scope.row.reasons?.length">
-            <el-tag v-for="item in scope.row.reasons || []" :key="item" size="small" style="margin-right: 4px">{{ item }}</el-tag>
-          </template>
-          <span v-else>{{ scope.row.feedback_type?.primary || (scope.row.type === 'dislike' ? '点踩' : '点赞') }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="处理状态" width="120" align="center">
-        <template #default="scope">
-          <el-tag
-            :type="scope.row.process_status === '已处理' ? 'success' : 'danger'"
-            :effect="scope.row.process_status === '已处理' ? 'light' : 'plain'"
-            style="cursor: pointer"
-            @click="handleProcessClick(scope.row)"
-          >
-            {{ scope.row.process_status || '未处理' }}
-          </el-tag>
-        </template>
-      </el-table-column>
-      <el-table-column label="处理人" width="120" align="center">
-        <template #default="scope">{{ scope.row.processor || '-' }}</template>
+      <el-table-column label="反馈类型" min-width="160">
+        <template #default="scope">{{ (scope.row.feedback_type?.labels || []).join(' / ') || (scope.row.type === 'dislike' ? '点踩' : '点赞') }}</template>
       </el-table-column>
       <el-table-column label="提交时间" width="180">
         <template #default="scope">{{ scope.row.times?.createdAt || scope.row.createdAt || '-' }}</template>
       </el-table-column>
-      <el-table-column label="操作" width="120" fixed="right" align="center">
-        <template #default="scope">
-          <el-button link type="primary" @click="viewDetail(scope.row)">详情</el-button>
-          <el-button link type="danger" @click="handleDelete(scope.row)">删除</el-button>
-        </template>
-      </el-table-column>
+      <!-- 反馈列表模式：处理状态 + 处理结果 + 处理/详情按钮 -->
+      <template v-if="mode === 'all'">
+        <el-table-column label="处理状态" width="100" align="center">
+          <template #default="scope">{{ scope.row.process_status || '未处理' }}</template>
+        </el-table-column>
+        <el-table-column label="处理结果" min-width="140" show-overflow-tooltip>
+          <template #default="scope">{{ scope.row.process_result || '-' }}</template>
+        </el-table-column>
+        <el-table-column label="操作" width="80" fixed="right" align="center">
+          <template #default="scope">
+            <el-button v-if="scope.row.process_status === '已处理'" link type="primary" @click="viewDetail(scope.row)">详情</el-button>
+            <el-button v-else link type="primary" @click="handleProcessClick(scope.row)">处理</el-button>
+          </template>
+        </el-table-column>
+      </template>
+      <!-- 待优化/良好模式：处理人 + 详情+删除按钮 -->
+      <template v-else>
+        <el-table-column label="处理人" width="120" align="center">
+          <template #default="scope">{{ scope.row.processor || '-' }}</template>
+        </el-table-column>
+        <el-table-column label="操作" width="140" fixed="right" align="center">
+          <template #default="scope">
+            <el-button link type="primary" @click="viewDetail(scope.row)">详情</el-button>
+            <el-button link type="danger" @click="handleDelete(scope.row)">删除</el-button>
+          </template>
+        </el-table-column>
+      </template>
     </el-table>
 
     <div class="table-pagination">
@@ -96,35 +95,29 @@
       />
     </div>
 
-    <el-dialog v-model="processVisible" title="反馈处理" width="400px">
-      <el-form label-position="top">
-        <el-form-item label="处理人姓名" required>
-          <el-input v-model="processForm.processor" placeholder="请输入姓名" />
-        </el-form-item>
-        <el-form-item>
-          <el-checkbox v-model="processForm.is_collect">{{ collectLabel }}</el-checkbox>
-        </el-form-item>
-      </el-form>
-      <template #footer>
-        <el-button @click="processVisible = false">取消</el-button>
-        <el-button type="primary" @click="submitProcess">确认收录</el-button>
-      </template>
-    </el-dialog>
-
-    <el-dialog v-model="detailVisible" title="反馈详情" width="750px" custom-class="feedback-detail-dialog">
+    <el-dialog v-model="detailVisible" :title="isProcessMode ? '反馈处理' : '反馈详情'" width="750px" custom-class="feedback-detail-dialog">
       <div v-if="currentDetail" class="feedback-detail-content">
         <div class="metadata-grid">
           <div class="meta-item"><span class="label">反馈人：</span><el-input :model-value="currentDetail.user?.name || '-'" readonly /></div>
           <div class="meta-item"><span class="label">联系方式：</span><el-input :model-value="currentDetail.user?.phone || '-'" readonly /></div>
           <div class="meta-item"><span class="label">反馈公司：</span><el-input :model-value="currentDetail.user?.enterprise || '-'" readonly /></div>
           <div class="meta-item"><span class="label">反馈类型：</span><el-input :model-value="detailTypeLabel" readonly /></div>
-          <div class="meta-item"><span class="label">RecordID：</span><el-input :model-value="currentDetail.user?.record_id || currentDetail.record_id || '-'" readonly /></div>
-          <div class="meta-item"><span class="label">UserID：</span><el-input :model-value="currentDetail.user?.user_id || currentDetail.user_id || '-'" readonly /></div>
         </div>
         <div class="qa-section">
           <h4 class="section-title">反馈对象：</h4>
           <div class="qa-box">
-            <div class="qa-item"><span class="prefix">问</span><p class="text">{{ currentDetail.question }}</p></div>
+            <div class="qa-item">
+              <span class="prefix">问</span>
+              <div class="qa-content">
+                <div v-if="currentDetail.uploaded_files?.length" class="qa-file-list">
+                  <div v-for="file in currentDetail.uploaded_files" :key="file.file_id || file.filename" class="qa-file-row">
+                    <span class="file-name">{{ file.filename }}</span>
+                    <el-button link type="primary" @click="downloadFeedbackHistoryFile(file)">下载</el-button>
+                  </div>
+                </div>
+                <p class="text">{{ currentDetail.question }}</p>
+              </div>
+            </div>
             <div class="qa-item"><span class="prefix">答</span><p class="text">{{ currentDetail.answer }}</p></div>
           </div>
         </div>
@@ -132,98 +125,98 @@
           <h4 class="section-title">更多描述：</h4>
           <el-input type="textarea" :model-value="currentDetail.comment || '用户未填写额外描述'" readonly rows="2" />
         </div>
-        <div class="download-section" v-if="currentDetail.uploaded_files?.length">
-          <h4 class="section-title">原始提问附件：</h4>
-          <div class="download-file-list">
-            <div v-for="file in currentDetail.uploaded_files" :key="file.file_id || file.filename" class="download-file-row">
-              <span class="file-name">{{ file.filename }}</span>
-              <el-button link type="primary" @click="downloadFeedbackHistoryFile(file)">下载</el-button>
-            </div>
-          </div>
-        </div>
         <div class="image-section" v-if="currentDetail.pictures?.length">
           <h4 class="section-title">附件图片：</h4>
           <div class="image-list">
             <el-image
-              v-for="item in currentDetail.pictures"
+              v-for="(item, index) in currentDetail.pictures"
               :key="item"
               class="feedback-img"
-              :src="buildPictureUrl(currentDetail, item)"
-              :preview-src-list="currentDetail.pictures.map((name) => buildPictureUrl(currentDetail, name)).filter(Boolean)"
+              :src="currentDetail.picture_urls?.[index] || ''"
+              :preview-src-list="currentDetail.picture_urls || []"
               fit="cover"
             />
           </div>
         </div>
         <el-divider />
         <div class="process-section">
-          <h4 class="section-title process-title">处理信息</h4>
-          <div class="meta-item full-width"><span class="label"><span class="required">*</span> 处理结果：</span><el-input :model-value="currentDetail.process_result || '未处理'" readonly /></div>
-          <div class="meta-item full-width" v-if="currentDetail.processor"><span class="label">处理人：</span><el-input :model-value="currentDetail.processor" readonly /></div>
+          <h4 class="section-title">处理结果</h4>
+          <div v-if="isProcessMode">
+            <el-select v-model="processResult" placeholder="请选择处理结果" style="width: 100%">
+              <el-option v-for="item in processResultOptions" :key="item" :label="item" :value="item" />
+              <el-option label="删除" value="删除" />
+            </el-select>
+          </div>
+          <div v-else>
+            <el-select :model-value="'已' + (currentDetail.process_result || '')" disabled style="width: 100%">
+              <el-option :label="'已' + (currentDetail.process_result || '')" :value="'已' + (currentDetail.process_result || '')" />
+            </el-select>
+          </div>
         </div>
       </div>
+      <template #footer v-if="isProcessMode">
+        <el-button @click="detailVisible = false">取消</el-button>
+        <el-button type="primary" @click="submitProcess" :disabled="!processResult">提交</el-button>
+      </template>
     </el-dialog>
   </div>
 </template>
 
 <script setup>
-import { computed, reactive, ref, onMounted } from 'vue'
+import { computed, reactive, ref, onMounted, watch } from 'vue'
+import { useRoute } from 'vue-router'
 import { ElMessage, ElMessageBox } from 'element-plus'
-import { aiApi, buildFeedbackPictureUrl, buildHistoryFileDownloadUrl } from '@/api/ai'
+import { aiApi, buildHistoryFileDownloadUrl } from '@/api/ai'
 
-const props = defineProps({
-  mode: {
-    type: String,
-    default: 'all',
-  },
+const route = useRoute()
+const mode = computed(() => route.meta.mode || 'all')
+
+const feedbackOptions = reactive({
+  question_issues: {},
+  answer_effects: {},
+  report_reasons: {},
+  type_options: [{ label: '全部', value: '全部' }],
+  status_options: [{ label: '全部', value: '' }],
+  process_results: [{ label: '录入待优化回答', value: '录入待优化回答' }, { label: '录入良好回答', value: '录入良好回答' }],
 })
 
-const REASON_MAP = {
-  question: ['不理解问题', '遗忘上下文', '未遵循要求'],
-  answer: ['回答错误', '逻辑混乱', '时效性差', '可读性差', '回答不完整', '回答笼统不专业'],
-  report: ['色情低俗', '政治敏感', '违法犯罪', '歧视或偏见回答', '侵犯隐私', '内容侵权'],
+async function loadFeedbackOptions() {
+  try {
+    const data = await aiApi.getFeedbackOptions()
+    Object.assign(feedbackOptions, data)
+  } catch (e) {
+    console.error('加载反馈选项失败:', e)
+  }
 }
 
 const PAGE_META = {
-  all: { title: '反馈列表', type: '' },
-  negative: { title: '待优化回答', type: 'dislike' },
-  positive: { title: '良好回答', type: 'like' },
+  all: { title: '反馈列表', type: '', processResult: '' },
+  negative: { title: '待优化回答', type: '', processResult: '录入待优化回答' },
+  positive: { title: '良好回答', type: '', processResult: '录入良好回答' },
 }
 
 const feedbackList = ref([])
+const selectedRows = ref([])
 const loading = ref(false)
 const detailVisible = ref(false)
 const currentDetail = ref(null)
-const reasonKeyword = ref('')
 const pagination = reactive({ page: 1, size: 10, total: 0 })
-const filters = reactive({ name: '', enterprise: '', type: PAGE_META[props.mode]?.type || '', feedback_type: '全部' })
+const filters = reactive({ search: '', type: PAGE_META[mode.value]?.type || '', process_status: '', process_result: PAGE_META[mode.value]?.processResult || '', feedback_type: '全部', dateRange: null, processedDateRange: null })
 
-const processVisible = ref(false)
-const processForm = reactive({ id: '', processor: '', is_collect: false, type: '' })
+const isProcessMode = ref(false)
+const processResult = ref('')
+const processingId = ref('')
 
-const pageTitle = computed(() => PAGE_META[props.mode]?.title || '反馈列表')
-const showTypeFilter = computed(() => props.mode === 'all')
-const showReasonFilter = computed(() => props.mode !== 'positive')
-const feedbackTypeOptions = computed(() => {
-  const common = [{ label: '全部', value: '全部' }]
-  if (props.mode === 'positive') {
-    return [...common, { label: '点赞', value: '点赞' }, { label: '针对回答效果', value: '针对回答效果' }]
-  }
-  if (props.mode === 'negative') {
-    return [...common, { label: '点踩', value: '点踩' }, { label: '针对问题', value: '针对问题' }, { label: '针对回答效果', value: '针对回答效果' }, { label: '举报', value: '举报' }]
-  }
-  return [...common, { label: '点赞', value: '点赞' }, { label: '点踩', value: '点踩' }, { label: '针对问题', value: '针对问题' }, { label: '针对回答效果', value: '针对回答效果' }, { label: '举报', value: '举报' }]
-})
-const collectLabel = computed(() => processForm.type === 'like' ? '是否收录于优秀回答' : '是否收录于负面回答')
+const pageTitle = computed(() => PAGE_META[mode.value]?.title || '反馈列表')
+const feedbackTypeOptions = computed(() => feedbackOptions.type_options)
+const feedbackStatusOptions = computed(() => feedbackOptions.status_options)
+const processResultOptions = computed(() => feedbackOptions.process_results.map((item) => typeof item === 'string' ? item : item.label))
 const detailTypeLabel = computed(() => {
   if (!currentDetail.value) return '-'
   const labels = currentDetail.value.feedback_type?.labels || []
   if (labels.length) return labels.join(' / ')
   return currentDetail.value.type === 'dislike' ? '点踩' : '点赞'
 })
-
-function buildPictureUrl(detail, filename) {
-  return buildFeedbackPictureUrl(detail, filename)
-}
 
 function triggerBlobDownload(blob, filename) {
   const url = URL.createObjectURL(blob)
@@ -236,23 +229,45 @@ function triggerBlobDownload(blob, filename) {
   URL.revokeObjectURL(url)
 }
 
+function handleSelectionChange(selection) {
+  selectedRows.value = selection
+}
+
 function applyModeDefaults() {
-  filters.type = PAGE_META[props.mode]?.type || ''
+  filters.type = PAGE_META[mode.value]?.type || ''
+  filters.process_result = PAGE_META[mode.value]?.processResult || ''
   filters.feedback_type = '全部'
+  filters.process_status = ''
+  filters.search = ''
+  filters.dateRange = null
+}
+
+function buildSearchParams() {
+  const params = {
+    search: filters.search || '',
+    feedback_type: filters.feedback_type || '全部',
+    process_status: filters.process_status || '',
+    process_result: filters.process_result || '',
+    start_time: filters.dateRange?.[0] || undefined,
+    end_time: filters.dateRange?.[1] || undefined,
+    processed_start_time: filters.processedDateRange?.[0] || undefined,
+    processed_end_time: filters.processedDateRange?.[1] || undefined,
+  }
+  if (filters.type) params.type = filters.type
+  return params
 }
 
 async function fetchFeedbacks() {
   loading.value = true
   try {
     const params = {
-      ...filters,
+      ...buildSearchParams(),
       page: pagination.page,
       size: pagination.size,
     }
-    if (!params.type) delete params.type
     const data = await aiApi.listFeedbacks(params)
     const list = data.list || []
-    feedbackList.value = reasonKeyword.value ? list.filter((item) => (item.reasons || []).includes(reasonKeyword.value)) : list
+    feedbackList.value = list
     pagination.total = data.total || 0
     pagination.page = data.page || pagination.page
     pagination.size = data.size || pagination.size
@@ -264,22 +279,65 @@ async function fetchFeedbacks() {
 }
 
 function resetFilters() {
-  filters.name = ''
-  filters.enterprise = ''
-  reasonKeyword.value = ''
+  filters.search = ''
+  filters.process_status = ''
+  filters.dateRange = null
+  filters.processedDateRange = null
   pagination.page = 1
   pagination.size = 10
   applyModeDefaults()
   fetchFeedbacks()
 }
 
-async function viewDetail(row) {
+async function handleExport() {
+  try {
+    const params = buildSearchParams()
+    if (selectedRows.value.length) {
+      params.ids = selectedRows.value.map((row) => row.id)
+    }
+    const response = await fetch('/api/feedback/export', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(params),
+    })
+    if (!response.ok) {
+      const err = await response.json().catch(() => ({}))
+      throw new Error(err.msg || '导出失败')
+    }
+    const blob = await response.blob()
+    const disposition = response.headers.get('content-disposition') || ''
+    const rfc5987 = disposition.match(/filename\*=UTF-8''([^;]+)/i)
+    let filename = '反馈导出.xlsx'
+    if (rfc5987?.[1]) {
+      try { filename = decodeURIComponent(rfc5987[1]) } catch { /* ignore */ }
+    } else {
+      const basic = disposition.match(/filename="?([^";]+)"?/i)
+      if (basic?.[1]) filename = basic[1]
+    }
+    triggerBlobDownload(blob, filename)
+  } catch (error) {
+    ElMessage.error(error.message || '导出失败')
+  }
+}
+
+async function openDetail(row, processMode) {
   try {
     currentDetail.value = await aiApi.getFeedbackDetail(row.id)
+    isProcessMode.value = processMode
+    processResult.value = ''
+    processingId.value = row.id
     detailVisible.value = true
   } catch (error) {
     ElMessage.error(error.message || '获取详情失败')
   }
+}
+
+function viewDetail(row) {
+  openDetail(row, false)
+}
+
+function handleProcessClick(row) {
+  openDetail(row, true)
 }
 
 async function downloadFeedbackHistoryFile(file) {
@@ -292,27 +350,21 @@ async function downloadFeedbackHistoryFile(file) {
   }
 }
 
-function handleProcessClick(row) {
-  if (row.process_status === '已处理') return
-  processForm.id = row.id
-  processForm.processor = ''
-  processForm.is_collect = false
-  processForm.type = row.type || ''
-  processVisible.value = true
-}
-
 async function submitProcess() {
-  if (!processForm.processor.trim()) {
-    ElMessage.warning('请填写处理人姓名')
+  if (!processResult.value) {
+    ElMessage.warning('请选择处理结果')
+    return
+  }
+  if (processResult.value === '删除') {
+    await handleDeleteFromProcess()
     return
   }
   try {
     await aiApi.processFeedback({
-      id: processForm.id,
-      processor: processForm.processor,
-      is_collect: processForm.is_collect,
+      id: processingId.value,
+      process_result: processResult.value,
     })
-    processVisible.value = false
+    detailVisible.value = false
     await fetchFeedbacks()
     ElMessage.success('处理成功')
   } catch (error) {
@@ -320,9 +372,23 @@ async function submitProcess() {
   }
 }
 
+async function handleDeleteFromProcess() {
+  try {
+    await ElMessageBox.confirm('确定删除该反馈吗？', '警告', { type: 'warning' })
+    await aiApi.batchDeleteFeedback([processingId.value])
+    detailVisible.value = false
+    await fetchFeedbacks()
+    ElMessage.success('已删除')
+  } catch (error) {
+    if (error !== 'cancel') {
+      ElMessage.error(error.message || '删除失败')
+    }
+  }
+}
+
 async function handleDelete(row) {
   try {
-    await ElMessageBox.confirm('确定删除吗？', '警告', { type: 'warning' })
+    await ElMessageBox.confirm('确定删除该反馈吗？', '警告', { type: 'warning' })
     await aiApi.batchDeleteFeedback([row.id])
     await fetchFeedbacks()
     ElMessage.success('已删除')
@@ -334,9 +400,33 @@ async function handleDelete(row) {
 }
 
 applyModeDefaults()
-onMounted(fetchFeedbacks)
+watch(mode, () => {
+  applyModeDefaults()
+  pagination.page = 1
+  fetchFeedbacks()
+})
+
+onMounted(() => {
+  loadFeedbackOptions()
+  fetchFeedbacks()
+})
 </script>
 
 <style scoped lang="less">
 @import "./feedback-shared.less";
+
+.filter-form {
+  background: #fcfcfc;
+  padding: 24px;
+  border: 1px solid #ebeef5;
+  border-radius: 8px;
+  .filter-row { display: flex; flex-wrap: wrap; gap: 8px; }
+  .button-row { margin-top: 16px; display: flex; gap: 12px; }
+  .export-row { margin-top: 16px; }
+}
+
+.qa-content { flex: 1; }
+.qa-file-list { margin-bottom: 8px; display: flex; flex-direction: column; gap: 4px; }
+.qa-file-row { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.qa-file-row .file-name { font-size: 13px; color: #606266; }
 </style>

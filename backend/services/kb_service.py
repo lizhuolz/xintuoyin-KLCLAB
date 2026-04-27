@@ -1,16 +1,16 @@
 import io
 import json
+import logging
 import tempfile
 from datetime import datetime
 from pathlib import Path
 
+from config import KB_METADATA_FILE as METADATA_FILE, get_user_profile, now_ms, now_display
 from services.kb_file_parser import extract_kb_file_text
 from services.milvus_service import build_milvus_service_from_env
 from services.storage_service import storage_service
 
-BASE_DIR = Path(__file__).parent.parent
-METADATA_FILE = BASE_DIR / "data" / "kb_metadata.json"
-USER_JSON_FILE = BASE_DIR.parent / "user.json"
+logger = logging.getLogger(__name__)
 DEFAULT_KB_CATEGORY = "知识库"
 
 
@@ -28,28 +28,6 @@ class KBService:
     def _ensure_storage_ready(self):
         storage_service.ensure_ready()
 
-    def _get_user_info(self):
-        if USER_JSON_FILE.exists():
-            try:
-                with open(USER_JSON_FILE, "r", encoding="utf-8") as f:
-                    return json.load(f)
-            except Exception:
-                pass
-        return {
-            "name": "未知用户",
-            "company": "未知公司",
-            "department": "未知部门",
-            "phone": "",
-            "record_id": "",
-            "ip_address": "",
-        }
-
-    def _now_ms(self):
-        return str(int(datetime.now().timestamp() * 1000))
-
-    def _now_display(self):
-        return datetime.now().strftime("%Y/%m/%d %H:%M:%S")
-
     def _read_all_raw(self):
         with open(METADATA_FILE, "r", encoding="utf-8") as f:
             return json.load(f)
@@ -58,24 +36,29 @@ class KBService:
         with open(METADATA_FILE, "w", encoding="utf-8") as f:
             json.dump(data, f, ensure_ascii=False, indent=2)
 
-    def _normalize_users(self, users):
+    def _normalize_users(self, users, creator_staff_id=None):
         normalized = []
         for item in users or []:
             if isinstance(item, dict):
+                staff_id = item.get("staffId") or item.get("staff_id") or None
                 normalized.append({
+                    "staffId": staff_id,
                     "name": item.get("name") or item.get("fullName") or "",
                     "phone": item.get("phone") or item.get("phones") or "",
                     "categoryName": item.get("categoryName") or item.get("company") or "",
                     "record_id": item.get("record_id") or item.get("recordId") or item.get("RecordID") or "",
                     "ip_address": item.get("ip_address") or item.get("ip") or "",
+                    "is_creator": creator_staff_id is not None and str(staff_id) == str(creator_staff_id),
                 })
             else:
                 normalized.append({
+                    "staffId": None,
                     "name": str(item),
                     "phone": "",
                     "categoryName": "",
                     "record_id": "",
                     "ip_address": "",
+                    "is_creator": False,
                 })
         return normalized
 
@@ -84,7 +67,7 @@ class KBService:
         return safe or default
 
     def _kb_prefix(self, kb):
-        return f"documents/{kb.get('physical_path', '').strip('/')}"
+        return f"kb/{kb.get('physical_path', '').strip('/')}"
 
     def _list_storage_objects(self, kb):
         prefix = self._kb_prefix(kb).rstrip("/") + "/"
@@ -93,10 +76,10 @@ class KBService:
     def _existing_paths(self, all_kb):
         return {item.get("physical_path", "") for item in all_kb}
 
-    def _build_physical_path(self, *, name: str, user: dict, all_kb: list[dict]):
-        owner = self._sanitize_segment(user.get("name", ""), "guest")
-        kb_name = self._sanitize_segment(name, self._now_ms())
-        base = f"{DEFAULT_KB_CATEGORY}/{owner}/{kb_name}"
+    def _build_physical_path(self, *, name: str, all_kb: list[dict]):
+        date = datetime.now().strftime("%Y-%m-%d")
+        kb_name = self._sanitize_segment(name, now_ms())
+        base = f"{date}/{kb_name}"
         candidate = base
         suffix = 1
         existing = self._existing_paths(all_kb)
@@ -108,6 +91,12 @@ class KBService:
     def _format_kb(self, kb, files=None):
         file_items = files if files is not None else self._list_storage_objects(kb)
         file_count = len(file_items)
+        # 老数据没有 creator_staff_id 字段时，回退到 users[0]（历史约定第 0 个是创建者）
+        creator_staff_id = kb.get("creator_staff_id")
+        if not creator_staff_id:
+            users_raw = kb.get("users") or []
+            if users_raw and isinstance(users_raw[0], dict):
+                creator_staff_id = users_raw[0].get("staffId") or users_raw[0].get("staff_id")
         return {
             "id": kb.get("id"),
             "name": kb.get("name", ""),
@@ -115,7 +104,9 @@ class KBService:
             "model": kb.get("model", "openai"),
             "remark": kb.get("remark", ""),
             "enabled": bool(kb.get("enabled", True)),
-            "users": self._normalize_users(kb.get("users", [])),
+            "users": self._normalize_users(kb.get("users", []), creator_staff_id),
+            "creator_staff_id": creator_staff_id,
+            "tenant_id": kb.get("tenant_id"),
             "fileCount": file_count,
             "url": kb.get("physical_path", ""),
             "physical_path": kb.get("physical_path", ""),
@@ -190,14 +181,14 @@ class KBService:
             index += 1
         return f"{self._kb_prefix(kb)}/{candidate}", candidate
 
-    def _build_upload_plan(self, kb, file_objs, delete_set=None):
+    def _build_upload_plan(self, kb, file_infos, delete_set=None):
         reserved_names = {item["name"] for item in self._current_file_items(kb)} - set(delete_set or set())
         upload_plan = []
-        for file_obj in file_objs or []:
-            object_name, final_name = self._build_unique_object_name(kb, file_obj.filename or "unnamed_file", reserved_names)
+        for fi in file_infos or []:
+            object_name, final_name = self._build_unique_object_name(kb, fi["filename"] or "unnamed_file", reserved_names)
             reserved_names.add(final_name)
             upload_plan.append({
-                "file_obj": file_obj,
+                "staging_object": fi["staging_object"],
                 "object_name": object_name,
                 "final_name": final_name,
             })
@@ -209,8 +200,26 @@ class KBService:
             if key in update_data:
                 updated_kb[key] = update_data[key]
         updated_kb.setdefault("category", DEFAULT_KB_CATEGORY)
-        updated_kb["updated_at"] = self._now_ms()
-        updated_kb["updatedAt"] = self._now_display()
+        # 强制保留创建者：如果新 users 不含 creator，把原 users 里的 creator 条目补回去
+        if "users" in update_data and kb.get("creator_staff_id") is not None:
+            creator_id = str(kb["creator_staff_id"])
+            new_users = list(updated_kb.get("users") or [])
+            has_creator = any(
+                isinstance(u, dict) and str(u.get("staffId") or u.get("staff_id") or "") == creator_id
+                for u in new_users
+            )
+            if not has_creator:
+                creator_entry = next(
+                    (u for u in (kb.get("users") or [])
+                     if isinstance(u, dict)
+                     and str(u.get("staffId") or u.get("staff_id") or "") == creator_id),
+                    None,
+                )
+                if creator_entry is not None:
+                    new_users.insert(0, creator_entry)
+                    updated_kb["users"] = new_users
+        updated_kb["updated_at"] = now_ms()
+        updated_kb["updatedAt"] = now_display()
         return updated_kb
 
     def _build_update_preview(self, kb, update_data, upload_plan, delete_files):
@@ -237,29 +246,50 @@ class KBService:
         formatted["preview"] = True
         return formatted
 
-    def load_all(self):
+    def load_all(self, category=None, tenant_id=None):
+        """加载知识库列表。
+        tenant_id=None 时不过滤（管理端使用）；
+        tenant_id 有值时：基础知识库全部返回；普通知识库仅返回 tenant_id 匹配的。
+        """
         self._ensure_storage_ready()
-        return [self._format_kb(item) for item in self._read_all_raw()]
+        items = self._read_all_raw()
+        if category:
+            items = [item for item in items if item.get("category") == category]
+        if tenant_id is not None:
+            str_tid = str(tenant_id)
+            items = [
+                item for item in items
+                if item.get("category") == "基础知识库"
+                or str(item.get("tenant_id") or "") == str_tid
+            ]
+        items.sort(key=lambda item: item.get("updated_at", ""), reverse=True)
+        return [self._format_kb(item) for item in items]
 
     def save_all(self, data):
         self._write_all_raw(data)
 
-    def create_kb(self, name, model="openai"):
+    def create_kb(self, name, model="openai", user=None, category=None):
         self._ensure_storage_ready()
-        user = self._get_user_info()
+        user = user or get_user_profile()
+        is_base = category == "基础知识库"
         all_kb = self._read_all_raw()
-        kb_id = f"kb_{self._now_ms()}"
-        now_ms = self._now_ms()
-        now_display = self._now_display()
+        ts_ms = now_ms()
+        ts_display = now_display()
+        kb_id = f"kb_{ts_ms}"
+        creator_staff_id = user.get("staff_id") or user.get("staffId") or None
+        tenant_id = user.get("tenant_id") if not is_base else None
         new_kb = {
             "id": kb_id,
             "name": name,
             "model": model,
-            "category": DEFAULT_KB_CATEGORY,
+            "category": "基础知识库" if is_base else DEFAULT_KB_CATEGORY,
             "owner_info": f"{user.get('company', '')}/{user.get('department', '')}",
-            "physical_path": self._build_physical_path(name=name, user=user, all_kb=all_kb),
+            "physical_path": self._build_physical_path(name=name, all_kb=all_kb),
             "remark": "",
-            "users": [{
+            "creator_staff_id": creator_staff_id,
+            "tenant_id": tenant_id,
+            "users": [] if is_base else [{
+                "staffId": creator_staff_id,
                 "name": user.get("name", ""),
                 "phone": user.get("phone", ""),
                 "categoryName": user.get("company", ""),
@@ -267,14 +297,26 @@ class KBService:
                 "ip_address": user.get("ip_address", ""),
             }],
             "enabled": True,
-            "created_at": now_ms,
-            "updated_at": now_ms,
-            "createdAt": now_display,
-            "updatedAt": now_display,
+            "created_at": ts_ms,
+            "updated_at": ts_ms,
+            "createdAt": ts_display,
+            "updatedAt": ts_display,
         }
         all_kb.append(new_kb)
         self._write_all_raw(all_kb)
         return self._format_kb(new_kb)
+
+    def toggle_enabled(self, kb_id: str, enabled: bool):
+        all_kb = self._read_all_raw()
+        for kb in all_kb:
+            if kb.get("id") == kb_id:
+                kb["enabled"] = enabled
+                kb["updated_at"] = now_ms()
+                kb["updatedAt"] = now_display()
+                self._write_all_raw(all_kb)
+                self.vector_service.update_enabled(kb_id, enabled)
+                return self._format_kb(kb)
+        return None
 
     def get_kb(self, kb_id):
         for kb in self._read_all_raw():
@@ -292,7 +334,7 @@ class KBService:
         formatted["files"] = self.list_files(kb_id)
         return formatted
 
-    def update_kb(self, kb_id, update_data, new_files=None, delete_filenames=None, confirm=True):
+    def update_kb(self, kb_id, update_data, new_file_infos=None, delete_filenames=None, confirm=True):
         self._ensure_storage_ready()
         all_kb = self._read_all_raw()
         match_index = next((index for index, item in enumerate(all_kb) if item.get("id") == kb_id), None)
@@ -301,7 +343,7 @@ class KBService:
 
         kb = dict(all_kb[match_index])
         delete_files = [Path(name).name for name in (delete_filenames or []) if str(name).strip()]
-        upload_plan = self._build_upload_plan(kb, new_files or [], set(delete_files))
+        upload_plan = self._build_upload_plan(kb, new_file_infos or [], set(delete_files))
         if not confirm:
             return self._build_update_preview(kb, update_data, upload_plan, delete_files)
 
@@ -327,14 +369,10 @@ class KBService:
                     raise RuntimeError(f"删除知识库文件失败: {filename}")
 
             for plan in upload_plan:
-                file_obj = plan["file_obj"]
+                staging_obj = plan["staging_object"]
                 object_name = plan["object_name"]
-                if not storage_service.upload_file_obj(
-                    file_obj.file,
-                    object_name,
-                    getattr(file_obj, "content_type", "application/octet-stream"),
-                ):
-                    raise RuntimeError(f"上传知识库文件到 MinIO 失败: {object_name}")
+                if not storage_service.move_object(staging_obj, object_name):
+                    raise RuntimeError(f"移动知识库文件失败: {object_name}")
                 uploaded_objects.append(object_name)
 
             updated_kb = self._apply_metadata_update(kb, update_data)
@@ -391,8 +429,8 @@ class KBService:
             item.pop("object_name", None)
         return items
 
-    def save_files(self, kb_id, file_objs):
-        return self.update_kb(kb_id, {}, new_files=file_objs, delete_filenames=[], confirm=True)
+    def save_files(self, kb_id, file_infos):
+        return self.update_kb(kb_id, {}, new_file_infos=file_infos, delete_filenames=[], confirm=True)
 
     def save_file(self, kb_id, file_obj):
         result = self.save_files(kb_id, [file_obj])
@@ -405,7 +443,7 @@ class KBService:
         normalized = [Path(name).name for name in filenames or []]
         existing_names = {item["name"] for item in self.list_files(kb_id)}
         delete_targets = [name for name in normalized if name in existing_names]
-        result = self.update_kb(kb_id, {}, new_files=[], delete_filenames=delete_targets, confirm=True)
+        result = self.update_kb(kb_id, {}, new_file_infos=[], delete_filenames=delete_targets, confirm=True)
         if result is None:
             return None
         return delete_targets
