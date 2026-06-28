@@ -1,9 +1,20 @@
 from __future__ import annotations
 
 import hashlib
+import os
+import threading
+import time
 from typing import Any, Dict, List, Sequence
 
 from ..providers.sql_provider import get_sql_provider
+
+
+# 系统内图谱构建依赖远程 SQL，单次调用约 5 秒。
+# 用 TTL 缓存避免 /api/get_all_graph、/api/combined_graph 等接口频繁拉数据。
+# 通过环境变量 GRAPH_CACHE_TTL_SECONDS 控制；设为 0 则禁用缓存。
+_GRAPH_CACHE_TTL = int(os.getenv('GRAPH_CACHE_TTL_SECONDS', '60'))
+_graph_cache: Dict[str, Dict[str, Any]] = {}
+_graph_cache_lock = threading.Lock()
 
 
 class GraphService:
@@ -75,6 +86,39 @@ class GraphService:
     def get_graph():
         provider = get_sql_provider()
         user = provider.get_current_user()
+        cache_key = GraphService._make_graph_cache_key(user)
+
+        # 命中 TTL 缓存直接返回，避免每次都查甲方远程 MySQL
+        if _GRAPH_CACHE_TTL > 0:
+            now = time.time()
+            cached = _graph_cache.get(cache_key)
+            if cached is not None and now < cached.get('expires_at', 0):
+                return cached.get('data')
+
+            with _graph_cache_lock:
+                cached = _graph_cache.get(cache_key)
+                if cached is not None and now < cached.get('expires_at', 0):
+                    return cached.get('data')
+
+                result = GraphService._load_graph_uncached(provider=provider, user=user)
+                _graph_cache[cache_key] = {
+                    'data': result,
+                    'expires_at': time.time() + _GRAPH_CACHE_TTL,
+                }
+                return result
+
+        return GraphService._load_graph_uncached(provider=provider, user=user)
+
+    @staticmethod
+    def _make_graph_cache_key(user) -> str:
+        return f'{user.user_id}:{user.enterprise_id}'
+
+    @staticmethod
+    def _load_graph_uncached(provider=None, user=None):
+        if provider is None:
+            provider = get_sql_provider()
+        if user is None:
+            user = provider.get_current_user()
         payload = provider.get_graph_payload(user)
         flat_graph = GraphService._build_flat_graph(payload)
         return {
@@ -506,6 +550,7 @@ class GraphService:
                 block for block in node.get('attrs_blocks', [])
                 if isinstance(block, dict) and isinstance(block.get('attrs'), dict) and block.get('attrs')
             ]
+            node['flag'] = node.get('parent_id') in (None, '')
             nodes.append(node)
 
         return {'nodes': nodes, 'links': links}

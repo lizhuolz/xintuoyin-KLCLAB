@@ -10,6 +10,7 @@ from ..db.connection import get_mysql_connection
 from ..detail.resolvers import NodeDetailResolver
 from ..models.graph_models import CurrentUser, GraphNode
 from ..repositories.graph_repository import GraphRepository
+from ..services.auth_context import get_chat_current_user
 
 
 class SQLGraphProvider:
@@ -25,15 +26,32 @@ class SQLGraphProvider:
         self._graph_cache: Dict[Tuple[str, str, int, int], Dict[str, Any]] = {}
 
     def get_current_user(self) -> CurrentUser:
+        chat_user = get_chat_current_user()
+        if not chat_user:
+            return self._fallback_user()
+
         conn = get_mysql_connection()
         if conn is None:
             return self._fallback_user()
 
         try:
             self._warmup_schema(conn)
-            row = self.repository.fetch_current_user(conn)
+            tenant_id = self.repository.resolve_tenant_id_from_user(conn, chat_user)
+            if not tenant_id:
+                return self._fallback_user()
+
+            row = self.repository.fetch_current_user(
+                conn,
+                tenant_id=tenant_id,
+            )
             if row:
                 return CurrentUser(**row)
+            return CurrentUser(
+                user_id=str(tenant_id),
+                username=str(chat_user.get('name') or chat_user.get('phone') or tenant_id),
+                enterprise_id=str(tenant_id),
+                enterprise_name=str(chat_user.get('company') or tenant_id),
+            )
         finally:
             conn.close()
 

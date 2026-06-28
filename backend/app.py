@@ -1,7 +1,9 @@
 import json
 import asyncio
+import base64
 import io
 import csv
+import mimetypes
 import os
 import re
 import sys
@@ -1817,6 +1819,26 @@ async def iterate_chat_events(message, conversation_id: str, web_search: bool, u
 
     checked_answer = _strip_think_blocks(full_answer)
 
+    # 兜底：strip 后 answer 全空时，可能是模型只输出了被清理的 <tool_call> XML 等
+    # （比如工具调用被路由截断的场景），给用户一个明确提示而不是空白
+    if not checked_answer.strip():
+        fallback_lines = ["抱歉，本次回答未能完整生成。"]
+        # 尝试从模型推理文本中截取末尾片段，至少让用户看到模型的思考脉络
+        think_tail = (full_thinking or "").strip()
+        if think_tail:
+            tail_excerpt = think_tail[-300:].strip()
+            fallback_lines.append("")
+            fallback_lines.append(f"模型推理片段：{tail_excerpt}")
+        # 如果有工具调用过，提示一下
+        if tool_trace_events:
+            tool_names = sorted({e.get("tool_name") or "" for e in tool_trace_events if e.get("tool_name")})
+            if tool_names:
+                fallback_lines.append("")
+                fallback_lines.append(f"已调用工具：{', '.join(tool_names)}（可能未取得有效结果）。")
+        fallback_lines.append("")
+        fallback_lines.append("建议换个问法或提供更多上下文重试。")
+        checked_answer = "\n".join(fallback_lines)
+
     yield {
         "type": "complete",
         "result": {
@@ -2204,6 +2226,45 @@ async def chat_endpoint(
 
 
 STAGING_PREFIX = "staging"
+GRAPH_LOCAL_FILE_ID_PREFIX = "graph_local"
+GRAPH_LOCAL_OBJECT_PREFIX = "graph-local://"
+GRAPH_LOCAL_UPLOAD_DIRS = {
+    "internal_binding": ROOT_DIR / "graph" / "runtime" / "internal_binding_workspace" / "uploads",
+    "external": ROOT_DIR / "graph" / "runtime" / "external_workspace" / "uploads",
+}
+
+
+def _decode_graph_local_file_id(file_id: str) -> Optional[dict]:
+    raw = str(file_id or "").strip()
+    parts = raw.split(":", 2)
+    if len(parts) != 3 or parts[0] != GRAPH_LOCAL_FILE_ID_PREFIX:
+        return None
+
+    scope, encoded_name = parts[1], parts[2]
+    upload_dir = GRAPH_LOCAL_UPLOAD_DIRS.get(scope)
+    if upload_dir is None:
+        return None
+    try:
+        padding = "=" * (-len(encoded_name) % 4)
+        filename = base64.urlsafe_b64decode(f"{encoded_name}{padding}").decode("utf-8")
+    except Exception:
+        return None
+
+    filename = Path(filename).name
+    if not filename:
+        return None
+    local_path = (upload_dir / filename).resolve()
+    try:
+        local_path.relative_to(upload_dir.resolve())
+    except ValueError:
+        return None
+    if not local_path.is_file():
+        return None
+    try:
+        size = local_path.stat().st_size
+    except OSError:
+        size = 0
+    return {"filename": filename, "local_path": local_path, "size": size}
 
 
 @app.post(
@@ -2294,6 +2355,15 @@ def resolve_staging_files(file_ids: list) -> list:
     for fid in (file_ids or []):
         if not fid:
             continue
+        graph_local_file = _decode_graph_local_file_id(fid)
+        if graph_local_file:
+            results.append({
+                "file_id": fid,
+                "filename": graph_local_file["filename"],
+                "staging_object": f"{GRAPH_LOCAL_OBJECT_PREFIX}{graph_local_file['local_path']}",
+                "size": graph_local_file.get("size", 0),
+            })
+            continue
         prefix = f"{STAGING_PREFIX}/{fid}/"
         objects = storage_service.list_files(prefix)
         if objects:
@@ -2310,6 +2380,25 @@ def resolve_staging_files(file_ids: list) -> list:
 
 def move_staging_to_dest(staging_object: str, dest_object: str) -> bool:
     """将 staging 文件移动到正式目录。"""
+    if str(staging_object or "").startswith(GRAPH_LOCAL_OBJECT_PREFIX):
+        local_path = Path(str(staging_object)[len(GRAPH_LOCAL_OBJECT_PREFIX):])
+        allowed = False
+        try:
+            resolved_path = local_path.resolve()
+        except OSError:
+            return False
+        for upload_dir in GRAPH_LOCAL_UPLOAD_DIRS.values():
+            try:
+                resolved_path.relative_to(upload_dir.resolve())
+                allowed = True
+                break
+            except ValueError:
+                continue
+        if not allowed or not resolved_path.is_file():
+            return False
+        content_type = mimetypes.guess_type(resolved_path.name)[0] or "application/octet-stream"
+        with open(resolved_path, "rb") as file_obj:
+            return storage_service.upload_file_obj(file_obj, dest_object, content_type)
     return storage_service.move_object(staging_object, dest_object)
 
 

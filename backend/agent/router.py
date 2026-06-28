@@ -34,31 +34,53 @@ def route_after_sql_planner(state: GraphState) -> Literal["sql_tools", "sql_answ
 # =============================
 # 5) chatbot 后路由：有 tool_calls -> 对应 tools；无 -> should_sql
 # =============================
-def route_after_chatbot_local(state: GraphState) -> Literal["tools_local", "should_sql","end"]:
+_SQL_FAIL_INDICATORS = ("error", "错误", "未找到", "no result", "empty", "不存在", "no data")
+
+
+def _last_tool_msg_failed_for(messages, tool_name: str) -> bool:
+    """从后往前找最后一个该工具的 ToolMessage，判断它是否失败/空结果。"""
+    for msg in reversed(messages):
+        if isinstance(msg, ToolMessage) and (msg.name or "") == tool_name:
+            content = (msg.content or "").lower()
+            return any(k in content for k in _SQL_FAIL_INDICATORS)
+    return False
+
+
+def route_after_chatbot_local(state: GraphState) -> Literal["tools_local", "should_sql", "sql_rag_fallback", "end"]:
     messages = state["messages"]
-    # 如果 messages 中已有 ToolMessage，说明工具已执行过，直接结束
+    # sql_tool 已执行过且失败 → 走 fallback 让模型改用 rag_tool
+    if not state.get("sql_fallback_done") and _last_tool_msg_failed_for(messages, "sql_tool"):
+        return "sql_rag_fallback"
     has_tool_result = any(isinstance(m, ToolMessage) for m in messages)
-    if has_tool_result:
-        return "end"
     last = messages[-1]
-    if isinstance(last, AIMessage) and getattr(last, "tool_calls", None):
+    has_tool_calls = bool(isinstance(last, AIMessage) and getattr(last, "tool_calls", None))
+    if has_tool_calls:
         return "tools_local"
-    # 没有 tool_calls 也没执行过工具，检查是否需要 SQL
+    if has_tool_result:
+        # 已调过 rag/web 工具，但用户问题看起来像 SQL 类且 should_sql 还没尝试 → 再补一次 SQL 路径
+        if not state.get("sql_attempted") and _looks_like_sql_query(extract_current_user_question(messages)):
+            return "should_sql"
+        return "end"
+    # 没用过工具：常规路径
     if _looks_like_sql_query(extract_current_user_question(messages)):
         return "should_sql"
     return "end"
 
 
-def route_after_chatbot_web(state: GraphState) -> Literal["tools_web", "should_sql", "end"]:
+def route_after_chatbot_web(state: GraphState) -> Literal["tools_web", "should_sql", "sql_rag_fallback", "end"]:
     messages = state["messages"]
+    if not state.get("sql_fallback_done") and _last_tool_msg_failed_for(messages, "sql_tool"):
+        return "sql_rag_fallback"
     has_tool_result = any(isinstance(m, ToolMessage) for m in messages)
-    if has_tool_result:
-        return "end"
     last = messages[-1]
-    if isinstance(last, AIMessage) and getattr(last, "tool_calls", None):
+    has_tool_calls = bool(isinstance(last, AIMessage) and getattr(last, "tool_calls", None))
+    if has_tool_calls:
         return "tools_web"
-    # 联网模式下模型没调搜索工具 → 走 should_sql 看看是否需要 SQL
-    # 如果也不需要 SQL，should_sql 会让它走 chatbot_local 再产出最终回答
+    if has_tool_result:
+        # 调过 web/rag 后，如果是 SQL 类问题且 should_sql 还没尝试过 → 补一次 SQL 路径
+        if not state.get("sql_attempted") and _looks_like_sql_query(extract_current_user_question(messages)):
+            return "should_sql"
+        return "end"
     return "should_sql"
 
     # 注意：web_chatbot_node 的 system prompt 已强制要求调用 tavily_search，

@@ -324,6 +324,7 @@ def make_should_sql_node(SQL_TOOL_NAME) -> GraphState:
         updates = {
             "sql_needed": sql_needed,
             "sql_reason": reason,
+            "sql_attempted": True,   # 标记已判断过，避免 chatbot 兜底再次进入
         }
 
         if sql_needed:

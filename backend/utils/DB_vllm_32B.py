@@ -45,6 +45,47 @@ REVISE_PROMPT ='''
 请你修改给出正确的SQL语句，用<SQL>xxx</SQL>形式给出修改后的SQL语句。
 '''.strip()
 
+def _extract_sql(raw: str) -> str:
+    """从 LLM 输出中提取纯 SQL。
+    依次尝试：
+      1. 剥离 <think>...</think> 思考块（避免混入 SQL）
+      2. ```sql ... ``` 代码块
+      3. 通用 ``` ... ``` 代码块
+      4. <SQL>...</SQL> 包裹
+      5. 兜底：从 SELECT/WITH/INSERT/UPDATE/DELETE 关键字开始截取到结尾或下一个空行
+    """
+    text = (raw or "").strip()
+    if not text:
+        return ""
+    # 1) 剥离 think 块
+    text = re.sub(r"<think>.*?</think>", "", text, flags=re.DOTALL | re.IGNORECASE).strip()
+    # 2) ```sql 代码块
+    m = re.search(r"```sql\s*(.*?)```", text, flags=re.DOTALL | re.IGNORECASE)
+    if m:
+        return m.group(1).strip()
+    # 3) 通用代码块
+    m = re.search(r"```(.*?)```", text, flags=re.DOTALL)
+    if m:
+        candidate = m.group(1).strip()
+        if re.match(r"^\s*(SELECT|WITH|INSERT|UPDATE|DELETE)\b", candidate, flags=re.IGNORECASE):
+            return candidate
+    # 4) <SQL>...</SQL>
+    m = re.search(r"<SQL>\s*(.*?)\s*</SQL>", text, flags=re.DOTALL | re.IGNORECASE)
+    if m:
+        return m.group(1).strip()
+    # 5) 兜底：从 SELECT/WITH/INSERT/UPDATE/DELETE 起始截取到 ; 或文本末尾
+    m = re.search(r"\b(SELECT|WITH|INSERT|UPDATE|DELETE)\b.+", text, flags=re.IGNORECASE | re.DOTALL)
+    if m:
+        sql = m.group(0).strip()
+        # 截到第一个分号（如果有）
+        semi = sql.find(";")
+        if semi >= 0:
+            sql = sql[: semi + 1]
+        return sql.strip()
+    # 实在没找到就返回原 text（让上层报错时更易调试）
+    return text.strip()
+
+
 # Selector Prompt (保持不变)
 SELECT_PROMPT="""
 以下是数据库的所有表和字段信息：
@@ -335,17 +376,12 @@ class DB:
             
             raw_output = response.choices[0].message.content
             print(f"[SQLCoder Output]: {raw_output}")
-            
-            sql_code = raw_output.strip()
-            # 提取 SQL (兼容 Markdown 和纯文本)
-            match = re.search(r"```sql(.*?)```", sql_code, re.DOTALL)
-            if match:
-                sql_code = match.group(1).strip()
-            else:
-                match_generic = re.search(r"```(.*?)```", sql_code, re.DOTALL)
-                if match_generic:
-                    sql_code = match_generic.group(1).strip()
-            
+
+            sql_code = _extract_sql(raw_output)
+            if not sql_code:
+                print("Error: 无法从模型输出中提取 SQL")
+                return ""
+
             sql_code = sqlparse.format(sql_code, reindent=True)
             return sql_code
 

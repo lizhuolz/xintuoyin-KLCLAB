@@ -11,3 +11,4 @@ class GraphState(MessagesState, total=False):
     select_model: str
     user_identity: str
     sql_fallback_done: bool
+    sql_attempted: bool   # should_sql 节点判断过 → True，避免重复进入

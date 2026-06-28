@@ -1,3 +1,4 @@
+import base64
 import json
 import os
 import shutil
@@ -10,6 +11,8 @@ from flask import Flask, jsonify, request, send_from_directory, Response
 from flask_cors import CORS
 
 BASE_DIR = Path(__file__).resolve().parent
+PROJECT_ROOT = BASE_DIR.parent
+CHAT_BACKEND_DIR = PROJECT_ROOT / 'backend'
 GRAPH_PROJECT_DIR = BASE_DIR / 'modules' / 'Graph' 
 GRAPH_BACKEND_DIR = GRAPH_PROJECT_DIR / 'backend'
 GRAPH_FRONTEND_DIR = GRAPH_PROJECT_DIR / 'frontend'
@@ -20,6 +23,7 @@ UPLOAD_FOLDER = WORKSPACE_DIR / 'uploads'
 OUTPUT_FILE = WORKSPACE_DIR / 'output_graph.json'
 META_FILE = WORKSPACE_DIR / 'workspace_meta.json'
 CURRENT_DB_FILE = WORKSPACE_DIR / 'current_db.txt'
+EXTERNAL_GRAPH_INDEX_FILE = WORKSPACE_DIR / 'graph_index.json'
 INTERNAL_BINDING_UPLOAD_FOLDER = INTERNAL_BINDING_DIR / 'uploads'
 INTERNAL_BINDING_GRAPH_FILE = INTERNAL_BINDING_DIR / 'internal_binding_graph.json'
 INTERNAL_BINDING_META_FILE = INTERNAL_BINDING_DIR / 'workspace_meta.json'
@@ -27,7 +31,7 @@ EXTRACTOR_FILE = XINTUOYIN_DIR / 'getgraph' / 'main.py'
 PROMPT_DIR = XINTUOYIN_DIR / 'getgraph' / 'prompt'
 XINTUOYIN_TEMPLATE = XINTUOYIN_DIR / 'templates' / 'index.html'
 
-DEFAULT_API_BASE = os.getenv('EXTERNAL_GRAPH_API_BASE', 'http://10.249.40.204:62272/v1')
+DEFAULT_API_BASE = os.getenv('EXTERNAL_GRAPH_API_BASE', 'http://127.0.0.1:62272/v1')
 DEFAULT_MODEL_PATH = os.getenv('EXTERNAL_GRAPH_MODEL_PATH', 'Qwen3.5-27B')
 EXTRACTOR_TIMEOUT_SECONDS = int(os.getenv('EXTERNAL_GRAPH_EXTRACT_TIMEOUT_SECONDS', '180'))
 
@@ -35,6 +39,27 @@ UPLOAD_FOLDER.mkdir(parents=True, exist_ok=True)
 WORKSPACE_DIR.mkdir(parents=True, exist_ok=True)
 INTERNAL_BINDING_UPLOAD_FOLDER.mkdir(parents=True, exist_ok=True)
 INTERNAL_BINDING_DIR.mkdir(parents=True, exist_ok=True)
+
+GRAPH_LOCAL_FILE_ID_PREFIX = 'graph_local'
+
+
+def _make_graph_local_file_id(scope: str, filename: str) -> str:
+    safe_name = Path(str(filename or '')).name
+    token = base64.urlsafe_b64encode(safe_name.encode('utf-8')).decode('ascii').rstrip('=')
+    return f'{GRAPH_LOCAL_FILE_ID_PREFIX}:{scope}:{token}'
+
+
+def _infer_graph_local_scope(save_path: Path) -> str:
+    try:
+        save_path.resolve().relative_to(INTERNAL_BINDING_UPLOAD_FOLDER.resolve())
+        return 'internal_binding'
+    except ValueError:
+        pass
+    try:
+        save_path.resolve().relative_to(UPLOAD_FOLDER.resolve())
+        return 'external'
+    except ValueError:
+        return ''
 
 if not CURRENT_DB_FILE.exists():
     CURRENT_DB_FILE.write_text('output_graph.json', encoding='utf-8')
@@ -48,6 +73,118 @@ def get_current_db_name() -> str:
 
 def get_current_output_file() -> Path:
     return WORKSPACE_DIR / get_current_db_name()
+
+
+def _display_name_from_filename(filename: str) -> str:
+    return Path(str(filename or '').strip()).stem
+
+
+def read_external_graph_index() -> Dict[str, Dict]:
+    if not EXTERNAL_GRAPH_INDEX_FILE.exists():
+        return {}
+    try:
+        data = json.loads(EXTERNAL_GRAPH_INDEX_FILE.read_text(encoding='utf-8'))
+    except Exception:
+        return {}
+    if not isinstance(data, dict):
+        return {}
+    return {str(key): value for key, value in data.items() if isinstance(value, dict)}
+
+
+def write_external_graph_index(index: Dict[str, Dict]) -> None:
+    EXTERNAL_GRAPH_INDEX_FILE.write_text(
+        json.dumps(index, ensure_ascii=False, indent=2),
+        encoding='utf-8',
+    )
+
+
+def get_external_graph_display_name(graph_name: str) -> str:
+    normalized_name = str(graph_name or '').strip()
+    if not normalized_name:
+        return ''
+    graph_id = Path(normalized_name).stem
+    index = read_external_graph_index()
+    entry = index.get(graph_id, {})
+    display_name = str(entry.get('graphName') or '').strip()
+    return display_name or normalized_name
+
+
+def ensure_external_graph_display_name(graph_name: str, uploaded_files: List[str]) -> str:
+    normalized_name = str(graph_name or '').strip()
+    if not normalized_name:
+        return ''
+    graph_id = Path(normalized_name).stem
+    index = read_external_graph_index()
+    existing_entry = index.get(graph_id, {})
+    existing_name = str(existing_entry.get('graphName') or '').strip()
+    if existing_name:
+        return existing_name
+
+    first_file = ''
+    for name in uploaded_files:
+        normalized = str(name or '').strip()
+        if normalized:
+            first_file = normalized
+            break
+
+    display_name = _display_name_from_filename(first_file) or graph_id
+    index[graph_id] = {
+        **existing_entry,
+        'graphId': graph_id,
+        'graphFile': normalized_name,
+        'graphName': display_name,
+        'firstFileName': first_file or None,
+    }
+    write_external_graph_index(index)
+    return display_name
+
+
+def _normalize_graph_id(graph_id: str) -> str:
+    graph_id_stem = str(graph_id or '').strip()
+    if graph_id_stem.endswith('.json'):
+        graph_id_stem = graph_id_stem[:-5]
+    return graph_id_stem
+
+
+def resolve_graph_file(graph_id: str = '', must_exist: bool = False) -> Path:
+    graph_id_stem = _normalize_graph_id(graph_id)
+    if not graph_id_stem:
+        target_file = get_current_output_file()
+    elif graph_id_stem == INTERNAL_BINDING_GRAPH_FILE.stem:
+        target_file = INTERNAL_BINDING_GRAPH_FILE
+    else:
+        if (
+            graph_id_stem in {'.', '..'}
+            or '/' in graph_id_stem
+            or '\\' in graph_id_stem
+            or graph_id_stem == 'workspace_meta'
+        ):
+            raise ValueError('无效的 graphId')
+        target_file = WORKSPACE_DIR / f'{graph_id_stem}.json'
+
+    if must_exist and not target_file.exists():
+        raise FileNotFoundError(f'图谱 {_normalize_graph_id(graph_id) or target_file.stem} 不存在')
+    return target_file
+
+
+def read_graph_by_id(graph_id: str = '', must_exist: bool = False) -> Dict:
+    return read_graph_file(resolve_graph_file(graph_id, must_exist=must_exist))
+
+
+def save_graph_by_id(graph: Dict, graph_id: str = '', must_exist: bool = False) -> Dict:
+    return save_graph_file(resolve_graph_file(graph_id, must_exist=must_exist), graph)
+
+
+def get_request_graph_id(payload: Dict | None = None) -> str:
+    if isinstance(payload, dict):
+        graph_id = payload.get('graphId')
+        if graph_id not in [None, '']:
+            return str(graph_id).strip()
+    for source in (request.args, request.form):
+        graph_id = source.get('graphId')
+        if graph_id not in [None, '']:
+            return str(graph_id).strip()
+    return ''
 
 if not get_current_output_file().exists():
     get_current_output_file().write_text(json.dumps({'nodes': [], 'links': []}, ensure_ascii=False, indent=2), encoding='utf-8')
@@ -182,6 +319,45 @@ def merge_graph(base_graph: Dict, incoming_graph: Dict) -> Dict:
         'links': list(base_graph.get('links', [])) + list(incoming_graph.get('links', [])),
     }
     return deduplicate_graph(merged)
+
+
+def graph_without_table_html(graph: Dict) -> Dict:
+    nodes = []
+    changed = False
+    for node in graph.get('nodes', []):
+        if isinstance(node, dict) and 'table_html' in node:
+            normalized = dict(node)
+            normalized.pop('table_html', None)
+            nodes.append(normalized)
+            changed = True
+        else:
+            nodes.append(node)
+    if not changed:
+        return graph
+    return {'nodes': nodes, 'links': graph.get('links', [])}
+
+
+def attach_file_metadata_to_graph(
+    graph: Dict,
+    *,
+    file_id: str,
+    file_name: str,
+    file_url: str,
+    staging_file_id: str | None,
+) -> Dict:
+    if not isinstance(graph, dict):
+        return graph
+
+    for collection_name in ('nodes', 'links'):
+        for item in graph.get(collection_name, []) or []:
+            if not isinstance(item, dict):
+                continue
+            item.setdefault('file_id', file_id)
+            item.setdefault('file_name', file_name)
+            item.setdefault('file_url', file_url)
+            if staging_file_id:
+                item['staging_file_id'] = staging_file_id
+    return graph
 
 
 def graph_has_content(graph: Dict) -> bool:
@@ -323,12 +499,21 @@ def run_extractor(file_path: Path, output_path: Path) -> Dict:
         '--model_path', DEFAULT_MODEL_PATH,
         '--prompt_txt_path', str(PROMPT_DIR),
     ]
+    child_env = os.environ.copy()
+    existing_no_proxy = child_env.get('NO_PROXY') or child_env.get('no_proxy') or ''
+    no_proxy_items = [item.strip() for item in existing_no_proxy.split(',') if item.strip()]
+    for item in ('127.0.0.1', 'localhost', '10.249.40.204'):
+        if item not in no_proxy_items:
+            no_proxy_items.append(item)
+    child_env['NO_PROXY'] = ','.join(no_proxy_items)
+    child_env['no_proxy'] = child_env['NO_PROXY']
     try:
         completed = subprocess.run(
             cmd,
             capture_output=True,
             text=True,
             timeout=EXTRACTOR_TIMEOUT_SECONDS,
+            env=child_env,
         )
     except subprocess.TimeoutExpired as exc:
         return {
@@ -401,7 +586,11 @@ def external_workspace_status():
     status = get_workspace_status()
     # Add current db info to status
     status['current_db'] = get_current_db_name()
-    status['available_dbs'] = [f.name for f in WORKSPACE_DIR.glob('*.json') if f.name != 'workspace_meta.json']
+    status['available_dbs'] = [
+        f.name
+        for f in WORKSPACE_DIR.glob('*.json')
+        if f.name not in {'workspace_meta.json', EXTERNAL_GRAPH_INDEX_FILE.name}
+    ]
     if status['current_db'] not in status['available_dbs']:
         status['available_dbs'].append(status['current_db'])
     return jsonify({
@@ -488,28 +677,31 @@ def external_workspace_clear():
 # 图谱上传后顺带把原文件副本上传到 chat 的 MinIO staging 区，
 # 让前端可以直接把 staging_file_id 喂给 /api/chat 的 file_ids，
 # 避免对话场景下用户重新上传一次同一份文件。
-_CHAT_IMAGE_SUFFIXES = {'.png', '.jpg', '.jpeg', '.bmp', '.gif'}
 
 
 def _stage_file_for_chat(save_path: Path):
     """把图谱已保存的文件副本上传到 chat staging。
-    返回 file_id；图片不进 staging（图谱已经处理过图片，对话用 graph_id 即可），返回 None。
-    任何失败也返 None，不影响图谱主流程。
+    返回 chat staging file_id；上传失败时返回可由 chat 解析的本地图谱文件 id。
+    聊天接口已支持图片，所以这里不再跳过图片文件，避免 staging_file_id 为空。
     """
+    local_scope = _infer_graph_local_scope(save_path)
+    local_file_id = _make_graph_local_file_id(local_scope, save_path.name) if local_scope else None
     try:
-        if save_path.suffix.lower() in _CHAT_IMAGE_SUFFIXES:
-            return None
-        import time, uuid
+        import mimetypes, time, uuid
+        backend_path = str(CHAT_BACKEND_DIR)
+        if CHAT_BACKEND_DIR.exists() and backend_path not in sys.path:
+            sys.path.insert(0, backend_path)
         from services.storage_service import storage_service
         file_id = f"f_{int(time.time() * 1000)}_{uuid.uuid4().hex[:8]}"
         object_name = f"staging/{file_id}/{save_path.name}"
+        content_type = mimetypes.guess_type(save_path.name)[0] or 'application/octet-stream'
         with open(save_path, 'rb') as f:
-            if not storage_service.upload_file_obj(f, object_name):
-                return None
+            if not storage_service.upload_file_obj(f, object_name, content_type):
+                return local_file_id
         return file_id
     except Exception as exc:
         print(f"[graph] stage_file_for_chat failed: {exc}", file=sys.stderr)
-        return None
+        return local_file_id
 
 
 @app.post('/upload')
@@ -521,7 +713,7 @@ def upload_file():
         }), 400
 
     is_default = request.form.get('isDefault', 'true').lower() == 'true'
-    graph_id = request.form.get('graphId', '')
+    graph_id = request.form.get('graphId', '').strip()
     now_ms = lambda: int(__import__('time').time() * 1000)
 
     if is_default:
@@ -556,6 +748,13 @@ def upload_file():
             extraction.pop('graph_stats', None)
             preprocess_results.append(extraction)
             if extracted_graph:
+                attach_file_metadata_to_graph(
+                    extracted_graph,
+                    file_id=file_id,
+                    file_name=safe_name,
+                    file_url=file_url,
+                    staging_file_id=staging_file_id,
+                )
                 successful_files.append(safe_name)
                 extracted_graphs.append(extracted_graph)
             if temp_output.exists():
@@ -583,6 +782,11 @@ def upload_file():
             'nodes': list(internal_graph.get('nodes', [])) + list(binding_graph.get('nodes', [])),
             'links': list(internal_graph.get('links', [])) + list(binding_graph.get('links', [])),
         })
+        try:
+            from modules.Graph.backend.api.routes import prime_combined_graph_cache
+            prime_combined_graph_cache(internal_graph, binding_graph, merged_graph)
+        except Exception as exc:
+            print(f"[graph] prime_combined_graph_cache failed: {exc}", file=sys.stderr)
 
         success_count = len([item for item in preprocess_results if item['status'] == 'ok'])
         failed = [item for item in preprocess_results if item['status'] != 'ok']
@@ -632,9 +836,28 @@ def upload_file():
         previous_db = get_current_db_name()
         created_new_db = False
         if graph_id:
-            target_db = f"{graph_id}.json"
-            if target_db != 'workspace_meta.json' and (WORKSPACE_DIR / target_db).exists():
-                CURRENT_DB_FILE.write_text(target_db, encoding='utf-8')
+            graph_id_stem = graph_id[:-5] if graph_id.endswith('.json') else graph_id
+            target_db = f"{graph_id_stem}.json"
+            if (
+                not graph_id_stem
+                or graph_id_stem in {'.', '..'}
+                or '/' in graph_id
+                or '\\' in graph_id
+                or target_db == 'workspace_meta.json'
+            ):
+                return jsonify({
+                    "code": 400,
+                    "msg": "无效的 graphId，请传入已有图谱的 graphId（不包含路径）"
+                }), 400
+
+            target_file = WORKSPACE_DIR / target_db
+            if not target_file.exists():
+                return jsonify({
+                    "code": 404,
+                    "msg": f"图谱 {graph_id_stem} 不存在，请检查 graphId 或先创建图谱"
+                }), 404
+
+            CURRENT_DB_FILE.write_text(target_db, encoding='utf-8')
         else:
             timestamp = now_ms()
             target_db = f"new_graph_{timestamp}.json"
@@ -672,6 +895,13 @@ def upload_file():
             extraction.pop('graph_stats', None)
             preprocess_results.append(extraction)
             if extracted_graph:
+                attach_file_metadata_to_graph(
+                    extracted_graph,
+                    file_id=file_id,
+                    file_name=safe_name,
+                    file_url=file_url,
+                    staging_file_id=staging_file_id,
+                )
                 successful_files.append(safe_name)
                 current_graph = merge_graph(current_graph, extracted_graph)
             if temp_output.exists():
@@ -686,6 +916,7 @@ def upload_file():
         if successful_files:
             graph = save_graph(current_graph)
             write_workspace_meta(successful_files)
+            ensure_external_graph_display_name(get_current_db_name(), successful_files)
         else:
             if created_new_db:
                 target_file = WORKSPACE_DIR / target_db
@@ -746,15 +977,28 @@ def serve_internal_binding_file(filename: str):
 
 @app.get('/get_graph')
 def get_graph():
-    graph_data = read_graph()
-    current_db = get_current_db_name()
-    graph_id = current_db.replace('.json', '')
+    graph_id = get_request_graph_id()
+    try:
+        graph_file = resolve_graph_file(graph_id, must_exist=bool(graph_id))
+    except ValueError as exc:
+        return jsonify({"code": 400, "msg": str(exc)}), 400
+    except FileNotFoundError as exc:
+        return jsonify({"code": 404, "msg": str(exc)}), 404
+
+    graph_data = read_graph_file(graph_file)
+    current_db = graph_file.name
+    graph_id = graph_file.stem
+    graph_name = (
+        current_db
+        if graph_file == INTERNAL_BINDING_GRAPH_FILE
+        else get_external_graph_display_name(current_db)
+    )
     return jsonify({
         "code": 0,
         "msg": "成功",
         "data": {
             'graphId': graph_id,
-            'graphName': current_db,
+            'graphName': graph_name,
             'nodes': graph_data.get('nodes', []),
             'links': graph_data.get('links', []),
         }
@@ -764,6 +1008,7 @@ def get_graph():
 @app.post('/graph/node')
 def create_node():
     payload = request.get_json(silent=True) or {}
+    graph_id = get_request_graph_id(payload)
     node_id = payload.get('id')
     if not node_id:
         return jsonify({
@@ -771,7 +1016,12 @@ def create_node():
             "msg": "节点 id 不能为空"
         }), 400
 
-    graph = read_graph()
+    try:
+        graph = read_graph_by_id(graph_id, must_exist=bool(graph_id))
+    except ValueError as exc:
+        return jsonify({"code": 400, "msg": str(exc)}), 400
+    except FileNotFoundError as exc:
+        return jsonify({"code": 404, "msg": str(exc)}), 404
     if any(node.get('id') == node_id for node in graph['nodes']):
         return jsonify({
             "code": 409,
@@ -779,21 +1029,28 @@ def create_node():
         }), 409
 
     node = dict(payload)
+    node.pop('graphId', None)
     if 'attrs' not in node or not isinstance(node.get('attrs'), dict):
         node['attrs'] = {}
     graph['nodes'].append(node)
-    graph = save_graph(graph)
+    graph = save_graph_by_id(graph, graph_id)
     return jsonify({
         "code": 0,
         "msg": "成功",
-        "data": {'status': 'success', 'node': node, 'graph': graph}
+        "data": {'status': 'success', 'graphId': resolve_graph_file(graph_id).stem, 'node': node, 'graph': graph}
     })
 
 
 @app.put('/graph/node/<path:node_id>')
 def update_node(node_id):
     payload = request.get_json(silent=True) or {}
-    graph = read_graph()
+    graph_id = get_request_graph_id(payload)
+    try:
+        graph = read_graph_by_id(graph_id, must_exist=bool(graph_id))
+    except ValueError as exc:
+        return jsonify({"code": 400, "msg": str(exc)}), 400
+    except FileNotFoundError as exc:
+        return jsonify({"code": 404, "msg": str(exc)}), 404
     target = None
     for node in graph['nodes']:
         if node.get('id') == node_id:
@@ -818,7 +1075,7 @@ def update_node(node_id):
         merged_attrs.update(incoming_attrs)
 
     for key, value in payload.items():
-        if key == 'attrs':
+        if key in {'attrs', 'graphId'}:
             continue
         target[key] = value
     target['id'] = new_id
@@ -831,17 +1088,24 @@ def update_node(node_id):
             if link.get('target') == node_id:
                 link['target'] = new_id
 
-    graph = save_graph(graph)
+    graph = save_graph_by_id(graph, graph_id)
     return jsonify({
         "code": 0,
         "msg": "成功",
-        "data": {'status': 'success', 'node': target, 'graph': graph}
+        "data": {'status': 'success', 'graphId': resolve_graph_file(graph_id).stem, 'node': target, 'graph': graph}
     })
 
 
 @app.delete('/graph/node/<path:node_id>')
 def delete_node(node_id):
-    graph = read_graph()
+    payload = request.get_json(silent=True) or {}
+    graph_id = get_request_graph_id(payload)
+    try:
+        graph = read_graph_by_id(graph_id, must_exist=bool(graph_id))
+    except ValueError as exc:
+        return jsonify({"code": 400, "msg": str(exc)}), 400
+    except FileNotFoundError as exc:
+        return jsonify({"code": 404, "msg": str(exc)}), 404
     before_node_count = len(graph['nodes'])
     graph['nodes'] = [node for node in graph['nodes'] if node.get('id') != node_id]
     if len(graph['nodes']) == before_node_count:
@@ -853,17 +1117,18 @@ def delete_node(node_id):
         link for link in graph['links']
         if link.get('source') != node_id and link.get('target') != node_id
     ]
-    graph = save_graph(graph)
+    graph = save_graph_by_id(graph, graph_id)
     return jsonify({
         "code": 0,
         "msg": "成功",
-        "data": {'status': 'success', 'deleted_node': node_id, 'graph': graph}
+        "data": {'status': 'success', 'graphId': resolve_graph_file(graph_id).stem, 'deleted_node': node_id, 'graph': graph}
     })
 
 
 @app.post('/graph/link')
 def create_link():
     payload = request.get_json(silent=True) or {}
+    graph_id = get_request_graph_id(payload)
     source = payload.get('source')
     target = payload.get('target')
     relation = payload.get('relation')
@@ -873,7 +1138,12 @@ def create_link():
             "msg": "source、target、relation 不能为空"
         }), 400
 
-    graph = read_graph()
+    try:
+        graph = read_graph_by_id(graph_id, must_exist=bool(graph_id))
+    except ValueError as exc:
+        return jsonify({"code": 400, "msg": str(exc)}), 400
+    except FileNotFoundError as exc:
+        return jsonify({"code": 404, "msg": str(exc)}), 404
     exists = any(
         link.get('source') == source and link.get('target') == target and link.get('relation') == relation
         for link in graph['links']
@@ -891,18 +1161,20 @@ def create_link():
         graph['nodes'].append({'id': target, 'group': 1, 'attrs': {}})
 
     link = dict(payload)
+    link.pop('graphId', None)
     graph['links'].append(link)
-    graph = save_graph(graph)
+    graph = save_graph_by_id(graph, graph_id)
     return jsonify({
         "code": 0,
         "msg": "成功",
-        "data": {'status': 'success', 'link': link, 'graph': graph}
+        "data": {'status': 'success', 'graphId': resolve_graph_file(graph_id).stem, 'link': link, 'graph': graph}
     })
 
 
 @app.put('/graph/link')
 def update_link():
     payload = request.get_json(silent=True) or {}
+    graph_id = get_request_graph_id(payload)
     old_source = payload.get('old_source')
     old_target = payload.get('old_target')
     old_relation = payload.get('old_relation')
@@ -912,7 +1184,12 @@ def update_link():
             "msg": "old_source、old_target、old_relation 不能为空"
         }), 400
 
-    graph = read_graph()
+    try:
+        graph = read_graph_by_id(graph_id, must_exist=bool(graph_id))
+    except ValueError as exc:
+        return jsonify({"code": 400, "msg": str(exc)}), 400
+    except FileNotFoundError as exc:
+        return jsonify({"code": 404, "msg": str(exc)}), 404
     target_link = None
     for link in graph['links']:
         if (
@@ -932,7 +1209,7 @@ def update_link():
         if field in payload:
             target_link[field] = payload[field]
     for key, value in payload.items():
-        if key not in {'old_source', 'old_target', 'old_relation', 'source', 'target', 'relation'}:
+        if key not in {'graphId', 'old_source', 'old_target', 'old_relation', 'source', 'target', 'relation'}:
             target_link[key] = value
 
     source = target_link.get('source')
@@ -950,17 +1227,18 @@ def update_link():
     if target not in existing_node_ids:
         graph['nodes'].append({'id': target, 'group': 1, 'attrs': {}})
 
-    graph = save_graph(graph)
+    graph = save_graph_by_id(graph, graph_id)
     return jsonify({
         "code": 0,
         "msg": "成功",
-        "data": {'status': 'success', 'link': target_link, 'graph': graph}
+        "data": {'status': 'success', 'graphId': resolve_graph_file(graph_id).stem, 'link': target_link, 'graph': graph}
     })
 
 
 @app.delete('/graph/link')
 def delete_link():
     payload = request.get_json(silent=True) or {}
+    graph_id = get_request_graph_id(payload)
     source = payload.get('source')
     target = payload.get('target')
     relation = payload.get('relation')
@@ -970,7 +1248,12 @@ def delete_link():
             "msg": "source、target、relation 不能为空"
         }), 400
 
-    graph = read_graph()
+    try:
+        graph = read_graph_by_id(graph_id, must_exist=bool(graph_id))
+    except ValueError as exc:
+        return jsonify({"code": 400, "msg": str(exc)}), 400
+    except FileNotFoundError as exc:
+        return jsonify({"code": 404, "msg": str(exc)}), 404
     original_count = len(graph['links'])
     graph['links'] = [
         link for link in graph['links']
@@ -981,17 +1264,18 @@ def delete_link():
             "code": 404,
             "msg": "待删除关系不存在"
         }), 404
-    graph = save_graph(graph)
+    graph = save_graph_by_id(graph, graph_id)
     return jsonify({
         "code": 0,
         "msg": "成功",
-        "data": {'status': 'success', 'deleted_link': {'source': source, 'target': target, 'relation': relation}, 'graph': graph}
+        "data": {'status': 'success', 'graphId': resolve_graph_file(graph_id).stem, 'deleted_link': {'source': source, 'target': target, 'relation': relation}, 'graph': graph}
     })
 
 
 @app.post('/graph/merge')
 def merge_graph_api():
     payload = request.get_json(silent=True) or {}
+    graph_id = get_request_graph_id(payload)
     incoming_data = payload.get('graph')
     merge_file_path = payload.get('file_path')
 
@@ -1016,10 +1300,15 @@ def merge_graph_api():
                 "msg": f"读取待合并文件失败: {exc}"
             }), 400
 
-    current = read_graph()
+    try:
+        current = read_graph_by_id(graph_id, must_exist=bool(graph_id))
+    except ValueError as exc:
+        return jsonify({"code": 400, "msg": str(exc)}), 400
+    except FileNotFoundError as exc:
+        return jsonify({"code": 404, "msg": str(exc)}), 404
     incoming = normalize_graph(incoming_data)
     merged = merge_graph(current, incoming)
-    merged = save_graph(merged)
+    merged = save_graph_by_id(merged, graph_id)
 
     return jsonify({
         "code": 0,
@@ -1032,18 +1321,26 @@ def merge_graph_api():
             'incoming_link_count': len(incoming.get('links', [])),
             'merged_node_count': len(merged.get('nodes', [])),
             'merged_link_count': len(merged.get('links', [])),
-            'graph': merged,
+            'graphId': resolve_graph_file(graph_id).stem,
+            'graph': graph_without_table_html(merged),
         }
     })
 
 
 @app.post('/graph/clear')
 def clear_graph_api():
-    cleared = save_graph({'nodes': [], 'links': []})
+    payload = request.get_json(silent=True) or {}
+    graph_id = get_request_graph_id(payload)
+    try:
+        cleared = save_graph_by_id({'nodes': [], 'links': []}, graph_id, must_exist=bool(graph_id))
+    except ValueError as exc:
+        return jsonify({"code": 400, "msg": str(exc)}), 400
+    except FileNotFoundError as exc:
+        return jsonify({"code": 404, "msg": str(exc)}), 404
     return jsonify({
         "code": 0,
         "msg": "成功",
-        "data": {'status': 'success', 'message': '图谱已清空', 'graph': cleared}
+        "data": {'status': 'success', 'graphId': resolve_graph_file(graph_id).stem, 'message': '图谱已清空', 'graph': cleared}
     })
 
 

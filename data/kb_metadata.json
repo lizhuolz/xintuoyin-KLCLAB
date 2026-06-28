@@ -312,5 +312,127 @@
     "updated_at": "1777256172751",
     "createdAt": "2026/04/24 16:04:17",
     "updatedAt": "2026/04/27 10:16:12"
+  },
+  {
+    "id": "kb_1778298975285",
+    "name": "a",
+    "model": "openai",
+    "category": "知识库",
+    "owner_info": "深圳市罗湖产业空间发展有限公司/",
+    "physical_path": "2026-05-09/a",
+    "remark": "",
+    "creator_staff_id": 630,
+    "tenant_id": 49,
+    "users": [
+      {
+        "staffId": 630,
+        "name": "祝文斌",
+        "phone": "13422225555",
+        "categoryName": "深圳市罗湖产业空间发展有限公司",
+        "record_id": "630",
+        "ip_address": "240e:3b3:30b4:7400:e9a1:ba05:9f7e:8738"
+      }
+    ],
+    "enabled": true,
+    "created_at": "1778298975285",
+    "updated_at": "1778299183084",
+    "createdAt": "2026/05/09 11:56:15",
+    "updatedAt": "2026/05/09 11:59:43"
+  },
+  {
+    "id": "kb_1778831032598",
+    "name": "研发",
+    "model": "openai",
+    "category": "知识库",
+    "owner_info": "易普集实业有限公司/",
+    "physical_path": "2026-05-15/研发",
+    "remark": "",
+    "creator_staff_id": 1758,
+    "tenant_id": 116,
+    "users": [
+      {
+        "staffId": 1758,
+        "name": "万仁俊",
+        "phone": "13682396539",
+        "categoryName": "易普集实业有限公司",
+        "record_id": "1758",
+        "ip_address": "240e:3b3:30b4:7400:1c1b:8eb7:7b39:1d16"
+      }
+    ],
+    "enabled": true,
+    "created_at": "1778831032598",
+    "updated_at": "1778831032598",
+    "createdAt": "2026/05/15 15:43:52",
+    "updatedAt": "2026/05/15 15:43:52"
+  },
+  {
+    "id": "kb_1779089391809",
+    "name": "财务数据库",
+    "model": "openai",
+    "category": "知识库",
+    "owner_info": "深圳市修征数字科技有限公司/",
+    "physical_path": "2026-05-18/财务数据库",
+    "remark": "",
+    "creator_staff_id": 1805,
+    "tenant_id": 122,
+    "users": [
+      {
+        "staffId": 1805,
+        "name": "耿志佳",
+        "phone": "13526656478",
+        "categoryName": "深圳市修征数字科技有限公司",
+        "record_id": "1805",
+        "ip_address": "240e:3b3:30b4:7400:2ce1:da1d:3da6:ccb2"
+      }
+    ],
+    "enabled": true,
+    "created_at": "1779089391809",
+    "updated_at": "1779089391809",
+    "createdAt": "2026/05/18 15:29:51",
+    "updatedAt": "2026/05/18 15:29:51"
+  },
+  {
+    "id": "kb_1780045412365",
+    "name": "1",
+    "model": "openai",
+    "category": "知识库",
+    "owner_info": "厦门垠袋梓科技有限公司/",
+    "physical_path": "2026-05-29/1",
+    "remark": "1",
+    "creator_staff_id": 1899,
+    "tenant_id": 132,
+    "users": [
+      {
+        "staffId": 1899,
+        "name": "李明泉"
+      }
+    ],
+    "enabled": true,
+    "created_at": "1780045412365",
+    "updated_at": "1780045446419",
+    "createdAt": "2026/05/29 17:03:32",
+    "updatedAt": "2026/05/29 17:04:06"
+  },
+  {
+    "id": "kb_1781061948210",
+    "name": "研发知识库",
+    "model": "openai",
+    "category": "知识库",
+    "owner_info": "新拓银（深圳）人工智能科技有限公司/",
+    "physical_path": "2026-06-10/研发知识库",
+    "remark": "11",
+    "creator_staff_id": 1,
+    "tenant_id": 1,
+    "users": [
+      {
+        "staffId": 1,
+        "name": "孙春树"
+      }
+    ],
+    "enabled": true,
+    "created_at": "1781061948210",
+    "updated_at": "1781062109878",
+    "createdAt": "2026/06/10 11:25:48",
+    "updatedAt": "2026/06/10 11:28:29"
   }
 ]

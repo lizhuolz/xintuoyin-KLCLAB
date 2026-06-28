@@ -48,3 +48,7 @@ cpolar
 # Misc
 GEMINI.md
 *.claude*
+
+# AI 工具产物 (codex 等)
+.codex
+.codex/

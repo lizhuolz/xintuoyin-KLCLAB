@@ -348,15 +348,81 @@ class GraphRepository(
             return ''
         return max(data.items(), key=lambda item: item[1])[0]
 
-    def fetch_current_user(self, conn) -> Optional[Dict[str, Any]]:
+    def resolve_tenant_id_from_user(self, conn, user: Dict[str, Any]) -> Optional[str]:
+        table_name = self._pick_table(conn, ('T_STAFF', 't_staff'))
+        if not table_name or not isinstance(user, dict):
+            return None
+
+        tenant_col = self._pick_column(conn, table_name, ('TENANT_ID', 'tenant_id'))
+        if not tenant_col:
+            return None
+
+        seen: set[Tuple[str, str]] = set()
+        order_parts: List[str] = []
+        exist_col = self._pick_column(conn, table_name, ('EXIST_WORK_STATUS', 'exist_work_status'))
+        enable_col = self._pick_column(conn, table_name, ('ENABLE_STATUS', 'enable_status'))
+        if exist_col:
+            order_parts.append(f'(`{exist_col}` = 9999) DESC')
+        if enable_col:
+            order_parts.append(f'(`{enable_col}` = 9999) DESC')
+        order_sql = f"ORDER BY {', '.join(order_parts)}" if order_parts else ''
+
+        def lookup(column_candidates: Sequence[str], value: Any) -> Optional[str]:
+            if value in (None, '', 'null'):
+                return None
+            column = self._pick_column(conn, table_name, column_candidates)
+            if not column:
+                return None
+            text_value = str(value).strip()
+            if not text_value:
+                return None
+            key = (column, text_value)
+            if key in seen:
+                return None
+            seen.add(key)
+            row = self._safe_one(
+                conn,
+                f"""
+                SELECT `{tenant_col}`
+                FROM `{table_name}`
+                WHERE `{column}` = %s
+                {order_sql}
+                LIMIT 1
+                """,
+                (text_value,),
+            )
+            if not row or row[0] in (None, '', 'null'):
+                return None
+            return self._stringify(row[0])
+
+        lookups = (
+            (('ID', 'STAFF_ID', 'staff_id'), user.get('staff_id') or user.get('staffId') or user.get('record_id')),
+            (('BELONG_USER_ID', 'USER_ID', 'user_id'), user.get('user_id') or user.get('userId')),
+            (('PHONES', 'PHONE', 'MOBILE', 'ACCOUNT'), user.get('phone') or user.get('account')),
+            (('FULL_NAME', 'NAME', 'NICKNAME'), user.get('name')),
+        )
+        for columns, value in lookups:
+            tenant_id = lookup(columns, value)
+            if tenant_id:
+                return tenant_id
+        return None
+
+    def fetch_current_user(self, conn, tenant_id: Optional[Any] = None) -> Optional[Dict[str, Any]]:
+        params: Tuple[Any, ...] = ()
+        where_sql = ''
+        if tenant_id not in (None, '', 'null'):
+            where_sql = 'WHERE TENANT_ID=%s'
+            params = (tenant_id,)
+
         row = self._safe_one(
             conn,
-            """
+            f"""
             SELECT TENANT_ID, LEGAL_PERSON_NAME, CODE, NAME
             FROM T_ENTERPRISE
-            WHERE TENANT_ID=3
+            {where_sql}
             LIMIT 1
             """,
+            params,
         )
         if not row:
             return None

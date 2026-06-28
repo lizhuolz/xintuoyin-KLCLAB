@@ -78,7 +78,8 @@ def build_graph():
         {
             "tools_local": "tools_local",
             "should_sql": "should_sql",
-            "end": END, # 添加结束路径
+            "sql_rag_fallback": "sql_rag_fallback",  # sql_tool 直接失败时跳到 fallback
+            "end": END,
         },
     )
     graph_builder.add_edge("tools_local", "chatbot_local")
@@ -90,6 +91,7 @@ def build_graph():
         {
             "tools_web": "tools_web",
             "should_sql": "should_sql",
+            "sql_rag_fallback": "sql_rag_fallback",  # 同上
             "end": END,
         },
     )

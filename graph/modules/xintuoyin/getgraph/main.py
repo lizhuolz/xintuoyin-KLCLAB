@@ -1,4 +1,4 @@
-import argparse, atexit, re, shutil, subprocess, tempfile
+import argparse, atexit, re, shutil, subprocess, tempfile, time
 from pathlib import Path
 from unittest import result
 from urllib import response
@@ -24,6 +24,14 @@ from openpyxl import load_workbook
 #所有的文件
 category_list = ['研发项目汇总表','研发费用加计扣除优惠明细表','研发支出辅助帐汇总表','研发支出辅助帐-项目名称','企业研发项目情况表','企业研发活动及相关情况表','委托合同','委托费用明细表','项目立项决议书','项目立项报告','项目计划任务书','鉴定意见','科技部门登记合同','检索记录','论证记录','调研记录','成果附件','结题报告','研发人员名单','人员人工费用明细表','社保补缴','人员工时记录','直接投入费用明细','材料领用','燃料领用','动力消耗明细','设备租金费用明细表','设备工时记录','设备折旧费用明细表','无形资产工时记录','无形资产摊销费用明细表','新产品设计费','其他费用明细表','补充养老保险费用明细','补充医疗保险费用明细','职工福利费用明细','发票']
 OTHER_CATEGORY = "other"
+CATEGORY_ALIASES = {
+    "鉴定建议": "鉴定意见",
+    "验收意见": "鉴定意见",
+    "专家评审报告": "鉴定意见",
+    "调研报告": "调研记录",
+    "调研纪要": "调研记录",
+    "调研材料": "调研记录",
+}
 
 #真正有主键的文件
 really_key_file = ['研发人员名单','研发项目汇总表','研发支出辅助帐汇总表','企业研发项目情况表']
@@ -47,6 +55,25 @@ xlsx_file = xlsx_file + worker_id_key_file + intangible_asset_key_file + device_
 
 #自动识别文件类别，可以提取每行的内容，识别其中的业务主键，有多少行样本就生成多少的对应节点
 other_xlsx_file = [file for file in category_list if file not in xlsx_file + upload_file]
+
+ENTITY_GROUP_MAP = {
+    "负责人": 1, "参与人员": 1, "项目成员": 1, "协作接口人": 1, "专家姓名": 1,
+    "负责人（姓名、单位、联系方式）": 1, "项目负责人": 1, "负责技术落地指导": 1,
+    "开票人": 1, "复核人": 1, "收款人": 1, "主持人": 1,
+    "记录人": 1, "参与调研人员": 1, "项目联系人": 1, "姓名": 1, "法定代表人（签章）：": 1,
+    "甲方（委托方）": 2, "乙方（受托方）": 2, "协作单位": 2, "专家名单": 2,
+    "单位/职称": 2, "购买方（名称、纳税人识别号、地址电话、开户行及账号）": 2,
+    "销售方（名称、纳税人识别号、地址电话、开户行及账号）": 2, "委托方/受托方信息": 2,
+    "执行单位/团队": 2,
+    "项目名称": 3, "成果名称": 3, "调研主题": 3, "论证事项": 3, "发票类型": 3,
+    "项目名称（商品或服务名称）": 3,
+    "不可抗力": 4, "项目单位": 4,
+    "部门（如：AI 研发部、前端团队、数据中心）": 4
+}
+
+
+def get_entity_group(entity_key):
+    return ENTITY_GROUP_MAP.get(entity_key, 4)
 
 IMAGE_EXTENSIONS = {".jpg", ".jpeg", ".png", ".bmp", ".tif", ".tiff", ".webp"}
 PDF_EXTENSIONS = {".pdf"}
@@ -376,23 +403,63 @@ def convert_source(source: str):
         cpu_converter = build_image_converter(AcceleratorDevice.CPU.value)
         return cpu_converter.convert(source)
 
-def get_file_category(document_text: str) -> str:
+def normalize_category_name(raw_category: str) -> str:
+    text = (raw_category or "").strip().strip("`")
+    if not text:
+        return ""
+    if text.lower() == OTHER_CATEGORY:
+        return OTHER_CATEGORY
+    if text in category_list:
+        return text
+    return CATEGORY_ALIASES.get(text, text)
+
+
+def match_category_in_text(text: str) -> str:
+    haystack = (text or "").strip()
+    if not haystack:
+        return ""
+
+    normalized = normalize_category_name(haystack)
+    if normalized == OTHER_CATEGORY or normalized in category_list:
+        return normalized
+
+    for alias, target in CATEGORY_ALIASES.items():
+        if alias in haystack:
+            return target
+    for cat in category_list:
+        if cat in haystack:
+            return cat
+    return ""
+
+
+def get_file_category(document_text: str, file_name: str = "") -> str:
     category_options = category_list + [OTHER_CATEGORY]
+    file_name_hint = ""
+    if file_name:
+        file_name_hint = (
+            f"文件名：{file_name}\n"
+            "可结合文件名判断类别；若文件名与正文/OCR 内容存在轻微差异，以最匹配的标准类别为准。\n\n"
+        )
     prompt = (
         "请根据以下内容判断该文件属于以下哪一类："
         f"{', '.join(category_options)}。"
+        "注意同义表达需要映射到标准类别，例如：鉴定建议、验收意见、专家评审报告 -> 鉴定意见；"
+        "调研报告、调研纪要 -> 调研记录。"
         f"如果内容与上述已知类别都不匹配，请返回 {OTHER_CATEGORY}。"
         "只需返回类别名称，不要返回其他内容。\n\n"
+        f"{file_name_hint}"
         f"文件内容：\n{document_text}"
     )
 
-    chat_response = client.chat.completions.create(
+    chat_response = create_chat_completion(
         model=args.model_path,
         messages=[
             {"role": "system", "content": "你是一个专业的信息提取助手"},
             {"role": "user", "content": prompt},
         ],
-        extra_body={"thinking.disable": True},
+        temperature=0,
+        max_tokens=int(os.getenv("GETGRAPH_CATEGORY_MAX_TOKENS", "64")),
+        extra_body=DISABLE_THINKING_EXTRA_BODY,
         #response_format={"type": "json_object"}
     )
 
@@ -407,20 +474,27 @@ def get_file_category(document_text: str) -> str:
         raw = raw.split("</think>")[-1].strip()
 
     lines = [line.strip().strip("`") for line in raw.splitlines() if line.strip()]
+    saw_other = False
     for line in reversed(lines):
-        normalized = line.strip()
-        if normalized.lower() == OTHER_CATEGORY:
-            return OTHER_CATEGORY
-        for cat in category_list:
-            if normalized == cat:
-                return cat
+        normalized = normalize_category_name(line)
+        if normalized == OTHER_CATEGORY:
+            saw_other = True
+            continue
+        if normalized in category_list:
+            return normalized
 
     tail = lines[-1] if lines else raw
-    if tail.strip().lower() == OTHER_CATEGORY:
+    matched = match_category_in_text(tail)
+    if matched in category_list:
+        return matched
+    if matched == OTHER_CATEGORY:
+        saw_other = True
+
+    name_matched = match_category_in_text(Path(file_name).stem if file_name else "")
+    if name_matched in category_list:
+        return name_matched
+    if saw_other:
         return OTHER_CATEGORY
-    for cat in category_list:
-        if cat in tail:
-            return cat
     return OTHER_CATEGORY
 
 
@@ -554,24 +628,6 @@ def normalize_invoice_result(result_dict):
 def get_entity_attr(file_category, result_dict):
     edges = [] # {"source": "Transformer", "target": "Attention Mechanism", "relation": "uses"},
     nodes_attr = []
-
-    entity_group_map = {
-        "负责人": 1, "参与人员": 1, "项目成员": 1, "协作接口人": 1, "专家姓名": 1,
-        "负责人（姓名、单位、联系方式）": 1, "项目负责人": 1, "负责技术落地指导": 1,
-        "开票人": 1, "复核人": 1, "收款人": 1, "主持人": 1,
-        "记录人": 1, "参与调研人员": 1, "项目联系人": 1, "姓名": 1, "法定代表人（签章）：": 1,
-        "甲方（委托方）": 2, "乙方（受托方）": 2, "协作单位": 2, "专家名单": 2,
-        "单位/职称": 2, "购买方（名称、纳税人识别号、地址电话、开户行及账号）": 2,
-        "销售方（名称、纳税人识别号、地址电话、开户行及账号）": 2, "委托方/受托方信息": 2,
-        "执行单位/团队": 2,
-        "项目名称": 3, "成果名称": 3, "调研主题": 3, "论证事项": 3, "发票类型": 3,
-        "项目名称（商品或服务名称）": 3,
-        "不可抗力": 4, "项目单位": 4,
-        "部门（如：AI 研发部、前端团队、数据中心）": 4
-    }
-
-    def get_entity_group(entity_key):
-        return entity_group_map.get(entity_key, 4)
 
     def build_entity_id(entity_key, entity_value, attrs):
         if entity_key == "姓名" and entity_value not in [None, "", "null"]:
@@ -1083,10 +1139,11 @@ def save_graph(output_file_path, file_path, file_category, edges, nodes_attr):
             endpoint = edge.get(endpoint_key)
             if endpoint in [None, ""] or endpoint in existing_node_ids:
                 continue
+            inferred_group = get_entity_group(edge.get("relation")) if endpoint_key == "target" else 4
             nodes_attr.append({
                 "object": endpoint,
                 "attribute": {},
-                "group": 4
+                "group": inferred_group
             })
             existing_node_ids.add(endpoint)
     
@@ -1177,26 +1234,59 @@ def normalize_category_for_source(file_category, source_suffix):
 parser = argparse.ArgumentParser(description="Get Graph")
 parser.add_argument('--input_file_path', type=str, required=True, help='Input file path')
 parser.add_argument('--output_file_path', type=str, required=True, help='Output file path')
-parser.add_argument('--api_base', type=str, default='http://10.249.40.204:62272/v1', help='Model name to use')
+parser.add_argument('--api_base', type=str, default='http://127.0.0.1:62272/v1', help='Model name to use')
 parser.add_argument('--model_path', type=str, default='Qwen3.5-27B', help='Model path')
 parser.add_argument('--prompt_txt_path', type=str, default='', help='File category')
 args = parser.parse_args()
 
 # Set OpenAI's API key and API base to use vLLM's API server.
 openai_api_key = "EMPTY"
-openai_api_base = args.api_base
+openai_api_base = os.getenv("GETGRAPH_API_BASE") or args.api_base
+if openai_api_base.rstrip("/") in {"http://10.249.40.204:62272/v1"}:
+    openai_api_base = "http://127.0.0.1:62272/v1"
+existing_no_proxy = os.getenv("NO_PROXY") or os.getenv("no_proxy") or ""
+no_proxy_items = [item.strip() for item in existing_no_proxy.split(",") if item.strip()]
+for item in ("127.0.0.1", "localhost", "10.249.40.204"):
+    if item not in no_proxy_items:
+        no_proxy_items.append(item)
+os.environ["NO_PROXY"] = ",".join(no_proxy_items)
+os.environ["no_proxy"] = os.environ["NO_PROXY"]
 
 client = OpenAI(
     api_key=openai_api_key,
     base_url=openai_api_base,
+    timeout=float(os.getenv("GETGRAPH_LLM_TIMEOUT", "120")),
 )
+
+DISABLE_THINKING_EXTRA_BODY = {"chat_template_kwargs": {"enable_thinking": False}}
+
+
+def create_chat_completion(**kwargs):
+    retry_count = int(os.getenv("GETGRAPH_LLM_RETRIES", "3"))
+    retry_sleep = float(os.getenv("GETGRAPH_LLM_RETRY_SLEEP_SECONDS", "2"))
+    retryable_status = {429, 500, 502, 503, 504}
+    last_exc = None
+
+    for attempt in range(1, retry_count + 1):
+        try:
+            return client.chat.completions.create(**kwargs)
+        except Exception as exc:
+            last_exc = exc
+            status_code = getattr(exc, "status_code", None)
+            is_retryable = status_code in retryable_status or "Error code: 502" in str(exc)
+            if not is_retryable or attempt >= retry_count:
+                raise
+            print(f"LLM 调用失败，准备重试 {attempt}/{retry_count}: {exc}")
+            time.sleep(retry_sleep * attempt)
+
+    raise last_exc
 
 source = args.input_file_path  # document per local path or URL
 result = convert_source(source)
 document_text = result.document.export_to_markdown()
 
 
-file_category = get_file_category(document_text)
+file_category = get_file_category(document_text, os.path.basename(source))
 
 source_suffix = Path(source).suffix.lower()
 file_category = normalize_category_for_source(file_category, source_suffix)
@@ -1225,14 +1315,16 @@ if file_category in xlsx_file and source_suffix in TABULAR_EXTENSIONS:
 
 prompt = get_prompt_2(args.prompt_txt_path + "/"+ file_category +"关键信息提取规则.txt", document_text)
 
-chat_response = client.chat.completions.create(
+chat_response = create_chat_completion(
     model=args.model_path,
     messages=[
         {"role": "system", "content": "你是一个专业的信息提取助手"},
         {"role": "user", "content": prompt},
     ],
+    temperature=0,
+    max_tokens=int(os.getenv("GETGRAPH_EXTRACTION_MAX_TOKENS", "4096")),
     response_format={"type": "json_object"},
-    extra_body={"thinking.disable": True},
+    extra_body=DISABLE_THINKING_EXTRA_BODY,
 )
 
 response_text = chat_response.choices[0].message.content
