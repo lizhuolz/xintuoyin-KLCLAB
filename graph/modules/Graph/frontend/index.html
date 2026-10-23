@@ -25,6 +25,7 @@
 
     <section class="workspace-tabs">
       <button class="workspace-tab active" data-view="internal">系统内知识图谱</button>
+      <button id="btnCreateExternal" class="workspace-tab hidden">+ 新建系统外知识图谱</button>
       <div id="externalTabGroup" class="external-tab-group hidden">
         <button class="workspace-tab" data-view="external" id="externalTabButton">系统外知识图谱</button>
         <button class="workspace-tab-delete" id="btnDeleteExternal" title="删除系统外子界面">删除</button>
@@ -55,8 +56,8 @@
           <div class="tool-column">
             <div class="section-title">2. 路径分析</div>
             <div class="toolbar-inline">
-              <input type="text" id="pathStart" placeholder="起点" list="pathNodeList" />
-              <input type="text" id="pathEnd" placeholder="终点" list="pathNodeList" />
+              <input type="text" id="pathStart" placeholder="起点（名称 / 业务主键）" list="pathEndpointList" />
+              <input type="text" id="pathEnd" placeholder="终点（名称 / 业务主键，可选）" list="pathEndpointList" />
               <input type="number" id="pathLimit" value="4" min="2" title="限制路径最大实体数量" />
               <button id="btnFindPath">查找</button>
               <button id="btnResetPath" class="btn-secondary">重置</button>
@@ -145,10 +146,12 @@
         <iframe id="externalFrame" class="external-frame" src="/external-view" title="系统外知识图谱"></iframe>
       </div>
     </section>
+
   </div>
 
   <datalist id="nodeNameList"></datalist>
   <datalist id="pathNodeList"></datalist>
+  <datalist id="pathEndpointList"></datalist>
   <datalist id="relationNameList"></datalist>
   <datalist id="pathRelationList"></datalist>
   <datalist id="attrKeyList"></datalist>

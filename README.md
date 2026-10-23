@@ -65,13 +65,13 @@ pixi install        # 装好所有 conda + pypi 依赖
 
 ```bash
 # 关键变量
-export DB_MYSQL_HOST="183.69.138.62"        # 甲方 MySQL
+export DB_MYSQL_HOST="183.69.145.186"        # 甲方 MySQL
 export DB_MYSQL_PORT=33666
 export DB_MYSQL_USER="hagongda"
 export DB_MYSQL_PASSWORD="..."
 export DB_MYSQL_NAME="r_d_test"
 
-export PARTNER_REDIS_HOST="183.69.138.62"   # 甲方 Redis（用户认证）
+export PARTNER_REDIS_HOST="183.69.145.186"   # 甲方 Redis（用户认证）
 export PARTNER_REDIS_PORT=6800
 export PARTNER_REDIS_PASSWORD="..."
 export PARTNER_REDIS_DB=1
@@ -317,7 +317,7 @@ tail -f data/logs/frontend.log
 
 | 对接点 | 说明 |
 |---|---|
-| 用户认证 | 甲方 Redis (`183.69.138.62:6800` db=1)，key 模式 `system:LOGIN_ENTERPRISE_USER_TOKEN:LOGIN_ENTERPRISE_USER_TOKEN_{token}` |
+| 用户认证 | 甲方 Redis (`183.69.145.186:6800` db=1)，key 模式 `system:LOGIN_ENTERPRISE_USER_TOKEN:LOGIN_ENTERPRISE_USER_TOKEN_{token}` |
 | 部门/员工 | 甲方 MySQL `t_dept`（树）+ `t_staff` |
 | 业务数据查询 | 通过 `/api/admin/db/*` 接口管理多数据库连接，对话 SQL 工具自动选当前激活的 |
 | 角色 | 三层：游客（无 token）/ 普通用户 / 企业管理员（roleName="超级管理员"）；管理端走独立路由不验 token |

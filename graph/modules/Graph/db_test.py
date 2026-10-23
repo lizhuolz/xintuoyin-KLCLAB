@@ -1,7 +1,7 @@
 import pymysql
 
 conn = pymysql.connect(
-    host='183.69.138.62',
+    host='183.69.145.186',
     port=33666,
     user='hagongda',
     password='ha.G/o[tEst]n%gD*a',

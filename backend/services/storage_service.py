@@ -1,16 +1,28 @@
 import logging
+import math
 import os
 from datetime import timedelta
 
+import certifi
+import urllib3
 from minio import Minio
 from minio.commonconfig import CopySource
 from minio.error import MinioException, S3Error
+from urllib3.util import Retry, Timeout
 
 logger = logging.getLogger(__name__)
 
 
 class StorageNotReadyError(RuntimeError):
     pass
+
+
+def _storage_timeout(name: str, default: float) -> float:
+    try:
+        value = float(os.getenv(name, default))
+        return value if math.isfinite(value) and value > 0 else default
+    except (TypeError, ValueError):
+        return default
 
 
 class StorageService:
@@ -25,6 +37,16 @@ class StorageService:
             access_key=self.access_key,
             secret_key=self.secret_key,
             secure=self.secure,
+            http_client=urllib3.PoolManager(
+                timeout=Timeout(
+                    connect=_storage_timeout("MINIO_CONNECT_TIMEOUT_SECONDS", 3.0),
+                    read=_storage_timeout("MINIO_READ_TIMEOUT_SECONDS", 30.0),
+                ),
+                maxsize=10,
+                cert_reqs="CERT_REQUIRED",
+                ca_certs=os.environ.get("SSL_CERT_FILE") or certifi.where(),
+                retries=Retry(total=0),
+            ),
         )
 
     def ensure_ready(self):

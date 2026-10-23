@@ -7,9 +7,9 @@
   管理端通过独立的 /api/admin/ 路由访问，不经过 token 认证。
 
 数据来源：
-  Redis 183.69.138.62:6800 db=1
+  Redis 183.69.145.186:6800 db=1
     key: system:LOGIN_ENTERPRISE_USER_TOKEN:LOGIN_ENTERPRISE_USER_TOKEN_{token}
-  MySQL 183.69.138.62:33666 / r_d_test
+  MySQL 183.69.145.186:33666 / r_d_test
     t_tenant  → 企业名
     t_staff   → 部门人员列表
 """
@@ -20,6 +20,7 @@ import contextvars
 import hashlib
 import json
 import os
+import threading
 import time
 from typing import Any, Optional
 
@@ -43,7 +44,7 @@ ROLE_LEVEL = {
 # ──────────────────────────────────────────────────────────────
 # Redis 配置
 # ──────────────────────────────────────────────────────────────
-REDIS_HOST = os.getenv("PARTNER_REDIS_HOST", "183.69.138.62")
+REDIS_HOST = os.getenv("PARTNER_REDIS_HOST", "183.69.145.186")
 REDIS_PORT = int(os.getenv("PARTNER_REDIS_PORT", "6800"))
 REDIS_PASSWORD = os.getenv("PARTNER_REDIS_PASSWORD", "ty188$#456.8")
 REDIS_DB = int(os.getenv("PARTNER_REDIS_DB", "1"))
@@ -66,27 +67,32 @@ def _get_redis() -> redis.Redis:
 # ──────────────────────────────────────────────────────────────
 # MySQL 辅助
 # ──────────────────────────────────────────────────────────────
-_mysql_conn: Optional[pymysql.Connection] = None
+_mysql_local = threading.local()
 
 
 def _get_mysql_conn():
-    """复用 MySQL 连接（断线自动重连）。"""
-    global _mysql_conn
-    if _mysql_conn is not None:
+    """在当前线程内复用 MySQL 连接，避免并发请求共享连接。"""
+    conn = getattr(_mysql_local, "connection", None)
+    if conn is not None:
         try:
-            _mysql_conn.ping(reconnect=True)
-            return _mysql_conn
+            conn.ping(reconnect=False)
+            return conn
         except Exception:
-            _mysql_conn = None
-    _mysql_conn = pymysql.connect(
-        host=os.getenv("DB_MYSQL_HOST", "183.69.138.62"),
+            try:
+                conn.close()
+            except Exception:
+                pass
+            _mysql_local.connection = None
+    conn = pymysql.connect(
+        host=os.getenv("DB_MYSQL_HOST", "183.69.145.186"),
         port=int(os.getenv("DB_MYSQL_PORT", "33666")),
         user=os.getenv("DB_MYSQL_USER", "hagongda"),
         passwd=os.getenv("DB_MYSQL_PASSWORD", ""),
         db=os.getenv("DB_MYSQL_NAME", "r_d_test"),
-        charset="utf8", connect_timeout=10,
+        charset="utf8", connect_timeout=5, read_timeout=5, write_timeout=5,
     )
-    return _mysql_conn
+    _mysql_local.connection = conn
+    return conn
 
 
 def _query_tenant_name(tenant_id: int) -> Optional[str]:

@@ -78,7 +78,7 @@ async def _resolve_user(request: Request):
     token = request.headers.get("accesstoken") or request.query_params.get("accessToken") or ""
     ip = request.client.host if request.client else ""
     if token:
-        user = get_user_by_token(token)
+        user = await asyncio.to_thread(get_user_by_token, token)
         if user:
             user["access_token"] = token
             user["ip_address"] = ip
@@ -886,7 +886,7 @@ def _extract_pdf_text(path: Path) -> str:
             parts = []
     if not ''.join(parts).strip():
         try:
-            result = subprocess.run(["pdftotext", str(path), "-"], capture_output=True, text=True, check=True)
+            result = subprocess.run(["pdftotext", str(path), "-"], capture_output=True, text=True, check=True, timeout=60)
             return _compact_text(result.stdout)
         except Exception:
             return ""
@@ -987,7 +987,7 @@ def extract_uploaded_file_text(file_path: Path) -> str:
                 shutil.rmtree(converted.parent, ignore_errors=True)
         return '该文件类型暂不支持正文抽取，但文件已上传保存。'
     except Exception as exc:
-        return f'文件解析失败：{exc}'
+        raise RuntimeError(f'文件解析失败：{exc}') from exc
 
 
 import tempfile
@@ -1011,8 +1011,21 @@ def build_uploaded_file_contexts(uploaded_files: List[dict]) -> list[dict]:
         suffix = Path(filename).suffix.lower()
         with tempfile.TemporaryDirectory() as tmpdir:
             tmp_path = Path(tmpdir) / filename
-            if not storage_service.download_file(object_name, str(tmp_path)):
-                continue
+            if str(object_name).startswith(GRAPH_LOCAL_OBJECT_PREFIX):
+                local_path = Path(str(object_name)[len(GRAPH_LOCAL_OBJECT_PREFIX):]).resolve()
+                allowed = False
+                for upload_dir in GRAPH_LOCAL_UPLOAD_DIRS.values():
+                    try:
+                        local_path.relative_to(upload_dir.resolve())
+                        allowed = True
+                        break
+                    except ValueError:
+                        continue
+                if not allowed or not local_path.is_file():
+                    raise RuntimeError(f'文件来源无效：{filename}')
+                shutil.copyfile(local_path, tmp_path)
+            elif not storage_service.download_file(object_name, str(tmp_path)):
+                raise RuntimeError(f'文件下载失败：{filename}')
             if suffix in IMAGE_SUFFIXES_CHAT:
                 mime, _ = mimetypes.guess_type(filename)
                 if not mime or not mime.startswith('image/'):
@@ -1028,6 +1041,8 @@ def build_uploaded_file_contexts(uploaded_files: List[dict]) -> list[dict]:
                     continue
             else:
                 extracted_text = extract_uploaded_file_text(tmp_path)
+                if not extracted_text or not extracted_text.strip():
+                    raise RuntimeError(f'文件内容为空或解析失败：{filename}')
                 contexts.append({
                     'filename': filename,
                     'kind': 'text',
@@ -1662,7 +1677,12 @@ async def iterate_chat_events(message, conversation_id: str, web_search: bool, u
         "user_identity": user_identity,
         "enable_thinking": enable_thinking,
     }
-    config = {"configurable": {"thread_id": f"{conversation_id}_{now_ms()}"}}
+    from services.user_auth import get_current_user
+    authenticated_user = get_current_user()
+    config = {"configurable": {
+        "thread_id": f"{conversation_id}_{now_ms()}",
+        "sql_user": {key: authenticated_user.get(key) for key in ("tenant_id", "staff_id", "role")},
+    }}
 
     last_chatbot_content = ""
     sources = []
@@ -1898,7 +1918,7 @@ async def abort_chat(data: dict = Body(...)):
     stream_id = str(data.get("stream_id") or "").strip()
     entry = _active_streams.get(conversation_id)
     if entry is None:
-        return error_response("当前会话没有正在进行的回答", {"conversation_id": conversation_id}, 404)
+        return success_response("当前会话没有正在进行的回答", {"conversation_id": conversation_id, "already_stopped": True}, 200)
     if stream_id and entry.get("stream_id") != stream_id:
         return error_response("stream_id 不匹配，可能回答已结束或已被替换", {"conversation_id": conversation_id}, 409)
     _abort_stream(conversation_id)
@@ -1993,6 +2013,14 @@ async def chat_endpoint(
     message_index = len(history_record.get("messages", []))
     file_ids = payload.get("file_ids") or []
     staging_files = resolve_staging_files(file_ids)
+    try:
+        file_contexts = build_uploaded_file_contexts([
+            {"filename": sf["filename"], "object_name": sf["staging_object"]}
+            for sf in staging_files
+        ])
+    except Exception as exc:
+        _unregister_stream(conversation_id, stream_id)
+        return error_response("文件解析失败", {"reason": str(exc)}, 500)
     uploaded_files = []
     for sf in staging_files:
         dest = f"chat/{today_str()}/{safe_segment(conversation_id)}/{message_index}/{sf['filename']}"
@@ -2004,7 +2032,9 @@ async def chat_endpoint(
                 "relative_path": dest,
                 "object_name": dest,
             })
-    file_contexts = build_uploaded_file_contexts(uploaded_files)
+        else:
+            _unregister_stream(conversation_id, stream_id)
+            return error_response("文件保存失败", {"reason": f"文件保存失败：{sf['filename']}"}, 500)
     model_message_text = compose_chat_prompt(sanitized_message, history_record, file_contexts)
     # 本轮若带图片，构造 multimodal 消息，让 Qwen3.5 原生看图作答
     image_ctxs = [c for c in file_contexts if c.get('kind') == 'image']
@@ -3665,10 +3695,10 @@ async def download_kb_file(id: str, file_id: str):
                                                 "properties": {
                                                     "id": {"type": "string", "example": "db_default"},
                                                     "name": {"type": "string", "description": "MySQL schema 名", "example": "r_d_test"},
-                                                    "host": {"type": "string", "example": "183.69.138.62"},
+                                                    "host": {"type": "string", "example": "183.69.145.186"},
                                                     "port": {"type": "integer", "example": 33666},
                                                     "user": {"type": "string", "example": "hagongda"},
-                                                    "label": {"type": "string", "description": "下拉显示用，后端拼好（name@host:port）", "example": "r_d_test@183.69.138.62:33666"},
+                                                    "label": {"type": "string", "description": "下拉显示用，后端拼好（name@host:port）", "example": "r_d_test@183.69.145.186:33666"},
                                                 },
                                             },
                                         },
@@ -3770,7 +3800,7 @@ async def select_db(data: dict = Body(..., example={"id": "db_default"})):
                         "required": ["name", "host", "port", "user", "password"],
                         "properties": {
                             "name": {"type": "string", "description": "MySQL schema 名（即 `pymysql.connect(db=...)`）", "example": "r_d_test"},
-                            "host": {"type": "string", "example": "183.69.138.62"},
+                            "host": {"type": "string", "example": "183.69.145.186"},
                             "port": {"type": "integer", "example": 33666},
                             "user": {"type": "string", "example": "hagongda"},
                             "password": {"type": "string", "example": "********"},
@@ -3781,7 +3811,7 @@ async def select_db(data: dict = Body(..., example={"id": "db_default"})):
                             "summary": "新增一条",
                             "value": {
                                 "name": "r_d_test",
-                                "host": "183.69.138.62",
+                                "host": "183.69.145.186",
                                 "port": 33666,
                                 "user": "hagongda",
                                 "password": "your_password",

@@ -163,7 +163,7 @@ def extract_pdf_text(path: Path) -> str:
             parts = []
     if not ''.join(parts).strip():
         try:
-            result = subprocess.run(["pdftotext", str(path), "-"], capture_output=True, text=True, check=True)
+            result = subprocess.run(["pdftotext", str(path), "-"], capture_output=True, text=True, check=True, timeout=60)
             return compact_text(result.stdout)
         except Exception:
             return ""
@@ -238,4 +238,4 @@ def extract_kb_file_text(file_path: Path) -> str:
             return describe_image_via_vllm(file_path)
         return '该文件类型暂不支持正文抽取，但文件已上传保存。'
     except Exception as exc:
-        return f'文件解析失败：{exc}'
+        raise RuntimeError(f'文件解析失败：{exc}') from exc

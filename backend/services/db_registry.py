@@ -5,7 +5,7 @@
 
 切换机制（monkey-patch 而非改 DB 类）：
   1. 改写 utils.DB_vllm_32B 模块的 5 个连接常量
-  2. 把 agent.tools.db_operator._db_instance 置 None，触发下次 sql_tool 调用时重建
+  2. 下次 sql_tool 调用创建请求级 DB，在途查询保留旧连接快照
 """
 
 from __future__ import annotations
@@ -130,14 +130,14 @@ def _connection_test(host: str, port: int, user: str, password: str, db_name: st
 
 
 def _apply_active(entry: dict) -> None:
-    """把 entry 的连接参数注入 utils.DB_vllm_32B 模块常量，并重置 sql_tool 单例。
-    其它任何地方一律不动。"""
+    """原子更新新查询使用的连接参数；在途请求保留自己的连接快照。"""
     import utils.DB_vllm_32B as db_mod
-    db_mod.HOST = entry["host"]
-    db_mod.PORT = int(entry["port"])
-    db_mod.USER = entry["user"]
-    db_mod.PASSWD = entry["password"]
-    db_mod.DB_NAME = entry["name"]
+    with db_mod.CONNECTION_LOCK:
+        db_mod.HOST = entry["host"]
+        db_mod.PORT = int(entry["port"])
+        db_mod.USER = entry["user"]
+        db_mod.PASSWD = entry["password"]
+        db_mod.DB_NAME = entry["name"]
 
     # 同步刷一下 env，便于其它代码直接 os.getenv 读到一致值
     os.environ["DB_MYSQL_HOST"] = entry["host"]
@@ -146,12 +146,6 @@ def _apply_active(entry: dict) -> None:
     os.environ["DB_MYSQL_PASSWORD"] = entry["password"]
     os.environ["DB_MYSQL_NAME"] = entry["name"]
 
-    # 重置 sql_tool 单例，下次调用会用新参数重新构造 DB
-    try:
-        import agent.tools.db_operator as db_operator
-        db_operator._db_instance = None
-    except Exception:
-        pass
 
 
 def _ensure_initialized() -> dict:
@@ -164,7 +158,7 @@ def _ensure_initialized() -> dict:
         default_entry = {
             "id": "db_default",
             "name": os.getenv("DB_MYSQL_NAME", "r_d_test"),
-            "host": os.getenv("DB_MYSQL_HOST", "183.69.138.62"),
+            "host": os.getenv("DB_MYSQL_HOST", "183.69.145.186"),
             "port": int(os.getenv("DB_MYSQL_PORT", "33666")),
             "user": os.getenv("DB_MYSQL_USER", "hagongda"),
             "password": os.getenv("DB_MYSQL_PASSWORD", ""),

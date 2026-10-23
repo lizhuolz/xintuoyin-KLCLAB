@@ -50,7 +50,7 @@ echo "后端 PID: $BACKEND_PID (端口 $BACKEND_PORT)"
 cd "$ROOT_DIR"
 
 cd "$FRONTEND_ROOT"
-nohup pixi run --manifest-path "$ROOT_DIR/pixi.toml" npm run dev -- --host 0.0.0.0 --port "$FRONTEND_PORT" > "$LOG_DIR/frontend.log" 2>&1 &
+nohup pixi run --manifest-path "$ROOT_DIR/pixi.toml" npm run dev -- --host 0.0.0.0 --port "$FRONTEND_PORT" --strictPort > "$LOG_DIR/frontend.log" 2>&1 &
 FRONTEND_PID=$!
 echo "前端 PID: $FRONTEND_PID (端口 $FRONTEND_PORT)"
 cd "$ROOT_DIR"

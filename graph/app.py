@@ -370,12 +370,18 @@ def graph_has_meaningful_content(graph: Dict) -> bool:
 
     for node in graph.get('nodes', []):
         attrs = node.get('attrs', {})
+        is_other_file_placeholder = (
+            node.get('file_category') == 'other'
+            and node.get('id') == node.get('file_path')
+        )
         if isinstance(attrs, dict):
             for key, value in attrs.items():
                 if key in {'文件名', '文件类别'}:
                     continue
                 if value not in (None, '', 'null'):
                     return True
+        if is_other_file_placeholder:
+            continue
         if node.get('type') or node.get('table_html'):
             return True
     return False
@@ -777,16 +783,31 @@ def upload_file():
         else:
             binding_graph = read_internal_binding_graph()
 
-        internal_graph = GraphService.get_graph()
+        # SQL merging is supplementary: extraction failures must retain their
+        # original response, and a saved binding graph must survive SQL errors.
+        internal_graph = {'nodes': [], 'links': [], 'status': 'unavailable'}
+        warnings = []
+        if successful_files:
+            try:
+                internal_graph = GraphService.get_graph()
+            except Exception as exc:
+                app.logger.warning('Internal graph merge unavailable: %s', type(exc).__name__)
+            if internal_graph.get('status') != 'ready':
+                internal_graph = {'nodes': [], 'links': [], 'status': 'unavailable'}
+                warnings.append({
+                    'code': 'internal_graph_unavailable',
+                    'message': '文件图谱已保存，系统内图谱暂不可用，本次统计仅包含绑定图谱',
+                })
         merged_graph = deduplicate_graph({
             'nodes': list(internal_graph.get('nodes', [])) + list(binding_graph.get('nodes', [])),
             'links': list(internal_graph.get('links', [])) + list(binding_graph.get('links', [])),
         })
-        try:
-            from modules.Graph.backend.api.routes import prime_combined_graph_cache
-            prime_combined_graph_cache(internal_graph, binding_graph, merged_graph)
-        except Exception as exc:
-            print(f"[graph] prime_combined_graph_cache failed: {exc}", file=sys.stderr)
+        if internal_graph.get('status') == 'ready':
+            try:
+                from modules.Graph.backend.api.routes import prime_combined_graph_cache
+                prime_combined_graph_cache(internal_graph, binding_graph, merged_graph)
+            except Exception as exc:
+                print(f"[graph] prime_combined_graph_cache failed: {exc}", file=sys.stderr)
 
         success_count = len([item for item in preprocess_results if item['status'] == 'ok'])
         failed = [item for item in preprocess_results if item['status'] != 'ok']
@@ -818,6 +839,7 @@ def upload_file():
                 'isDefault': True,
                 'files': saved_files,
                 'preprocess_results': preprocess_results,
+                'warnings': warnings,
                 'merged_to': 'internal_binding_graph',
                 'binding_graph': {
                     'graphId': INTERNAL_BINDING_GRAPH_FILE.stem,
@@ -828,6 +850,7 @@ def upload_file():
                 'graph': {
                     'node_count': len(merged_graph.get('nodes', [])),
                     'link_count': len(merged_graph.get('links', [])),
+                    'includes_internal_graph': internal_graph.get('status') == 'ready',
                 },
             }
         }), status_code

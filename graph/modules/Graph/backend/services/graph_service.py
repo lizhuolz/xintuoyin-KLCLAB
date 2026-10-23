@@ -86,7 +86,7 @@ class GraphService:
     def get_graph():
         provider = get_sql_provider()
         user = provider.get_current_user()
-        cache_key = GraphService._make_graph_cache_key(user)
+        cache_key = GraphService._make_graph_cache_key(user, bool(provider.database_available))
 
         # 命中 TTL 缓存直接返回，避免每次都查甲方远程 MySQL
         if _GRAPH_CACHE_TTL > 0:
@@ -101,17 +101,18 @@ class GraphService:
                     return cached.get('data')
 
                 result = GraphService._load_graph_uncached(provider=provider, user=user)
-                _graph_cache[cache_key] = {
-                    'data': result,
-                    'expires_at': time.time() + _GRAPH_CACHE_TTL,
-                }
+                if result.get('status') == 'ready':
+                    _graph_cache[cache_key] = {
+                        'data': result,
+                        'expires_at': time.time() + _GRAPH_CACHE_TTL,
+                    }
                 return result
 
         return GraphService._load_graph_uncached(provider=provider, user=user)
 
     @staticmethod
-    def _make_graph_cache_key(user) -> str:
-        return f'{user.user_id}:{user.enterprise_id}'
+    def _make_graph_cache_key(user, database_available: bool) -> str:
+        return f'{user.user_id}:{user.enterprise_id}:{int(database_available)}'
 
     @staticmethod
     def _load_graph_uncached(provider=None, user=None):
@@ -120,10 +121,13 @@ class GraphService:
         if user is None:
             user = provider.get_current_user()
         payload = provider.get_graph_payload(user)
-        flat_graph = GraphService._build_flat_graph(payload)
+        status = payload.get('status', 'ready')
+        flat_graph = GraphService._build_flat_graph(payload) if status == 'ready' else {'nodes': [], 'links': []}
         return {
             'graphId': GraphService.INTERNAL_GRAPH_ID,
             'graphName': GraphService.INTERNAL_GRAPH_NAME,
+            'status': status,
+            'message': payload.get('message', ''),
             'nodes': flat_graph['nodes'],
             'links': flat_graph['links'],
         }
@@ -135,11 +139,13 @@ class GraphService:
         links = graph.get('links', [])
         return {
             'exists': bool(nodes or links),
+            'status': graph.get('status', 'ready'),
+            'message': graph.get('message', ''),
             'node_count': len(nodes),
             'link_count': len(links),
             'graphId': graph.get('graphId'),
             'graphName': graph.get('graphName'),
-            'available_graphs': [graph.get('graphName')],
+            'available_graphs': [graph.get('graphName')] if graph.get('status') == 'ready' else [],
         }
 
     @staticmethod

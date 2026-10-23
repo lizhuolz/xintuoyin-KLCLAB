@@ -70,7 +70,7 @@ export MILVUS_CHUNK_OVERLAP=120
 # RAG model settings
 export RAG_LLM_MODEL="Qwen3.5-27B"
 export RAG_LLM_TEMPERATURE=0.1
-export RAG_EMBED_MODEL="${RAG_EMBED_MODEL:-BAAI/bge-small-zh-v1.5}"
+export RAG_EMBED_MODEL="${RAG_EMBED_MODEL:-/data/public/model/bge-small-zh-v1.5}"
 export RAG_EMBED_DEVICE="cpu"
 
 # SQL tool LLM settings
@@ -83,25 +83,33 @@ export DB_LLM_GENERATE_TEMPERATURE=0.0
 export DB_LLM_GENERATE_MAX_TOKENS=1024
 export DB_LLM_REVISE_TEMPERATURE=0.0
 export DB_MAX_REVISE_ROUND=4
-export DB_LLM_ENABLE_THINKING=1
+# SQL selection uses a closing-marker stop; keep reasoning out of this structured response.
+export DB_LLM_ENABLE_THINKING=0
 
 # MySQL connection used by sql_tool
-export DB_MYSQL_HOST="183.69.138.62"
+export DB_MYSQL_HOST="183.69.145.186"
 export DB_MYSQL_PORT=33666
 export DB_MYSQL_USER="hagongda"
 export DB_MYSQL_PASSWORD='ha.G/o[tEst]n%gD*a'
 export DB_MYSQL_NAME="r_d_test"
 
 
+# Internal graph uses the same verified MySQL configuration.
+export DB_HOST="$DB_MYSQL_HOST"
+export DB_PORT="$DB_MYSQL_PORT"
+export DB_USER="$DB_MYSQL_USER"
+export DB_PASSWORD="$DB_MYSQL_PASSWORD"
+export DB_NAME="$DB_MYSQL_NAME"
+
 # Partner Redis (login token store)
-export PARTNER_REDIS_HOST="183.69.138.62"
+export PARTNER_REDIS_HOST="183.69.145.186"
 export PARTNER_REDIS_PORT=6800
 export PARTNER_REDIS_PASSWORD='ty188$#456.8'
 export PARTNER_REDIS_DB=1
 
 export OPENAI_API_KEY="EMPTY" # # lyq
 export OPENAI_API_BASE="http://127.0.0.1:62272/v1"
-export TAVILY_API_KEY=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
+export TAVILY_API_KEY=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
 export SECURITY_ENABLE_GIBBERISH=0
 export SECURITY_ENABLE_NO_REFUSAL=0
 export SECURITY_ENABLE_BAN_TOPICS=0

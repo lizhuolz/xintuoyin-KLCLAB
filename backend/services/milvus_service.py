@@ -91,6 +91,12 @@ class MilvusService:
             kwargs["token"] = self.settings.token
         if self.settings.db_name:
             kwargs["db_name"] = self.settings.db_name
+        # Avoid idle pings and respect the server's keepalive limits.
+        kwargs["grpc_options"] = {
+            "grpc.keepalive_time_ms": 300_000,
+            "grpc.keepalive_timeout_ms": 20_000,
+            "grpc.keepalive_permit_without_calls": False,
+        }
         self._client = client_cls(**kwargs)
         return self._client
 

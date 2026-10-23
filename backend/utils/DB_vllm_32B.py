@@ -4,6 +4,11 @@ import pymysql
 import re
 import sqlparse
 from openai import OpenAI
+from datetime import date
+from threading import RLock
+from utils.sql_permissions import SQLAccessDenied, SQLPermissions, ALL_PROJECT_ACCESS
+
+CONNECTION_LOCK = RLock()
 
 
 def _env_int(name, default):
@@ -28,7 +33,7 @@ def _env_bool(name, default):
 
 
 # MySQL Info
-HOST = os.getenv("DB_MYSQL_HOST", '183.69.138.62')
+HOST = os.getenv("DB_MYSQL_HOST", '183.69.145.186')
 PORT = _env_int("DB_MYSQL_PORT", 33666)
 USER = os.getenv("DB_MYSQL_USER", 'hagongda')
 PASSWD = os.getenv("DB_MYSQL_PASSWORD", 'ha.G/o[tEst]n%gD*a')
@@ -77,10 +82,6 @@ def _extract_sql(raw: str) -> str:
     m = re.search(r"\b(SELECT|WITH|INSERT|UPDATE|DELETE)\b.+", text, flags=re.IGNORECASE | re.DOTALL)
     if m:
         sql = m.group(0).strip()
-        # 截到第一个分号（如果有）
-        semi = sql.find(";")
-        if semi >= 0:
-            sql = sql[: semi + 1]
         return sql.strip()
     # 实在没找到就返回原 text（让上层报错时更易调试）
     return text.strip()
@@ -110,7 +111,9 @@ Please generate a valid SQL query to answer the user's question based on the pro
 
 Requirements:
 1. Output **only** the SQL query. Do not add any explanations, markdown formatting (like ```sql), or conversational text.
-2. If you cannot answer, return 'I do not know'.
+2. If you cannot answer or access is denied, return 'I do not know'.
+3. Follow the Access Control and Project-Level Access Control constraints.
+4. Use the provided Type Mapping for coded integer fields.
 """
 
 SQL_USER_TEMPLATE = """### Database Schema
@@ -118,15 +121,42 @@ SQL_USER_TEMPLATE = """### Database Schema
 
 ### Question
 {question}
+
+### Current Date
+{current_date}
+
+### Access Control
+{access_control_hint}
+
+### Project-Level Access Control
+{project_access_control_hint}
+
+### Type Mapping
+{type_mapping_hint}
 """
 
 class DB:
     def __init__(self, 
                  base_url=None, 
                  model_name=None,
-                 api_key=None
+                 api_key=None,
+                 *, tenant_id, staff_id=None, allow_all_projects=False
                  ):
-        
+        self.permissions = SQLPermissions(tenant_id, staff_id, allow_all_projects=allow_all_projects)
+        self.tenant_id = self.permissions.tenant_id
+        self.staff_id = self.permissions.staff_id
+        self.table_columns = {}
+        self.user_project_list = None
+        self.conn = None
+        self.cur = None
+        self.client = None
+        try:
+            self._initialize(base_url, model_name, api_key)
+        except Exception:
+            self.close()
+            raise
+
+    def _initialize(self, base_url, model_name, api_key):
         base_url = base_url or os.getenv("DB_LLM_BASE_URL") or os.getenv("OPENAI_API_BASE") or 'https://api.claudeshop.top/v1'
         model_name = model_name or os.getenv("DB_LLM_MODEL_NAME", 'gpt-4o')
         api_key = api_key or os.getenv("DB_LLM_API_KEY") or os.getenv("OPENAI_API_KEY") or "EMPTY"
@@ -140,11 +170,8 @@ class DB:
         # init MySQL
         self.conn = None
         self.cur = None
-        self.host = HOST
-        self.port = PORT
-        self.user = USER
-        self.passwd = PASSWD
-        self.db_name = DB_NAME
+        with CONNECTION_LOCK:
+            self.host, self.port, self.user, self.passwd, self.db_name = HOST, PORT, USER, PASSWD, DB_NAME
         self._init_mysql()
         
         # Cache comments
@@ -164,12 +191,50 @@ class DB:
             api_key=api_key
         )
         self.model_name = model_name
-        
+        self._load_project_access()
         print(f"DB initialized. All-in-Qwen Mode @ {base_url} (model='{model_name}')")
 
     def _init_mysql(self):
-        self.conn = pymysql.connect(host=self.host, port=self.port, user=self.user, passwd=self.passwd, db=self.db_name, charset='utf8')
+        self.conn = pymysql.connect(
+            host=self.host, port=self.port, user=self.user, passwd=self.passwd,
+            db=self.db_name, charset='utf8mb4', connect_timeout=10,
+            read_timeout=30, write_timeout=30, autocommit=True,
+        )
         self.cur = self.conn.cursor()
+
+    def close(self):
+        for name in ("cur", "conn", "client"):
+            resource = getattr(self, name, None)
+            if resource is not None:
+                try:
+                    resource.close()
+                except Exception:
+                    pass
+                setattr(self, name, None)
+
+    def _read_internal(self, sql, params=None):
+        with self.conn.cursor() as cur:
+            cur.execute(sql, params)
+            fields = [item[0] for item in cur.description]
+            return [dict(zip(fields, row)) for row in cur.fetchall()]
+
+    def _load_project_access(self):
+        if self.permissions.allow_all_projects:
+            self.user_project_list = ALL_PROJECT_ACCESS
+            return
+        rows = self._read_internal(
+            "SELECT DISTINCT p.ID, p.PROJECT_NAME FROM t_project p "
+            "JOIN t_project_user u ON u.PROJECT_ID = p.ID AND u.TENANT_ID = p.TENANT_ID "
+            "WHERE p.TENANT_ID = %s AND u.STAFF_ID = %s "
+            "AND p.OPERATER_STATUS > 0 AND u.OPERATER_STATUS > 0",
+            (self.tenant_id, self.staff_id),
+        )
+        self.permissions.project_ids = tuple(int(row["ID"]) for row in rows)
+        self.permissions.project_names = tuple(row["PROJECT_NAME"] for row in rows)
+        self.user_project_list = list(self.permissions.project_names)
+
+    def _is_project_level_query(self, tables):
+        return any(self.permissions.is_project_table(table, self.table_columns.get(table, set())) for table in tables)
 
     # --- Schema Helpers (Unchanged) ---
     def _format_schema(self, table_names):
@@ -206,13 +271,9 @@ class DB:
         FROM information_schema.tables
         WHERE table_schema = DATABASE()
         """
-        result = self.execute_sql(sql)
-        # print(result)
-        if "data" in result:
-            return {row["TABLE_NAME"]: row["TABLE_COMMENT"] for row in result["data"]}
-            # return {row["table_name"]: row["table_comment"] for row in result["data"]}
-        else:
-            return {}
+        rows = self._read_internal(sql)
+        return {row["TABLE_NAME"]: row["TABLE_COMMENT"] for row in rows
+                if row["TABLE_NAME"] in self.permissions.allowed_tables}
         
     def _extract_column_comments(self, table_name: str):
         """
@@ -224,13 +285,14 @@ class DB:
                     ...
                 ]
         """
-        sql = f"""
+        sql = """
         SELECT column_name, column_type, column_comment
         FROM information_schema.columns
-        WHERE table_schema = DATABASE() AND table_name = '{table_name}'
+        WHERE table_schema = DATABASE() AND table_name = %s
         """
-        result = self.execute_sql(sql)
-        return result.get("data", [])
+        rows = self._read_internal(sql, (table_name,))
+        self.table_columns[table_name] = {row["COLUMN_NAME"].upper() for row in rows}
+        return rows
     
     def _extract_all_table_detailed_comments(self):
         """
@@ -257,7 +319,8 @@ class DB:
 
         for table_name, table_comment in table_comments.items():
             columns = self._extract_column_comments(table_name)
-            # column_comments = [col["column_comment"] for col in columns]
+            if "TENANT_ID" not in self.table_columns[table_name]:
+                continue
             column_comments = [col["COLUMN_COMMENT"] for col in columns]
             result[table_name] = {
                 "table_comment": table_comment,
@@ -358,7 +421,12 @@ class DB:
             current_question += f"\n\n[Previous Failed Attempts & Errors]:\n{error_context}\nPlease avoid these errors and generate a correct SQL."
 
         # 组装 User Message
-        user_content = SQL_USER_TEMPLATE.format(schema=schema, question=current_question)
+        user_content = SQL_USER_TEMPLATE.format(
+            schema=schema, question=current_question, current_date=date.today().isoformat(),
+            access_control_hint=self.permissions.access_hint(),
+            project_access_control_hint=self.permissions.project_hint() if self._is_project_level_query(selected_table_name) else "N/A",
+            type_mapping_hint=self.permissions.type_hint(question),
+        )
         
         messages = [
             {"role": "system", "content": SQL_SYSTEM_PROMPT},
@@ -413,22 +481,19 @@ class DB:
              return wrong_sql
 
     def execute_sql(self, sql):
-        # ... (保持不变) ...
         try:
+            restricted_sql = self.permissions.restrict_sql(sql, self.table_columns)
             self.conn.ping(reconnect=True)
-            self.cur = self.conn.cursor()
-            count = self.cur.execute(sql)
-            if sql.strip().lower().startswith("select"):
-                rows = self.cur.fetchall()
-                if self.cur.description:
-                    fields = [desc[0] for desc in self.cur.description]
-                    data = [dict(zip(fields, row)) for row in rows]
-                else:
-                    fields = []; data = []
-                return {"rowcount": count, "fields": fields, "data": data}
-            else:
-                self.conn.commit()
-                return {"rowcount": count, "message": "Success"}
+            with self.conn.cursor() as cur:
+                cur.execute(restricted_sql)
+                fields = [desc[0] for desc in cur.description]
+                rows = cur.fetchmany(1001)
+                truncated = len(rows) > 1000
+                data = [dict(zip(fields, row)) for row in rows[:1000]]
+                return {"status": "ok" if data else "empty", "rowcount": len(data),
+                        "fields": fields, "data": data, "truncated": truncated}
+        except SQLAccessDenied as exc:
+            return {"status": "denied", "Access_check": False, "message": str(exc)}
         except Exception as e:
             return {"error": str(e)}
 
@@ -457,10 +522,15 @@ class DB:
                     print(current_error)
                     continue
                 
+                if self._is_project_level_query(selected) and not self.permissions.allow_all_projects and not self.permissions.project_ids:
+                    return {"status": "denied", "Access_check": False, "message": "当前员工无可访问项目"}
+
                 # 2. 生成 SQL (带入之前的错误上下文)
                 sql = self.generate_sql(selected, text_query, error_context=error_history)
                 print(f"Generated SQL: {sql}")
-                
+                if sql.strip().rstrip(".;").lower() == "i do not know":
+                    return {"status": "denied", "Access_check": False, "message": "无法在当前授权范围内完成查询"}
+
                 # 3. 执行 SQL
                 res = self.execute_sql(sql)
                 
@@ -488,4 +558,4 @@ class DB:
         raise RuntimeError(f"Database query failed after {MAX_REVISE_ROUND} attempts. Last Error: {last_error_msg}")
 
 if __name__ == "__main__":
-    db = DB()
+    raise SystemExit("请通过 SQL 工具传入当前登录用户的 tenant_id 和 staff_id。")

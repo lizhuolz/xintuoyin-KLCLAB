@@ -23,14 +23,20 @@ class SQLGraphProvider:
         self._cache_lock = RLock()
         self._graph_cache_ttl_seconds = 120
         self._graph_cache_max_entries = 8
-        self._graph_cache: Dict[Tuple[str, str, int, int], Dict[str, Any]] = {}
+        self._graph_cache: Dict[Tuple[str, str, int, int, bool], Dict[str, Any]] = {}
+        self.database_available: Optional[bool] = None
 
     def get_current_user(self) -> CurrentUser:
         chat_user = get_chat_current_user()
         if not chat_user:
+            conn = get_mysql_connection()
+            self.database_available = conn is not None
+            if conn is not None:
+                conn.close()
             return self._fallback_user()
 
         conn = get_mysql_connection()
+        self.database_available = conn is not None
         if conn is None:
             return self._fallback_user()
 
@@ -57,20 +63,13 @@ class SQLGraphProvider:
 
         return self._fallback_user()
 
-    def _safe_domain_fetch(self, fetcher, **kwargs) -> Dict:
-        try:
-            result = fetcher(**kwargs)
-        except Exception:
-            return {}
-        return result or {}
-
     def _current_period(self) -> Tuple[int, int]:
         now = datetime.now()
         return 2025, 12
         # return now.year, now.month
 
-    def _make_graph_cache_key(self, user: CurrentUser, year: int, month: int) -> Tuple[str, str, int, int]:
-        return (str(user.user_id), str(user.enterprise_id), year, month)
+    def _make_graph_cache_key(self, user: CurrentUser, year: int, month: int) -> Tuple[str, str, int, int, bool]:
+        return (str(user.user_id), str(user.enterprise_id), year, month, bool(self.database_available))
 
     def _warmup_schema(self, conn) -> None:
         try:
@@ -81,28 +80,36 @@ class SQLGraphProvider:
     def _build_graph_entry(self, user: CurrentUser, year: int, month: int) -> Dict[str, Any]:
         conn = get_mysql_connection()
         if conn is None:
-            root_node = self.builder.build_placeholder_tree(user)
-            root_dict = root_node.to_dict()
-            node_index, name_index = self._index_graph_nodes(root_dict)
             return {
                 'created_at': time(),
-                'root_node': root_node,
-                'root_dict': root_dict,
-                'node_index': node_index,
-                'name_index': name_index,
+                'root_node': None,
+                'root_dict': {},
+                'node_index': {},
+                'name_index': {},
                 'detail_cache': {},
+                'status': 'unavailable',
+                'message': '数据库未连接，系统内图谱暂不可用。',
             }
 
         try:
             self._warmup_schema(conn)
-            hr_domain = self._safe_domain_fetch(
+            fetch_errors = []
+
+            def fetch_domain(fetcher, **kwargs):
+                try:
+                    return fetcher(**kwargs) or {}
+                except Exception:
+                    fetch_errors.append(True)
+                    return {}
+
+            hr_domain = fetch_domain(
                 self.repository.fetch_hr_domain,
                 conn=conn,
                 tenant_id=user.user_id,
                 year=year,
                 month=month,
             )
-            project_domain = self._safe_domain_fetch(
+            project_domain = fetch_domain(
                 self.repository.fetch_project_library_domain,
                 conn=conn,
                 tenant_id=user.user_id,
@@ -110,20 +117,20 @@ class SQLGraphProvider:
                 month=month,
                 hr_domain=hr_domain,
             )
-            finance_domain = self._safe_domain_fetch(
+            finance_domain = fetch_domain(
                 self.repository.fetch_finance_domain,
                 conn=conn,
                 tenant_id=user.user_id,
                 year=year,
                 current_month=month,
             )
-            declaration_domain = self._safe_domain_fetch(
+            declaration_domain = fetch_domain(
                 self.repository.fetch_declaration_domain,
                 conn=conn,
                 tenant_id=user.user_id,
                 year=year,
             )
-            risk_domain = self._safe_domain_fetch(
+            risk_domain = fetch_domain(
                 self.repository.fetch_risk_domain,
                 conn=conn,
                 tenant_id=user.user_id,
@@ -139,6 +146,30 @@ class SQLGraphProvider:
             }
             root_node = self.builder.build_graph_tree(user, payload)
             root_dict = root_node.to_dict()
+
+            def count_business_nodes(node: Dict[str, Any]) -> int:
+                count = 1 if node.get('category') == 'dynamic' else 0
+                return count + sum(
+                    count_business_nodes(child)
+                    for child in node.get('children', [])
+                    if isinstance(child, dict)
+                )
+
+            business_node_count = count_business_nodes(root_dict)
+            if fetch_errors:
+                status = 'error'
+                message = '数据库查询失败，系统内图谱暂不可用。'
+            elif business_node_count == 0:
+                status = 'empty'
+                message = '数据库已连接，当前企业暂无图谱数据。'
+            else:
+                status = 'ready'
+                message = ''
+
+            if status != 'ready':
+                root_node = None
+                root_dict = {}
+
             node_index, name_index = self._index_graph_nodes(root_dict)
             return {
                 'created_at': time(),
@@ -147,6 +178,8 @@ class SQLGraphProvider:
                 'node_index': node_index,
                 'name_index': name_index,
                 'detail_cache': {},
+                'status': status,
+                'message': message,
             }
         finally:
             conn.close()
@@ -180,6 +213,9 @@ class SQLGraphProvider:
             self._prune_graph_cache(now_ts)
 
         entry = self._build_graph_entry(user, current_year, current_month)
+
+        if entry.get('status') != 'ready':
+            return entry
 
         with self._cache_lock:
             self._graph_cache[cache_key] = entry
@@ -221,6 +257,8 @@ class SQLGraphProvider:
         entry = self._get_graph_entry(user)
         return {
             'root': entry['root_dict'],
+            'status': entry.get('status', 'ready'),
+            'message': entry.get('message', ''),
         }
 
     def get_node_detail(self, node_id: str, user: CurrentUser) -> Dict:

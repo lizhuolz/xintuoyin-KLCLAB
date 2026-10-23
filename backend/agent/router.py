@@ -1,4 +1,6 @@
 from __future__ import annotations
+import ast
+import json
 from typing import  Literal
 from langchain_core.messages import AIMessage, HumanMessage
 from langchain_openai import ChatOpenAI
@@ -37,12 +39,32 @@ def route_after_sql_planner(state: GraphState) -> Literal["sql_tools", "sql_answ
 _SQL_FAIL_INDICATORS = ("error", "错误", "未找到", "no result", "empty", "不存在", "no data")
 
 
+def _sql_content_failed(content) -> bool:
+    if not isinstance(content, str):
+        return False
+    result = None
+    for parser in (json.loads, ast.literal_eval):
+        try:
+            result = parser(content)
+            break
+        except (ValueError, SyntaxError, TypeError):
+            continue
+    if isinstance(result, dict):
+        if result.get("status") == "denied" or result.get("Access_check") is False:
+            return False
+        if "status" in result:
+            return result["status"] in {"error", "empty"}
+        if "data" in result:
+            return not result["data"]
+        return "error" in result
+    return any(word in content.lower() for word in _SQL_FAIL_INDICATORS)
+
+
 def _last_tool_msg_failed_for(messages, tool_name: str) -> bool:
     """从后往前找最后一个该工具的 ToolMessage，判断它是否失败/空结果。"""
     for msg in reversed(messages):
         if isinstance(msg, ToolMessage) and (msg.name or "") == tool_name:
-            content = (msg.content or "").lower()
-            return any(k in content for k in _SQL_FAIL_INDICATORS)
+            return _sql_content_failed(msg.content or "")
     return False
 
 
@@ -93,9 +115,7 @@ def _sql_result_is_empty(state: GraphState) -> bool:
     # 从后往前找最后一个 sql_tool 的 ToolMessage
     for msg in reversed(messages):
         if isinstance(msg, ToolMessage) and (msg.name or "") == "sql_tool":
-            content = (msg.content or "").lower()
-            empty_indicators = ("没有", "未找到", "无结果", "no result", "empty", "error", "错误", "不存在")
-            return any(indicator in content for indicator in empty_indicators)
+            return _sql_content_failed(msg.content or "")
     return False
 
 

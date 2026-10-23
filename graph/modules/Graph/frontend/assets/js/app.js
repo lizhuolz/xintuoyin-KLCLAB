@@ -7,12 +7,15 @@ const state = {
   links: [],
   selectedNodeId: null,
   nodeById: new Map(),
+  pathEndpointByLabel: new Map(),
   edgeMeta: [],
 };
 
 const currentUserText = document.getElementById('currentUserText');
 const graphStatus = document.getElementById('graphStatus');
+const graphEmpty = document.getElementById('graphEmpty');
 const attrContent = document.getElementById('attrContent');
+const defaultEmptyMessage = graphEmpty.textContent;
 
 const renderer = new TreeGraphRenderer({
   svgSelector: '#graphSvg',
@@ -140,6 +143,24 @@ function optionHtml(values) {
   return values.map((value) => `<option value="${escapeHtml(value)}"></option>`).join('');
 }
 
+function endpointLabel(node) {
+  const name = String(node.name || node.id).trim();
+  const businessKey = String(node.identity_key || node.id).trim();
+  return `${name}（业务主键：${businessKey}）`;
+}
+
+function resolvePathEndpoint(value) {
+  const input = value.trim();
+  if (state.pathEndpointByLabel.has(input)) return state.pathEndpointByLabel.get(input);
+  if (state.nodeById.has(input)) return input;
+
+  // 兼容直接输入唯一名称或业务主键；同名时必须从候选项明确选择。
+  const matches = [...state.nodeById.values()].filter(
+    (node) => node.name === input || node.identity_key === input,
+  );
+  return matches.length === 1 ? matches[0].id : null;
+}
+
 function populateDatalists() {
   const nodeNames = new Set();
   const relations = new Set();
@@ -163,12 +184,26 @@ function populateDatalists() {
   }
 
   const nodeOptions = optionHtml(Array.from(nodeNames));
+  state.pathEndpointByLabel = new Map();
+  const endpointLabels = [];
+  const labelCounts = new Map();
+  for (const node of state.nodeById.values()) {
+    const label = endpointLabel(node);
+    labelCounts.set(label, (labelCounts.get(label) || 0) + 1);
+  }
+  for (const node of state.nodeById.values()) {
+    const baseLabel = endpointLabel(node);
+    const label = labelCounts.get(baseLabel) > 1 ? `${baseLabel} [${node.id}]` : baseLabel;
+    state.pathEndpointByLabel.set(label, node.id);
+    endpointLabels.push(label);
+  }
   const relationOptions = optionHtml(Array.from(relations));
   const attrKeyOptions = optionHtml(Array.from(attrKeys));
   const attrValOptions = optionHtml(Array.from(attrVals));
 
   document.getElementById('nodeNameList').innerHTML = nodeOptions;
   document.getElementById('pathNodeList').innerHTML = nodeOptions;
+  document.getElementById('pathEndpointList').innerHTML = optionHtml(endpointLabels);
   document.getElementById('relationNameList').innerHTML = relationOptions;
   document.getElementById('pathRelationList').innerHTML = relationOptions;
   document.getElementById('attrKeyList').innerHTML = attrKeyOptions;
@@ -301,15 +336,15 @@ function findPathAction() {
   const endRaw = document.getElementById('pathEnd').value.trim();
   const pathLimit = Math.max(2, Number(document.getElementById('pathLimit').value) || 4);
 
-  if (!startRaw || !endRaw) {
-    setStatus('路径分析请填写起点与终点。', true);
+  if (!startRaw) {
+    setStatus('路径分析请填写起点。', true);
     return;
   }
 
-  const startId = findNodeIdByNameOrId(startRaw);
-  const endId = findNodeIdByNameOrId(endRaw);
-  if (!startId || !endId) {
-    setStatus('起点或终点不存在，请从下拉建议中选择。', true);
+  const startId = resolvePathEndpoint(startRaw);
+  const endId = endRaw ? resolvePathEndpoint(endRaw) : null;
+  if (!startId || (endRaw && !endId)) {
+    setStatus('起点或终点不存在，或名称对应多个实体；请从带业务主键的下拉建议中选择。', true);
     return;
   }
 
@@ -318,10 +353,17 @@ function findPathAction() {
 
   const dfs = (currentId, visited, pathNodes, pathEdges) => {
     if (pathNodes.length > pathLimit) return;
-    if (currentId === endId && pathNodes.length > 1) {
+    if (endId && currentId === endId && pathNodes.length > 1) {
       paths.push({ nodes: [...pathNodes], edges: [...pathEdges] });
       return;
     }
+
+    // 未指定终点时，把从起点可达的每段路径都作为筛选候选。
+    if (!endId && pathNodes.length > 1) {
+      paths.push({ nodes: [...pathNodes], edges: [...pathEdges] });
+    }
+
+    if (pathNodes.length >= pathLimit) return;
 
     const neighbors = adj.get(currentId) || [];
     for (const edge of neighbors) {
@@ -435,6 +477,21 @@ async function loadGraph() {
     populateDatalists();
     renderGraph();
 
+    const sourceStatus = state.rawGraph.status || 'ready';
+    if (sourceStatus !== 'ready') {
+      const message = state.rawGraph.message || '系统内图谱暂不可用。';
+      graphEmpty.textContent = message;
+      state.selectedNodeId = null;
+      attrContent.textContent = message;
+      currentUserText.textContent = sourceStatus === 'empty'
+        ? '当前企业暂无图谱数据'
+        : '企业信息暂不可用';
+      setStatus(message, true);
+      return;
+    }
+
+    graphEmpty.textContent = defaultEmptyMessage;
+
     const defaultNodeId = state.rawGraph.root?.id || state.nodes[0]?.id || null;
     if (defaultNodeId) {
       onNodeSelected(defaultNodeId);
@@ -452,13 +509,23 @@ async function loadGraph() {
     state.nodeById = new Map();
     state.edgeMeta = [];
     renderer.clear();
-    setStatus(`图谱加载失败：${error.message}`, true);
+    const message = `图谱加载失败：${error.message}`;
+    graphEmpty.textContent = message;
+    attrContent.textContent = message;
+    currentUserText.textContent = '企业信息暂不可用';
+    setStatus(message, true);
   }
 }
 
 async function loadCurrentUser() {
   try {
     const user = await fetchCurrentUser();
+    if (state.rawGraph?.status && state.rawGraph.status !== 'ready') {
+      currentUserText.textContent = state.rawGraph.status === 'empty'
+        ? '当前企业暂无图谱数据'
+        : '企业信息暂不可用';
+      return;
+    }
     currentUserText.textContent = `当前用户：${user.username || '--'} / ${user.enterprise_name || '--'}`;
   } catch (error) {
     currentUserText.textContent = '当前用户：加载失败';

@@ -37,7 +37,7 @@
           <el-input v-model="addForm.name" placeholder="MySQL schema 名，如 r_d_test" />
         </el-form-item>
         <el-form-item label="IP 地址" prop="host">
-          <el-input v-model="addForm.host" placeholder="例如 183.69.138.62" />
+          <el-input v-model="addForm.host" placeholder="例如 183.69.145.186" />
         </el-form-item>
         <el-form-item label="端口" prop="port">
           <el-input-number v-model="addForm.port" :min="1" :max="65535" controls-position="right" style="width: 100%" />

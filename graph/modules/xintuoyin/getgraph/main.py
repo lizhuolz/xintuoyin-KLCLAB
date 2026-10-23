@@ -1158,6 +1158,8 @@ def save_graph(output_file_path, file_path, file_category, edges, nodes_attr):
         }
         if "type" in n:
             node["type"] = n["type"]
+        if "level" in n:
+            node["level"] = n["level"]
         if "table_html" in n:
             node["table_html"] = n["table_html"]
         data["nodes"].append(node)
@@ -1281,6 +1283,85 @@ def create_chat_completion(**kwargs):
 
     raise last_exc
 
+
+def extract_general_graph(document_text: str, file_name: str):
+    """Extract a graph from documents outside the predefined R&D categories."""
+    prompt = (
+        "请从下面的文件内容提取知识图谱，只使用文件中明确出现的信息，不要补造实体或关系。"
+        "返回严格 JSON 对象，格式为："
+        '{"nodes":[{"id":"实体名称","type":"人员/企业/部门/项目/资产/其他",'
+        '"level":0,"attrs":{}}],'
+        '"relations":[{"source":"实体名称","target":"实体名称","relation":"关系名称"}]}。'
+        "id 应在本文件中唯一；同名但不同实体时在 id 中加入可区分的业务信息。"
+        "level 是层级深度，顶层实体为 0，直接下属为 1，依次递增；"
+        "根据上下级、包含、汇报、负责等明确表述生成有方向的关系。"
+        "没有依据时返回空数组。\n"
+        f"文件名：{file_name}\n文件内容：\n{document_text[:20000]}"
+    )
+    response = create_chat_completion(
+        model=args.model_path,
+        messages=[
+            {"role": "system", "content": "你是一个专业的知识图谱抽取助手，只输出 JSON。"},
+            {"role": "user", "content": prompt},
+        ],
+        temperature=0,
+        max_tokens=int(os.getenv("GETGRAPH_EXTRACTION_MAX_TOKENS", "4096")),
+        response_format={"type": "json_object"},
+        extra_body=DISABLE_THINKING_EXTRA_BODY,
+    )
+    result = json.loads(extract_json_candidate(response.choices[0].message.content or ""))
+    if not isinstance(result, dict):
+        raise ValueError("通用抽取结果不是 JSON 对象")
+
+    nodes_attr = []
+    node_ids = set()
+    for item in result.get("nodes", []):
+        if not isinstance(item, dict):
+            continue
+        entity_id = str(item.get("id") or item.get("name") or "").strip()
+        if not entity_id or entity_id in node_ids:
+            continue
+        entity_type = str(item.get("type") or "其他").strip()
+        group = 1 if entity_type in {"人员", "人物"} else 2 if entity_type in {"企业", "公司", "组织"} else 3 if entity_type == "资产" else 4
+        attrs = item.get("attrs") if isinstance(item.get("attrs"), dict) else {}
+        attrs = {str(key): value for key, value in attrs.items() if value not in (None, "")}
+        attrs.setdefault("实体类型", entity_type)
+        node = {"object": entity_id, "attribute": attrs, "group": group, "type": entity_type}
+        try:
+            level = int(item.get("level"))
+            if 0 <= level <= 20:
+                node["level"] = level
+                attrs["层级"] = level
+        except (TypeError, ValueError):
+            pass
+        nodes_attr.append(node)
+        node_ids.add(entity_id)
+
+    edges = []
+    seen_edges = set()
+    for item in result.get("relations", []):
+        if not isinstance(item, dict):
+            continue
+        source_id = str(item.get("source") or "").strip()
+        target_id = str(item.get("target") or "").strip()
+        relation = str(item.get("relation") or "").strip()
+        edge_key = (source_id, target_id, relation)
+        if source_id not in node_ids or target_id not in node_ids or not relation or edge_key in seen_edges:
+            continue
+        edges.append({"source": source_id, "target": target_id, "relation": relation})
+        seen_edges.add(edge_key)
+
+    if not nodes_attr:
+        raise ValueError("文件未提取出明确实体")
+
+    # Connect the file node to top-level entities so the extracted hierarchy is visible.
+    incoming = {edge["target"] for edge in edges}
+    top_level = [node["object"] for node in nodes_attr if node["object"] not in incoming]
+    for entity_id in top_level:
+        if entity_id != file_name:
+            edges.append({"source": file_name, "target": entity_id, "relation": "包含"})
+    return edges, nodes_attr
+
 source = args.input_file_path  # document per local path or URL
 result = convert_source(source)
 document_text = result.document.export_to_markdown()
@@ -1292,13 +1373,8 @@ source_suffix = Path(source).suffix.lower()
 file_category = normalize_category_for_source(file_category, source_suffix)
 
 if file_category == OTHER_CATEGORY:
-    nodes_attr = [{
-        "object": os.path.basename(source),
-        "attribute": {},
-        "group": 4,
-        "type": OTHER_CATEGORY
-    }]
-    save_graph(args.output_file_path, args.input_file_path, file_category, [], nodes_attr)
+    edges, nodes_attr = extract_general_graph(document_text, os.path.basename(source))
+    save_graph(args.output_file_path, args.input_file_path, file_category, edges, nodes_attr)
     exit(0)
 
 if file_category in xlsx_file and source_suffix in TABULAR_EXTENSIONS:

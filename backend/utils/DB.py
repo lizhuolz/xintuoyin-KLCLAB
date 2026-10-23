@@ -9,7 +9,7 @@ import copy
 import re
 from utils.functions import query_LLM_ollama
 # predefined info
-HOST = '183.69.138.62'
+HOST = '183.69.145.186'
 PORT = 33666
 USER = 'hagongda'
 PASSWD = 'ha.G/o[tEst]n%gD*a'

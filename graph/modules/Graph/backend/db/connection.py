@@ -16,6 +16,9 @@ def get_mysql_connection() -> Optional[pymysql.connections.Connection]:
             password=settings.db_password,
             database=settings.db_name,
             charset=settings.db_charset,
+            connect_timeout=settings.db_connect_timeout,
+            read_timeout=settings.db_read_timeout,
+            write_timeout=settings.db_write_timeout,
             autocommit=True,
         )
     except pymysql.MySQLError:

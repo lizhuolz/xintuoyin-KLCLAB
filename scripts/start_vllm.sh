@@ -5,9 +5,9 @@
 set -euo pipefail
 
 VLLM_PROJECT="/data2/dlx/projects/vllm"
-MODEL_PATH="/data2/dlx/models/base4/Qwen3.5-27B"
+MODEL_PATH="/data/public/model/qwen_xty/Qwen3.5-27B/"
 PORT=62272
-GPUS="0,1"
+GPUS="2,3"
 
 if ! [ -d "$VLLM_PROJECT" ]; then
   echo "错误: vLLM 项目目录不存在: $VLLM_PROJECT"

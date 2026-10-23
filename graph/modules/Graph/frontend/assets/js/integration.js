@@ -1,6 +1,7 @@
 
 const externalWorkspaceBadge = document.getElementById('externalWorkspaceBadge');
 const externalTabGroup = document.getElementById('externalTabGroup');
+const createExternalButton = document.getElementById('btnCreateExternal');
 const deleteExternalButton = document.getElementById('btnDeleteExternal');
 const refreshExternalButton = document.getElementById('btnRefreshExternal');
 const externalFrame = document.getElementById('externalFrame');
@@ -16,6 +17,12 @@ const loginStateToggle = document.getElementById('loginStateToggle');
 const loginStateText = document.getElementById('loginStateText');
 
 let isLoggedIn = true;
+let externalWorkspaceExists = false;
+
+function updateExternalTabs() {
+  createExternalButton.classList.toggle('hidden', externalWorkspaceExists);
+  externalTabGroup.classList.toggle('hidden', !externalWorkspaceExists);
+}
 
 function updateLoginStateUI() {
   if (isLoggedIn) {
@@ -49,7 +56,8 @@ function showMessage(text, isError = false) {
 
 function setWorkspaceExists(status) {
   const exists = Boolean(status?.exists);
-  externalTabGroup.classList.toggle('hidden', !exists);
+  externalWorkspaceExists = exists;
+  updateExternalTabs();
   externalWorkspaceBadge.textContent = exists
     ? `系统外子界面：已创建（节点 ${status.node_count ?? 0} / 关系 ${status.link_count ?? 0}）`
     : '系统外子界面：未创建';
@@ -113,16 +121,30 @@ async function deleteExternalWorkspace() {
 for (const button of tabButtons) {
   button.addEventListener('click', () => {
     const targetView = button.dataset.view;
-    if (targetView === 'external' && externalTabGroup.classList.contains('hidden')) {
+    if (targetView !== 'internal' && !externalWorkspaceExists) {
       showMessage('系统外知识图谱子界面未创建。', true);
       return;
     }
-    if (targetView === 'external') {
+    if (targetView !== 'internal') {
       refreshExternalFrame();
     }
     switchView(targetView);
   });
 }
+
+createExternalButton?.addEventListener('click', () => {
+  refreshExternalFrame();
+  switchView('external');
+});
+
+window.addEventListener('message', (event) => {
+  if (event.origin !== window.location.origin || event.source !== externalFrame.contentWindow) return;
+  if (event.data?.type !== 'external-workspace-updated') return;
+  loadWorkspaceStatus().catch((error) => {
+    console.error(error);
+    showMessage(error.message || '更新系统外子界面状态失败', true);
+  });
+});
 
 refreshExternalButton?.addEventListener('click', refreshExternalFrame);
 deleteExternalButton?.addEventListener('click', async () => {

@@ -451,6 +451,8 @@ def get_graph_internal():
     data = GraphService.get_graph()
     return jsonify(
         {
+            'status': data.get('status', 'ready'),
+            'message': data.get('message', ''),
             'nodes': data.get('nodes', []),
             'links': data.get('links', []),
         }
@@ -485,6 +487,20 @@ def search_nodes():
 @api_bp.get('/combined_graph')
 def get_combined_graph():
     internal_graph = GraphService.get_graph()
+    if internal_graph.get('status') != 'ready':
+        return jsonify({
+            'code': 0,
+            'msg': '成功',
+            'data': {
+                'graphId': 'combined_graph',
+                'graphName': 'combined',
+                'status': internal_graph.get('status', 'unavailable'),
+                'message': internal_graph.get('message') or '系统内图谱暂不可用。',
+                'nodes': [],
+                'links': [],
+            },
+        })
+
     binding_signature = _graph_file_signature(INTERNAL_BINDING_GRAPH_FILE)
     cache_key = (
         id(internal_graph),
@@ -502,6 +518,8 @@ def get_combined_graph():
                 'data': {
                     'graphId': 'combined_graph',
                     'graphName': 'combined',
+                    'status': 'ready',
+                    'message': '',
                     'nodes': cached_graph.get('nodes', []),
                     'links': cached_graph.get('links', []),
                 }
@@ -523,6 +541,8 @@ def get_combined_graph():
         'data': {
             'graphId': 'combined_graph',
             'graphName': 'combined',
+            'status': 'ready',
+            'message': '',
             'nodes': merged_graph.get('nodes', []),
             'links': merged_graph.get('links', []),
         }

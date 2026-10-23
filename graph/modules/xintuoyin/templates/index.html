@@ -190,7 +190,7 @@
                 <option value="4">其它</option>
             </select>
             <input type="text" id="pathStart" placeholder="起点" style="width: 60px;" list="pathNodeList" oninput="updatePathDatalists()">
-            <input type="text" id="pathEnd" placeholder="终点" style="width: 60px;" list="pathNodeList" oninput="updatePathDatalists()">
+            <input type="text" id="pathEnd" placeholder="终点（可选）" style="width: 80px;" list="pathNodeList" oninput="updatePathDatalists()">
             <input type="number" id="pathLimit" placeholder="层数" value="3" min="2" style="width: 40px;" title="限制路径最大实体数量" oninput="updatePathDatalists()">
             
             <button onclick="findPathAction()">查找</button>
@@ -809,6 +809,7 @@ async function uploadStagedFiles() {
         renderStaging();
         initCanvas();
         await loadGraph();
+        window.parent.postMessage({ type: 'external-workspace-updated' }, window.location.origin);
         alert(data.message || (respJson.code === 207 ? "部分文件处理失败，图谱已更新" : "上传成功，图谱已更新"));
     } catch (e) {
         alert(e.message || '上传失败');
@@ -1002,7 +1003,7 @@ function findPathAction() {
         if(k && v) targetAttrs.push({ k: k, v: v });
     }
 
-    if (!startName || !endName) { alert("请输入起点和终点"); return; }
+    if (!startName) { alert("请输入起点"); return; }
 
     // ===========================
     // 2. 数据预处理 (查找表)
@@ -1027,6 +1028,10 @@ function findPathAction() {
         alert("起点不存在图谱中");
         return;
     }
+    if (endName && !nodeLookup[endName]) {
+        alert("终点不存在图谱中");
+        return;
+    }
 
     // ===========================
     // 3. BFS 搜索 (获取所有长度符合的路径)
@@ -1039,11 +1044,14 @@ function findPathAction() {
         let curr = item.current;
         let path = item.path;
 
-        if (curr === endName) {
+        if (endName && curr === endName) {
             if (path.length === targetLength) rawPaths.push(path);
             continue; 
         }
-        if (path.length >= targetLength) continue;
+        if (path.length >= targetLength) {
+            if (!endName && path.length === targetLength) rawPaths.push(path);
+            continue;
+        }
 
         let neighbors = adj[curr] || [];
         for (let nextNode of neighbors) {

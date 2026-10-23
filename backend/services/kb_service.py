@@ -123,7 +123,10 @@ class KBService:
             tmp_path = Path(tmpdir) / f"payload{suffix}"
             if not storage_service.download_file(object_name, str(tmp_path)):
                 raise RuntimeError(f"从 MinIO 下载文件失败: {object_name}")
-            return extract_kb_file_text(tmp_path)
+            text = extract_kb_file_text(tmp_path)
+            if not text or not text.strip():
+                raise RuntimeError(f"文件解析失败：{filename} 未提取到可用正文")
+            return text
 
     def _reindex_kb(self, kb):
         self.vector_service.delete_by_kb(kb.get("id", ""))
