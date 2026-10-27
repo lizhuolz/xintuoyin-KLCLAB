@@ -1,6 +1,7 @@
 import json
 import asyncio
 import base64
+import hashlib
 import io
 import csv
 import mimetypes
@@ -574,6 +575,54 @@ def fallback_select_tables(question: str, detailed: dict, limit: int = 8) -> lis
 
 def list_history_objects():
     return storage_service.list_files(f"{HISTORY_MINIO_PREFIX}/")
+
+
+def history_visibility_prefix(user: Optional[dict] = None) -> str:
+    """Stable request identity; never key deletion state by name or token."""
+    user = user if user is not None else get_logged_in_user()
+    user_id = user.get("user_id") or user.get("userId") or user.get("UID")
+    if user_id and user.get("role") != "guest":
+        identity = ["user", str(user.get("tenant_id") or ""), str(user_id)]
+    else:
+        # Guests already share an identity when they share the request IP.
+        identity = ["guest", str(user.get("ip_address") or "")]
+    key = hashlib.sha256(json.dumps(identity, ensure_ascii=False).encode("utf-8")).hexdigest()
+    return f"history_visibility/{key}/"
+
+
+def history_visibility_key(conversation_id: str) -> str:
+    # Match resolve_history_path's canonical ID, including legacy aliases.
+    return hashlib.sha256(str(safe_segment(conversation_id)).encode("utf-8")).hexdigest()
+
+
+def hide_history_record(conversation_id: str, user: Optional[dict] = None) -> bool:
+    """Write only a visibility marker, leaving the shared audit object intact."""
+    target = f"{history_visibility_prefix(user)}{history_visibility_key(conversation_id)}.json"
+    marker = {"conversation_id": safe_segment(conversation_id), "hidden_at": now_ms()}
+    data = json.dumps(marker, ensure_ascii=False).encode("utf-8")
+    return storage_service.upload_file_obj(io.BytesIO(data), target, "application/json")
+
+
+def filter_visible_history_records(records: list, user: Optional[dict] = None) -> list:
+    # StorageService.list_files swallows failures as [], which would expose
+    # hidden records again. Read this prefix strictly and let callers fail.
+    prefix = history_visibility_prefix(user)
+    storage_service.ensure_ready()
+    hidden = {
+        Path(item.object_name).stem
+        for item in storage_service.client.list_objects(
+            storage_service.bucket_name, prefix=prefix, recursive=True
+        )
+        if item.object_name.endswith(".json")
+    }
+    return [record for record in records
+            if history_visibility_key(record.get("conversation_id", "")) not in hidden]
+
+
+def delete_history_record(conversation_id: str) -> bool:
+    """Physical deletion is reserved for the existing platform delete routes."""
+    object_name = resolve_history_path(conversation_id)
+    return bool(object_name and storage_service.delete_file(object_name))
 
 
 def resolve_history_path(conversation_id: str) -> Optional[str]:
@@ -2452,6 +2501,10 @@ async def list_histories(
     my_name = user.get("name", "")
     if my_name:
         records = [r for r in records if (r.get("user") or {}).get("name") == my_name]
+    try:
+        records = filter_visible_history_records(records, user)
+    except Exception:
+        return error_response("获取历史记录失败", {"reason": "读取历史隐藏状态失败"}, 500)
     results = [build_history_list_item(record) for record in records]
     return success_response("获取历史记录成功", paginate_payload(results, page, size))
 
@@ -2461,6 +2514,12 @@ async def get_history_detail(conversation_id: str):
     history_record, _ = load_history_record(conversation_id)
     if not history_record.get("messages"):
         return error_response("获取历史详情失败", {"conversation_id": conversation_id}, 404)
+    try:
+        visible = filter_visible_history_records([history_record])
+    except Exception:
+        return error_response("获取历史详情失败", {"reason": "读取历史隐藏状态失败"}, 500)
+    if not visible:
+        return error_response("获取历史详情失败", {"conversation_id": conversation_id}, 404)
     return success_response("获取历史详情成功", history_record)
 
 
@@ -2469,8 +2528,8 @@ async def delete_history(conversation_id: str):
     object_name = resolve_history_path(conversation_id)
     if not object_name:
         return error_response("删除历史对话失败", {"conversation_id": conversation_id}, 404)
-    if not storage_service.delete_file(object_name):
-        return error_response("删除历史对话失败", {"reason": "删除 MinIO 历史文件失败"}, 500)
+    if not hide_history_record(conversation_id):
+        return error_response("删除历史对话失败", {"reason": "保存历史隐藏状态失败"}, 500)
     return success_response("删除历史对话成功", {"conversation_id": conversation_id})
 
 
@@ -2485,7 +2544,7 @@ async def batch_delete_history(data: dict = Body(..., example={"ids": ["conversa
     deleted = []
     for conversation_id in ids:
         object_name = resolve_history_path(conversation_id)
-        if object_name and storage_service.delete_file(object_name):
+        if object_name and hide_history_record(conversation_id):
             deleted.append(conversation_id)
     return success_response("批量删除历史对话成功", {"deleted_ids": deleted})
 
@@ -3909,7 +3968,12 @@ async def admin_get_history_detail(conversation_id: str):
 
 @admin_router.delete("/history/{conversation_id}", tags=["管理端/对话日志"], summary="[管理端] 删除单条历史记录")
 async def admin_delete_history(conversation_id: str):
-    return await delete_history(conversation_id)
+    object_name = resolve_history_path(conversation_id)
+    if not object_name:
+        return error_response("删除历史对话失败", {"conversation_id": conversation_id}, 404)
+    if not storage_service.delete_file(object_name):
+        return error_response("删除历史对话失败", {"reason": "删除 MinIO 历史文件失败"}, 500)
+    return success_response("删除历史对话成功", {"conversation_id": conversation_id})
 
 
 @admin_router.post("/history/batch_delete", tags=["管理端/对话日志"], summary="[管理端] 批量删除历史记录")
