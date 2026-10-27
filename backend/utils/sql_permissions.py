@@ -58,6 +58,20 @@ VARIANCE WEEK WEEKDAY WEEKOFYEAR YEAR YEARWEEK
 """.split())
 
 
+# sqlglot normalizes permitted MySQL date functions to these AST types.
+# Match exact types and keep walking their children so unsafe arguments
+# cannot bypass the existing function and data-access checks.
+READ_DATE_EXPRESSIONS = frozenset({
+    exp.TsOrDsToDate,
+    exp.DayOfMonth,
+    exp.DayOfWeek,
+    exp.DayOfYear,
+    exp.WeekOfYear,
+    exp.TimeToStr,
+    exp.StrToTime,
+})
+
+
 class SQLPermissions:
     def __init__(self, tenant_id, staff_id, *, allow_all_projects=False):
         self.tenant_id = positive_id(tenant_id, "tenant_id")
@@ -141,7 +155,9 @@ class SQLPermissions:
                 raise SQLAccessDenied("SQL 包含不允许的变量")
             if isinstance(node, exp.Func):
                 name = node.name.upper() if isinstance(node, exp.Anonymous) else node.sql_name().upper()
-                if name not in READ_FUNCTIONS and not isinstance(node, (exp.And, exp.Or)):
+                if (name not in READ_FUNCTIONS
+                        and type(node) not in READ_DATE_EXPRESSIONS
+                        and not isinstance(node, (exp.And, exp.Or))):
                     raise SQLAccessDenied(f"SQL 函数 {name} 未获准使用")
         for cte in tree.find_all(exp.CTE):
             if not isinstance(cte.this, (exp.Select, exp.Union)):
