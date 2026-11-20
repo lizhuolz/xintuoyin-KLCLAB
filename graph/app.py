@@ -461,9 +461,11 @@ def clear_external_workspace(remove_files: bool = True) -> Dict:
     return {'status': 'success', 'removed_files': removed_files}
 
 
-def get_workspace_status() -> Dict:
-    graph = read_graph()
-    meta = read_workspace_meta()
+def get_workspace_status(graph: Dict | None = None, meta: Dict | None = None) -> Dict:
+    if graph is None:
+        graph = read_graph()
+    if meta is None:
+        meta = read_workspace_meta()
     return {
         'exists': meta.get('exists', False) or bool(graph.get('nodes') or graph.get('links')),
         'files': meta.get('files', []),
@@ -857,6 +859,7 @@ def upload_file():
 
     else:
         previous_db = get_current_db_name()
+        workspace_meta = read_workspace_meta()
         created_new_db = False
         if graph_id:
             graph_id_stem = graph_id[:-5] if graph_id.endswith('.json') else graph_id
@@ -883,9 +886,16 @@ def upload_file():
             CURRENT_DB_FILE.write_text(target_db, encoding='utf-8')
         else:
             timestamp = now_ms()
-            target_db = f"new_graph_{timestamp}.json"
-            new_db_file = WORKSPACE_DIR / target_db
-            new_db_file.write_text(json.dumps({'nodes': [], 'links': []}, ensure_ascii=False, indent=2), encoding='utf-8')
+            while True:
+                target_db = f"new_graph_{timestamp}.json"
+                target_file = WORKSPACE_DIR / target_db
+                try:
+                    # Two uploads in the same millisecond must create separate graphs.
+                    with target_file.open('x', encoding='utf-8') as output:
+                        json.dump({'nodes': [], 'links': []}, output, ensure_ascii=False, indent=2)
+                    break
+                except FileExistsError:
+                    timestamp += 1
             CURRENT_DB_FILE.write_text(target_db, encoding='utf-8')
             created_new_db = True
 
@@ -893,7 +903,8 @@ def upload_file():
         saved_files = []
         successful_files = []
         preprocess_results = []
-        current_graph = read_graph()
+        # Keep this request's destination even if another request switches the UI.
+        current_graph = read_graph_file(target_file)
 
         for file in files:
             if not file or not file.filename:
@@ -937,17 +948,19 @@ def upload_file():
             }), 400
 
         if successful_files:
-            graph = save_graph(current_graph)
-            write_workspace_meta(successful_files)
-            ensure_external_graph_display_name(get_current_db_name(), successful_files)
+            graph = save_graph_file(target_file, current_graph)
+            workspace_meta = write_workspace_meta(successful_files)
+            ensure_external_graph_display_name(target_db, successful_files)
         else:
             if created_new_db:
-                target_file = WORKSPACE_DIR / target_db
                 target_file.unlink(missing_ok=True)
-                CURRENT_DB_FILE.write_text(previous_db, encoding='utf-8')
-            graph = read_graph()
-        current_db = get_current_db_name()
-        response_graph_id = current_db.replace('.json', '')
+                if get_current_db_name() == target_db:
+                    CURRENT_DB_FILE.write_text(previous_db, encoding='utf-8')
+                target_db = previous_db
+                target_file = WORKSPACE_DIR / target_db
+            graph = read_graph_file(target_file)
+        current_db = target_db
+        response_graph_id = target_file.stem
         success_count = len([item for item in preprocess_results if item['status'] == 'ok'])
         failed = [item for item in preprocess_results if item['status'] != 'ok']
         if success_count == 0:
@@ -978,7 +991,7 @@ def upload_file():
                 'isDefault': False,
                 'graphId': response_graph_id,
                 'files': saved_files,
-                'workspace': get_workspace_status(),
+                'workspace': get_workspace_status(graph, workspace_meta),
                 'preprocess_results': preprocess_results,
                 'graph': {
                     'node_count': len(graph.get('nodes', [])),

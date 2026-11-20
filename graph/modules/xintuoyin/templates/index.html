@@ -351,6 +351,7 @@ let force, svg, container, zoom;
 let stagedFiles = [];
 let width = window.innerWidth - 320, height = window.innerHeight - 100;
 let uploadProcessing = false;
+let graphLoadSequence = 0;
 
 // --- 初始化画布（包含缩放逻辑修复） ---
 function initCanvas() {
@@ -403,10 +404,14 @@ function dragended(d) {
     d.fixed = false; // 松开后恢复力学模拟（如果你想让它一直固定，可以删掉这一行）
 }
 
-async function loadGraph() {
+async function loadGraph(graphId = '') {
+    const loadSequence = ++graphLoadSequence;
+    const requestedGraphId = graphId || document.getElementById('dbSelect').value;
     try {
-        const res = await fetch('/get_graph');
+        const url = requestedGraphId ? `/get_graph?graphId=${encodeURIComponent(requestedGraphId)}` : '/get_graph';
+        const res = await fetch(url);
         const respJson = await res.json();
+        if (loadSequence !== graphLoadSequence) return;
         
         if (respJson.code !== 0) {
             throw new Error(respJson.msg || '获取图谱失败');
@@ -774,11 +779,13 @@ function removeStaged(i) { stagedFiles.splice(i, 1); renderStaging(); }
 
 function setProcessingState(isProcessing, text) {
     uploadProcessing = isProcessing;
+    if (isProcessing) graphLoadSequence++;
     const overlay = document.getElementById('processingOverlay');
     const processingText = document.getElementById('processingText');
     const uploadStatus = document.getElementById('uploadStatus');
     const uploadBtn = document.getElementById('uploadBtn');
     const fileInput = document.getElementById('fileInput');
+    const dbSelect = document.getElementById('dbSelect');
     processingText.innerText = text || '正在处理，请稍候...';
     overlay.style.display = isProcessing ? 'flex' : 'none';
     if (uploadBtn) {
@@ -788,15 +795,19 @@ function setProcessingState(isProcessing, text) {
     if (fileInput) {
         fileInput.disabled = isProcessing;
     }
+    if (dbSelect) dbSelect.disabled = isProcessing;
     uploadStatus.innerText = isProcessing ? '后台正在提取图谱，请勿重复提交。' : '';
 }
 
 async function uploadStagedFiles() {
     if (uploadProcessing) return;
     if (!stagedFiles.length) return alert("请先选择文件");
+    const targetGraphId = document.getElementById('dbSelect').value.trim().replace(/\.json$/, '');
+    if (!targetGraphId) return alert('请选择已有图谱，或先新建图谱。');
     const formData = new FormData();
     stagedFiles.forEach(f => formData.append('file', f));
     formData.append('isDefault', 'false');
+    formData.append('graphId', targetGraphId);
     setProcessingState(true, '文件上传中，后台正在提取图谱...');
     try {
         const res = await fetch('/upload', { method: 'POST', body: formData });
@@ -805,10 +816,12 @@ async function uploadStagedFiles() {
             throw new Error(respJson.msg || `上传失败: ${res.status}`);
         }
         const data = respJson.data || {};
+        const resultGraphId = data.graphId || targetGraphId;
         stagedFiles = [];
         renderStaging();
+        await loadDatabases(resultGraphId);
         initCanvas();
-        await loadGraph();
+        await loadGraph(resultGraphId);
         window.parent.postMessage({ type: 'external-workspace-updated' }, window.location.origin);
         alert(data.message || (respJson.code === 207 ? "部分文件处理失败，图谱已更新" : "上传成功，图谱已更新"));
     } catch (e) {
@@ -825,6 +838,9 @@ function parseJsonInput(raw, defaultValue = {}) {
 }
 
 async function graphApiRequest(url, method, body) {
+    const graphId = document.getElementById('dbSelect').value.trim().replace(/\.json$/, '');
+    if (!graphId) throw new Error('请选择已有图谱，或先新建图谱。');
+    url += `${url.includes('?') ? '&' : '?'}graphId=${encodeURIComponent(graphId)}`;
     const options = { method, headers: { 'Content-Type': 'application/json' } };
     if (body !== undefined) options.body = JSON.stringify(body);
     const res = await fetch(url, options);
@@ -1235,13 +1251,14 @@ function closeModal(event) {
 }
 
 // --- 多图谱数据库切换 ---
-async function loadDatabases() {
+async function loadDatabases(graphId = '') {
     try {
         const res = await fetch('/external/workspace/status');
         if (!res.ok) return;
         const respJson = await res.json();
         if (respJson.code !== 0) return;
         const data = respJson.data;
+        const preferredDb = graphId ? `${String(graphId).replace(/\.json$/, '')}.json` : data.current_db;
         
         const select = document.getElementById('dbSelect');
         select.innerHTML = '';
@@ -1251,7 +1268,7 @@ async function loadDatabases() {
                 const option = document.createElement('option');
                 option.value = db;
                 option.textContent = db;
-                if (db === data.current_db) {
+                if (db === preferredDb) {
                     option.selected = true;
                 }
                 select.appendChild(option);
@@ -1265,6 +1282,7 @@ async function loadDatabases() {
 }
 
 async function switchDb() {
+    if (uploadProcessing) return;
     const select = document.getElementById('dbSelect');
     const dbName = select.value;
     if (!dbName) return;
@@ -1281,8 +1299,9 @@ async function switchDb() {
         const data = respJson.data;
         
         // 重新加载图谱
+        select.value = data.current_db || dbName;
         initCanvas();
-        await loadGraph();
+        await loadGraph(data.current_db || dbName);
         alert(data.message || '切换成功');
     } catch (e) {
         alert(e.message || '切换失败');
@@ -1292,6 +1311,7 @@ async function switchDb() {
 }
 
 async function createDb() {
+    if (uploadProcessing) return;
     let dbName = document.getElementById('newDbName').value.trim();
     if (!dbName) return alert('请输入新图谱名称');
     
@@ -1307,9 +1327,9 @@ async function createDb() {
         const data = respJson.data;
         
         document.getElementById('newDbName').value = ''; // 清空输入框
-        await loadDatabases(); // 重新加载下拉列表
+        await loadDatabases(data.current_db || dbName); // 重新加载下拉列表
         initCanvas(); // 初始化画布
-        await loadGraph(); // 重新加载（空）图谱
+        await loadGraph(data.current_db || dbName); // 重新加载（空）图谱
         alert(data.message || '创建并切换成功');
     } catch (e) {
         alert(e.message || '创建失败');

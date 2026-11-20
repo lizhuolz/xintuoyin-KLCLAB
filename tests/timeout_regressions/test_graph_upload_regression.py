@@ -78,13 +78,134 @@ class UploadRegression(unittest.TestCase):
         app.run_extractor = extract
         app._stage_file_for_chat = lambda path: app._make_graph_local_file_id(app._infer_graph_local_scope(path), path.name)
 
-    def post(self, files=('good.md',), default='true'):
+    def post(self, files=('good.md',), default='true', graph_id=None):
         data = {'file': [(io.BytesIO(b'synthetic test content'), name) for name in files]}
         if default is not None:
             data['isDefault'] = default
+        if graph_id is not None:
+            data['graphId'] = graph_id
         with app.app.test_client() as client:
             response = client.post('/upload', data=data, content_type='multipart/form-data')
         return response, response.get_json(silent=True) or {}
+
+    def seed_graph(self, name, ids):
+        app.save_graph_file(app.WORKSPACE_DIR / f'{name}.json', {
+            'nodes': [{'id': key, 'name': key} for key in ids], 'links': []})
+
+    def graph_ids(self, name):
+        with app.app.test_client() as client:
+            response = client.get('/get_graph', query_string={'graphId': name})
+        self.assertEqual(response.status_code, 200)
+        return {node['id'] for node in response.get_json()['data']['nodes']}
+
+    def switch_while_extracting(self, name):
+        original = app.run_extractor
+        def extract(path, output):
+            result = original(path, output)
+            # Exercise the real switch route during the long-running extraction.
+            with app.app.test_client() as client:
+                response = client.post('/external/workspace/switch_db', json={'db_name': f'{name}.json'})
+            self.assertEqual(response.status_code, 200)
+            return result
+        app.run_extractor = extract
+
+    def test_new_and_append_have_distinct_targets_and_preserve_existing_nodes(self):
+        self.seed_graph('existing', ['old1', 'old2'])
+        _, new = self.post(default='false')
+        _, appended = self.post(default='false', graph_id='existing.json')
+        self.assertEqual(new['code'], 0)
+        self.assertEqual(appended['code'], 0)
+        self.assertNotEqual(new['data']['graphId'], appended['data']['graphId'])
+        self.assertEqual(new['data']['graph']['node_count'], 2)
+        self.assertEqual(appended['data']['graph']['node_count'], 4)
+        self.assertEqual(self.graph_ids(new['data']['graphId']), {'n1', 'n2'})
+        self.assertEqual(self.graph_ids('existing'), {'old1', 'old2', 'n1', 'n2'})
+
+    def test_repeat_upload_keeps_existing_deduplication(self):
+        _, new = self.post(default='false')
+        graph_id = new['data']['graphId']
+        _, repeated = self.post(default='false', graph_id=graph_id)
+        self.assertEqual(repeated['code'], 0)
+        self.assertEqual(repeated['data']['graphId'], graph_id)
+        self.assertEqual(repeated['data']['graph'], {'node_count': 2, 'link_count': 1})
+        self.assertEqual(self.graph_ids(graph_id), {'n1', 'n2'})
+
+    def test_append_keeps_target_when_selection_changes_during_extraction(self):
+        self.seed_graph('graph_a', ['a1'])
+        self.seed_graph('graph_b', ['b1', 'b2'])
+        self.switch_while_extracting('graph_b')
+        _, payload = self.post(default='false', graph_id='graph_a')
+        self.assertEqual(payload['code'], 0)
+        self.assertEqual(payload['data']['graphId'], 'graph_a')
+        self.assertEqual(self.graph_ids('graph_a'), {'a1', 'n1', 'n2'})
+        self.assertEqual(self.graph_ids('graph_b'), {'b1', 'b2'})
+        self.assertEqual(payload['data']['workspace']['node_count'], 3)
+        self.assertEqual(payload['data']['graph']['node_count'], 3)
+        self.assertEqual(app.get_current_db_name(), 'graph_b.json')
+        self.assertIn('graph_a', app.read_external_graph_index())
+        self.assertNotIn('graph_b', app.read_external_graph_index())
+
+    def test_new_graph_keeps_target_when_selection_changes_during_extraction(self):
+        self.seed_graph('graph_b', ['b1'])
+        self.switch_while_extracting('graph_b')
+        _, payload = self.post(default='false')
+        self.assertEqual(payload['code'], 0)
+        self.assertTrue(payload['data']['graphId'].startswith('new_graph_'))
+        self.assertEqual(self.graph_ids(payload['data']['graphId']), {'n1', 'n2'})
+        self.assertEqual(self.graph_ids('graph_b'), {'b1'})
+        self.assertEqual(payload['data']['workspace']['node_count'], 2)
+
+    def test_failed_append_returns_requested_graph_even_after_switch(self):
+        self.seed_graph('graph_a', ['a1'])
+        self.seed_graph('graph_b', ['b1', 'b2'])
+        self.switch_while_extracting('graph_b')
+        _, payload = self.post(('bad.md',), default='false', graph_id='graph_a')
+        self.assertEqual(payload['code'], 422)
+        self.assertEqual(payload['data']['graphId'], 'graph_a')
+        self.assertEqual(payload['data']['graph']['node_count'], 1)
+        self.assertEqual(payload['data']['workspace']['node_count'], 1)
+        self.assertEqual(self.graph_ids('graph_a'), {'a1'})
+        self.assertEqual(self.graph_ids('graph_b'), {'b1', 'b2'})
+
+    def test_failed_new_graph_does_not_undo_another_selection(self):
+        self.seed_graph('graph_a', ['a1'])
+        self.seed_graph('graph_b', ['b1', 'b2'])
+        app.CURRENT_DB_FILE.write_text('graph_a.json')
+        self.switch_while_extracting('graph_b')
+        _, payload = self.post(('bad.md',), default='false')
+        self.assertEqual(payload['code'], 422)
+        self.assertEqual(app.get_current_db_name(), 'graph_b.json')
+        self.assertEqual(list(app.WORKSPACE_DIR.glob('new_graph_*.json')), [])
+        self.assertEqual(self.graph_ids('graph_a'), {'a1'})
+        self.assertEqual(self.graph_ids('graph_b'), {'b1', 'b2'})
+
+    def test_failed_new_graph_restores_previous_selection_without_switch(self):
+        self.seed_graph('graph_a', ['a1'])
+        app.CURRENT_DB_FILE.write_text('graph_a.json')
+        _, payload = self.post(('bad.md',), default='false')
+        self.assertEqual(payload['code'], 422)
+        self.assertEqual(app.get_current_db_name(), 'graph_a.json')
+        self.assertEqual(payload['data']['graphId'], 'graph_a')
+        self.assertEqual(payload['data']['workspace']['node_count'], 1)
+        self.assertEqual(list(app.WORKSPACE_DIR.glob('new_graph_*.json')), [])
+
+    def test_new_graph_does_not_reuse_an_existing_millisecond_id(self):
+        from unittest.mock import patch
+        self.seed_graph('new_graph_1234000', ['old'])
+        with patch('time.time', return_value=1234):
+            _, payload = self.post(default='false')
+        self.assertEqual(payload['code'], 0)
+        self.assertNotEqual(payload['data']['graphId'], 'new_graph_1234000')
+        self.assertEqual(self.graph_ids('new_graph_1234000'), {'old'})
+        self.assertEqual(self.graph_ids(payload['data']['graphId']), {'n1', 'n2'})
+
+    def test_invalid_and_missing_graph_ids_preserve_error_contract(self):
+        for graph_id, expected in [('missing', 404), ('../outside', 400), ('workspace_meta', 400)]:
+            with self.subTest(graph_id=graph_id):
+                response, payload = self.post(default='false', graph_id=graph_id)
+                self.assertEqual(response.status_code, expected)
+                self.assertEqual(payload['code'], expected)
+        self.assertEqual(app.get_current_db_name(), 'output_graph.json')
 
     def assert_saved_binding(self):
         graph = app.read_internal_binding_graph()
