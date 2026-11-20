@@ -1628,7 +1628,7 @@ async def _yield_text_events(event_type: str, text: str) -> AsyncIterator[str]:
             await asyncio.sleep(delay_ms / 1000)
 
 
-def _strip_think_blocks(text: str) -> str:
+def _strip_think_blocks(text: str, *, strip_edges: bool = True) -> str:
     """移除 content 中的 <think>、<tool_call> 等模型内部标签。"""
     if not text:
         return ""
@@ -1641,7 +1641,7 @@ def _strip_think_blocks(text: str) -> str:
     cleaned = re.sub(r"<parameter=[^>]*>.*?</parameter>", "", cleaned, flags=re.DOTALL | re.IGNORECASE)
     # 4) 残留的单独标签（未闭合的）
     cleaned = re.sub(r"</?(?:think|tool_call|function|parameter)(?:=[^>]*)?>", "", cleaned, flags=re.IGNORECASE)
-    return cleaned.strip()
+    return cleaned.strip() if strip_edges else cleaned
 
 
 class ThinkSplitter:
@@ -1719,8 +1719,14 @@ async def _get_request_payload(request: Request) -> dict:
 
 async def iterate_chat_events(message, conversation_id: str, web_search: bool, user_identity: str, *, raw_user_message: str = "", enable_thinking: bool = False):
     # message 支持 str 或 multimodal list（[{"type":"text",...}, {"type":"image_url",...}]）
+    from agent.utils import extract_current_user_question, extract_query_context
+    human_message = HumanMessage(content=message)
+    current_question = raw_user_message or extract_current_user_question([human_message])
+    query_context = extract_query_context([human_message])
     inputs = {
-        "messages": [HumanMessage(content=message)],
+        "messages": [human_message],
+        "current_question": current_question,
+        "query_context": query_context,
         "enable_web": web_search,
         "select_model": os.getenv("CHAT_MODEL_NAME", "gpt-4o"),
         "user_identity": user_identity,
@@ -1731,6 +1737,7 @@ async def iterate_chat_events(message, conversation_id: str, web_search: bool, u
     config = {"configurable": {
         "thread_id": f"{conversation_id}_{now_ms()}",
         "sql_user": {key: authenticated_user.get(key) for key in ("tenant_id", "staff_id", "role")},
+        "sql_query_context": query_context,
     }}
 
     last_chatbot_content = ""
@@ -1782,6 +1789,7 @@ async def iterate_chat_events(message, conversation_id: str, web_search: bool, u
                 last_chatbot_content = ""
                 stream_buf = ""
                 in_think_block = False
+                yield {"type": "answer_replace", "content": ""}
                 if tool_name == "tavily_search_with_summary":
                     try:
                         results = json.loads(msg.content).get("results", [])
@@ -1830,7 +1838,7 @@ async def iterate_chat_events(message, conversation_id: str, web_search: bool, u
                         # 遇到 <think> 开始
                         before = stream_buf[:open_pos]
                         if before.strip():
-                            yield {"type": "answer_delta", "delta": _strip_think_blocks(before)}
+                            yield {"type": "answer_delta", "delta": _strip_think_blocks(before, strip_edges=False)}
                         in_think_block = True
                         stream_buf = stream_buf[open_pos + 7:]  # 跳过 <think>
                         # 检查同一 chunk 里是否也有 </think>
@@ -1843,7 +1851,7 @@ async def iterate_chat_events(message, conversation_id: str, web_search: bool, u
                             in_think_block = False
                             stream_buf = ""
                             if answer_part:
-                                yield {"type": "answer_delta", "delta": _strip_think_blocks(answer_part)}
+                                yield {"type": "answer_delta", "delta": _strip_think_blocks(answer_part, strip_edges=False)}
                     else:
                         # 检查是否包含 <tool_call> 等标签块
                         tc_open = stream_buf.lower().find("<tool_call>")
@@ -1874,7 +1882,7 @@ async def iterate_chat_events(message, conversation_id: str, web_search: bool, u
         if in_think_block:
             yield {"type": "thinking_delta", "delta": stream_buf}
         else:
-            yield {"type": "answer_delta", "delta": _strip_think_blocks(stream_buf)}
+            yield {"type": "answer_delta", "delta": _strip_think_blocks(stream_buf, strip_edges=False)}
 
     # 从完整文本提取最终 answer（用于保存历史）
     close_tag = "</think>"

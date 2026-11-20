@@ -1,5 +1,7 @@
 from __future__ import annotations
 from agent.node import make_chatbot_node
+from agent.sql_answer import make_sql_answer_node
+from agent.sql_planner import make_sql_planner_node
 from agent.tools import LOCAL_TOOLS,WEB_TOOLS,SQL_TOOLS,SQL_TOOL_NAME
 from langchain_core.messages import AIMessage, BaseMessage, HumanMessage, SystemMessage
 
@@ -31,12 +33,9 @@ web_chatbot_node = make_chatbot_node(0, WEB_TOOLS, system_prompt=(
 ))
 should_sql_node = make_should_sql_node(SQL_TOOL_NAME)
 # sql_planner：只允许 SQL 工具调用（产出 tool_calls）
-sql_planner_node = make_chatbot_node(0, SQL_TOOLS, system_prompt="你是一个用户问题总结器,你需要精炼用户的问题，后续你的回答将会给sql代码生成器使用，请让你的回答清晰且能完全表述需求。")
+sql_planner_node = make_sql_planner_node(SQL_TOOL_NAME)
 # sql_answer：不允许任何工具调用（只根据 messages 里 ToolMessage 总结）
-sql_answer_node = make_chatbot_node(0, [], system_prompt=(
-    "根据 SQL 工具返回结果回答。若 status=denied 或 Access_check=false，"
-    "明确告知权限限制，不推测受限数据，不建议通过其他工具绕过权限。"
-))
+sql_answer_node = make_sql_answer_node()
 
 
 local_tools_node = ToolNode(LOCAL_TOOLS)

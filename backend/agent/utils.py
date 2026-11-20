@@ -104,10 +104,20 @@ def get_semantic_recommendations(user_query: str) -> list[str]:
 def extract_last_user_text(messages: List[BaseMessage]) -> str:
     for m in reversed(messages):
         if getattr(m, "type", None) == "human":
-            return getattr(m, "content", "") or ""
-        if isinstance(m, dict) and m.get("role") == "user":
-            return m.get("content", "") or ""
+            content = getattr(m, "content", "") or ""
+        elif isinstance(m, dict) and m.get("role") == "user":
+            content = m.get("content", "") or ""
+        else:
+            continue
+        if isinstance(content, list):
+            # Images remain in the chat message; SQL context contains text only.
+            return "\n".join(str(block.get("text", "")) for block in content
+                             if isinstance(block, dict) and block.get("type") == "text")
+        return content if isinstance(content, str) else ""
     return ""
+
+
+_CURRENT_QUESTION_MARKERS = ("【当前用户提问（请务必针对此问题回答）】", "【当前用户问题】")
 
 
 def extract_current_user_question(messages: List[BaseMessage]) -> str:
@@ -115,16 +125,22 @@ def extract_current_user_question(messages: List[BaseMessage]) -> str:
     if not text:
         return ""
 
-    current_marker = "【当前用户问题】"
-    answer_marker = "【回答要求】"
-    if current_marker not in text:
-        return text
+    for marker in _CURRENT_QUESTION_MARKERS:
+        if marker in text:
+            current_part = text.rsplit(marker, 1)[1]
+            current_part = current_part.split("【回答要求】", 1)[0]
+            current_part = current_part.split("\n\n注意：上面的文件内容已由系统成功读取", 1)[0]
+            return current_part.strip()
+    return text
 
-    current_part = text.split(current_marker, 1)[1]
-    if answer_marker in current_part:
-        current_part = current_part.split(answer_marker, 1)[0]
-    current_part = current_part.strip()
-    return current_part or text
+
+def extract_query_context(messages: List[BaseMessage]) -> str:
+    """Retain server-composed history/files separately from the current request."""
+    text = extract_last_user_text(messages)
+    for marker in _CURRENT_QUESTION_MARKERS:
+        if marker in text:
+            return text.rsplit(marker, 1)[0].strip()
+    return ""
 
 
 def safe_json_load(s: str) -> Dict[str, Any]:

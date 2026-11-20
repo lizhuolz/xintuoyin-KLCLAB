@@ -164,6 +164,7 @@ class DBIntegrationTests(unittest.TestCase):
         db.permissions = SQLPermissions(6, 51)
         db.permissions.project_ids, db.permissions.project_names = (10,), ("项目甲",)
         db.table_columns = {"t_project": {"ID", "TENANT_ID"}}
+        db.detailed_comments = {}
         db._format_schema = MagicMock(return_value="CREATE TABLE t_project ...")
         db.client = MagicMock()
         db.client.chat.completions.create.return_value = SimpleNamespace(
@@ -189,7 +190,9 @@ class RouterTests(unittest.TestCase):
             router_spec.loader.exec_module(router)
         for result, expected in [
             ({"status": "denied", "Access_check": False, "message": "没有权限"}, "end"),
-            ({"status": "empty", "data": []}, "sql_rag_fallback"),
+            # A valid empty database result is final evidence, not a reason
+            # to replace business data with a knowledge-base example.
+            ({"status": "empty", "data": []}, "end"),
             ({"status": "error", "message": "查询失败"}, "sql_rag_fallback"),
             ({"status": "ok", "data": [{"NAME": "错误测试项目"}]}, "end"),
         ]:

@@ -10,5 +10,7 @@ class GraphState(MessagesState, total=False):
     enable_thinking: bool
     select_model: str
     user_identity: str
+    current_question: str
+    query_context: str
     sql_fallback_done: bool
     sql_attempted: bool   # should_sql 节点判断过 → True，避免重复进入

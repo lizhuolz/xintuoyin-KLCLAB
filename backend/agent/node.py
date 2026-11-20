@@ -214,22 +214,28 @@ def make_chatbot_node(
     temperature: float,
     tools,
     system_prompt: str = "你是一个专业的人工智能助手。",
+    *,
+    stream_answer: bool = True,
+    model_tags=None,
+    machine_output=False,
 ):
     def chatbot_node(state: GraphState):
         from langchain_openai import ChatOpenAI
 
         model = state["select_model"]
-        user_text = extract_current_user_question(state["messages"])
-        enable_thinking = bool(state.get("enable_thinking", False))
+        user_text = state.get("current_question") or extract_current_user_question(state["messages"])
+        enable_thinking = bool(state.get("enable_thinking", False)) and not machine_output
         base_llm = ChatOpenAI(
             model=model,
             temperature=_env_float("CHAT_MODEL_TEMPERATURE", temperature),
-            streaming=not tools,
+            streaming=bool(stream_answer and not tools),
+            disable_streaming=not stream_answer,
+            tags=list(model_tags or []),
             max_tokens=_env_int("CHAT_MODEL_MAX_TOKENS", 4096),
             timeout=_env_float("CHAT_MODEL_TIMEOUT", 120),
             model_kwargs=_chat_model_kwargs(enable_thinking),
         )
-        llm = base_llm
+        llm = base_llm.bind(response_format={'type':'json_object'}) if machine_output else base_llm
         if tools:
             llm = llm.bind_tools(tools)
         
@@ -245,7 +251,7 @@ def make_chatbot_node(
             "\n7. 涉及知识库内容的问题，你必须调用 `rag_tool` 检索最新内容后再回答，不要直接引用历史对话中的知识库相关回答，因为知识库可能已更新或关闭。"
         )
         
-        full_system_prompt = system_prompt + instruction
+        full_system_prompt = system_prompt if machine_output else system_prompt + instruction
         sys_msg = SystemMessage(content=full_system_prompt)
         response = llm.invoke([sys_msg, *state["messages"]])
         if isinstance(response, AIMessage):
@@ -272,6 +278,8 @@ def make_chatbot_node(
                     model=model,
                     temperature=_env_float("CHAT_MODEL_TEMPERATURE", temperature),
                     streaming=False,
+                    disable_streaming=not stream_answer,
+                    tags=list(model_tags or []),
                     max_tokens=_env_int("CHAT_MODEL_MAX_TOKENS", 4096),
                     timeout=_env_float("CHAT_MODEL_TIMEOUT", 120),
                     model_kwargs=_chat_model_kwargs(enable_thinking),
@@ -298,7 +306,7 @@ def make_should_sql_node(SQL_TOOL_NAME) -> GraphState:
             timeout=_env_float("CHAT_MODEL_TIMEOUT", 120),
             model_kwargs=_chat_model_kwargs(False),
         )
-        user_text = extract_last_user_text(state["messages"])
+        user_text = state.get("current_question") or extract_current_user_question(state["messages"])
         system = SystemMessage(
             content=(
                 "你是一个路由分类器。任务：判断用户问题是否必须通过数据库(SQL)查询才能回答。\n"
@@ -326,22 +334,6 @@ def make_should_sql_node(SQL_TOOL_NAME) -> GraphState:
             "sql_reason": reason,
             "sql_attempted": True,   # 标记已判断过，避免 chatbot 兜底再次进入
         }
-
-        if sql_needed:
-            new_messages = list(state["messages"])
-            last = new_messages[-1] if new_messages else None
-            if isinstance(last, AIMessage) and not getattr(last, "tool_calls", None):
-                new_messages = new_messages[:-1]
-
-            new_messages.append(
-                HumanMessage(
-                    content=(
-                        f"系统补充要求：这个问题必须通过数据库查询来回答。你只能调用工具 `{SQL_TOOL_NAME}` 获取数据，"
-                        "请先发起一次工具调用获取结果，然后再基于工具返回结果回答用户。"
-                    )
-                )
-            )
-            updates["messages"] = new_messages
 
         return updates
     return res

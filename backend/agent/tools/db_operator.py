@@ -36,6 +36,10 @@ def sql_tool(question: str, config: RunnableConfig) -> str:
     db = None
     try:
         db = get_db_instance(user)
+        # This background is a server-created request snapshot, not a tool
+        # argument supplied by the model. Keep the current question unchanged.
+        context = configurable.get("sql_query_context", "")
+        db.query_context = context if isinstance(context, str) else ""
         answer = db.query_db(text_query=question)
     except SQLAccessDenied as exc:
         answer = {"status": "denied", "Access_check": False, "message": str(exc)}

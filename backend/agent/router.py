@@ -1,6 +1,7 @@
 from __future__ import annotations
 import ast
 import json
+import re
 from typing import  Literal
 from langchain_core.messages import AIMessage, HumanMessage
 from langchain_openai import ChatOpenAI
@@ -12,7 +13,14 @@ from agent.utils import extract_current_user_question
 def _looks_like_sql_query(text: str) -> bool:
     lowered = (text or "").lower()
     keywords = ("数据库", "sql", "字段", "统计", "发票", "员工", "总数", "总额", "查询", "人数", "多少", "汇总", "排行", "数据表")
-    return any(keyword in lowered for keyword in keywords)
+    if any(keyword in lowered for keyword in keywords):
+        return True
+    # A structured entity list/count request still needs the SQL classifier;
+    # general instructions and explanations stay on the existing chat/RAG path.
+    if re.search(r"如何|怎么|怎样|教程|步骤|方法|是什么|含义|职责", lowered):
+        return False
+    return bool(re.search(r"项目|员工|人员|成员|发票|记录", lowered)) and bool(
+        re.search(r"查看哪些|列出|列表|清单|几(?:个|名|条|项)", lowered))
 
 
 def route_start(state: GraphState) -> Literal["chatbot_local", "chatbot_web"]:
@@ -53,9 +61,9 @@ def _sql_content_failed(content) -> bool:
         if result.get("status") == "denied" or result.get("Access_check") is False:
             return False
         if "status" in result:
-            return result["status"] in {"error", "empty"}
+            return result["status"] == "error"
         if "data" in result:
-            return not result["data"]
+            return not isinstance(result["data"], list)
         return "error" in result
     return any(word in content.lower() for word in _SQL_FAIL_INDICATORS)
 
@@ -80,11 +88,11 @@ def route_after_chatbot_local(state: GraphState) -> Literal["tools_local", "shou
         return "tools_local"
     if has_tool_result:
         # 已调过 rag/web 工具，但用户问题看起来像 SQL 类且 should_sql 还没尝试 → 再补一次 SQL 路径
-        if not state.get("sql_attempted") and _looks_like_sql_query(extract_current_user_question(messages)):
+        if not state.get("sql_attempted") and _looks_like_sql_query(state.get("current_question") or extract_current_user_question(messages)):
             return "should_sql"
         return "end"
     # 没用过工具：常规路径
-    if _looks_like_sql_query(extract_current_user_question(messages)):
+    if _looks_like_sql_query(state.get("current_question") or extract_current_user_question(messages)):
         return "should_sql"
     return "end"
 
@@ -100,7 +108,7 @@ def route_after_chatbot_web(state: GraphState) -> Literal["tools_web", "should_s
         return "tools_web"
     if has_tool_result:
         # 调过 web/rag 后，如果是 SQL 类问题且 should_sql 还没尝试过 → 补一次 SQL 路径
-        if not state.get("sql_attempted") and _looks_like_sql_query(extract_current_user_question(messages)):
+        if not state.get("sql_attempted") and _looks_like_sql_query(state.get("current_question") or extract_current_user_question(messages)):
             return "should_sql"
         return "end"
     return "should_sql"
